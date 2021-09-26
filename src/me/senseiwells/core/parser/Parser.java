@@ -73,7 +73,6 @@ public class Parser {
     }
 
     private Node term() throws Error {
-        //BinOp method
         Node left = this.factor();
         while (this.currentToken.type.isTypeInArray(new Token.Type[]{Token.Type.MULTIPLY, Token.Type.DIVIDE})) {
             Token operatorToken = this.currentToken;
@@ -85,6 +84,7 @@ public class Parser {
     }
 
     private Node expression() throws Error {
+        //Initialise variable with keyword 'var' -> stores value in map
         if (this.currentToken instanceof KeyWordToken && ((KeyWordToken) this.currentToken).keyWord == KeyWordToken.KeyWord.VAR) {
             this.advance();
             if (this.currentToken.type != Token.Type.IDENTIFIER)
@@ -97,7 +97,7 @@ public class Parser {
             Node expression = this.expression();
             return new VariableAssignNode(token, expression);
         }
-        //Added to check
+        //If identifier is already a variable -> can assign value without 'var' keyword
         else if (this.currentToken.type == Token.Type.IDENTIFIER) {
             Token cachedToken = this.currentToken;
             this.advance();
@@ -109,7 +109,6 @@ public class Parser {
             this.recede();
         }
         try {
-            //BinOp method
             Node left = this.comparisonExpression();
             while (this.currentToken instanceof KeyWordToken && (((KeyWordToken) this.currentToken).keyWord == KeyWordToken.KeyWord.AND || ((KeyWordToken) this.currentToken).keyWord == KeyWordToken.KeyWord.OR)) {
                 Token operatorToken = this.currentToken;

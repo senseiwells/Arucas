@@ -49,6 +49,7 @@ public class BinaryOperatorNode extends Node {
             result.setPos(this.startPos, this.endPos);
             return result;
         }
+        //When you try to use an operator that doesn't work e.g. true/false
         catch (ClassCastException classCastException) {
             throw new Error(Error.ErrorType.ILLEGAL_OPERATION_ERROR, "The operation '" + (this.token instanceof KeyWordToken ? ((KeyWordToken) this.token).keyWord.toString() : this.token.type.toString()) + "' cannot be applied to '" + left.value + "' and '" + right.value + "'", this.startPos, this.endPos);
         }
