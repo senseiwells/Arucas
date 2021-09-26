@@ -101,12 +101,10 @@ public class Parser {
         else if (this.currentToken.type == Token.Type.IDENTIFIER) {
             Token cachedToken = this.currentToken;
             this.advance();
-            if (this.currentToken.type == Token.Type.ASSIGN_OPERATOR) {
+            if (this.currentToken.type == Token.Type.ASSIGN_OPERATOR && new VariableAccessNode(cachedToken).hasValue(this.context)) {
                 this.advance();
                 Node expression = this.expression();
-                if (new VariableAccessNode(cachedToken).hasValue(this.context))
-                    return new VariableAssignNode(cachedToken, expression);
-                this.recede();
+                return new VariableAssignNode(cachedToken, expression);
             }
             this.recede();
         }

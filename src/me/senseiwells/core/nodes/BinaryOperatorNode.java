@@ -45,7 +45,6 @@ public class BinaryOperatorNode extends Node {
                     else
                         throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected an operator", this.startPos, this.endPos);
                 }
-
             }
             result.setPos(this.startPos, this.endPos);
             return result;
