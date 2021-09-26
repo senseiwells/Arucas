@@ -25,7 +25,7 @@ public class BinaryOperatorNode extends Node {
         Value<?> left = interpreter.visit(this.leftNode, context);
         Value<?> right = interpreter.visit(this.rightNode, context);
         try {
-            Value<?> result = new NumberValue(0);
+            Value<?> result;
             switch (this.token.type) {
                 case PLUS -> result = ((NumberValue) left).addTo((NumberValue) right);
                 case MINUS -> result = ((NumberValue) left).subtractBy((NumberValue) right);
@@ -39,9 +39,13 @@ public class BinaryOperatorNode extends Node {
                         switch (((KeyWordToken) this.token).keyWord) {
                             case AND -> result = ((BooleanValue) left).isAnd((BooleanValue) right);
                             case OR -> result = ((BooleanValue) left).isOr((BooleanValue) right);
+                            default -> throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected an operator", this.startPos, this.endPos);
                         }
                     }
+                    else
+                        throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected an operator", this.startPos, this.endPos);
                 }
+
             }
             result.setPos(this.startPos, this.endPos);
             return result;
