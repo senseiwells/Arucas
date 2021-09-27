@@ -16,7 +16,11 @@ public class KeyWordToken extends Token {
         VAR("var"),
         AND("and"),
         OR("or"),
-        NOT("not");
+        NOT("not"),
+        IF("if"),
+        THEN("then"),
+        ELIF("elif"),
+        ELSE("else");
 
         private final String name;
 

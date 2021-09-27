@@ -5,7 +5,9 @@ import me.senseiwells.core.error.Error;
 import me.senseiwells.core.nodes.*;
 import me.senseiwells.core.tokens.KeyWordToken;
 import me.senseiwells.core.tokens.Token;
+import me.senseiwells.helpers.TwoValues;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public class Parser {
@@ -67,6 +69,15 @@ public class Parser {
                     return expression;
                 }
                 throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected ')'", this.currentToken.startPos, this.currentToken.endPos );
+            }
+            default -> {
+                if (this.currentToken instanceof KeyWordToken) {
+                    switch (((KeyWordToken) this.currentToken).keyWord) {
+                        case IF -> {
+                            return this.ifExpression();
+                        }
+                    }
+                }
             }
         }
         throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected an integer, float, identifier, or '('", token.startPos, token.endPos);
@@ -149,5 +160,31 @@ public class Parser {
             left = new BinaryOperatorNode(left, operatorToken, right);
         }
         return left;
+    }
+
+    private Node ifExpression() throws Error {
+        List<TwoValues<Node, Node>> cases = new LinkedList<>();
+        Node elseCase = null;
+        this.advance();
+        Node condition = this.expression();
+        if (!(this.currentToken instanceof KeyWordToken) || ((KeyWordToken) this.currentToken).keyWord != KeyWordToken.KeyWord.THEN)
+            throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected 'then'", this.currentToken.startPos, this.currentToken.endPos);
+        this.advance();
+        Node expression = this.expression();
+        cases.add(new TwoValues<>(condition, expression));
+        while (this.currentToken instanceof KeyWordToken && ((KeyWordToken) this.currentToken).keyWord == KeyWordToken.KeyWord.ELIF) {
+            this.advance();
+            condition = this.expression();
+            if (!(this.currentToken instanceof KeyWordToken) || ((KeyWordToken) this.currentToken).keyWord != KeyWordToken.KeyWord.THEN)
+                throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected 'then'", this.currentToken.startPos, this.currentToken.endPos);
+            this.advance();
+            expression = this.expression();
+            cases.add(new TwoValues<>(condition, expression));
+        }
+        if (this.currentToken instanceof KeyWordToken && ((KeyWordToken) this.currentToken).keyWord == KeyWordToken.KeyWord.ELSE) {
+            this.advance();
+            elseCase = this.expression();
+        }
+        return new IfNode(cases, elseCase);
     }
  }

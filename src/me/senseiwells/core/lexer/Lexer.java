@@ -47,7 +47,7 @@ public class Lexer {
                      'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
                      'u', 'v', 'w', 'x', 'y', 'z', '_' -> token = this.formIdentifierToken();
                 case '+' -> token = this.formBasicToken(Type.PLUS);
-                case '-' -> token = this.formBasicToken(Type.MINUS);
+                case '-' -> token = this.formMinusToken();
                 case '*' -> token = this.formBasicToken(Type.MULTIPLY);
                 case '/' -> token = this.formBasicToken(Type.DIVIDE);
                 case '(' -> token = this.formBasicToken(Type.LEFT_BRACKET);
@@ -104,6 +104,15 @@ public class Lexer {
 
     private Token formBasicToken(Type type) {
         return new Token(type, this.pos);
+    }
+
+    private Token formMinusToken() {
+        Position startPos = this.pos.copy();
+        this.advance();
+        if (this.currentChar.equals('>'))
+            return new KeyWordToken(KeyWordToken.KeyWord.THEN, startPos, this.pos);
+        this.recede();
+        return new Token(Type.MINUS, startPos, this.pos);
     }
 
     private Token formEqualsToken() {
