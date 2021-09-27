@@ -35,7 +35,7 @@ public class Parser {
     public Node parse() throws Error {
         Node result = this.expression();
         if (this.currentToken.type != Token.Type.END)
-            throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected an operator", this.currentToken.startPos, this.currentToken.endPos);
+            throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected an expression", this.currentToken.startPos, this.currentToken.endPos);
         return result;
     }
 
