@@ -24,13 +24,13 @@ public class UnaryOperatorNode extends Node {
         try {
             if (this.token.type == Token.Type.MINUS)
                 value = ((NumberValue) value).multiplyBy(new NumberValue(-1));
-            else if (this.token instanceof KeyWordToken && ((KeyWordToken) this.token).keyWord == KeyWordToken.KeyWord.NOT)
+            else if (this.token.type == Token.Type.KEYWORD && ((KeyWordToken) this.token).keyWord == KeyWordToken.KeyWord.NOT)
                 value = ((BooleanValue) value).not();
             value.setPos(node.startPos, node.endPos);
             return value;
         }
         catch (ClassCastException classCastException) {
-            throw new Error(Error.ErrorType.ILLEGAL_OPERATION_ERROR, "The operation '" + (this.token instanceof KeyWordToken ? ((KeyWordToken) this.token).keyWord.toString() : this.token.type.toString()) + "' cannot be applied to '" + value.value + "'", this.startPos, this.endPos);
+            throw new Error(Error.ErrorType.ILLEGAL_OPERATION_ERROR, "The operation '" + (this.token.type == Token.Type.KEYWORD ? ((KeyWordToken) this.token).keyWord.toString() : this.token.type.toString()) + "' cannot be applied to '" + value.value + "'", this.startPos, this.endPos);
         }
     }
 

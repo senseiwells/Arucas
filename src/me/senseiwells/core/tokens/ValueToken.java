@@ -1,18 +1,19 @@
 package me.senseiwells.core.tokens;
 
 import me.senseiwells.core.lexer.Position;
+import me.senseiwells.core.values.Value;
 
-public class ValueToken<T> extends Token {
+public class ValueToken extends Token {
 
-    public T value;
+    public Value<?> tokenValue;
 
-    public ValueToken(Type type, Position startPos, Position endPos, T value) {
+    public ValueToken(Type type, Position startPos, Position endPos, Value<?> value) {
         super(type, startPos, endPos);
-        this.value = value;
+        this.tokenValue = value;
     }
 
     @Override
     public String toString() {
-        return "Token{" + "type=" + this.type + ", value=" + this.value + '}';
+        return "Token{" + "type=" + this.type + ", value=" + this.tokenValue + '}';
     }
 }

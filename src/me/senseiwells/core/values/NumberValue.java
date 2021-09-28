@@ -50,11 +50,6 @@ public class NumberValue extends Value<Float>{
     }
 
     @Override
-    public String toString() {
-        return this.value.toString();
-    }
-
-    @Override
     public Value<Float> copy() {
         return new NumberValue(this.value);
     }

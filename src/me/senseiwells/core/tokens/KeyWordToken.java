@@ -20,7 +20,8 @@ public class KeyWordToken extends Token {
         IF("if"),
         THEN("then"),
         //ELIF("elif"),
-        ELSE("else");
+        ELSE("else"),
+        WHILE("while");
 
         private final String name;
 

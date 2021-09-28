@@ -8,6 +8,9 @@ import me.senseiwells.core.tokens.KeyWordToken;
 import me.senseiwells.core.tokens.Token;
 import me.senseiwells.core.tokens.Token.Type;
 import me.senseiwells.core.tokens.ValueToken;
+import me.senseiwells.core.values.BooleanValue;
+import me.senseiwells.core.values.NumberValue;
+import me.senseiwells.core.values.StringValue;
 
 public class Lexer {
 
@@ -78,9 +81,9 @@ public class Lexer {
         this.recede();
         String identifier = identifierBuilder.toString();
         if (identifier.equals("true") || identifier.equals("false"))
-            return new ValueToken<>(Type.BOOLEAN, startPos, this.pos, identifier.equals("true"));
+            return new ValueToken(Type.BOOLEAN, startPos, this.pos, new BooleanValue(identifier.equals("true")));
         KeyWordToken.KeyWord keyWord = KeyWordToken.KeyWord.stringToKeyWord(identifier);
-        return keyWord != null ? new KeyWordToken(keyWord, startPos, this.pos) : new ValueToken<>(Type.IDENTIFIER, startPos, this.pos, identifier);
+        return keyWord != null ? new KeyWordToken(keyWord, startPos, this.pos) : new ValueToken(Type.IDENTIFIER, startPos, this.pos, new StringValue(identifier));
     }
 
     private Token formNumberToken() throws Error {
@@ -99,7 +102,7 @@ public class Lexer {
             this.advance();
         }
         this.recede();
-        return hasDots ? new ValueToken<>(Type.FLOAT, startPos, this.pos, Float.parseFloat(numberAsString.toString())) : new ValueToken<>(Type.INT, startPos, this.pos, Integer.parseInt(numberAsString.toString()));
+        return new ValueToken(Type.FLOAT, startPos, this.pos, new NumberValue(Float.parseFloat(numberAsString.toString())));
     }
 
     private Token formBasicToken(Type type) {

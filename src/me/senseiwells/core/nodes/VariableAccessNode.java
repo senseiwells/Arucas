@@ -15,7 +15,7 @@ public class VariableAccessNode extends Node {
 
     @Override
     public Value<?> visit(Interpreter interpreter, Context context) throws ErrorRuntime {
-        String name = (String) ((ValueToken<?>)this.token).value;
+        String name = (String) ((ValueToken)this.token).tokenValue.value;
         Value<?> value = context.symbolTable.get(name);
         if (value == null)
             throw new ErrorRuntime(name + " is not defined", this.startPos, this.endPos, context);
@@ -25,7 +25,7 @@ public class VariableAccessNode extends Node {
     }
 
     public boolean hasValue(Context context) {
-        String name = (String) ((ValueToken<?>)this.token).value;
+        String name = (String) ((ValueToken)this.token).tokenValue.value;
         Value<?> value = context.symbolTable.get(name);
         return value != null;
     }

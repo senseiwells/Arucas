@@ -5,6 +5,7 @@ import me.senseiwells.core.error.Error;
 import me.senseiwells.core.nodes.*;
 import me.senseiwells.core.tokens.KeyWordToken;
 import me.senseiwells.core.tokens.Token;
+import me.senseiwells.core.tokens.ValueToken;
 import me.senseiwells.helpers.TwoValues;
 
 import java.util.LinkedList;
@@ -70,12 +71,13 @@ public class Parser {
                 }
                 throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected ')'", this.currentToken.startPos, this.currentToken.endPos );
             }
-            default -> {
-                if (this.currentToken instanceof KeyWordToken) {
-                    switch (((KeyWordToken) this.currentToken).keyWord) {
-                        case IF -> {
-                            return this.ifExpression();
-                        }
+            case KEYWORD -> {
+                switch (((KeyWordToken) this.currentToken).keyWord) {
+                    case IF -> {
+                        return this.ifExpression();
+                    }
+                    case WHILE -> {
+                        return this.whileExpression();
                     }
                 }
             }
@@ -96,7 +98,7 @@ public class Parser {
 
     private Node expression() throws Error {
         //Initialise variable with keyword 'var' -> stores value in map
-        if (this.currentToken instanceof KeyWordToken && ((KeyWordToken) this.currentToken).keyWord == KeyWordToken.KeyWord.VAR) {
+        if (this.currentToken.type == Token.Type.KEYWORD && ((KeyWordToken) this.currentToken).keyWord == KeyWordToken.KeyWord.VAR) {
             this.advance();
             if (this.currentToken.type != Token.Type.IDENTIFIER)
                 throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected an identifier", this.currentToken.startPos, this.currentToken.endPos);
@@ -120,7 +122,7 @@ public class Parser {
             this.recede();
         }
         Node left = this.comparisonExpression();
-        while (this.currentToken instanceof KeyWordToken && (((KeyWordToken) this.currentToken).keyWord == KeyWordToken.KeyWord.AND || ((KeyWordToken) this.currentToken).keyWord == KeyWordToken.KeyWord.OR)) {
+        while (this.currentToken.type == Token.Type.KEYWORD && (((KeyWordToken) this.currentToken).keyWord == KeyWordToken.KeyWord.AND || ((KeyWordToken) this.currentToken).keyWord == KeyWordToken.KeyWord.OR)) {
             Token operatorToken = this.currentToken;
             this.advance();
             Node right = this.comparisonExpression();
@@ -130,7 +132,7 @@ public class Parser {
     }
 
     private Node comparisonExpression() throws Error {
-        if (this.currentToken instanceof KeyWordToken && ((KeyWordToken) this.currentToken).keyWord == KeyWordToken.KeyWord.NOT) {
+        if (this.currentToken.type == Token.Type.KEYWORD && ((KeyWordToken) this.currentToken).keyWord == KeyWordToken.KeyWord.NOT) {
             Token token = this.currentToken;
             this.advance();
             Node node = this.comparisonExpression();
@@ -161,29 +163,45 @@ public class Parser {
         List<TwoValues<Node, Node>> cases = new LinkedList<>();
         Node elseCase = null;
         this.advance();
-        if (this.currentToken.type != Token.Type.LEFT_BRACKET)
+        if (!this.currentHasBracket())
             throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected 'if (...)'", this.currentToken.startPos, this.currentToken.endPos);
         Node condition = this.expression();
-        if (!(this.currentToken instanceof KeyWordToken) || ((KeyWordToken) this.currentToken).keyWord != KeyWordToken.KeyWord.THEN)
+        if (!(this.currentToken.type == Token.Type.KEYWORD || ((KeyWordToken) this.currentToken).keyWord != KeyWordToken.KeyWord.THEN))
             throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected 'then' or '->'", this.currentToken.startPos, this.currentToken.endPos);
         this.advance();
         Node expression = this.expression();
         cases.add(new TwoValues<>(condition, expression));
         /* "elif (...) -> ..." code, removed as can do "else if (...) -> ..."
-        while (this.currentToken instanceof KeyWordToken && ((KeyWordToken) this.currentToken).keyWord == KeyWordToken.KeyWord.ELIF) {
+        while (this.currentToken.type == Token.Type.KEYWORD && ((KeyWordToken) this.currentToken).keyWord == KeyWordToken.KeyWord.ELIF) {
             this.advance();
             condition = this.expression();
-            if (!(this.currentToken instanceof KeyWordToken) || ((KeyWordToken) this.currentToken).keyWord != KeyWordToken.KeyWord.THEN)
+            if (this.currentToken.type != Token.Type.KEYWORD || ((KeyWordToken) this.currentToken).keyWord != KeyWordToken.KeyWord.THEN)
                 throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected 'then'", this.currentToken.startPos, this.currentToken.endPos);
             this.advance();
             expression = this.expression();
             cases.add(new TwoValues<>(condition, expression));
         }
          */
-        if (this.currentToken instanceof KeyWordToken && ((KeyWordToken) this.currentToken).keyWord == KeyWordToken.KeyWord.ELSE) {
+        if (this.currentToken.type == Token.Type.KEYWORD && ((KeyWordToken) this.currentToken).keyWord == KeyWordToken.KeyWord.ELSE) {
             this.advance();
             elseCase = this.expression();
         }
         return new IfNode(cases, elseCase);
+    }
+
+    private Node whileExpression() throws Error {
+        this.advance();
+        if (!this.currentHasBracket())
+            throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected 'while (...)'", this.currentToken.startPos, this.currentToken.endPos);
+        Node condition = this.expression();
+        if (this.currentToken.type != Token.Type.KEYWORD || ((KeyWordToken)this.currentToken).keyWord != KeyWordToken.KeyWord.THEN)
+            throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected 'then' or '->'", this.currentToken.startPos, this.currentToken.endPos);
+        this.advance();
+        Node body = this.expression();
+        return new WhileNode(condition, body);
+    }
+
+    private boolean currentHasBracket() {
+        return this.currentToken.type == Token.Type.LEFT_BRACKET;
     }
  }

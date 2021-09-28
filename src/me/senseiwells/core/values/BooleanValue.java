@@ -25,11 +25,6 @@ public class BooleanValue extends Value<Boolean> {
     }
 
     @Override
-    public String toString() {
-        return this.value.toString();
-    }
-
-    @Override
     public Value<Boolean> copy() {
         return new BooleanValue(this.value);
     }

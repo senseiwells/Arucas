@@ -18,7 +18,7 @@ public class VariableAssignNode extends Node {
 
     @Override
     public Value<?> visit(Interpreter interpreter, Context context) throws Error {
-        String name = (String) ((ValueToken<?>)this.token).value;
+        String name = (String) ((ValueToken)this.token).tokenValue.value;
         Value<?> value = interpreter.visit(this.node, context);
         context.symbolTable.set(name, value);
         return value;

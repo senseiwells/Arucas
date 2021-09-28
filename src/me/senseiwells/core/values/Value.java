@@ -37,4 +37,9 @@ public abstract class Value<T> {
 
     public abstract Value<T> copy();
 
+    @Override
+    public String toString() {
+        return this.value.toString();
+    }
+
 }
