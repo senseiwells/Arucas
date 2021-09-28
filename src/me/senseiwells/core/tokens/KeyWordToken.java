@@ -19,7 +19,7 @@ public class KeyWordToken extends Token {
         NOT("not"),
         IF("if"),
         THEN("then"),
-        ELIF("elif"),
+        //ELIF("elif"),
         ELSE("else");
 
         private final String name;
