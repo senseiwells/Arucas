@@ -63,6 +63,7 @@ public class Lexer {
                 case '|' -> token = this.formOrToken();
                 case ',' -> token = this.formBasicToken(Type.COMMA);
                 case '^' -> token = this.formBasicToken(Type.POWER);
+                case '"' -> token = this.formStringToken();
                 default -> throw this.throwNewError(Error.ErrorType.ILLEGAL_CHAR_ERROR, this.currentChar.toString());
             }
             if (token != null)
@@ -89,6 +90,27 @@ public class Lexer {
         }
         KeyWordToken.KeyWord keyWord = KeyWordToken.KeyWord.stringToKeyWord(identifier);
         return keyWord != null ? new KeyWordToken(keyWord, startPos, this.pos) : new ValueToken(Type.IDENTIFIER, startPos, this.pos, new StringValue(identifier));
+    }
+
+    private Token formStringToken() {
+        StringBuilder string = new StringBuilder();
+        Position startPos = this.pos.copy();
+        boolean escapeCharacter = false;
+        this.advance();
+        while (this.currentChar != null && (!this.currentChar.equals('"') || escapeCharacter)) {
+            if (escapeCharacter)
+                string.append(StringValue.EscapeCharacters.getReplacement(this.currentChar));
+            else if (this.currentChar.equals('\\')) {
+                escapeCharacter = true;
+                this.advance();
+                continue;
+            }
+            else
+                string.append(this.currentChar);
+            this.advance();
+            escapeCharacter = false;
+        }
+        return new ValueToken(Type.STRING, startPos, this.pos, new StringValue(string.toString()));
     }
 
     private Token formNumberToken() throws Error {

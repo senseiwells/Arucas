@@ -1,5 +1,6 @@
 package me.senseiwells.core.values;
 
+import me.senseiwells.core.error.Error;
 import me.senseiwells.core.error.ErrorRuntime;
 import me.senseiwells.core.tokens.Token;
 
@@ -9,8 +10,11 @@ public class NumberValue extends Value<Float>{
         super(value);
     }
 
-    public NumberValue addTo(NumberValue other) {
-        return (NumberValue) new NumberValue(this.value + other.value).setContext(this.context);
+    @Override
+    public Value<Float> addTo(Value<?> other) throws Error {
+        if (!(other instanceof NumberValue otherValue))
+            throw new Error(Error.ErrorType.ILLEGAL_OPERATION_ERROR, "The 'add' operator cannot be applied to " + this + " and " + other, this.startPos, this.endPos);
+        return (NumberValue) new NumberValue(this.value + otherValue.value).setContext(this.context);
     }
 
     public NumberValue subtractBy(NumberValue other) {
@@ -46,7 +50,7 @@ public class NumberValue extends Value<Float>{
     }
 
     @Override
-    public Value<Float> copy() {
-        return new NumberValue(this.value);
+    public Value<?> copy() {
+        return new NumberValue(this.value).setPos(this.startPos, this.endPos).setContext(this.context);
     }
 }

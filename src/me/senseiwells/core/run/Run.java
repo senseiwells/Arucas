@@ -13,6 +13,7 @@ import me.senseiwells.core.values.Value;
 import java.util.List;
 import java.util.Scanner;
 
+@SuppressWarnings("all")
 public class Run {
 
     public static SymbolTable symbolTable = new SymbolTable();
@@ -24,7 +25,7 @@ public class Run {
             Value<?> values;
             try {
                 values = run("System.in", line);
-                System.out.println(values);
+                //System.out.println(values);
             }
             catch (Error e) {
                 String error = e.toString();
@@ -34,15 +35,16 @@ public class Run {
         }
     }
 
-    @SuppressWarnings({"SameParameterValue", "UnnecessaryLocalVariable"})
     private static Value<?> run(String fileName, String line) throws Error {
-        //Create context
-        Context context = new Context("program", null, null);
-        context.symbolTable = symbolTable;
 
         //Create Tokens
         Lexer lexer = new Lexer(line, fileName);
         List<Token> values = lexer.createTokens();
+
+        //Create context
+        Context context = new Context("terminal", null, null);
+        symbolTable.setDefaultSymbols(context);
+        context.symbolTable = symbolTable;
 
         //Try To Parse
         Parser parser = new Parser(values, context);

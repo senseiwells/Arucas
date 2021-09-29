@@ -3,6 +3,7 @@ package me.senseiwells.core.nodes;
 import me.senseiwells.core.error.Context;
 import me.senseiwells.core.error.Error;
 import me.senseiwells.core.interpreter.Interpreter;
+import me.senseiwells.core.values.BaseFunctionValue;
 import me.senseiwells.core.values.FunctionValue;
 import me.senseiwells.core.values.Value;
 
@@ -23,12 +24,13 @@ public class CallNode extends Node {
     @Override
     public Value<?> visit(Interpreter interpreter, Context context) throws Error {
         Value<?> callValue = interpreter.visit(this.callNode, context);
-        if (!(callValue instanceof FunctionValue))
+        if (!(callValue instanceof BaseFunctionValue))
             return null;
         List<Value<?>> argumentValues = new LinkedList<>();
-        callValue = callValue.copy().setPos(this.startPos, this.endPos).setContext(context);
+        callValue = callValue.copy().setPos(this.startPos, this.endPos);
         for (Node node : this.argumentNodes)
             argumentValues.add(interpreter.visit(node, context));
-        return ((FunctionValue)callValue).execute(argumentValues);
+        Value<?> functionValue = ((BaseFunctionValue) callValue).execute(argumentValues);
+        return functionValue != null ? functionValue.setPos(this.startPos, this.endPos).setContext(context) : null;
     }
 }

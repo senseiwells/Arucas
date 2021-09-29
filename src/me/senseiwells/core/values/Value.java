@@ -1,6 +1,7 @@
 package me.senseiwells.core.values;
 
 import me.senseiwells.core.error.Context;
+import me.senseiwells.core.error.Error;
 import me.senseiwells.core.lexer.Position;
 
 public abstract class Value<T> {
@@ -14,15 +15,19 @@ public abstract class Value<T> {
         this.value = value;
     }
 
-    public Value<T> setPos(Position startPos, Position endPos) {
+    public Value<?> setPos(Position startPos, Position endPos) {
         this.startPos = startPos;
         this.endPos = endPos;
         return this;
     }
 
-    public Value<T> setContext(Context context) {
+    public Value<?> setContext(Context context) {
         this.context = context;
         return this;
+    }
+
+    public Value<?> addTo(Value<?> other) throws Error {
+        throw new Error(Error.ErrorType.ILLEGAL_OPERATION_ERROR, "The 'add' operator cannot be applied to " + this + " and " + other, this.startPos, this.endPos);
     }
 
     public BooleanValue isEqual(Value<?> other) {
@@ -33,7 +38,7 @@ public abstract class Value<T> {
         return (BooleanValue) new BooleanValue(!this.value.equals(other.value)).setContext(this.context);
     }
 
-    public abstract Value<T> copy();
+    public abstract Value<?> copy();
 
     @Override
     public String toString() {

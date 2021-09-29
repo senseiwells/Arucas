@@ -29,6 +29,7 @@ public class Token {
         INT,
         FLOAT,
         BOOLEAN,
+        STRING,
 
         PLUS,
         MINUS,

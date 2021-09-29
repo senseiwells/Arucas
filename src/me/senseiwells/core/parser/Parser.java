@@ -76,6 +76,10 @@ public class Parser {
                 this.advance();
                 return new BooleanNode(token);
             }
+            case STRING -> {
+                this.advance();
+                return new StringNode(token);
+            }
             case LEFT_BRACKET -> {
                 this.advance();
                 Node expression = this.expression();

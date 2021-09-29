@@ -27,7 +27,7 @@ public class BinaryOperatorNode extends Node {
         try {
             Value<?> result;
             switch (this.token.type) {
-                case PLUS -> result = ((NumberValue) left).addTo((NumberValue) right);
+                case PLUS -> result = left.addTo(right);
                 case MINUS -> result = ((NumberValue) left).subtractBy((NumberValue) right);
                 case MULTIPLY -> result = ((NumberValue) left).multiplyBy((NumberValue) right);
                 case DIVIDE -> result = ((NumberValue) left).divideBy((NumberValue) right);

@@ -1,5 +1,8 @@
 package me.senseiwells.core.interpreter;
 
+import me.senseiwells.core.error.Context;
+import me.senseiwells.core.values.BooleanValue;
+import me.senseiwells.core.values.BuiltInFunctionValue;
 import me.senseiwells.core.values.Value;
 
 import java.util.HashMap;
@@ -18,6 +21,14 @@ public class SymbolTable {
         this(null);
     }
 
+    public void setDefaultSymbols(Context context) {
+        this.set("true", new BooleanValue(true));
+        this.set("false", new BooleanValue(false));
+        for (BuiltInFunctionValue.BuiltInFunction function : BuiltInFunctionValue.BuiltInFunction.values()) {
+            this.set(function.name, new BuiltInFunctionValue(function.name).setContext(context));
+        }
+    }
+
     public Value<?> get(String name) {
         Value<?> value = this.symbolMap.get(name);
         if (value == null && this.parent != null)
@@ -33,5 +44,25 @@ public class SymbolTable {
     public SymbolTable remove(String name) {
         this.symbolMap.remove(name);
         return this;
+    }
+
+    public enum Literal {
+
+        TRUE("true"),
+        FALSE("false");
+
+        String name;
+
+        Literal(String name) {
+            this.name = name;
+        }
+
+        public static Literal stringToLiteral(String word) {
+            for (Literal value : Literal.values()) {
+                if (word.equals(value.name))
+                    return value;
+            }
+            return null;
+        }
     }
 }
