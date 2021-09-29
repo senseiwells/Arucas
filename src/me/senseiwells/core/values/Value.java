@@ -14,25 +14,23 @@ public abstract class Value<T> {
         this.value = value;
     }
 
-    public void setPos(Position startPos, Position endPos) {
+    public Value<T> setPos(Position startPos, Position endPos) {
         this.startPos = startPos;
         this.endPos = endPos;
+        return this;
     }
 
-    public void setContext(Context context) {
+    public Value<T> setContext(Context context) {
         this.context = context;
+        return this;
     }
 
     public BooleanValue isEqual(Value<?> other) {
-        BooleanValue booleanValue = new BooleanValue(this.value.equals(other.value));
-        booleanValue.setContext(this.context);
-        return booleanValue;
+        return (BooleanValue) new BooleanValue(this.value.equals(other.value)).setContext(this.context);
     }
 
     public BooleanValue isNotEqual(Value<?> other) {
-        BooleanValue booleanValue = new BooleanValue(!this.value.equals(other.value));
-        booleanValue.setContext(this.context);
-        return booleanValue;
+        return (BooleanValue) new BooleanValue(!this.value.equals(other.value)).setContext(this.context);
     }
 
     public abstract Value<T> copy();

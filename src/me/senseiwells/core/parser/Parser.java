@@ -5,7 +5,6 @@ import me.senseiwells.core.error.Error;
 import me.senseiwells.core.nodes.*;
 import me.senseiwells.core.tokens.KeyWordToken;
 import me.senseiwells.core.tokens.Token;
-import me.senseiwells.core.tokens.ValueToken;
 import me.senseiwells.helpers.TwoValues;
 
 import java.util.LinkedList;
@@ -40,6 +39,26 @@ public class Parser {
         if (this.currentToken.type != Token.Type.END)
             throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected an expression", this.currentToken.startPos, this.currentToken.endPos);
         return result;
+    }
+
+    //todo LEFT HERE 9:00
+    private Node call() throws Error {
+        List<Node> argumentNodes = new LinkedList<>();
+        Node factor = this.factor();
+        if (this.currentHasNoBracket())
+            return factor;
+        this.advance();
+        if (this.currentToken.type != Token.Type.RIGHT_BRACKET) {
+            argumentNodes.add(this.expression());
+            while (this.currentToken.type == Token.Type.COMMA) {
+                this.advance();
+                argumentNodes.add(this.expression());
+            }
+            if (this.currentToken.type != Token.Type.RIGHT_BRACKET)
+                throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected a ')'", this.currentToken.startPos, this.currentToken.endPos);
+        }
+        this.advance();
+        return new CallNode(factor, argumentNodes);
     }
 
     private Node factor() throws Error {
@@ -79,6 +98,9 @@ public class Parser {
                     case WHILE -> {
                         return this.whileExpression();
                     }
+                    case FUN -> {
+                        return this.functionDefinition();
+                    }
                 }
             }
         }
@@ -86,11 +108,11 @@ public class Parser {
     }
 
     private Node term() throws Error {
-        Node left = this.factor();
+        Node left = this.call();
         while (this.currentToken.type.isTypeInArray(new Token.Type[]{Token.Type.MULTIPLY, Token.Type.DIVIDE})) {
             Token operatorToken = this.currentToken;
             this.advance();
-            Node right = this.factor();
+            Node right = this.call();
             left = new BinaryOperatorNode(left, operatorToken, right);
         }
         return left;
@@ -163,7 +185,7 @@ public class Parser {
         List<TwoValues<Node, Node>> cases = new LinkedList<>();
         Node elseCase = null;
         this.advance();
-        if (!this.currentHasBracket())
+        if (this.currentHasNoBracket())
             throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected 'if (...)'", this.currentToken.startPos, this.currentToken.endPos);
         Node condition = this.expression();
         if (!(this.currentToken.type == Token.Type.KEYWORD || ((KeyWordToken) this.currentToken).keyWord != KeyWordToken.KeyWord.THEN))
@@ -191,7 +213,7 @@ public class Parser {
 
     private Node whileExpression() throws Error {
         this.advance();
-        if (!this.currentHasBracket())
+        if (this.currentHasNoBracket())
             throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected 'while (...)'", this.currentToken.startPos, this.currentToken.endPos);
         Node condition = this.expression();
         if (this.currentToken.type != Token.Type.KEYWORD || ((KeyWordToken)this.currentToken).keyWord != KeyWordToken.KeyWord.THEN)
@@ -201,7 +223,41 @@ public class Parser {
         return new WhileNode(condition, body);
     }
 
-    private boolean currentHasBracket() {
-        return this.currentToken.type == Token.Type.LEFT_BRACKET;
+    private Node functionDefinition() throws Error {
+        List<Token> argumentNameTokens = new LinkedList<>();
+        Token variableNameToken = null;
+        this.advance();
+        if (this.currentToken.type == Token.Type.IDENTIFIER) {
+            variableNameToken = currentToken;
+            this.advance();
+        }
+        if (this.currentHasNoBracket())
+            throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected '(...)'", this.currentToken.startPos, this.currentToken.endPos);
+        this.advance();
+        if (this.currentToken.type == Token.Type.IDENTIFIER) {
+            argumentNameTokens.add(this.currentToken);
+            this.advance();
+            while (this.currentToken.type == Token.Type.COMMA) {
+                this.advance();
+                if (this.currentToken.type != Token.Type.IDENTIFIER)
+                    throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected Identifier", this.currentToken.startPos, this.currentToken.endPos);
+                argumentNameTokens.add(this.currentToken);
+                this.advance();
+            }
+        }
+        if (this.currentToken.type != Token.Type.RIGHT_BRACKET){
+            throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected ',' or ')'", this.currentToken.startPos, this.currentToken.endPos);
+        }
+        this.advance();
+        if (this.currentToken.type != Token.Type.KEYWORD || ((KeyWordToken)this.currentToken).keyWord != KeyWordToken.KeyWord.THEN)
+            throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected 'then' or '->'", this.currentToken.startPos, this.currentToken.endPos);
+        this.advance();
+        Node returnNode = this.expression();
+        return new FunctionNode(variableNameToken, argumentNameTokens, returnNode);
+    }
+
+
+    private boolean currentHasNoBracket() {
+        return this.currentToken.type != Token.Type.LEFT_BRACKET;
     }
  }

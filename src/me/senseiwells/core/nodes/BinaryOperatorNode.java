@@ -43,8 +43,7 @@ public class BinaryOperatorNode extends Node {
                 }
                 default -> throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected an operator", this.startPos, this.endPos);
             }
-            result.setPos(this.startPos, this.endPos);
-            return result;
+            return result.setPos(this.startPos, this.endPos);
         }
         //When you try to use an operator that doesn't work e.g. true/false
         catch (ClassCastException classCastException) {

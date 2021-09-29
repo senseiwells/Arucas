@@ -16,9 +16,6 @@ public class NumberNode extends Node {
     @Override
     public Value<?> visit(Interpreter interpreter, Context context) {
         ValueToken token = ((ValueToken)this.token);
-        NumberValue number = (NumberValue) token.tokenValue;
-        number.setPos(this.startPos, this.endPos);
-        number.setContext(context);
-        return number;
+        return token.tokenValue.setPos(this.startPos, this.endPos).setContext(context);
     }
 }

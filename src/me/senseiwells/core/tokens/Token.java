@@ -47,6 +47,7 @@ public class Token {
         MORE_THAN,
         LESS_THAN_EQUAL,
         MORE_THAN_EQUAL,
+        COMMA,
 
         END;
 

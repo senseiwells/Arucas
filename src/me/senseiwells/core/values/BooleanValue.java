@@ -7,21 +7,15 @@ public class BooleanValue extends Value<Boolean> {
     }
 
     public BooleanValue isAnd(BooleanValue other) {
-        BooleanValue booleanValue = new BooleanValue(this.value && other.value);
-        booleanValue.setContext(this.context);
-        return booleanValue;
+        return (BooleanValue) new BooleanValue(this.value && other.value).setContext(this.context);
     }
 
     public BooleanValue isOr(BooleanValue other) {
-        BooleanValue booleanValue = new BooleanValue(this.value || other.value);
-        booleanValue.setContext(this.context);
-        return booleanValue;
+        return (BooleanValue) new BooleanValue(this.value || other.value).setContext(this.context);
     }
 
     public BooleanValue not() {
-        BooleanValue value = new BooleanValue(!this.value);
-        value.setContext(this.context);
-        return value;
+        return (BooleanValue) new BooleanValue(!this.value).setContext(this.context);
     }
 
     @Override

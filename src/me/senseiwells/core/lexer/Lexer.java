@@ -26,7 +26,7 @@ public class Lexer {
         this.fileName = fileName;
         this.pos = new Position(-1, 0, -1, fileName, text);
         this.currentChar = null;
-        advance();
+        this.advance();
     }
 
     private void advance() {
@@ -61,6 +61,7 @@ public class Lexer {
                 case '>' -> token = this.formMoreThanToken();
                 case '&' -> token = this.formAndToken();
                 case '|' -> token = this.formOrToken();
+                case ',' -> token = this.formBasicToken(Type.COMMA);
                 default -> throw this.throwNewError(Error.ErrorType.ILLEGAL_CHAR_ERROR, this.currentChar.toString());
             }
             if (token != null)
@@ -80,8 +81,11 @@ public class Lexer {
         }
         this.recede();
         String identifier = identifierBuilder.toString();
-        if (identifier.equals("true") || identifier.equals("false"))
-            return new ValueToken(Type.BOOLEAN, startPos, this.pos, new BooleanValue(identifier.equals("true")));
+        switch (identifier) {
+            case "true", "false" -> {
+                return new ValueToken(Type.BOOLEAN, startPos, this.pos, new BooleanValue(identifier.equals("true")));
+            }
+        }
         KeyWordToken.KeyWord keyWord = KeyWordToken.KeyWord.stringToKeyWord(identifier);
         return keyWord != null ? new KeyWordToken(keyWord, startPos, this.pos) : new ValueToken(Type.IDENTIFIER, startPos, this.pos, new StringValue(identifier));
     }

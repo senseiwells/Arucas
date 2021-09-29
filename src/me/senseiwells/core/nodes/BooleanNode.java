@@ -16,9 +16,6 @@ public class BooleanNode extends Node {
     @Override
     public Value<?> visit(Interpreter interpreter, Context context) {
         ValueToken token = ((ValueToken)this.token);
-        BooleanValue booleanValue = (BooleanValue) token.tokenValue;
-        booleanValue.setPos(this.startPos, this.endPos);
-        booleanValue.setContext(context);
-        return booleanValue;
+        return token.tokenValue.setPos(this.startPos, this.endPos).setContext(context);
     }
 }

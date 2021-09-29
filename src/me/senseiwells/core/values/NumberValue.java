@@ -10,29 +10,21 @@ public class NumberValue extends Value<Float>{
     }
 
     public NumberValue addTo(NumberValue other) {
-        NumberValue numberValue = new NumberValue(this.value + other.value);
-        numberValue.setContext(this.context);
-        return numberValue;
+        return (NumberValue) new NumberValue(this.value + other.value).setContext(this.context);
     }
 
     public NumberValue subtractBy(NumberValue other) {
-        NumberValue numberValue = new NumberValue(this.value - other.value);
-        numberValue.setContext(this.context);
-        return numberValue;
+        return (NumberValue) new NumberValue(this.value - other.value).setContext(this.context);
     }
 
     public NumberValue multiplyBy(NumberValue other) {
-        NumberValue numberValue = new NumberValue(this.value * other.value);
-        numberValue.setContext(this.context);
-        return numberValue;
+        return (NumberValue) new NumberValue(this.value * other.value).setContext(this.context);
     }
 
     public NumberValue divideBy(NumberValue other) throws ErrorRuntime {
         if (other.value == 0)
             throw new ErrorRuntime("You cannot divide by 0", other.startPos, other.endPos, context);
-        NumberValue numberValue = new NumberValue(this.value / other.value);
-        numberValue.setContext(this.context);
-        return numberValue;
+        return (NumberValue) new NumberValue(this.value / other.value).setContext(this.context);
     }
 
     public BooleanValue compareNumber(NumberValue other, Token.Type type) {
@@ -44,9 +36,7 @@ public class NumberValue extends Value<Float>{
             case LESS_THAN_EQUAL -> bool = this.value <= other.value;
             default -> bool = false;
         }
-        BooleanValue value = new BooleanValue(bool);
-        value.setContext(this.context);
-        return value;
+        return (BooleanValue) new BooleanValue(bool).setContext(this.context);
     }
 
     @Override

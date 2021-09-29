@@ -14,6 +14,7 @@ public class KeyWordToken extends Token {
     public enum KeyWord {
 
         VAR("var"),
+        FUN("fun"),
         AND("and"),
         OR("or"),
         NOT("not"),
