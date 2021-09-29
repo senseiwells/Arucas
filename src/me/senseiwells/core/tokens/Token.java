@@ -34,6 +34,7 @@ public class Token {
         MINUS,
         MULTIPLY,
         DIVIDE,
+        POWER,
         LEFT_BRACKET,
         RIGHT_BRACKET,
 

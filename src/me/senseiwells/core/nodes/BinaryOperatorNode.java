@@ -31,6 +31,7 @@ public class BinaryOperatorNode extends Node {
                 case MINUS -> result = ((NumberValue) left).subtractBy((NumberValue) right);
                 case MULTIPLY -> result = ((NumberValue) left).multiplyBy((NumberValue) right);
                 case DIVIDE -> result = ((NumberValue) left).divideBy((NumberValue) right);
+                case POWER -> result = ((NumberValue) left).powerBy((NumberValue) right);
                 case EQUALS -> result = left.isEqual(right);
                 case NOT_EQUALS -> result = left.isNotEqual(right);
                 case LESS_THAN, LESS_THAN_EQUAL, MORE_THAN, MORE_THAN_EQUAL -> result = ((NumberValue) left).compareNumber((NumberValue) right, this.token.type);

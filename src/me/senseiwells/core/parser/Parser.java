@@ -44,9 +44,9 @@ public class Parser {
     //todo LEFT HERE 9:00
     private Node call() throws Error {
         List<Node> argumentNodes = new LinkedList<>();
-        Node factor = this.factor();
+        Node atom = this.atom();
         if (this.currentHasNoBracket())
-            return factor;
+            return atom;
         this.advance();
         if (this.currentToken.type != Token.Type.RIGHT_BRACKET) {
             argumentNodes.add(this.expression());
@@ -58,20 +58,15 @@ public class Parser {
                 throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected a ')'", this.currentToken.startPos, this.currentToken.endPos);
         }
         this.advance();
-        return new CallNode(factor, argumentNodes);
+        return new CallNode(atom, argumentNodes);
     }
 
-    private Node factor() throws Error {
+    private Node atom() throws Error {
         Token token = this.currentToken;
         switch (token.type) {
             case IDENTIFIER -> {
                 this.advance();
                 return new VariableAccessNode(token);
-            }
-            case PLUS, MINUS -> {
-                this.advance();
-                Node factor = this.factor();
-                return new UnaryOperatorNode(token, factor);
             }
             case INT, FLOAT -> {
                 this.advance();
@@ -104,15 +99,36 @@ public class Parser {
                 }
             }
         }
-        throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Unexpected token", token.startPos, token.endPos);
+        throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Unexpected Token", this.currentToken.startPos, this.currentToken.endPos );
+    }
+
+    private Node factor() throws Error {
+        Token token = this.currentToken;
+        if (token.type == Token.Type.PLUS || token.type == Token.Type.MINUS) {
+            this.advance();
+            Node factor = this.factor();
+            return new UnaryOperatorNode(token, factor);
+        }
+        return this.power();
+    }
+
+    private Node power() throws Error {
+        Node left = this.call();
+        while (this.currentToken.type.isTypeInArray(new Token.Type[]{Token.Type.POWER})) {
+            Token operatorToken = this.currentToken;
+            this.advance();
+            Node right = this.factor();
+            left = new BinaryOperatorNode(left, operatorToken, right);
+        }
+        return left;
     }
 
     private Node term() throws Error {
-        Node left = this.call();
+        Node left = this.factor();
         while (this.currentToken.type.isTypeInArray(new Token.Type[]{Token.Type.MULTIPLY, Token.Type.DIVIDE})) {
             Token operatorToken = this.currentToken;
             this.advance();
-            Node right = this.call();
+            Node right = this.factor();
             left = new BinaryOperatorNode(left, operatorToken, right);
         }
         return left;

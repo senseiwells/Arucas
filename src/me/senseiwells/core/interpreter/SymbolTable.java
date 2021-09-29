@@ -9,9 +9,13 @@ public class SymbolTable {
     public HashMap<String, Value<?>> symbolMap;
     public SymbolTable parent;
 
-    public SymbolTable() {
+    public SymbolTable(SymbolTable parent) {
         this.symbolMap = new HashMap<>();
-        this.parent = null;
+        this.parent = parent;
+    }
+
+    public SymbolTable() {
+        this(null);
     }
 
     public Value<?> get(String name) {

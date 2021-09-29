@@ -5,8 +5,11 @@ import me.senseiwells.core.error.Error;
 import me.senseiwells.core.interpreter.Interpreter;
 import me.senseiwells.core.lexer.Position;
 import me.senseiwells.core.tokens.Token;
+import me.senseiwells.core.tokens.ValueToken;
+import me.senseiwells.core.values.FunctionValue;
 import me.senseiwells.core.values.Value;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public class FunctionNode extends Node {
@@ -24,6 +27,13 @@ public class FunctionNode extends Node {
 
     @Override
     public Value<?> visit(Interpreter interpreter, Context context) throws Error {
-        return null;
+        String functionName = this.variableNameToken != null ? (String) ((ValueToken)this.variableNameToken).tokenValue.value : null;
+        Node bodyNode = this.bodyNode;
+        List<String> argumentNames = new LinkedList<>();
+        this.argumentNameToken.forEach(t -> argumentNames.add((String) ((ValueToken)t).tokenValue.value));
+        Value<?> functionValue = new FunctionValue(functionName, bodyNode, argumentNames).setContext(context).setPos(this.startPos, this.endPos);
+        if (this.variableNameToken != null)
+            context.symbolTable.set(functionName, functionValue);
+        return functionValue;
     }
 }

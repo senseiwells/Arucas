@@ -62,6 +62,7 @@ public class Lexer {
                 case '&' -> token = this.formAndToken();
                 case '|' -> token = this.formOrToken();
                 case ',' -> token = this.formBasicToken(Type.COMMA);
+                case '^' -> token = this.formBasicToken(Type.POWER);
                 default -> throw this.throwNewError(Error.ErrorType.ILLEGAL_CHAR_ERROR, this.currentChar.toString());
             }
             if (token != null)
