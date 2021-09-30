@@ -8,7 +8,6 @@ import me.senseiwells.core.tokens.KeyWordToken;
 import me.senseiwells.core.tokens.Token;
 import me.senseiwells.core.tokens.Token.Type;
 import me.senseiwells.core.tokens.ValueToken;
-import me.senseiwells.core.values.BooleanValue;
 import me.senseiwells.core.values.NumberValue;
 import me.senseiwells.core.values.StringValue;
 
@@ -44,7 +43,7 @@ public class Lexer {
         while (this.currentChar != null) {
             Token token = null;
             switch (this.currentChar) {
-                case '\t', ' ' -> {}
+                case '\t', ' ', '\n' -> {}
                 case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' -> token = this.formNumberToken();
                 case 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
                      'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
@@ -55,6 +54,10 @@ public class Lexer {
                 case '/' -> token = this.formBasicToken(Type.DIVIDE);
                 case '(' -> token = this.formBasicToken(Type.LEFT_BRACKET);
                 case ')' -> token = this.formBasicToken(Type.RIGHT_BRACKET);
+                case '[' -> token = this.formBasicToken(Type.LEFT_SQUARE_BRACKET);
+                case ']' -> token = this.formBasicToken(Type.RIGHT_SQUARE_BRACKET);
+                case '{' -> token = new KeyWordToken(KeyWordToken.KeyWord.START, this.pos);
+                case '}' -> token = new KeyWordToken(KeyWordToken.KeyWord.END, this.pos);
                 case '=' -> token = this.formEqualsToken();
                 case '!' -> token = this.formNotToken();
                 case '<' -> token = this.formLessThanToken();
@@ -64,6 +67,7 @@ public class Lexer {
                 case ',' -> token = this.formBasicToken(Type.COMMA);
                 case '^' -> token = this.formBasicToken(Type.POWER);
                 case '"' -> token = this.formStringToken();
+                case ';' -> token = this.formBasicToken(Type.SEMI_COLON);
                 default -> throw this.throwNewError(Error.ErrorType.ILLEGAL_CHAR_ERROR, this.currentChar.toString());
             }
             if (token != null)
@@ -83,11 +87,6 @@ public class Lexer {
         }
         this.recede();
         String identifier = identifierBuilder.toString();
-        switch (identifier) {
-            case "true", "false" -> {
-                return new ValueToken(Type.BOOLEAN, startPos, this.pos, new BooleanValue(identifier.equals("true")));
-            }
-        }
         KeyWordToken.KeyWord keyWord = KeyWordToken.KeyWord.stringToKeyWord(identifier);
         return keyWord != null ? new KeyWordToken(keyWord, startPos, this.pos) : new ValueToken(Type.IDENTIFIER, startPos, this.pos, new StringValue(identifier));
     }

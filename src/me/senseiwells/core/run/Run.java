@@ -23,6 +23,8 @@ public class Run {
         while (true) {
             Scanner scanner = new Scanner(System.in);
             String line = scanner.nextLine();
+            if (line.trim().equals(""))
+                continue;
             Value<?> values;
             try {
                 values = run("System.in", line);
@@ -48,7 +50,7 @@ public class Run {
         symbolTable.setDefaultSymbols(context);
         context.symbolTable = symbolTable;
 
-        //Try To Parse
+        //Parse
         Parser parser = new Parser(values, context);
         Node nodeResult = parser.parse();
 

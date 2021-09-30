@@ -11,6 +11,11 @@ public class KeyWordToken extends Token {
         this.keyWord = keyword;
     }
 
+    public KeyWordToken(KeyWord keyword, Position startPos) {
+        super(Type.KEYWORD, startPos, startPos.copy().advance(null));
+        this.keyWord = keyword;
+    }
+
     public enum KeyWord {
 
         VAR("var"),
@@ -22,7 +27,9 @@ public class KeyWordToken extends Token {
         THEN("then"),
         //ELIF("elif"),
         ELSE("else"),
-        WHILE("while");
+        WHILE("while"),
+        START("start"),
+        END("end");
 
         private final String name;
 

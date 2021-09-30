@@ -30,6 +30,7 @@ public class Token {
         FLOAT,
         BOOLEAN,
         STRING,
+        LIST,
 
         PLUS,
         MINUS,
@@ -38,6 +39,8 @@ public class Token {
         POWER,
         LEFT_BRACKET,
         RIGHT_BRACKET,
+        LEFT_SQUARE_BRACKET,
+        RIGHT_SQUARE_BRACKET,
 
         IDENTIFIER,
         KEYWORD,
@@ -50,6 +53,8 @@ public class Token {
         LESS_THAN_EQUAL,
         MORE_THAN_EQUAL,
         COMMA,
+        SEMI_COLON,
+        NEW_LINE,
 
         END;
 

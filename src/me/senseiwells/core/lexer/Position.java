@@ -16,13 +16,14 @@ public class Position {
         this.fileText = fileText;
     }
 
-    public void advance(Character currentCharacter) {
+    public Position advance(Character currentCharacter) {
         this.index++;
         this.column++;
         if (currentCharacter != null && currentCharacter.equals('\n')) {
             this.line++;
             this.column = 0;
         }
+        return this;
     }
 
     public void recede() {

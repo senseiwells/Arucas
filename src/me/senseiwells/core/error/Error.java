@@ -30,7 +30,8 @@ public class Error extends Exception {
         ILLEGAL_SYNTAX_ERROR    ("Illegal Syntax Error"),
         ILLEGAL_OPERATION_ERROR ("Illegal Operation Error"),
         EXPECTED_CHAR_ERROR     ("Expected Character Error"),
-        RUNTIME_ERROR           ("Runtime Error");
+        RUNTIME_ERROR           ("Runtime Error"),
+        CAUGHT_ERROR            ("Caught Error");
 
         public String stringName;
 

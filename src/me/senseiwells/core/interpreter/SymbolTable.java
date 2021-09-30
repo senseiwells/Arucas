@@ -3,6 +3,7 @@ package me.senseiwells.core.interpreter;
 import me.senseiwells.core.error.Context;
 import me.senseiwells.core.values.BooleanValue;
 import me.senseiwells.core.values.BuiltInFunctionValue;
+import me.senseiwells.core.values.NullValue;
 import me.senseiwells.core.values.Value;
 
 import java.util.HashMap;
@@ -22,8 +23,9 @@ public class SymbolTable {
     }
 
     public void setDefaultSymbols(Context context) {
-        this.set("true", new BooleanValue(true));
-        this.set("false", new BooleanValue(false));
+        this.set("true", new BooleanValue(true).setContext(context));
+        this.set("false", new BooleanValue(false).setContext(context));
+        this.set("null", new NullValue().setContext(context));
         for (BuiltInFunctionValue.BuiltInFunction function : BuiltInFunctionValue.BuiltInFunction.values()) {
             this.set(function.name, new BuiltInFunctionValue(function.name).setContext(context));
         }
@@ -49,7 +51,8 @@ public class SymbolTable {
     public enum Literal {
 
         TRUE("true"),
-        FALSE("false");
+        FALSE("false"),
+        NULL("null");
 
         String name;
 
