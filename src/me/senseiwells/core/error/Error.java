@@ -25,6 +25,7 @@ public class Error extends Exception {
     }
 
     public enum ErrorType {
+
         ILLEGAL_CHAR_ERROR      ("Illegal Character Error"),
         ILLEGAL_SYNTAX_ERROR    ("Illegal Syntax Error"),
         ILLEGAL_OPERATION_ERROR ("Illegal Operation Error"),

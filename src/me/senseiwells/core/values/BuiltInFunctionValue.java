@@ -3,6 +3,7 @@ package me.senseiwells.core.values;
 import me.senseiwells.core.error.Context;
 import me.senseiwells.core.error.Error;
 import me.senseiwells.core.error.ErrorRuntime;
+import me.senseiwells.core.run.Run;
 
 import java.util.List;
 
@@ -21,6 +22,7 @@ public class BuiltInFunctionValue extends BaseFunctionValue {
             throw new ErrorRuntime("Function " + this.value + " is not defined", this.startPos, this.endPos, this.context);
         this.checkAndPopulateArguments(arguments, function.argumentNames, context);
         switch (function) {
+            case DEBUG -> this.toggleDebug(context);
             case PRINT -> this.print(context);
             case IS_NUMBER -> returnValue = isType(context, NumberValue.class);
             case IS_STRING -> returnValue = isType(context, StringValue.class);
@@ -38,6 +40,13 @@ public class BuiltInFunctionValue extends BaseFunctionValue {
         return new BooleanValue(classInstance.isInstance(context.symbolTable.get("value")));
     }
 
+    private void toggleDebug(Context context) throws Error {
+        Value<?> value = context.symbolTable.get("boolean");
+        if (!(value instanceof BooleanValue booleanValue))
+            throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Cannot pass " + value.value + "to debug()", this.startPos, this.endPos);
+        Run.debug = booleanValue.value;
+    }
+
     @Override
     public Value<?> copy() {
         return new BuiltInFunctionValue(this.value).setPos(this.startPos, this.endPos).setContext(this.context);
@@ -45,11 +54,15 @@ public class BuiltInFunctionValue extends BaseFunctionValue {
 
     public enum BuiltInFunction {
 
+        DEBUG("debug", List.of("boolean")),
         PRINT("print", List.of("printValue")),
         IS_NUMBER("isNumber", List.of("value")),
         IS_STRING("isString",List.of("value")),
         IS_BOOLEAN("isBoolean", List.of("value")),
         IS_FUNCTION("isFunction", List.of("value"));
+        //GET_INDEX
+        //APPEND
+        //CONCAT
 
         public String name;
         List<String> argumentNames;

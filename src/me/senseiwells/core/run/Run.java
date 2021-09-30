@@ -17,6 +17,7 @@ import java.util.Scanner;
 public class Run {
 
     public static SymbolTable symbolTable = new SymbolTable();
+    public static boolean debug = false;
 
     public static void baseRun() {
         while (true) {
@@ -25,7 +26,8 @@ public class Run {
             Value<?> values;
             try {
                 values = run("System.in", line);
-                //System.out.println(values);
+                if (debug)
+                    System.out.println(values);
             }
             catch (Error e) {
                 String error = e.toString();
