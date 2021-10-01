@@ -1,6 +1,5 @@
-package me.senseiwells.core.interpreter;
+package me.senseiwells.core.utils;
 
-import me.senseiwells.core.error.Context;
 import me.senseiwells.core.values.BooleanValue;
 import me.senseiwells.core.values.BuiltInFunctionValue;
 import me.senseiwells.core.values.NullValue;
@@ -38,15 +37,18 @@ public class SymbolTable {
         return value;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public SymbolTable set(String name, Value<?> value) {
         this.symbolMap.put(name, value);
         return this;
     }
 
+    /* Never ended up using this method.
     public SymbolTable remove(String name) {
         this.symbolMap.remove(name);
         return this;
     }
+     */
 
     public enum Literal {
 

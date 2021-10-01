@@ -1,12 +1,11 @@
-package me.senseiwells.core.run;
+package me.senseiwells.core.core;
 
-import me.senseiwells.core.error.Context;
-import me.senseiwells.core.error.Error;
-import me.senseiwells.core.interpreter.Interpreter;
-import me.senseiwells.core.interpreter.SymbolTable;
-import me.senseiwells.core.lexer.Lexer;
+import me.senseiwells.core.utils.Context;
+import me.senseiwells.core.throwables.Error;
+import me.senseiwells.core.throwables.ThrowValue;
+import me.senseiwells.core.utils.Interpreter;
+import me.senseiwells.core.utils.SymbolTable;
 import me.senseiwells.core.nodes.Node;
-import me.senseiwells.core.parser.Parser;
 import me.senseiwells.core.tokens.Token;
 import me.senseiwells.core.values.Value;
 
@@ -56,8 +55,12 @@ public class Run {
 
         //Run
         Interpreter interpreter = new Interpreter();
-        Value<?> value = interpreter.visit(nodeResult, context);
-
-        return value;
+        try {
+            Value<?> value = interpreter.visit(nodeResult, context);
+            return value;
+        }
+        catch (ThrowValue tv) {
+            throw new Error(Error.ErrorType.ILLEGAL_OPERATION_ERROR, "Cannot use keywords 'break' or 'continue' outside loop, and cannot use 'return' outside function", nodeResult.startPos, nodeResult.endPos);
+        }
     }
 }

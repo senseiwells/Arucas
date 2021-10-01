@@ -1,7 +1,7 @@
 package me.senseiwells.core.values;
 
-import me.senseiwells.core.error.Error;
-import me.senseiwells.core.error.ErrorRuntime;
+import me.senseiwells.core.throwables.Error;
+import me.senseiwells.core.throwables.ErrorRuntime;
 import me.senseiwells.core.tokens.Token;
 
 public class NumberValue extends Value<Float>{

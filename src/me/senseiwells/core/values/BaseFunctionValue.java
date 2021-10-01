@@ -1,9 +1,10 @@
 package me.senseiwells.core.values;
 
-import me.senseiwells.core.error.Context;
-import me.senseiwells.core.error.Error;
-import me.senseiwells.core.error.ErrorRuntime;
-import me.senseiwells.core.interpreter.SymbolTable;
+import me.senseiwells.core.utils.Context;
+import me.senseiwells.core.throwables.Error;
+import me.senseiwells.core.throwables.ErrorRuntime;
+import me.senseiwells.core.throwables.ThrowValue;
+import me.senseiwells.core.utils.SymbolTable;
 
 import java.util.List;
 
@@ -40,7 +41,7 @@ public abstract class BaseFunctionValue extends Value<String> {
         this.populateArguments(arguments, argumentNames, context);
     }
 
-    public abstract Value<?> execute(List<Value<?>> arguments) throws Error;
+    public abstract Value<?> execute(List<Value<?>> arguments) throws Error, ThrowValue;
 
     @Override
     public abstract Value<?> copy();

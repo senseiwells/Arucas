@@ -1,6 +1,6 @@
 package me.senseiwells.core.tokens;
 
-import me.senseiwells.core.lexer.Position;
+import me.senseiwells.core.utils.Position;
 import me.senseiwells.core.values.Value;
 
 public class ValueToken extends Token {

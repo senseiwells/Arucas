@@ -1,9 +1,10 @@
-package me.senseiwells.core.lexer;
+package me.senseiwells.core.core;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import me.senseiwells.core.error.Error;
+import me.senseiwells.core.utils.Position;
+import me.senseiwells.core.throwables.Error;
 import me.senseiwells.core.tokens.KeyWordToken;
 import me.senseiwells.core.tokens.Token;
 import me.senseiwells.core.tokens.Token.Type;

@@ -1,10 +1,11 @@
 package me.senseiwells.core.values;
 
-import me.senseiwells.core.error.Error;
-import me.senseiwells.core.error.ErrorRuntime;
-import me.senseiwells.core.run.Run;
+import me.senseiwells.core.throwables.Error;
+import me.senseiwells.core.throwables.ErrorRuntime;
+import me.senseiwells.core.core.Run;
 
 import java.util.List;
+import java.util.Random;
 
 public class BuiltInFunctionValue extends BaseFunctionValue {
 
@@ -16,7 +17,7 @@ public class BuiltInFunctionValue extends BaseFunctionValue {
     public Value<?> execute(List<Value<?>> arguments) throws Error {
         BuiltInFunction function = BuiltInFunction.stringToFunction(this.value);
         this.context = this.generateNewContext();
-        Value<?> returnValue = null;
+        Value<?> returnValue = new NullValue();
         if (function == null)
             throw new ErrorRuntime("Function " + this.value + " is not defined", this.startPos, this.endPos, this.context);
         this.checkAndPopulateArguments(arguments, function.argumentNames, this.context);
@@ -24,6 +25,7 @@ public class BuiltInFunctionValue extends BaseFunctionValue {
             case DEBUG -> this.toggleDebug();
             case PRINT -> this.print();
             case SLEEP -> this.sleep();
+            case RANDOM -> returnValue = this.random();
             case IS_NUMBER -> returnValue = this.isType(NumberValue.class);
             case IS_STRING -> returnValue = this.isType(StringValue.class);
             case IS_BOOLEAN -> returnValue = this.isType(BooleanValue.class);
@@ -51,6 +53,13 @@ public class BuiltInFunctionValue extends BaseFunctionValue {
         catch (InterruptedException e) {
             throw new Error(Error.ErrorType.RUNTIME_ERROR, "An error occurred while trying to call 'sleep()'", this.startPos, this.endPos);
         }
+    }
+
+    private NumberValue random() throws Error {
+        Value<?> numValue = this.context.symbolTable.get("bound");
+        if (!(numValue instanceof NumberValue bound))
+            throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Must pass an integer (bound) into function", this.startPos, this.endPos);
+        return new NumberValue(new Random().nextInt(bound.value.intValue()));
     }
 
     private BooleanValue isType(Class<?> classInstance) {
@@ -105,6 +114,7 @@ public class BuiltInFunctionValue extends BaseFunctionValue {
         DEBUG("debug", List.of("boolean")),
         PRINT("print", List.of("printValue")),
         SLEEP("sleep", List.of("time")),
+        RANDOM("random", List.of("bound")),
         IS_NUMBER("isNumber", List.of("value")),
         IS_STRING("isString", List.of("value")),
         IS_BOOLEAN("isBoolean", List.of("value")),

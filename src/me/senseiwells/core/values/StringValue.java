@@ -1,6 +1,6 @@
 package me.senseiwells.core.values;
 
-import me.senseiwells.core.error.Error;
+import me.senseiwells.core.throwables.Error;
 
 public class StringValue extends Value<String> {
 

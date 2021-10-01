@@ -1,6 +1,6 @@
 package me.senseiwells;
 
-import me.senseiwells.core.run.Run;
+import me.senseiwells.core.core.Run;
 
 public class Main {
 

@@ -1,4 +1,4 @@
-package me.senseiwells.helpers;
+package me.senseiwells.core.utils;
 
 public record TwoValues<T, S>(T value1, S value2) {
 

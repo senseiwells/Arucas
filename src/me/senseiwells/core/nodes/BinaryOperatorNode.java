@@ -1,8 +1,9 @@
 package me.senseiwells.core.nodes;
 
-import me.senseiwells.core.error.Context;
-import me.senseiwells.core.error.Error;
-import me.senseiwells.core.interpreter.Interpreter;
+import me.senseiwells.core.utils.Context;
+import me.senseiwells.core.throwables.Error;
+import me.senseiwells.core.throwables.ThrowValue;
+import me.senseiwells.core.utils.Interpreter;
 import me.senseiwells.core.tokens.KeyWordToken;
 import me.senseiwells.core.tokens.Token;
 import me.senseiwells.core.values.BooleanValue;
@@ -21,7 +22,7 @@ public class BinaryOperatorNode extends Node {
     }
 
     @Override
-    public Value<?> visit(Interpreter interpreter, Context context) throws Error {
+    public Value<?> visit(Interpreter interpreter, Context context) throws Error, ThrowValue {
         Value<?> left = interpreter.visit(this.leftNode, context);
         Value<?> right = interpreter.visit(this.rightNode, context);
         try {

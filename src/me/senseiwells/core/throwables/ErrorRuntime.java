@@ -1,6 +1,7 @@
-package me.senseiwells.core.error;
+package me.senseiwells.core.throwables;
 
-import me.senseiwells.core.lexer.Position;
+import me.senseiwells.core.utils.Context;
+import me.senseiwells.core.utils.Position;
 
 public class ErrorRuntime extends Error {
 

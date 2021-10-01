@@ -1,4 +1,4 @@
-package me.senseiwells.core.lexer;
+package me.senseiwells.core.utils;
 
 public class Position {
 

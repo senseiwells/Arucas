@@ -1,10 +1,9 @@
 package me.senseiwells.core.nodes;
 
-import me.senseiwells.core.error.Context;
-import me.senseiwells.core.interpreter.Interpreter;
+import me.senseiwells.core.utils.Context;
+import me.senseiwells.core.utils.Interpreter;
 import me.senseiwells.core.tokens.Token;
 import me.senseiwells.core.tokens.ValueToken;
-import me.senseiwells.core.values.NumberValue;
 import me.senseiwells.core.values.Value;
 
 public class NumberNode extends Node {

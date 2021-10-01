@@ -1,7 +1,4 @@
-package me.senseiwells.core.error;
-
-import me.senseiwells.core.interpreter.SymbolTable;
-import me.senseiwells.core.lexer.Position;
+package me.senseiwells.core.utils;
 
 public class Context {
 

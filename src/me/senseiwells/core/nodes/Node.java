@@ -1,9 +1,10 @@
 package me.senseiwells.core.nodes;
 
-import me.senseiwells.core.error.Context;
-import me.senseiwells.core.error.Error;
-import me.senseiwells.core.interpreter.Interpreter;
-import me.senseiwells.core.lexer.Position;
+import me.senseiwells.core.utils.Context;
+import me.senseiwells.core.throwables.Error;
+import me.senseiwells.core.throwables.ThrowValue;
+import me.senseiwells.core.utils.Interpreter;
+import me.senseiwells.core.utils.Position;
 import me.senseiwells.core.tokens.Token;
 import me.senseiwells.core.values.Value;
 
@@ -23,7 +24,7 @@ public abstract class Node {
         this(token, token.startPos, token.endPos);
     }
 
-    public abstract Value<?> visit(Interpreter interpreter, Context context) throws Error;
+    public abstract Value<?> visit(Interpreter interpreter, Context context) throws Error, ThrowValue;
 
     @Override
     public String toString() {

@@ -1,4 +1,4 @@
-package me.senseiwells.helpers;
+package me.senseiwells.core.utils;
 
 public record ThreeValues<T, S, E>(T value1, S value2, E value3) {
 

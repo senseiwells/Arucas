@@ -1,13 +1,13 @@
-package me.senseiwells.core.parser;
+package me.senseiwells.core.core;
 
-import me.senseiwells.core.error.Context;
-import me.senseiwells.core.error.Error;
-import me.senseiwells.core.lexer.Position;
+import me.senseiwells.core.utils.Context;
+import me.senseiwells.core.throwables.Error;
+import me.senseiwells.core.utils.Position;
 import me.senseiwells.core.nodes.*;
 import me.senseiwells.core.tokens.KeyWordToken;
 import me.senseiwells.core.tokens.Token;
-import me.senseiwells.helpers.ThreeValues;
-import me.senseiwells.helpers.TwoValues;
+import me.senseiwells.core.utils.ThreeValues;
+import me.senseiwells.core.utils.TwoValues;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -153,7 +153,7 @@ public class Parser {
         Position startPos = this.currentToken.startPos;
         while (this.currentToken.type == Token.Type.NEW_LINE)
             this.advance();
-        Node statement = this.expression();
+        Node statement = this.statement();
         if (this.currentToken.type != Token.Type.NEW_LINE) {
             //if (this.previousToken.type != Token.Type.KEYWORD || ((KeyWordToken) this.previousToken).keyWord != KeyWordToken.KeyWord.END)
                 throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected ; at end of line", this.currentToken.startPos, this.currentToken.endPos);
@@ -170,7 +170,7 @@ public class Parser {
                 break;
             int cachedIndex = this.operatorTokenIndex;
             try {
-                statement = this.expression();
+                statement = this.statement();
             }
             catch (Error error) {
                 if (error.errorType != Error.ErrorType.CAUGHT_ERROR)
@@ -184,6 +184,38 @@ public class Parser {
                 throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected ; at end of line", this.currentToken.startPos, this.currentToken.endPos);
         }
         return new ListNode(statements, startPos, this.currentToken.endPos.copy());
+    }
+
+    private Node statement() throws Error {
+        Position startPos = this.currentToken.startPos.copy();
+        Node expression;
+        if (this.currentToken.type == Token.Type.KEYWORD) {
+            switch (((KeyWordToken) this.currentToken).keyWord) {
+                case RETURN -> {
+                    this.advance();
+                    int cachedIndex = this.operatorTokenIndex;
+                    try {
+                        expression = this.expression();
+                        return new ReturnNode(expression, startPos, this.currentToken.endPos.copy());
+                    }
+                    catch (Error error) {
+                        if (error.errorType != Error.ErrorType.ILLEGAL_SYNTAX_ERROR)
+                            throw error;
+                        this.recede(this.operatorTokenIndex - cachedIndex);
+                        return new ReturnNode(null, startPos, this.currentToken.endPos.copy());
+                    }
+                }
+                case CONTINUE -> {
+                    this.advance();
+                    return new ContinueNode(startPos, this.currentToken.endPos.copy());
+                }
+                case BREAK -> {
+                    this.advance();
+                    return new BreakNode(startPos, this.currentToken.endPos.copy());
+                }
+            }
+        }
+        return this.expression();
     }
 
     private Node expression() throws Error {
@@ -278,7 +310,7 @@ public class Parser {
                 }
                 case THEN -> {
                     this.advance();
-                    Node expression = this.expression();
+                    Node expression = this.statement();
                     cases.add(new ThreeValues<>(condition, expression, false));
                     var allCases = this.elseExpression();
                     elseCase = allCases.getValue2();
@@ -321,7 +353,7 @@ public class Parser {
                     }
                     case THEN -> {
                         this.advance();
-                        Node expression = this.expression();
+                        Node expression = this.statement();
                         elseCase = new TwoValues<>(expression, false);
                         return new TwoValues<>(cases, elseCase);
                     }
@@ -381,7 +413,7 @@ public class Parser {
         if (this.currentToken.type != Token.Type.KEYWORD || ((KeyWordToken) this.currentToken).keyWord != KeyWordToken.KeyWord.END)
             throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected '}'", this.currentToken.startPos, this.currentToken.endPos);
         this.advance();
-        return new FunctionNode(variableNameToken, argumentNameTokens, returnNode, true);
+        return new FunctionNode(variableNameToken, argumentNameTokens, returnNode, false);
     }
 
     private Node listExpression() throws Error {

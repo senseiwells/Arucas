@@ -1,8 +1,8 @@
 package me.senseiwells.core.values;
 
-import me.senseiwells.core.error.Context;
-import me.senseiwells.core.error.Error;
-import me.senseiwells.core.lexer.Position;
+import me.senseiwells.core.utils.Context;
+import me.senseiwells.core.throwables.Error;
+import me.senseiwells.core.utils.Position;
 
 public abstract class Value<T> {
 

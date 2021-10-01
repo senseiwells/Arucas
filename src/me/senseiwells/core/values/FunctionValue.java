@@ -1,8 +1,9 @@
 package me.senseiwells.core.values;
 
-import me.senseiwells.core.error.Context;
-import me.senseiwells.core.error.Error;
-import me.senseiwells.core.interpreter.Interpreter;
+import me.senseiwells.core.utils.Context;
+import me.senseiwells.core.throwables.Error;
+import me.senseiwells.core.throwables.ThrowValue;
+import me.senseiwells.core.utils.Interpreter;
 import me.senseiwells.core.nodes.Node;
 
 import java.util.List;
@@ -22,7 +23,13 @@ public class FunctionValue extends BaseFunctionValue {
         Interpreter interpreter = new Interpreter();
         Context context = this.generateNewContext();
         this.checkAndPopulateArguments(arguments, this.argumentNames, context);
-        return interpreter.visit(this.bodyNode, context);
+        try {
+            interpreter.visit(this.bodyNode, context);
+            return new NullValue();
+        }
+        catch (ThrowValue tv) {
+            return tv.returnValue;
+        }
     }
 
     @Override

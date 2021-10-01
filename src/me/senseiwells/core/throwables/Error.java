@@ -1,8 +1,8 @@
-package me.senseiwells.core.error;
+package me.senseiwells.core.throwables;
 
-import me.senseiwells.core.lexer.Position;
+import me.senseiwells.core.utils.Position;
 
-public class Error extends Exception {
+public class Error extends Throwable {
 
     public ErrorType errorType;
     public final Position startPos;

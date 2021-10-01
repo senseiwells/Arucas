@@ -1,13 +1,14 @@
 package me.senseiwells.core.nodes;
 
-import me.senseiwells.core.error.Context;
-import me.senseiwells.core.error.Error;
-import me.senseiwells.core.interpreter.Interpreter;
+import me.senseiwells.core.utils.Context;
+import me.senseiwells.core.throwables.Error;
+import me.senseiwells.core.throwables.ThrowValue;
+import me.senseiwells.core.utils.Interpreter;
 import me.senseiwells.core.values.BooleanValue;
 import me.senseiwells.core.values.NullValue;
 import me.senseiwells.core.values.Value;
-import me.senseiwells.helpers.ThreeValues;
-import me.senseiwells.helpers.TwoValues;
+import me.senseiwells.core.utils.ThreeValues;
+import me.senseiwells.core.utils.TwoValues;
 
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class IfNode extends Node {
     }
 
     @Override
-    public Value<?> visit(Interpreter interpreter, Context context) throws Error {
+    public Value<?> visit(Interpreter interpreter, Context context) throws Error, ThrowValue {
         for (ThreeValues<Node, Node, Boolean> nodes : this.nodes) {
             Value<?> conditionValue = interpreter.visit(nodes.getValue1(), context);
             if (!(conditionValue instanceof BooleanValue booleanValue))

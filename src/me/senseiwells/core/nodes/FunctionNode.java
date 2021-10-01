@@ -1,9 +1,9 @@
 package me.senseiwells.core.nodes;
 
-import me.senseiwells.core.error.Context;
-import me.senseiwells.core.error.Error;
-import me.senseiwells.core.interpreter.Interpreter;
-import me.senseiwells.core.interpreter.SymbolTable;
+import me.senseiwells.core.utils.Context;
+import me.senseiwells.core.throwables.Error;
+import me.senseiwells.core.utils.Interpreter;
+import me.senseiwells.core.utils.SymbolTable;
 import me.senseiwells.core.tokens.Token;
 import me.senseiwells.core.tokens.ValueToken;
 import me.senseiwells.core.values.BuiltInFunctionValue;
@@ -21,14 +21,14 @@ public class FunctionNode extends Node {
     Token variableNameToken;
     List<Token> argumentNameToken;
     Node bodyNode;
-    boolean shouldReturnNull;
+    boolean shouldAutoReturn;
 
-    public FunctionNode(Token varNameToken, List<Token> argumentNameToken, Node bodyNode, boolean shouldReturnNull) {
+    public FunctionNode(Token varNameToken, List<Token> argumentNameToken, Node bodyNode, boolean shouldAutoReturn) {
         super(bodyNode.token, varNameToken != null ? varNameToken.startPos : argumentNameToken.size() > 0 ? argumentNameToken.get(0).startPos : bodyNode.startPos, bodyNode.endPos);
         this.variableNameToken = varNameToken;
         this.argumentNameToken = argumentNameToken;
         this.bodyNode = bodyNode;
-        this.shouldReturnNull = shouldReturnNull;
+        this.shouldAutoReturn = shouldAutoReturn;
     }
 
     @Override
@@ -42,6 +42,6 @@ public class FunctionNode extends Node {
         Value<?> functionValue = new FunctionValue(functionName, bodyNode, argumentNames).setContext(context).setPos(this.startPos, this.endPos);
         if (this.variableNameToken != null)
             context.symbolTable.set(functionName, functionValue);
-        return this.shouldReturnNull ? new NullValue() : functionValue;
+        return this.shouldAutoReturn ? functionValue : new NullValue();
     }
 }
