@@ -55,7 +55,7 @@ public class Token {
         COMMA,
         NEW_LINE,
 
-        END;
+        FINISH;
 
         public boolean isTypeInArray(Type[] types) {
             for (Type type : types)

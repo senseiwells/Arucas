@@ -25,9 +25,11 @@ public class KeyWordToken extends Token {
         NOT("not"),
         IF("if"),
         THEN("then"),
-        ELIF("elif"),
         ELSE("else"),
         WHILE("while"),
+        RETURN("return"),
+        CONTINUE("continue"),
+        BREAK("break"),
         START("start"),
         END("end");
 

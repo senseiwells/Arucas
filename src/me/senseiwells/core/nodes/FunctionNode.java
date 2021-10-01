@@ -8,6 +8,7 @@ import me.senseiwells.core.tokens.Token;
 import me.senseiwells.core.tokens.ValueToken;
 import me.senseiwells.core.values.BuiltInFunctionValue;
 import me.senseiwells.core.values.FunctionValue;
+import me.senseiwells.core.values.NullValue;
 import me.senseiwells.core.values.Value;
 
 import java.util.LinkedList;
@@ -20,12 +21,14 @@ public class FunctionNode extends Node {
     Token variableNameToken;
     List<Token> argumentNameToken;
     Node bodyNode;
+    boolean shouldReturnNull;
 
-    public FunctionNode(Token varNameToken, List<Token> argumentNameToken, Node bodyNode) {
+    public FunctionNode(Token varNameToken, List<Token> argumentNameToken, Node bodyNode, boolean shouldReturnNull) {
         super(bodyNode.token, varNameToken != null ? varNameToken.startPos : argumentNameToken.size() > 0 ? argumentNameToken.get(0).startPos : bodyNode.startPos, bodyNode.endPos);
         this.variableNameToken = varNameToken;
         this.argumentNameToken = argumentNameToken;
         this.bodyNode = bodyNode;
+        this.shouldReturnNull = shouldReturnNull;
     }
 
     @Override
@@ -39,6 +42,6 @@ public class FunctionNode extends Node {
         Value<?> functionValue = new FunctionValue(functionName, bodyNode, argumentNames).setContext(context).setPos(this.startPos, this.endPos);
         if (this.variableNameToken != null)
             context.symbolTable.set(functionName, functionValue);
-        return functionValue;
+        return this.shouldReturnNull ? new NullValue() : functionValue;
     }
 }

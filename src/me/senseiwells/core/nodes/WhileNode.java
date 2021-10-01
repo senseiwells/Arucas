@@ -4,6 +4,7 @@ import me.senseiwells.core.error.Context;
 import me.senseiwells.core.error.Error;
 import me.senseiwells.core.interpreter.Interpreter;
 import me.senseiwells.core.values.BooleanValue;
+import me.senseiwells.core.values.NullValue;
 import me.senseiwells.core.values.Value;
 
 public class WhileNode extends Node {
@@ -27,6 +28,6 @@ public class WhileNode extends Node {
                 break;
             interpreter.visit(this.body, context);
         }
-        return null;
+        return new NullValue();
     }
 }

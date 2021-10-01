@@ -23,6 +23,7 @@ public class BuiltInFunctionValue extends BaseFunctionValue {
         switch (function) {
             case DEBUG -> this.toggleDebug();
             case PRINT -> this.print();
+            case SLEEP -> this.sleep();
             case IS_NUMBER -> returnValue = this.isType(NumberValue.class);
             case IS_STRING -> returnValue = this.isType(StringValue.class);
             case IS_BOOLEAN -> returnValue = this.isType(BooleanValue.class);
@@ -36,8 +37,20 @@ public class BuiltInFunctionValue extends BaseFunctionValue {
         return returnValue;
     }
 
-    public void print() {
+    private void print() {
         System.out.println(this.context.symbolTable.get("printValue"));
+    }
+
+    private void sleep() throws Error {
+        Value<?> numValue = this.context.symbolTable.get("time");
+        if (!(numValue instanceof NumberValue timeValue))
+            throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Must pass an integer into function", this.startPos, this.endPos);
+        try {
+            Thread.sleep(timeValue.value.longValue());
+        }
+        catch (InterruptedException e) {
+            throw new Error(Error.ErrorType.RUNTIME_ERROR, "An error occurred while trying to call 'sleep()'", this.startPos, this.endPos);
+        }
     }
 
     private BooleanValue isType(Class<?> classInstance) {
@@ -91,6 +104,7 @@ public class BuiltInFunctionValue extends BaseFunctionValue {
         //general functions
         DEBUG("debug", List.of("boolean")),
         PRINT("print", List.of("printValue")),
+        SLEEP("sleep", List.of("time")),
         IS_NUMBER("isNumber", List.of("value")),
         IS_STRING("isString", List.of("value")),
         IS_BOOLEAN("isBoolean", List.of("value")),

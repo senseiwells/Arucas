@@ -56,8 +56,6 @@ public class Lexer {
                 case ')' -> token = this.formBasicToken(Type.RIGHT_BRACKET);
                 case '[' -> token = this.formBasicToken(Type.LEFT_SQUARE_BRACKET);
                 case ']' -> token = this.formBasicToken(Type.RIGHT_SQUARE_BRACKET);
-                case '{' -> token = new KeyWordToken(KeyWordToken.KeyWord.THEN, this.pos);
-                case '}' -> token = new KeyWordToken(KeyWordToken.KeyWord.END, this.pos);
                 case '=' -> token = this.formEqualsToken();
                 case '!' -> token = this.formNotToken();
                 case '<' -> token = this.formLessThanToken();
@@ -68,13 +66,18 @@ public class Lexer {
                 case '^' -> token = this.formBasicToken(Type.POWER);
                 case '"' -> token = this.formStringToken();
                 case ';' -> token = this.formBasicToken(Type.NEW_LINE);
+                case '{' -> token = new KeyWordToken(KeyWordToken.KeyWord.START, this.pos);
+                case '}' -> {
+                    tokenList.add(new KeyWordToken(KeyWordToken.KeyWord.END, this.pos));
+                    token = this.formBasicToken(Type.NEW_LINE);
+                }
                 default -> throw this.throwNewError(Error.ErrorType.ILLEGAL_CHAR_ERROR, this.currentChar.toString());
             }
             if (token != null)
                 tokenList.add(token);
             this.advance();
         }
-        tokenList.add(new Token(Type.END, this.pos));
+        tokenList.add(new Token(Type.FINISH, this.pos));
         return tokenList;
     }
 
