@@ -53,7 +53,6 @@ public class Token {
         LESS_THAN_EQUAL,
         MORE_THAN_EQUAL,
         COMMA,
-        SEMI_COLON,
         NEW_LINE,
 
         END;

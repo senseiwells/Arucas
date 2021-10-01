@@ -153,14 +153,14 @@ public class Parser {
     private Node statements() throws Error {
         List<Node> statements = new LinkedList<>();
         Position startPos = this.currentToken.startPos;
-        while (this.currentToken.type == Token.Type.SEMI_COLON)
+        while (this.currentToken.type == Token.Type.NEW_LINE)
             this.advance();
         Node statement = this.expression();
         statements.add(statement);
         boolean moreStatements = true;
         while (true) {
             int newLines = 0;
-            while (this.currentToken.type == Token.Type.SEMI_COLON) {
+            while (this.currentToken.type == Token.Type.NEW_LINE) {
                 this.advance();
                 newLines++;
             }
@@ -175,10 +175,11 @@ public class Parser {
                     throw error;
                 this.recede(this.operatorTokenIndex - cachedIndex);
                 moreStatements = false;
+                this.advance();
                 continue;
             }
             statements.add(statement);
-            if (this.currentToken.type != Token.Type.SEMI_COLON)
+            if (this.currentToken.type != Token.Type.NEW_LINE)
                 throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected ; at end of line", this.currentToken.startPos, this.currentToken.endPos);
         }
         return new ListNode(statements, startPos, this.currentToken.endPos.copy());
@@ -248,61 +249,66 @@ public class Parser {
     }
 
     private Node ifExpression() throws Error {
-        var allCases = this.ifExpressionCases();
-        if (this.currentToken.type != Token.Type.SEMI_COLON && (this.previousToken.type != Token.Type.KEYWORD || ((KeyWordToken) this.previousToken).keyWord != KeyWordToken.KeyWord.END))
-            throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected ; at end of line", this.currentToken.startPos, this.currentToken.endPos);
-        //this.advance();
+        var allCases = this.ifExpressionCases(KeyWordToken.KeyWord.IF);
         return new IfNode(allCases.getValue1(), allCases.getValue2());
     }
 
     private TwoValues<List<ThreeValues<Node, Node, Boolean>>, TwoValues<Node, Boolean>> elseExpression() throws Error {
+        List<ThreeValues<Node, Node, Boolean>> cases = new LinkedList<>();
         TwoValues<Node, Boolean> elseCase = null;
         if (this.currentToken.type == Token.Type.KEYWORD && ((KeyWordToken)this.currentToken).keyWord == KeyWordToken.KeyWord.ELSE) {
             this.advance();
-            if (this.currentToken.type == Token.Type.KEYWORD && ((KeyWordToken)this.currentToken).keyWord == KeyWordToken.KeyWord.IF)
-                return ifExpressionCases();
-            if ((this.currentToken.type != Token.Type.KEYWORD || (((KeyWordToken) this.currentToken).keyWord != KeyWordToken.KeyWord.THEN && ((KeyWordToken) this.currentToken).keyWord != KeyWordToken.KeyWord.START)))
-                throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected 'then','->', or '{'", this.currentToken.startPos, this.currentToken.endPos);
-            boolean newLine = ((KeyWordToken) this.currentToken).keyWord == KeyWordToken.KeyWord.START;
-            this.advance();
-            if (newLine) {
-                Node statements = this.statements();
-                elseCase = new TwoValues<>(statements, true);
-                if (this.currentToken.type == Token.Type.KEYWORD && ((KeyWordToken) this.currentToken).keyWord == KeyWordToken.KeyWord.END)
-                    this.advance();
-                else
-                    throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected 'end' or '}'", this.currentToken.startPos, this.currentToken.endPos);
+            if (this.currentToken.type == Token.Type.KEYWORD && ((KeyWordToken)this.currentToken).keyWord == KeyWordToken.KeyWord.IF) {
+                var allCases = this.ifExpressionCases(KeyWordToken.KeyWord.IF);
+                cases = allCases.getValue1();
+                elseCase = allCases.getValue2();
             }
             else {
-                Node expression = this.expression();
-                elseCase = new TwoValues<>(expression, false);
+                if ((this.currentToken.type != Token.Type.KEYWORD || ((KeyWordToken) this.currentToken).keyWord != KeyWordToken.KeyWord.THEN))
+                    throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected 'then','->', or '{'", this.currentToken.startPos, this.currentToken.endPos);
+                this.advance();
+                if (this.currentToken.type == Token.Type.NEW_LINE) {
+                    this.advance();
+                    var statement = this.statements();
+                    elseCase = new TwoValues<>(statement, true);
+                    if (this.currentToken.type == Token.Type.KEYWORD && ((KeyWordToken) this.currentToken).keyWord == KeyWordToken.KeyWord.END)
+                        this.advance();
+                    else
+                        throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected '}'", this.currentToken.startPos, this.currentToken.endPos);
+                }
+                else {
+                    var expression = this.expression();
+                    elseCase = new TwoValues<>(expression, false);
+                }
             }
         }
-        return new TwoValues<>(null, elseCase);
+        return new TwoValues<>(cases, elseCase);
     }
 
-    private TwoValues<List<ThreeValues<Node, Node, Boolean>>, TwoValues<Node, Boolean>> ifExpressionCases() throws Error {
+    private TwoValues<List<ThreeValues<Node, Node, Boolean>>, TwoValues<Node, Boolean>> ifExpressionCases(KeyWordToken.KeyWord keyWord) throws Error {
         List<ThreeValues<Node, Node, Boolean>> cases = new LinkedList<>();
         TwoValues<Node, Boolean> elseCase = null;
-        if (this.currentToken.type != Token.Type.KEYWORD || ((KeyWordToken) this.currentToken).keyWord != KeyWordToken.KeyWord.IF)
+        if (this.currentToken.type != Token.Type.KEYWORD || ((KeyWordToken) this.currentToken).keyWord != keyWord)
             throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected '" + KeyWordToken.KeyWord.IF.name() + "'", this.currentToken.startPos, this.currentToken.endPos);
         this.advance();
         if (this.currentHasNoBracket())
             throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected 'if (...)'", this.currentToken.startPos, this.currentToken.endPos);
         Node condition = this.expression();
-        if ((this.currentToken.type != Token.Type.KEYWORD || (((KeyWordToken) this.currentToken).keyWord != KeyWordToken.KeyWord.THEN && ((KeyWordToken) this.currentToken).keyWord != KeyWordToken.KeyWord.START)))
+        if ((this.currentToken.type != Token.Type.KEYWORD || ((KeyWordToken) this.currentToken).keyWord != KeyWordToken.KeyWord.THEN))
             throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected 'then','->', or '{'", this.currentToken.startPos, this.currentToken.endPos);
-        boolean newLine = ((KeyWordToken) this.currentToken).keyWord == KeyWordToken.KeyWord.START;
         this.advance();
-        if (newLine) {
+        if (this.currentToken.type == Token.Type.NEW_LINE) {
+            this.advance();
             Node statement = this.statements();
             cases.add(new ThreeValues<>(condition, statement, true));
             if (this.currentToken.type == Token.Type.KEYWORD && ((KeyWordToken) this.currentToken).keyWord == KeyWordToken.KeyWord.END)
                 this.advance();
-            var allCases = this.elseExpression();
-            elseCase = allCases.getValue2();
-            if (allCases.getValue1() != null)
-                cases.addAll(allCases.getValue1());
+            else {
+                var allCases = this.elseExpression();
+                elseCase = allCases.getValue2();
+                if (allCases.getValue1() != null)
+                    cases.addAll(allCases.getValue1());
+            }
         }
         else {
             Node expression = this.expression();
