@@ -6,3 +6,5 @@ Arucas is an Interpreted Language using Java, with similar syntax to Java.
 code for this project and uses much of the same basic logic, although a 
 large amount of code has been rewritten by myself to function with Java, 
 as the reference code was written in python.
+
+This was made largely for a project for a Minecraft mod that can be found [here](https://github.com/senseiwells/EssentialClient)
