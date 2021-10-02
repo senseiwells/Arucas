@@ -17,7 +17,7 @@ public class ErrorRuntime extends Error {
         Position pos = this.startPos;
         Context context = this.context;
         while (context != null) {
-            result.insert(0, "File: " + pos.fileName + ", Line: " + pos.line + 1 + ", In: " + context.displayName + "\n");
+            result.insert(0, "File: " + pos.fileName + ", Line: " + (pos.line + 1) + ", In: " + context.displayName + "\n");
             pos = context.parentEntryPosition;
             context = context.parent;
         }
@@ -28,7 +28,6 @@ public class ErrorRuntime extends Error {
     public String toString() {
         String error = this.generateTraceback();
         error += this.errorType.stringName + " - " +  "'" + this.getMessage() +  "'";
-        error += "\n>> " + this.startPos.fileText;
         return error;
     }
 }

@@ -6,15 +6,19 @@ import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 public class SymbolTable {
 
     public HashMap<String, Value<?>> symbolMap;
     public SymbolTable parent;
+    public List<String> constants;
 
     public SymbolTable(SymbolTable parent) {
         this.symbolMap = new HashMap<>();
         this.parent = parent;
+        this.constants = new LinkedList<>();
     }
 
     public SymbolTable() {
@@ -38,18 +42,21 @@ public class SymbolTable {
         return value;
     }
 
-    @SuppressWarnings("UnusedReturnValue")
-    public SymbolTable set(String name, Value<?> value) {
+    public void set(String name, Value<?> value) {
         this.symbolMap.put(name, value);
-        return this;
     }
 
-    /* Never ended up using this method.
-    public SymbolTable remove(String name) {
-        this.symbolMap.remove(name);
-        return this;
+    public void setConstant(String name, Value<?> value) {
+        this.constants.add(name);
+        this.symbolMap.put(name, value);
     }
-     */
+
+    public boolean isConstant(String name) {
+        for (String constant : this.constants)
+            if (constant.equals(name))
+                return true;
+        return false;
+    }
 
     public enum Literal {
 

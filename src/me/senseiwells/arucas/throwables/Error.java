@@ -19,8 +19,7 @@ public class Error extends Throwable {
     @Override
     public String toString() {
         String error = this.errorType.stringName + " - " +  "'" + this.getMessage() +  "'";
-        error += "\nFile: " + this.startPos.fileName + ", Line: " + this.startPos.line + 1;
-        error += "\n>> " + this.startPos.fileText;
+        error += "\nFile: " + this.startPos.fileName + ", Line: " + (this.startPos.line + 1);
         return error;
     }
 
@@ -31,7 +30,8 @@ public class Error extends Throwable {
         ILLEGAL_OPERATION_ERROR ("Illegal Operation Error"),
         EXPECTED_CHAR_ERROR     ("Expected Character Error"),
         RUNTIME_ERROR           ("Runtime Error"),
-        CAUGHT_ERROR            ("Caught Error");
+        CAUGHT_ERROR            ("Caught Error"),
+        STOP                    ("Program stopped");
 
         public String stringName;
 

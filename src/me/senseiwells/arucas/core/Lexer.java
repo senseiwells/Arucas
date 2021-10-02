@@ -30,7 +30,7 @@ public class Lexer {
     }
 
     private void advance() {
-        this.pos.advance(null);
+        this.pos.advance(this.currentChar);
         this.currentChar = this.pos.index < this.charArray.length ? this.charArray[this.pos.index] : null;
     }
     

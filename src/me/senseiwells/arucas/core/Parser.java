@@ -218,23 +218,15 @@ public class Parser {
 
     private Node expression() throws Error {
         //Initialise variable with keyword 'var' -> stores value in map
-        if (this.currentToken.type == Token.Type.KEYWORD && ((KeyWordToken) this.currentToken).keyWord == KeyWordToken.KeyWord.VAR) {
-            this.advance();
-            if (this.currentToken.type != Token.Type.IDENTIFIER)
-                throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected an identifier", this.currentToken.startPos, this.currentToken.endPos);
-            Token token = this.currentToken;
-            this.advance();
-            if (this.currentToken.type != Token.Type.ASSIGN_OPERATOR)
-                throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected an assignment operator", this.currentToken.startPos, this.currentToken.endPos);
-            this.advance();
-            Node expression = this.expression();
-            VariableAssignNode assign = new VariableAssignNode(token, expression);
-            try {
-                assign.visit(new Interpreter(), this.context);
+        if (this.currentToken.type == Token.Type.KEYWORD) {
+            switch (((KeyWordToken) this.currentToken).keyWord) {
+                case VAR -> {
+                    return this.setVariable();
+                }
+                case CONST -> {
+                    return this.setVariable().setConstant();
+                }
             }
-            catch (ThrowValue ignored) {
-            }
-            return assign;
         }
         //If identifier is already a variable -> can assign value without 'var' keyword
         else if (this.currentToken.type == Token.Type.IDENTIFIER) {
@@ -255,6 +247,25 @@ public class Parser {
             left = new BinaryOperatorNode(left, operatorToken, right);
         }
         return left;
+    }
+
+    private VariableAssignNode setVariable() throws Error {
+        this.advance();
+        if (this.currentToken.type != Token.Type.IDENTIFIER)
+            throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected an identifier", this.currentToken.startPos, this.currentToken.endPos);
+        Token token = this.currentToken;
+        this.advance();
+        if (this.currentToken.type != Token.Type.ASSIGN_OPERATOR)
+            throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected an assignment operator", this.currentToken.startPos, this.currentToken.endPos);
+        this.advance();
+        Node expression = this.expression();
+        VariableAssignNode assign = new VariableAssignNode(token, expression);
+        try {
+            assign.visit(new Interpreter(), this.context);
+        }
+        catch (ThrowValue ignored) {
+        }
+        return assign;
     }
 
     private Node comparisonExpression() throws Error {

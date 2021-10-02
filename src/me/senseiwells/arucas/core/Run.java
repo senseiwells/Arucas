@@ -12,12 +12,13 @@ import me.senseiwells.arucas.values.Value;
 import java.util.List;
 import java.util.Scanner;
 
-@SuppressWarnings("all")
+
 public class Run {
 
     public static SymbolTable symbolTable = new SymbolTable();
     public static boolean debug = false;
 
+    @SuppressWarnings("InfiniteLoopStatement")
     public static void baseRun() {
         while (true) {
             Scanner scanner = new Scanner(System.in);
@@ -33,32 +34,20 @@ public class Run {
             catch (Error e) {
                 String error = e.toString();
                 System.out.println(error);
-                //break;
             }
         }
     }
 
     public static Value<?> run(String fileName, String line) throws Error {
+        String[] fileNameRoot = fileName.split("/");
+        Context context = new Context(fileNameRoot[fileNameRoot.length - 1], null, null);
+        context.symbolTable = fileName.equals("System.in") ? symbolTable.setDefaultSymbols(context) : new SymbolTable().setDefaultSymbols(context);
 
-        //Create context
-        boolean isTerminal = fileName.equals("System.in");
-        Context context = new Context(isTerminal ? "terminal" : fileName, null, null);
-        SymbolTable table = isTerminal ? table = symbolTable.setDefaultSymbols(context) : new SymbolTable().setDefaultSymbols(context);
-        context.symbolTable = table;
+        List<Token> values = new Lexer(line, fileName).createTokens();
 
-        //Create Tokens
-        Lexer lexer = new Lexer(line, fileName);
-        List<Token> values = lexer.createTokens();
-
-        //Parse
-        Parser parser = new Parser(values, context);
-        Node nodeResult = parser.parse();
-
-        //Run
-        Interpreter interpreter = new Interpreter();
+        Node nodeResult = new Parser(values, context).parse();
         try {
-            Value<?> value = interpreter.visit(nodeResult, context);
-            return value;
+            return new Interpreter().visit(nodeResult, context);
         }
         catch (ThrowValue tv) {
             throw new Error(Error.ErrorType.ILLEGAL_OPERATION_ERROR, "Cannot use keywords 'break' or 'continue' outside loop, and cannot use 'return' outside function", nodeResult.startPos, nodeResult.endPos);

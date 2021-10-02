@@ -1,21 +1,12 @@
+//const path = "E:/Java/Projects/Arucas/src/me/senseiwells/code/test.arucas";
 var int = 0;
+var list = ["diamond", "grass", "air", "glass", "dirt"];
 
-fun print9() {
-    print("THIS IS asdasd!!!");
+print(getTime());
+while (len(list) > int) {
+    var thing = getIndex(list, int);
+	int = int + 1;
+	if (thing == "air") -> continue;
+	print(thing);
 }
-
-//this is where code will actually start running
-
-while (int < 100) {
-    int = int + 1;
-    print(int);
-    if (int == 5) {
-        print("pausing for 4 seconds");
-        sleep(4000);
-    }
-    else if (int == 10) {
-        schedule(1000, print9);
-    }
-    else if (int == 15) -> break;
-    else if (int == 9) -> print9();
-}
+print(getTime());
