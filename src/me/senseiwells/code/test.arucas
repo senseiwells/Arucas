@@ -1,12 +1,6 @@
 //const path = "E:/Java/Projects/Arucas/src/me/senseiwells/code/test.arucas";
 var int = 0;
-var list = ["diamond", "grass", "air", "glass", "dirt"];
 
-print(getTime());
-while (len(list) > int) {
-    var thing = getIndex(list, int);
-	int = int + 1;
-	if (thing == "air") -> continue;
-	print(thing);
+while (int < 100) {
+    print(int);
 }
-print(getTime());

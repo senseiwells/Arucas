@@ -19,19 +19,21 @@ import java.util.Random;
 
 public class BuiltInFunctionValue extends BaseFunctionValue {
 
+    private BuiltInFunction function;
+
     public BuiltInFunctionValue(String name) {
         super(name);
     }
 
     @Override
     public Value<?> execute(List<Value<?>> arguments) throws Error {
-        BuiltInFunction function = BuiltInFunction.stringToFunction(this.value);
+        this.function = BuiltInFunction.stringToFunction(this.value);
         this.context = this.generateNewContext();
         Value<?> returnValue = new NullValue();
-        if (function == null)
+        if (this.function == null)
             throw new ErrorRuntime("Function " + this.value + " is not defined", this.startPos, this.endPos, this.context);
-        this.checkAndPopulateArguments(arguments, function.argumentNames, this.context);
-        switch (function) {
+        this.checkAndPopulateArguments(arguments, this.function.argumentNames, this.context);
+        switch (this.function) {
             case RUN -> this.run();
             case STOP -> throw new ThrowStop();
             case DEBUG -> this.toggleDebug();
@@ -55,12 +57,13 @@ public class BuiltInFunctionValue extends BaseFunctionValue {
     }
 
     private void run() throws Error {
-        Value<?> value = this.context.symbolTable.get(BuiltInFunction.RUN.getArgument(0));
+        Value<?> value = this.context.symbolTable.get(this.function.getArgument(0));
         if (!(value instanceof StringValue stringValue))
             throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Must pass an string (file path) to function", this.startPos, this.endPos);
         String fileName = stringValue.value;
         try {
             String fileContent = Files.readString(Path.of(fileName));
+
             Run.run(fileName, fileContent);
         }
         catch (IOException | InvalidPathException e) {
@@ -69,13 +72,13 @@ public class BuiltInFunctionValue extends BaseFunctionValue {
     }
 
     private void print() {
-        System.out.println(this.context.symbolTable.get(BuiltInFunction.PRINT.getArgument(0)));
+        System.out.println(this.getValueFromTable(this.function.getArgument(0)));
     }
 
     private void sleep() throws Error {
-        Value<?> numValue = this.context.symbolTable.get(BuiltInFunction.SLEEP.getArgument(0));
+        Value<?> numValue = this.getValueFromTable(this.function.getArgument(0));
         if (!(numValue instanceof NumberValue timeValue))
-            throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Must pass an integer into function", this.startPos, this.endPos);
+            throw this.throwInvalidParameterError("Must pass an integer into function");
         try {
             Thread.sleep(timeValue.value.longValue());
         }
@@ -85,12 +88,12 @@ public class BuiltInFunctionValue extends BaseFunctionValue {
     }
 
     private void schedule() throws Error {
-        Value<?> numValue = this.context.symbolTable.get(BuiltInFunction.SCHEDULE.getArgument(0));
-        Value<?> funValue = this.context.symbolTable.get(BuiltInFunction.SCHEDULE.getArgument(1));
+        Value<?> numValue = this.getValueFromTable(this.function.getArgument(0));
+        Value<?> funValue = this.getValueFromTable(this.function.getArgument(1));
         if (!(numValue instanceof NumberValue timeValue))
-            throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Must pass an integer into parameter 1", this.startPos, this.endPos);
+            throw this.throwInvalidParameterError("Must pass an integer into parameter 1");
         if (!(funValue instanceof BaseFunctionValue functionValue))
-            throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Must pass a function into parameter 2", this.startPos, this.endPos);
+            throw this.throwInvalidParameterError("Must pass a function into parameter 2");
         Thread thread = new Thread(() -> {
             try {
                 Thread.sleep(timeValue.value.longValue());
@@ -104,58 +107,58 @@ public class BuiltInFunctionValue extends BaseFunctionValue {
     }
 
     private NumberValue random() throws Error {
-        Value<?> numValue = this.context.symbolTable.get(BuiltInFunction.RANDOM.getArgument(0));
+        Value<?> numValue = this.getValueFromTable(this.function.getArgument(0));
         if (!(numValue instanceof NumberValue bound))
-            throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Must pass an integer (bound) into function", this.startPos, this.endPos);
+            throw this.throwInvalidParameterError("Must pass an integer (bound) into function");
         return new NumberValue(new Random().nextInt(bound.value.intValue()));
     }
 
     private BooleanValue isType(Class<?> classInstance) {
-        return new BooleanValue(classInstance.isInstance(this.context.symbolTable.get(BuiltInFunction.IS_STRING.getArgument(0))));
+        return new BooleanValue(classInstance.isInstance(this.getValueFromTable(this.function.getArgument(0))));
     }
 
     private Value<?> modifyListIndex(boolean delete) throws Error {
-        Value<?> value = this.context.symbolTable.get(BuiltInFunction.GET_INDEX.getArgument(0));
-        Value<?> numValue = this.context.symbolTable.get(BuiltInFunction.GET_INDEX.getArgument(1));
+        Value<?> value = this.getValueFromTable(this.function.getArgument(0));
+        Value<?> numValue = this.getValueFromTable(this.function.getArgument(1));
         if (!(value instanceof ListValue listValue))
-            throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Must pass a list into parameter 1", this.startPos, this.endPos);
+            throw this.throwInvalidParameterError("Must pass a list into parameter 1");
         if (!(numValue instanceof NumberValue numberValue))
-            throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Must pass an integer into parameter 2", this.startPos, this.endPos);
+            throw this.throwInvalidParameterError("Must pass an integer into parameter 2");
         int index = numberValue.value.intValue();
         if (index >= listValue.value.size() || index < 0)
-            throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Parameter 2 is out of bounds", this.startPos, this.endPos);
+            throw this.throwInvalidParameterError("Parameter 2 is out of bounds");
         return delete ? listValue.value.remove(index) : listValue.value.get(index);
     }
 
     private Value<?> appendList() throws Error {
-        Value<?> listValue = this.context.symbolTable.get(BuiltInFunction.APPEND.getArgument(0));
-        Value<?> value = this.context.symbolTable.get(BuiltInFunction.APPEND.getArgument(1));
+        Value<?> listValue = this.getValueFromTable(this.function.getArgument(0));
+        Value<?> value = this.getValueFromTable(this.function.getArgument(1));
         if (!(listValue instanceof ListValue list))
-            throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Must pass a list into parameter 1 for append()", this.startPos, this.endPos);
+            throw this.throwInvalidParameterError("Must pass a list into parameter 1 for append()");
         list.value.add(value);
         return list;
     }
 
     private Value<?> concatList() throws Error {
-        Value<?> list1 = this.context.symbolTable.get(BuiltInFunction.CONCAT.getArgument(0));
-        Value<?> list2 = this.context.symbolTable.get(BuiltInFunction.CONCAT.getArgument(1));
+        Value<?> list1 = this.getValueFromTable(this.function.getArgument(0));
+        Value<?> list2 = this.getValueFromTable(this.function.getArgument(1));
         if (!(list1 instanceof ListValue listValue1) || !(list2 instanceof ListValue listValue2))
-            throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Parameters for concat() must both be lists", this.startPos, this.endPos);
+            throw this.throwInvalidParameterError("Parameters for concat() must both be lists");
         listValue1.value.addAll(listValue2.value);
         return listValue1;
     }
 
     private NumberValue getListLength() throws Error {
-        Value<?> listValue = this.context.symbolTable.get(BuiltInFunction.LEN.getArgument(0));
+        Value<?> listValue = this.getValueFromTable(this.function.getArgument(0));
         if (!(listValue instanceof ListValue list))
-            throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Parameter for len() must both be a list", this.startPos, this.endPos);
+            throw this.throwInvalidParameterError("Parameter for len() must both be a list");
         return new NumberValue(list.value.size());
     }
 
     private void toggleDebug() throws Error {
-        Value<?> value = this.context.symbolTable.get(BuiltInFunction.DEBUG.getArgument(0));
+        Value<?> value = this.getValueFromTable(this.function.getArgument(0));
         if (!(value instanceof BooleanValue booleanValue))
-            throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Cannot pass " + value.value + "to debug()", this.startPos, this.endPos);
+            throw this.throwInvalidParameterError("Cannot pass " + value.value + "to debug()");
         Run.debug = booleanValue.value;
     }
 

@@ -37,9 +37,23 @@ public abstract class BaseFunctionValue extends Value<String> {
         }
     }
 
+    public static Enum<?> stringToFunction(String word) {
+        Enum<?> function;
+        function = BuiltInFunctionValue.BuiltInFunction.stringToFunction(word);
+        return function;
+    }
+
     public void checkAndPopulateArguments(List<Value<?>> arguments, List<String> argumentNames, Context context) throws ErrorRuntime {
         this.checkArguments(arguments, argumentNames);
         this.populateArguments(arguments, argumentNames, context);
+    }
+
+    public Value<?> getValueFromTable(String key) {
+        return this.context.symbolTable.get(key);
+    }
+
+    public Error throwInvalidParameterError(String details) {
+        return new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, details, this.startPos, this.endPos);
     }
 
     public abstract Value<?> execute(List<Value<?>> arguments) throws Error, ThrowValue;
