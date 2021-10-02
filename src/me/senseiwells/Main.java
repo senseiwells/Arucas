@@ -1,6 +1,6 @@
 package me.senseiwells;
 
-import me.senseiwells.core.core.Run;
+import me.senseiwells.arucas.core.Run;
 
 public class Main {
 

@@ -1,0 +1,7 @@
+var int = 0;
+while (int < 100) {
+    int = int + 1;
+    print(int);
+    if (int == 69) -> break;
+    else if (int == 58) -> print("THIS IS 58!!!");
+}
