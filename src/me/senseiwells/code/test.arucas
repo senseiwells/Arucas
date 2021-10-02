@@ -1,7 +1,21 @@
 var int = 0;
+
+fun print9() {
+    print("THIS IS asdasd!!!");
+}
+
+//this is where code will actually start running
+
 while (int < 100) {
     int = int + 1;
     print(int);
-    if (int == 69) -> break;
-    else if (int == 58) -> print("THIS IS 58!!!");
+    if (int == 5) {
+        print("pausing for 4 seconds");
+        sleep(4000);
+    }
+    else if (int == 10) {
+        schedule(1000, print9);
+    }
+    else if (int == 15) -> break;
+    else if (int == 9) -> print9();
 }

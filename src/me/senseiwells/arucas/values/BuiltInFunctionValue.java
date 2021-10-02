@@ -3,11 +3,13 @@ package me.senseiwells.arucas.values;
 import me.senseiwells.arucas.throwables.Error;
 import me.senseiwells.arucas.throwables.ErrorRuntime;
 import me.senseiwells.arucas.core.Run;
+import me.senseiwells.arucas.throwables.ThrowValue;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -24,12 +26,13 @@ public class BuiltInFunctionValue extends BaseFunctionValue {
         Value<?> returnValue = new NullValue();
         if (function == null)
             throw new ErrorRuntime("Function " + this.value + " is not defined", this.startPos, this.endPos, this.context);
-        this.checkAndPopulateArguments(arguments, function.argumentNames, this.context);
+        this.checkAndPopulateArguments(arguments, Arrays.stream(function.argumentNames).toList(), this.context);
         switch (function) {
             case RUN -> this.run();
             case DEBUG -> this.toggleDebug();
             case PRINT -> this.print();
             case SLEEP -> this.sleep();
+            case SCHEDULE -> this.schedule();
             case RANDOM -> returnValue = this.random();
             case IS_NUMBER -> returnValue = this.isType(NumberValue.class);
             case IS_STRING -> returnValue = this.isType(StringValue.class);
@@ -72,6 +75,25 @@ public class BuiltInFunctionValue extends BaseFunctionValue {
         catch (InterruptedException e) {
             throw new Error(Error.ErrorType.RUNTIME_ERROR, "An error occurred while trying to call 'sleep()'", this.startPos, this.endPos);
         }
+    }
+
+    private void schedule() throws Error {
+        Value<?> numValue = this.context.symbolTable.get(BuiltInFunction.SCHEDULE.getArgument(0));
+        Value<?> funValue = this.context.symbolTable.get(BuiltInFunction.SCHEDULE.getArgument(1));
+        if (!(numValue instanceof NumberValue timeValue))
+            throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Must pass an integer into parameter 1", this.startPos, this.endPos);
+        if (!(funValue instanceof BaseFunctionValue functionValue))
+            throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Must pass a function into parameter 2", this.startPos, this.endPos);
+        Thread thread = new Thread(() -> {
+            try {
+                Thread.sleep(timeValue.value.longValue());
+                functionValue.execute(null);
+            }
+            catch (InterruptedException | Error | ThrowValue e) {
+                System.out.println("WARN: An error was caught in schedule() call, check that you are passing in a valid function");
+            }
+        });
+        thread.start();
     }
 
     private NumberValue random() throws Error {
@@ -130,29 +152,34 @@ public class BuiltInFunctionValue extends BaseFunctionValue {
 
     public enum BuiltInFunction {
         //general functions
-        RUN("run", List.of("path")),
-        DEBUG("debug", List.of("boolean")),
-        PRINT("print", List.of("printValue")),
-        SLEEP("sleep", List.of("time")),
-        RANDOM("random", List.of("bound")),
-        IS_NUMBER("isNumber", List.of("value")),
-        IS_STRING("isString", List.of("value")),
-        IS_BOOLEAN("isBoolean", List.of("value")),
-        IS_FUNCTION("isFunction", List.of("value")),
-        IS_LIST("isList", List.of("value")),
+        RUN("run", "path"),
+        DEBUG("debug", "boolean"),
+        PRINT("print", "printValue"),
+        SLEEP("sleep", "time"),
+        SCHEDULE("schedule", new String[]{"time", "function"}),
+        RANDOM("random", "bound"),
+        IS_NUMBER("isNumber", "value"),
+        IS_STRING("isString", "value"),
+        IS_BOOLEAN("isBoolean", "value"),
+        IS_FUNCTION("isFunction", "value"),
+        IS_LIST("isList", "value"),
 
         //list functions
-        GET_INDEX("getIndex", List.of("list", "index")),
-        REMOVE_INDEX("removeIndex", List.of("list", "index")),
-        APPEND("append", List.of("list", "value")),
-        CONCAT("concat", List.of("list", "otherList"));
+        GET_INDEX("getIndex", new String[]{"list", "index"}),
+        REMOVE_INDEX("removeIndex", new String[]{"list", "index"}),
+        APPEND("append", new String[]{"list", "value"}),
+        CONCAT("concat", new String[]{"list", "otherList"});
 
         public String name;
-        List<String> argumentNames;
+        String[] argumentNames;
 
-        BuiltInFunction(String name, List<String> argumentNames) {
+        BuiltInFunction(String name, String[] argumentNames) {
             this.name = name;
             this.argumentNames = argumentNames;
+        }
+
+        BuiltInFunction(String name, String argumentName) {
+            this(name, new String[]{argumentName});
         }
 
         public static BuiltInFunction stringToFunction(String word) {
@@ -164,7 +191,7 @@ public class BuiltInFunctionValue extends BaseFunctionValue {
         }
 
         private String getArgument(int index) {
-            return this.argumentNames.get(index);
+            return this.argumentNames[index];
         }
     }
 }

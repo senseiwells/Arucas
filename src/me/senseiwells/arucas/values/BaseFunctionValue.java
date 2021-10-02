@@ -21,10 +21,11 @@ public abstract class BaseFunctionValue extends Value<String> {
     }
 
     private void checkArguments(List<Value<?>> arguments, List<String> argumentNames) throws ErrorRuntime {
-        if (arguments.size() > argumentNames.size())
+        int argumentSize = arguments == null ? 0 : arguments.size();
+        if (argumentSize > argumentNames.size())
             throw new ErrorRuntime(arguments.size() - argumentNames.size() + " too many arguments passed into " + this.value, this.startPos, this.endPos, this.context);
-        if (arguments.size() < argumentNames.size())
-            throw new ErrorRuntime(argumentNames.size() - arguments.size() + " too few arguments passed into " + this.value, this.startPos, this.endPos, this.context);
+        if (argumentSize < argumentNames.size())
+            throw new ErrorRuntime(argumentNames.size() - argumentSize + " too few arguments passed into " + this.value, this.startPos, this.endPos, this.context);
     }
 
     private void populateArguments(List<Value<?>> arguments, List<String> argumentNames, Context context) {
