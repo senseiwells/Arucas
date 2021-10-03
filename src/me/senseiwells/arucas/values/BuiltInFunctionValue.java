@@ -95,8 +95,10 @@ public class BuiltInFunctionValue extends BaseFunctionValue {
                 functionValue.execute(null);
             }
             catch (InterruptedException | Error | ThrowValue e) {
-                System.out.println("WARN: An error was caught in schedule() call, check that you are passing in a valid function");
+                if (!(e instanceof ThrowStop))
+                    System.out.println("WARN: An error was caught in schedule() call, check that you are passing in a valid function");
             }
+            Thread.currentThread().interrupt();
         });
         thread.start();
     }
@@ -105,7 +107,7 @@ public class BuiltInFunctionValue extends BaseFunctionValue {
         NumberValue numberValue = (NumberValue) this.getValueForType(NumberValue.class, 0);
         return new NumberValue(new Random().nextInt(numberValue.value.intValue()));
     }
-    
+
     private NumberValue round() throws Error {
         NumberValue numValue = (NumberValue) this.getValueForType(NumberValue.class, 0);
         return new NumberValue(Math.round(numValue.value));
