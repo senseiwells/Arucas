@@ -36,9 +36,4 @@ public class FunctionValue extends BaseFunctionValue {
     public Value<?> copy() {
         return new FunctionValue(this.value, this.bodyNode, this.argumentNames).setPos(this.startPos, this.endPos).setContext(this.context);
     }
-
-    @Override
-    public String toString() {
-        return "<function " + this.value + ">";
-     }
 }

@@ -36,11 +36,12 @@ public class BuiltInFunctionValue extends BaseFunctionValue {
         switch (this.function) {
             case RUN -> this.run();
             case STOP -> throw new ThrowStop();
-            case DEBUG -> this.toggleDebug();
+            case DEBUG -> Run.debug = (boolean) this.getValueForType(BooleanValue.class, 0).value;
             case PRINT -> this.print();
             case SLEEP -> this.sleep();
             case SCHEDULE -> this.schedule();
             case RANDOM -> returnValue = this.random();
+            case ROUND -> returnValue = this.round();
             case IS_NUMBER -> returnValue = this.isType(NumberValue.class);
             case IS_STRING -> returnValue = this.isType(StringValue.class);
             case IS_BOOLEAN -> returnValue = this.isType(BooleanValue.class);
@@ -57,9 +58,7 @@ public class BuiltInFunctionValue extends BaseFunctionValue {
     }
 
     private void run() throws Error {
-        Value<?> value = this.context.symbolTable.get(this.function.getArgument(0));
-        if (!(value instanceof StringValue stringValue))
-            throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Must pass an string (file path) to function", this.startPos, this.endPos);
+        StringValue stringValue = (StringValue) this.getValueForType(StringValue.class, 0);
         String fileName = stringValue.value;
         try {
             String fileContent = Files.readString(Path.of(fileName));
@@ -76,11 +75,9 @@ public class BuiltInFunctionValue extends BaseFunctionValue {
     }
 
     private void sleep() throws Error {
-        Value<?> numValue = this.getValueFromTable(this.function.getArgument(0));
-        if (!(numValue instanceof NumberValue timeValue))
-            throw this.throwInvalidParameterError("Must pass an integer into function");
+        NumberValue numberValue = (NumberValue) this.getValueForType(NumberValue.class, 0);
         try {
-            Thread.sleep(timeValue.value.longValue());
+            Thread.sleep(numberValue.value.longValue());
         }
         catch (InterruptedException e) {
             throw new Error(Error.ErrorType.RUNTIME_ERROR, "An error occurred while trying to call 'sleep()'", this.startPos, this.endPos);
@@ -88,15 +85,11 @@ public class BuiltInFunctionValue extends BaseFunctionValue {
     }
 
     private void schedule() throws Error {
-        Value<?> numValue = this.getValueFromTable(this.function.getArgument(0));
-        Value<?> funValue = this.getValueFromTable(this.function.getArgument(1));
-        if (!(numValue instanceof NumberValue timeValue))
-            throw this.throwInvalidParameterError("Must pass an integer into parameter 1");
-        if (!(funValue instanceof BaseFunctionValue functionValue))
-            throw this.throwInvalidParameterError("Must pass a function into parameter 2");
+        NumberValue numberValue = (NumberValue) this.getValueForType(NumberValue.class, 0);
+        BaseFunctionValue functionValue = (BaseFunctionValue) this.getValueForType(BaseFunctionValue.class, 1);
         Thread thread = new Thread(() -> {
             try {
-                Thread.sleep(timeValue.value.longValue());
+                Thread.sleep(numberValue.value.longValue());
                 functionValue.execute(null);
             }
             catch (InterruptedException | Error | ThrowValue e) {
@@ -107,10 +100,13 @@ public class BuiltInFunctionValue extends BaseFunctionValue {
     }
 
     private NumberValue random() throws Error {
-        Value<?> numValue = this.getValueFromTable(this.function.getArgument(0));
-        if (!(numValue instanceof NumberValue bound))
-            throw this.throwInvalidParameterError("Must pass an integer (bound) into function");
-        return new NumberValue(new Random().nextInt(bound.value.intValue()));
+        NumberValue numberValue = (NumberValue) this.getValueForType(NumberValue.class, 0);
+        return new NumberValue(new Random().nextInt(numberValue.value.intValue()));
+    }
+    
+    private NumberValue round() throws Error {
+        NumberValue numValue = (NumberValue) this.getValueForType(NumberValue.class, 0);
+        return new NumberValue(Math.round(numValue.value));
     }
 
     private BooleanValue isType(Class<?> classInstance) {
@@ -118,12 +114,8 @@ public class BuiltInFunctionValue extends BaseFunctionValue {
     }
 
     private Value<?> modifyListIndex(boolean delete) throws Error {
-        Value<?> value = this.getValueFromTable(this.function.getArgument(0));
-        Value<?> numValue = this.getValueFromTable(this.function.getArgument(1));
-        if (!(value instanceof ListValue listValue))
-            throw this.throwInvalidParameterError("Must pass a list into parameter 1");
-        if (!(numValue instanceof NumberValue numberValue))
-            throw this.throwInvalidParameterError("Must pass an integer into parameter 2");
+        ListValue listValue = (ListValue) this.getValueForType(ListValue.class, 0);
+        NumberValue numberValue = (NumberValue) this.getValueForType(NumberValue.class, 1);
         int index = numberValue.value.intValue();
         if (index >= listValue.value.size() || index < 0)
             throw this.throwInvalidParameterError("Parameter 2 is out of bounds");
@@ -131,35 +123,29 @@ public class BuiltInFunctionValue extends BaseFunctionValue {
     }
 
     private Value<?> appendList() throws Error {
-        Value<?> listValue = this.getValueFromTable(this.function.getArgument(0));
+        ListValue listValue = (ListValue) this.getValueForType(ListValue.class, 0);
         Value<?> value = this.getValueFromTable(this.function.getArgument(1));
-        if (!(listValue instanceof ListValue list))
-            throw this.throwInvalidParameterError("Must pass a list into parameter 1 for append()");
-        list.value.add(value);
-        return list;
+        listValue.value.add(value);
+        return listValue;
     }
 
     private Value<?> concatList() throws Error {
-        Value<?> list1 = this.getValueFromTable(this.function.getArgument(0));
-        Value<?> list2 = this.getValueFromTable(this.function.getArgument(1));
-        if (!(list1 instanceof ListValue listValue1) || !(list2 instanceof ListValue listValue2))
-            throw this.throwInvalidParameterError("Parameters for concat() must both be lists");
-        listValue1.value.addAll(listValue2.value);
-        return listValue1;
+        ListValue list1 = (ListValue) this.getValueForType(ListValue.class, 0);
+        ListValue list2 = (ListValue) this.getValueForType(ListValue.class, 1);
+        list1.value.addAll(list2.value);
+        return list1;
     }
 
     private NumberValue getListLength() throws Error {
-        Value<?> listValue = this.getValueFromTable(this.function.getArgument(0));
-        if (!(listValue instanceof ListValue list))
-            throw this.throwInvalidParameterError("Parameter for len() must both be a list");
-        return new NumberValue(list.value.size());
+        ListValue listValue = (ListValue) this.getValueForType(ListValue.class, 0);
+        return new NumberValue(listValue.value.size());
     }
 
-    private void toggleDebug() throws Error {
-        Value<?> value = this.getValueFromTable(this.function.getArgument(0));
-        if (!(value instanceof BooleanValue booleanValue))
-            throw this.throwInvalidParameterError("Cannot pass " + value.value + "to debug()");
-        Run.debug = booleanValue.value;
+    public Value<?> getValueForType(Class<?> clazz, int index) throws Error {
+        Value<?> value = this.getValueFromTable(this.function.getArgument(index));
+        if (!(clazz.isInstance(value)))
+            throw this.throwInvalidParameterError("Must pass " + clazz.getSimpleName() + " into parameter " + (index + 1) + " for " + this.function.name + "()");
+        return value;
     }
 
     @Override
@@ -175,6 +161,7 @@ public class BuiltInFunctionValue extends BaseFunctionValue {
         PRINT("print", "printValue"),
         SLEEP("sleep", "time"),
         SCHEDULE("schedule", new String[]{"time", "function"}),
+        ROUND("round", "number"),
         RANDOM("random", "bound"),
         GET_TIME("getTime"),
         IS_NUMBER("isNumber", "value"),

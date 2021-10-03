@@ -37,12 +37,6 @@ public abstract class BaseFunctionValue extends Value<String> {
         }
     }
 
-    public static Enum<?> stringToFunction(String word) {
-        Enum<?> function;
-        function = BuiltInFunctionValue.BuiltInFunction.stringToFunction(word);
-        return function;
-    }
-
     public void checkAndPopulateArguments(List<Value<?>> arguments, List<String> argumentNames, Context context) throws ErrorRuntime {
         this.checkArguments(arguments, argumentNames);
         this.populateArguments(arguments, argumentNames, context);
@@ -60,4 +54,9 @@ public abstract class BaseFunctionValue extends Value<String> {
 
     @Override
     public abstract Value<?> copy();
+
+    @Override
+    public String toString() {
+        return "<function " + this.value + ">";
+    }
 }
