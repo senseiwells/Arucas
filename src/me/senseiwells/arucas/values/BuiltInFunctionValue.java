@@ -42,6 +42,8 @@ public class BuiltInFunctionValue extends BaseFunctionValue {
             case SCHEDULE -> this.schedule();
             case RANDOM -> returnValue = this.random();
             case ROUND -> returnValue = this.round();
+            case ROUND_UP -> returnValue = this.roundUp();
+            case ROUND_DOWN -> returnValue = this.roundDown();
             case IS_NUMBER -> returnValue = this.isType(NumberValue.class);
             case IS_STRING -> returnValue = this.isType(StringValue.class);
             case IS_BOOLEAN -> returnValue = this.isType(BooleanValue.class);
@@ -109,6 +111,16 @@ public class BuiltInFunctionValue extends BaseFunctionValue {
         return new NumberValue(Math.round(numValue.value));
     }
 
+    private NumberValue roundUp() throws Error {
+        NumberValue numValue = (NumberValue) this.getValueForType(NumberValue.class, 0);
+        return new NumberValue((float) Math.ceil(numValue.value));
+    }
+
+    private NumberValue roundDown() throws Error {
+        NumberValue numValue = (NumberValue) this.getValueForType(NumberValue.class, 0);
+        return new NumberValue((float) Math.floor(numValue.value));
+    }
+
     private BooleanValue isType(Class<?> classInstance) {
         return new BooleanValue(classInstance.isInstance(this.getValueFromTable(this.function.getArgument(0))));
     }
@@ -162,6 +174,8 @@ public class BuiltInFunctionValue extends BaseFunctionValue {
         SLEEP("sleep", "time"),
         SCHEDULE("schedule", new String[]{"time", "function"}),
         ROUND("round", "number"),
+        ROUND_UP("roundUp", "number"),
+        ROUND_DOWN("roundUp", "number"),
         RANDOM("random", "bound"),
         GET_TIME("getTime"),
         IS_NUMBER("isNumber", "value"),
