@@ -175,7 +175,7 @@ public class BuiltInFunctionValue extends BaseFunctionValue {
         SCHEDULE("schedule", new String[]{"time", "function"}),
         ROUND("round", "number"),
         ROUND_UP("roundUp", "number"),
-        ROUND_DOWN("roundUp", "number"),
+        ROUND_DOWN("roundDown", "number"),
         RANDOM("random", "bound"),
         GET_TIME("getTime"),
         IS_NUMBER("isNumber", "value"),
