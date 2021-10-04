@@ -51,7 +51,7 @@ public class BuiltInFunction extends FunctionValue {
      */
 
     public static Set<BuiltInFunction> initialiseBuiltInFunctions() {
-        new BuiltInFunction("run", "path", (function) -> {
+        new BuiltInFunction("run", "path", function -> {
             StringValue stringValue = (StringValue) function.getValueForType(StringValue.class, 0, null);
             String fileName = stringValue.value;
             try {
@@ -64,21 +64,21 @@ public class BuiltInFunction extends FunctionValue {
             return new NullValue();
         });
 
-        new BuiltInFunction("stop", (function) -> {
+        new BuiltInFunction("stop", function -> {
             throw new ThrowStop();
         });
 
-        new BuiltInFunction("debug", "boolean", (function) -> {
+        new BuiltInFunction("debug", "boolean", function -> {
             Run.debug = (boolean) function.getValueForType(BooleanValue.class, 0, null).value;
             return new NullValue();
         });
 
-        new BuiltInFunction("print", "printValue", (function) -> {
+        new BuiltInFunction("print", "printValue", function -> {
             System.out.println(function.getValueFromTable(function.argumentNames.get(0)));
             return new NullValue();
         });
 
-        new BuiltInFunction("sleep", "milliseconds", (function) -> {
+        new BuiltInFunction("sleep", "milliseconds", function -> {
             NumberValue numberValue = (NumberValue) function.getValueForType(NumberValue.class, 0, null);
             try {
                 Thread.sleep(numberValue.value.longValue());
@@ -89,7 +89,7 @@ public class BuiltInFunction extends FunctionValue {
             return new NullValue();
         });
 
-        new BuiltInFunction("schedule", List.of("milliseconds", "function"), (function -> {
+        new BuiltInFunction("schedule", List.of("milliseconds", "function"), function -> {
             NumberValue numberValue = (NumberValue) function.getValueForType(NumberValue.class, 0, null);
             FunctionValue functionValue = (FunctionValue) function.getValueForType(FunctionValue.class, 1, null);
             Thread thread = new Thread(() -> {
@@ -105,35 +105,35 @@ public class BuiltInFunction extends FunctionValue {
             });
             thread.start();
             return new NullValue();
-        }));
+        });
 
-        new BuiltInFunction("random", "bound", (function) -> {
+        new BuiltInFunction("random", "bound", function -> {
             NumberValue numValue = (NumberValue) function.getValueForType(NumberValue.class, 0, null);
             return new NumberValue(Math.round(numValue.value));
         });
 
-        new BuiltInFunction("round", "number", (function) -> {
+        new BuiltInFunction("round", "number", function -> {
             NumberValue numValue = (NumberValue) function.getValueForType(NumberValue.class, 0, null);
             return new NumberValue(Math.round(numValue.value));
         });
 
-        new BuiltInFunction("roundUp", "number", (function) -> {
+        new BuiltInFunction("roundUp", "number", function -> {
             NumberValue numValue = (NumberValue) function.getValueForType(NumberValue.class, 0, null);
             return new NumberValue((float) Math.ceil(numValue.value));
         });
 
-        new BuiltInFunction("roundDown", "number", (function) -> {
+        new BuiltInFunction("roundDown", "number", function -> {
             NumberValue numValue = (NumberValue) function.getValueForType(NumberValue.class, 0, null);
             return new NumberValue((float) Math.floor(numValue.value));
         });
 
         new BuiltInFunction("getTime", (function) -> new StringValue(DateTimeFormatter.ofPattern("HH:mm:ss").format(LocalTime.now())));
 
-        new BuiltInFunction("isString", "value", (function) -> function.isType(StringValue.class));
-        new BuiltInFunction("isNumber", "value", (function) -> function.isType(NumberValue.class));
-        new BuiltInFunction("isBoolean", "value", (function) -> function.isType(BooleanValue.class));
-        new BuiltInFunction("isFunction", "value", (function) -> function.isType(FunctionValue.class));
-        new BuiltInFunction("isList", "value", (function) -> function.isType(ListValue.class));
+        new BuiltInFunction("isString", "value", function -> function.isType(StringValue.class));
+        new BuiltInFunction("isNumber", "value", function -> function.isType(NumberValue.class));
+        new BuiltInFunction("isBoolean", "value", function -> function.isType(BooleanValue.class));
+        new BuiltInFunction("isFunction", "value", function -> function.isType(FunctionValue.class));
+        new BuiltInFunction("isList", "value", function -> function.isType(ListValue.class));
 
         // Injecting method here
         ListFunction.initialiseListFunctions();

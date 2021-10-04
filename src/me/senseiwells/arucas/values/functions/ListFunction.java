@@ -18,24 +18,24 @@ public class ListFunction extends BuiltInFunction {
     }
 
     public static void initialiseListFunctions() {
-        new ListFunction("getIndex", "index", (function) -> modifyListIndex(function, false));
-        new ListFunction("removeIndex", "index", (function) -> modifyListIndex(function, true));
+        new ListFunction("getIndex", "index", function -> modifyListIndex(function, false));
+        new ListFunction("removeIndex", "index", function -> modifyListIndex(function, true));
 
-        new ListFunction("append", "value", (function) -> {
+        new ListFunction("append", "value", function -> {
             ListValue listValue = (ListValue) function.getValueForType(ListValue.class, 0, null);
             Value<?> value = function.getValueFromTable(function.argumentNames.get(1));
             listValue.value.add(value);
             return listValue;
         });
 
-        new ListFunction("concat", "otherList", (function) -> {
+        new ListFunction("concat", "otherList", function -> {
             ListValue list1 = (ListValue) function.getValueForType(ListValue.class, 0, null);
             ListValue list2 = (ListValue) function.getValueForType(ListValue.class, 1, null);
             list1.value.addAll(list2.value);
             return list1;
         });
 
-        new ListFunction("len", (function) -> {
+        new ListFunction("len", function -> {
             ListValue listValue = (ListValue) function.getValueForType(ListValue.class, 0, null);
             return new NumberValue(listValue.value.size());
         });
