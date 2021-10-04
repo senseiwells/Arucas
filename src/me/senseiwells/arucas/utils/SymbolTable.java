@@ -29,8 +29,8 @@ public class SymbolTable {
         this.set("true", new BooleanValue(true).setContext(context));
         this.set("false", new BooleanValue(false).setContext(context));
         this.set("null", new NullValue().setContext(context));
-        for (BuiltInFunctionValue.BuiltInFunction function : BuiltInFunctionValue.BuiltInFunction.values()) {
-            this.set(function.name, new BuiltInFunctionValue(function.name).setContext(context));
+        for (BuiltInFunctionValue function : BuiltInFunctionValue.initialiseBuiltInFunctions()) {
+            this.set(function.value, function.setContext(context));
         }
         return this;
     }

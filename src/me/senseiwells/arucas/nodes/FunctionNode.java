@@ -34,7 +34,7 @@ public class FunctionNode extends Node {
     @Override
     public Value<?> visit(Interpreter interpreter, Context context) throws Error {
         String functionName = this.variableNameToken != null ? (String) ((ValueToken)this.variableNameToken).tokenValue.value : "lambda_" + lambdaNumber++;
-        if (SymbolTable.Literal.stringToLiteral(functionName) != null || BuiltInFunctionValue.BuiltInFunction.stringToFunction(functionName) != null)
+        if (SymbolTable.Literal.stringToLiteral(functionName) != null || BuiltInFunctionValue.isFunction(functionName))
             throw new Error(Error.ErrorType.ILLEGAL_OPERATION_ERROR, "Cannot define " + functionName + "() function as it is a predefined function", this.startPos, this.endPos);
         Node bodyNode = this.bodyNode;
         List<String> argumentNames = new LinkedList<>();

@@ -12,27 +12,105 @@ import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class BuiltInFunctionValue extends BaseFunctionValue {
 
-    private BuiltInFunction function;
+    private static final Set<BuiltInFunctionValue> builtInFunctionSet = new HashSet<>();
 
-    public BuiltInFunctionValue(String name) {
+    public Function function;
+    public List<String> argumentNames;
+
+    public BuiltInFunctionValue(String name, List<String> argumentNames, Function function) {
         super(name);
+        this.function = function;
+        this.argumentNames = argumentNames;
+        builtInFunctionSet.add(this);
     }
+
+    public BuiltInFunctionValue(String name, String argument, Function function) {
+        this(name, List.of(argument), function);
+    }
+
+    public BuiltInFunctionValue(String name, Function function) {
+        this(name, new LinkedList<>(), function);
+    }
+
+    public static boolean isFunction(String word) {
+        for (BuiltInFunctionValue builtInFunctionValue : builtInFunctionSet)
+            if (builtInFunctionValue.value.equals(word))
+                return true;
+        return false;
+    }
+
+    /**
+     *  This method is where all functions are defined
+     *  If you want to add functions then create a new class e.g. MinecraftFunctionValue
+     *  Then at the bottom of this method call a method in your class that is similar to this
+     */
+
+    public static Set<BuiltInFunctionValue> initialiseBuiltInFunctions() {
+        new BuiltInFunctionValue("run", "path", (function) -> {
+            StringValue stringValue = (StringValue) function.getValueForType(StringValue.class, 0);
+            String fileName = stringValue.value;
+            try {
+                String fileContent = Files.readString(Path.of(fileName));
+                Run.run(fileName, fileContent);
+            }
+            catch (IOException | InvalidPathException e) {
+                throw new ErrorRuntime("Failed to execute script '" + fileName + "' \n" + e, function.startPos, function.endPos, function.context);
+            }
+            return new NullValue();
+        });
+        new BuiltInFunctionValue("stop", (function) -> {
+            throw new ThrowStop();
+        });
+        new BuiltInFunctionValue("debug", "boolean", (function) -> {
+            Run.debug = (boolean) function.getValueForType(BooleanValue.class, 0).value;
+            return new NullValue();
+        });
+        new BuiltInFunctionValue("print", "printValue", (function) -> {
+            System.out.println(function.getValueFromTable(function.argumentNames.get(0)));
+            return new NullValue();
+        });
+        new BuiltInFunctionValue("sleep", "milliseconds", (function) -> {
+            NumberValue numberValue = (NumberValue) function.getValueForType(NumberValue.class, 0);
+            try {
+                Thread.sleep(numberValue.value.longValue());
+            }
+            catch (InterruptedException e) {
+                throw new Error(Error.ErrorType.RUNTIME_ERROR, "An error occurred while trying to call 'sleep()'", function.startPos, function.endPos);
+            }
+            return new NullValue();
+        });
+        new BuiltInFunctionValue("schedule", List.of("milliseconds", "function"), (function -> {
+            NumberValue numberValue = (NumberValue) function.getValueForType(NumberValue.class, 0);
+            BaseFunctionValue functionValue = (BaseFunctionValue) function.getValueForType(BaseFunctionValue.class, 1);
+            Thread thread = new Thread(() -> {
+                try {
+                    Thread.sleep(numberValue.value.longValue());
+                    functionValue.execute(null);
+                }
+                catch (InterruptedException | Error | ThrowValue e) {
+                    if (!(e instanceof ThrowStop))
+                        System.out.println("WARN: An error was caught in schedule() call, check that you are passing in a valid function");
+                }
+                Thread.currentThread().interrupt();
+            });
+            thread.start();
+            return new NullValue();
+        }));
+        return builtInFunctionSet;
+    }
+
+
 
     @Override
     public Value<?> execute(List<Value<?>> arguments) throws Error {
-        this.function = BuiltInFunction.stringToFunction(this.value);
         this.context = this.generateNewContext();
-        Value<?> returnValue = new NullValue();
-        if (this.function == null)
-            throw new ErrorRuntime("Function " + this.value + " is not defined", this.startPos, this.endPos, this.context);
-        this.checkAndPopulateArguments(arguments, this.function.argumentNames, this.context);
+        this.checkAndPopulateArguments(arguments, this.argumentNames, this.context);
+        return this.function.execute(this);
+        /*
         switch (this.function) {
             case RUN -> this.run();
             case STOP -> throw new ThrowStop();
@@ -57,8 +135,10 @@ public class BuiltInFunctionValue extends BaseFunctionValue {
             case GET_TIME -> returnValue = new StringValue(DateTimeFormatter.ofPattern("HH:mm:ss").format(LocalTime.now()));
         }
         return returnValue;
-    }
 
+         */
+    }
+    /*
     private void run() throws Error {
         StringValue stringValue = (StringValue) this.getValueForType(StringValue.class, 0);
         String fileName = stringValue.value;
@@ -70,10 +150,6 @@ public class BuiltInFunctionValue extends BaseFunctionValue {
         catch (IOException | InvalidPathException e) {
             throw new ErrorRuntime("Failed to execute script '" + fileName + "' \n" + e, this.startPos, this.endPos, this.context);
         }
-    }
-
-    private void print() {
-        System.out.println(this.getValueFromTable(this.function.getArgument(0)));
     }
 
     private void sleep() throws Error {
@@ -154,19 +230,20 @@ public class BuiltInFunctionValue extends BaseFunctionValue {
         ListValue listValue = (ListValue) this.getValueForType(ListValue.class, 0);
         return new NumberValue(listValue.value.size());
     }
+    */
 
     public Value<?> getValueForType(Class<?> clazz, int index) throws Error {
-        Value<?> value = this.getValueFromTable(this.function.getArgument(index));
+        Value<?> value = this.getValueFromTable(this.argumentNames.get(index));
         if (!(clazz.isInstance(value)))
-            throw this.throwInvalidParameterError("Must pass " + clazz.getSimpleName() + " into parameter " + (index + 1) + " for " + this.function.name + "()");
+            throw this.throwInvalidParameterError("Must pass " + clazz.getSimpleName() + " into parameter " + (index + 1) + " for " + this.value + "()");
         return value;
     }
 
     @Override
     public Value<?> copy() {
-        return new BuiltInFunctionValue(this.value).setPos(this.startPos, this.endPos).setContext(this.context);
+        return new BuiltInFunctionValue(this.value, this.argumentNames, this.function).setPos(this.startPos, this.endPos).setContext(this.context);
     }
-
+    /*
     public enum BuiltInFunction {
         //general functions
         RUN("run", "path"),
@@ -217,9 +294,7 @@ public class BuiltInFunctionValue extends BaseFunctionValue {
             }
             return null;
         }
-
-        private String getArgument(int index) {
-            return this.argumentNames.get(index);
-        }
     }
+
+     */
 }
