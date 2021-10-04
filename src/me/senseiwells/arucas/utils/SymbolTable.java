@@ -1,7 +1,7 @@
 package me.senseiwells.arucas.utils;
 
 import me.senseiwells.arucas.values.BooleanValue;
-import me.senseiwells.arucas.values.functions.BuiltInFunctionValue;
+import me.senseiwells.arucas.values.functions.BuiltInFunction;
 import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
 
@@ -29,7 +29,7 @@ public class SymbolTable {
         this.set("true", new BooleanValue(true).setContext(context));
         this.set("false", new BooleanValue(false).setContext(context));
         this.set("null", new NullValue().setContext(context));
-        for (BuiltInFunctionValue function : BuiltInFunctionValue.initialiseBuiltInFunctions()) {
+        for (BuiltInFunction function : BuiltInFunction.initialiseBuiltInFunctions()) {
             this.set(function.value, function.setContext(context));
         }
         return this;

@@ -1,6 +1,18 @@
 //const path = "E:/Java/Projects/Arucas/src/me/senseiwells/code/test.arucas";
-var int = 0;
 
-while (int < 100) {
-    print(int);
+// Lets sort this list for only strings
+
+var valueList = ["foo", 89, true, "bar", null, false, 3.14, "baz"];
+var stringList = [];
+var iterator = 0;
+
+while (len(valueList) > iterator) {
+    var value = getIndex(valueList, iterator);
+    if (isString(value)) {
+        append(stringList, value);
+    }
+    iterator = iterator + 1;
 }
+print(stringList);
+
+//Expected list for stringList is ["foo", "bar", "baz"]

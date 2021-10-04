@@ -7,8 +7,8 @@ import me.senseiwells.arucas.utils.Position;
 public abstract class Value<T> {
 
     public T value;
-    Position startPos;
-    Position endPos;
+    public Position startPos;
+    public Position endPos;
     public Context context;
 
     public Value(T value) {
