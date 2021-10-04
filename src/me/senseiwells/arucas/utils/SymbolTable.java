@@ -26,6 +26,8 @@ public class SymbolTable {
     }
 
     public SymbolTable setDefaultSymbols(Context context) {
+        if (!this.symbolMap.isEmpty())
+            return this;
         this.set("true", new BooleanValue(true).setContext(context));
         this.set("false", new BooleanValue(false).setContext(context));
         this.set("null", new NullValue().setContext(context));
