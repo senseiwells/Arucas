@@ -9,7 +9,7 @@ public abstract class Value<T> {
     public T value;
     Position startPos;
     Position endPos;
-    Context context;
+    public Context context;
 
     public Value(T value) {
         this.value = value;

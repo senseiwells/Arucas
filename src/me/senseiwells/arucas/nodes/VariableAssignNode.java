@@ -7,7 +7,7 @@ import me.senseiwells.arucas.utils.Interpreter;
 import me.senseiwells.arucas.utils.SymbolTable;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.tokens.ValueToken;
-import me.senseiwells.arucas.values.BuiltInFunctionValue;
+import me.senseiwells.arucas.values.functions.BuiltInFunctionValue;
 import me.senseiwells.arucas.values.Value;
 
 public class VariableAssignNode extends Node {

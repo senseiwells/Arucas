@@ -4,7 +4,7 @@ import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.throwables.Error;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.Interpreter;
-import me.senseiwells.arucas.values.BaseFunctionValue;
+import me.senseiwells.arucas.values.functions.BaseFunctionValue;
 import me.senseiwells.arucas.values.Value;
 
 import java.util.LinkedList;

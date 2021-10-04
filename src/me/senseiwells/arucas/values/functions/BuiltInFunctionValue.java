@@ -1,10 +1,11 @@
-package me.senseiwells.arucas.values;
+package me.senseiwells.arucas.values.functions;
 
 import me.senseiwells.arucas.throwables.Error;
 import me.senseiwells.arucas.throwables.ErrorRuntime;
 import me.senseiwells.arucas.core.Run;
 import me.senseiwells.arucas.throwables.ThrowStop;
 import me.senseiwells.arucas.throwables.ThrowValue;
+import me.senseiwells.arucas.values.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -18,21 +19,21 @@ public class BuiltInFunctionValue extends BaseFunctionValue {
 
     private static final Set<BuiltInFunctionValue> builtInFunctionSet = new HashSet<>();
 
-    public Function function;
+    public FunctionDefinition function;
     public List<String> argumentNames;
 
-    public BuiltInFunctionValue(String name, List<String> argumentNames, Function function) {
+    public BuiltInFunctionValue(String name, List<String> argumentNames, FunctionDefinition function) {
         super(name);
         this.function = function;
         this.argumentNames = argumentNames;
         builtInFunctionSet.add(this);
     }
 
-    public BuiltInFunctionValue(String name, String argument, Function function) {
+    public BuiltInFunctionValue(String name, String argument, FunctionDefinition function) {
         this(name, List.of(argument), function);
     }
 
-    public BuiltInFunctionValue(String name, Function function) {
+    public BuiltInFunctionValue(String name, FunctionDefinition function) {
         this(name, new LinkedList<>(), function);
     }
 
@@ -62,17 +63,21 @@ public class BuiltInFunctionValue extends BaseFunctionValue {
             }
             return new NullValue();
         });
+
         new BuiltInFunctionValue("stop", (function) -> {
             throw new ThrowStop();
         });
+
         new BuiltInFunctionValue("debug", "boolean", (function) -> {
             Run.debug = (boolean) function.getValueForType(BooleanValue.class, 0).value;
             return new NullValue();
         });
+
         new BuiltInFunctionValue("print", "printValue", (function) -> {
             System.out.println(function.getValueFromTable(function.argumentNames.get(0)));
             return new NullValue();
         });
+
         new BuiltInFunctionValue("sleep", "milliseconds", (function) -> {
             NumberValue numberValue = (NumberValue) function.getValueForType(NumberValue.class, 0);
             try {
@@ -83,6 +88,7 @@ public class BuiltInFunctionValue extends BaseFunctionValue {
             }
             return new NullValue();
         });
+
         new BuiltInFunctionValue("schedule", List.of("milliseconds", "function"), (function -> {
             NumberValue numberValue = (NumberValue) function.getValueForType(NumberValue.class, 0);
             BaseFunctionValue functionValue = (BaseFunctionValue) function.getValueForType(BaseFunctionValue.class, 1);
@@ -100,10 +106,42 @@ public class BuiltInFunctionValue extends BaseFunctionValue {
             thread.start();
             return new NullValue();
         }));
+
+
+
+
+        new BuiltInFunctionValue("random", "bound", (function) -> {
+            NumberValue numValue = (NumberValue) function.getValueForType(NumberValue.class, 0);
+            return new NumberValue(Math.round(numValue.value));
+        });
+
+        new BuiltInFunctionValue("round", "number", (function) -> {
+            NumberValue numValue = (NumberValue) function.getValueForType(NumberValue.class, 0);
+            return new NumberValue(Math.round(numValue.value));
+        });
+
+        new BuiltInFunctionValue("roundUp", "number", (function) -> {
+            NumberValue numValue = (NumberValue) function.getValueForType(NumberValue.class, 0);
+            return new NumberValue((float) Math.ceil(numValue.value));
+        });
+
+        new BuiltInFunctionValue("roundDown", "number", (function) -> {
+            NumberValue numValue = (NumberValue) function.getValueForType(NumberValue.class, 0);
+            return new NumberValue((float) Math.floor(numValue.value));
+        });
+
+        new BuiltInFunctionValue("getTime", (function) -> new StringValue(DateTimeFormatter.ofPattern("HH:mm:ss").format(LocalTime.now())));
+
+        new BuiltInFunctionValue("isString", "value", (function) -> function.isType(StringValue.class));
+        new BuiltInFunctionValue("isNumber", "value", (function) -> function.isType(NumberValue.class));
+        new BuiltInFunctionValue("isBoolean", "value", (function) -> function.isType(BooleanValue.class));
+        new BuiltInFunctionValue("isFunction", "value", (function) -> function.isType(BaseFunctionValue.class));
+        new BuiltInFunctionValue("isList", "value", (function) -> function.isType(ListValue.class));
+
+        // Injecting method here
+
         return builtInFunctionSet;
     }
-
-
 
     @Override
     public Value<?> execute(List<Value<?>> arguments) throws Error {
@@ -112,12 +150,6 @@ public class BuiltInFunctionValue extends BaseFunctionValue {
         return this.function.execute(this);
         /*
         switch (this.function) {
-            case RUN -> this.run();
-            case STOP -> throw new ThrowStop();
-            case DEBUG -> Run.debug = (boolean) this.getValueForType(BooleanValue.class, 0).value;
-            case PRINT -> this.print();
-            case SLEEP -> this.sleep();
-            case SCHEDULE -> this.schedule();
             case RANDOM -> returnValue = this.random();
             case ROUND -> returnValue = this.round();
             case ROUND_UP -> returnValue = this.roundUp();
@@ -198,11 +230,11 @@ public class BuiltInFunctionValue extends BaseFunctionValue {
         NumberValue numValue = (NumberValue) this.getValueForType(NumberValue.class, 0);
         return new NumberValue((float) Math.floor(numValue.value));
     }
-
+    */
     private BooleanValue isType(Class<?> classInstance) {
-        return new BooleanValue(classInstance.isInstance(this.getValueFromTable(this.function.getArgument(0))));
+        return new BooleanValue(classInstance.isInstance(this.getValueFromTable(this.argumentNames.get(0))));
     }
-
+    /*
     private Value<?> modifyListIndex(boolean delete) throws Error {
         ListValue listValue = (ListValue) this.getValueForType(ListValue.class, 0);
         NumberValue numberValue = (NumberValue) this.getValueForType(NumberValue.class, 1);

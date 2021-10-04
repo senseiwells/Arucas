@@ -1,7 +1,7 @@
 package me.senseiwells.arucas.utils;
 
 import me.senseiwells.arucas.values.BooleanValue;
-import me.senseiwells.arucas.values.BuiltInFunctionValue;
+import me.senseiwells.arucas.values.functions.BuiltInFunctionValue;
 import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
 

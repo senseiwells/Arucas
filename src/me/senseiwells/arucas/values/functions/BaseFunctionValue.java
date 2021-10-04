@@ -1,10 +1,11 @@
-package me.senseiwells.arucas.values;
+package me.senseiwells.arucas.values.functions;
 
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.throwables.Error;
 import me.senseiwells.arucas.throwables.ErrorRuntime;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.SymbolTable;
+import me.senseiwells.arucas.values.Value;
 
 import java.util.List;
 

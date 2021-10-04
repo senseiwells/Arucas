@@ -6,8 +6,8 @@ import me.senseiwells.arucas.utils.Interpreter;
 import me.senseiwells.arucas.utils.SymbolTable;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.tokens.ValueToken;
-import me.senseiwells.arucas.values.BuiltInFunctionValue;
-import me.senseiwells.arucas.values.FunctionValue;
+import me.senseiwells.arucas.values.functions.BuiltInFunctionValue;
+import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
 

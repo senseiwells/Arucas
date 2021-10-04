@@ -1,10 +1,12 @@
-package me.senseiwells.arucas.values;
+package me.senseiwells.arucas.values.functions;
 
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.throwables.Error;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.Interpreter;
 import me.senseiwells.arucas.nodes.Node;
+import me.senseiwells.arucas.values.NullValue;
+import me.senseiwells.arucas.values.Value;
 
 import java.util.List;
 
