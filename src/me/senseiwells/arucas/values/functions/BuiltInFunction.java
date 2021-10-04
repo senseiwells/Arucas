@@ -52,7 +52,7 @@ public class BuiltInFunction extends FunctionValue {
 
     public static Set<BuiltInFunction> initialiseBuiltInFunctions() {
         new BuiltInFunction("run", "path", (function) -> {
-            StringValue stringValue = (StringValue) function.getValueForType(StringValue.class, 0);
+            StringValue stringValue = (StringValue) function.getValueForType(StringValue.class, 0, null);
             String fileName = stringValue.value;
             try {
                 String fileContent = Files.readString(Path.of(fileName));
@@ -69,7 +69,7 @@ public class BuiltInFunction extends FunctionValue {
         });
 
         new BuiltInFunction("debug", "boolean", (function) -> {
-            Run.debug = (boolean) function.getValueForType(BooleanValue.class, 0).value;
+            Run.debug = (boolean) function.getValueForType(BooleanValue.class, 0, null).value;
             return new NullValue();
         });
 
@@ -79,7 +79,7 @@ public class BuiltInFunction extends FunctionValue {
         });
 
         new BuiltInFunction("sleep", "milliseconds", (function) -> {
-            NumberValue numberValue = (NumberValue) function.getValueForType(NumberValue.class, 0);
+            NumberValue numberValue = (NumberValue) function.getValueForType(NumberValue.class, 0, null);
             try {
                 Thread.sleep(numberValue.value.longValue());
             }
@@ -90,8 +90,8 @@ public class BuiltInFunction extends FunctionValue {
         });
 
         new BuiltInFunction("schedule", List.of("milliseconds", "function"), (function -> {
-            NumberValue numberValue = (NumberValue) function.getValueForType(NumberValue.class, 0);
-            FunctionValue functionValue = (FunctionValue) function.getValueForType(FunctionValue.class, 1);
+            NumberValue numberValue = (NumberValue) function.getValueForType(NumberValue.class, 0, null);
+            FunctionValue functionValue = (FunctionValue) function.getValueForType(FunctionValue.class, 1, null);
             Thread thread = new Thread(() -> {
                 try {
                     Thread.sleep(numberValue.value.longValue());
@@ -108,22 +108,22 @@ public class BuiltInFunction extends FunctionValue {
         }));
 
         new BuiltInFunction("random", "bound", (function) -> {
-            NumberValue numValue = (NumberValue) function.getValueForType(NumberValue.class, 0);
+            NumberValue numValue = (NumberValue) function.getValueForType(NumberValue.class, 0, null);
             return new NumberValue(Math.round(numValue.value));
         });
 
         new BuiltInFunction("round", "number", (function) -> {
-            NumberValue numValue = (NumberValue) function.getValueForType(NumberValue.class, 0);
+            NumberValue numValue = (NumberValue) function.getValueForType(NumberValue.class, 0, null);
             return new NumberValue(Math.round(numValue.value));
         });
 
         new BuiltInFunction("roundUp", "number", (function) -> {
-            NumberValue numValue = (NumberValue) function.getValueForType(NumberValue.class, 0);
+            NumberValue numValue = (NumberValue) function.getValueForType(NumberValue.class, 0, null);
             return new NumberValue((float) Math.ceil(numValue.value));
         });
 
         new BuiltInFunction("roundDown", "number", (function) -> {
-            NumberValue numValue = (NumberValue) function.getValueForType(NumberValue.class, 0);
+            NumberValue numValue = (NumberValue) function.getValueForType(NumberValue.class, 0, null);
             return new NumberValue((float) Math.floor(numValue.value));
         });
 
@@ -152,10 +152,10 @@ public class BuiltInFunction extends FunctionValue {
         return new BooleanValue(classInstance.isInstance(this.getValueFromTable(this.argumentNames.get(0))));
     }
 
-    public Value<?> getValueForType(Class<?> clazz, int index) throws Error {
+    public Value<?> getValueForType(Class<?> clazz, int index, String additionalInfo) throws Error {
         Value<?> value = this.getValueFromTable(this.argumentNames.get(index));
         if (!(clazz.isInstance(value)))
-            throw this.throwInvalidParameterError("Must pass " + clazz.getSimpleName() + " into parameter " + (index + 1) + " for " + this.value + "()");
+            throw this.throwInvalidParameterError("Must pass " + clazz.getSimpleName() + " into parameter " + (index + 1) + " for " + this.value + "()" + (additionalInfo == null ? "" : "\n" + additionalInfo));
         return value;
     }
 
