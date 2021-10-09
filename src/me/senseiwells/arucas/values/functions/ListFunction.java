@@ -13,10 +13,6 @@ public class ListFunction extends BuiltInFunction {
         super(name, List.of("list", argument), function);
     }
 
-    public ListFunction(String name, FunctionDefinition function) {
-        super(name, "list", function);
-    }
-
     public static void initialiseListFunctions() {
         new ListFunction("getIndex", "index", function -> modifyListIndex(function, false));
         new ListFunction("removeIndex", "index", function -> modifyListIndex(function, true));
@@ -33,11 +29,6 @@ public class ListFunction extends BuiltInFunction {
             ListValue list2 = (ListValue) function.getValueForType(ListValue.class, 1, null);
             list1.value.addAll(list2.value);
             return list1;
-        });
-
-        new ListFunction("len", function -> {
-            ListValue listValue = (ListValue) function.getValueForType(ListValue.class, 0, null);
-            return new NumberValue(listValue.value.size());
         });
     }
 
