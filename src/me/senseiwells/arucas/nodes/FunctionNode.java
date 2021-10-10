@@ -8,7 +8,6 @@ import me.senseiwells.arucas.values.functions.BuiltInFunction;
 import me.senseiwells.arucas.values.functions.UserDefinedFunction;
 import me.senseiwells.arucas.values.Value;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class FunctionNode extends Node {

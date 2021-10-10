@@ -1,5 +1,6 @@
 package me.senseiwells.arucas.utils;
 
+@SuppressWarnings("all")
 public class StringUtils {
 	/**
 	 * Convertes all instances of <code>[\'] [\"] [\\] [\r] [\n] [\b] [\t] [\x..] [&bsol;u....]</code> to the correct character.
@@ -18,7 +19,7 @@ public class StringUtils {
 			
 			if(escape) {
 				escape = false;
-				
+
 				switch(c) {
 					case '\'': case '\"': case '\\': sb.append(c); break;
 					case '0': sb.append('\0'); break;
@@ -30,15 +31,15 @@ public class StringUtils {
 						if(i + 3 > string.length()) {
 							throw new RuntimeException("(index:" + i + ") Not enough characters for '\\x..' escape.");
 						}
-						
+
 						String hex = string.substring(i + 1, i + 3);
-						
+
 						try {
 							sb.append((char)(int)Integer.valueOf(hex, 16));
 						} catch(NumberFormatException e) {
 							throw new RuntimeException("(index:" + i + ") Invalid escape '\\x" + hex + "'");
 						}
-						
+
 						i += 2;
 						break;
 					}
@@ -46,19 +47,19 @@ public class StringUtils {
 						if(i + 5 > string.length()) {
 							throw new RuntimeException("(index:" + i + ") Not enough characters for '\\u....' escape.");
 						}
-						
+
 						String hex = string.substring(i + 1, i + 5);
-						
+
 						try {
 							sb.append((char)(int)Integer.valueOf(hex, 16));
 						} catch(NumberFormatException e) {
 							throw new RuntimeException("(index:" + i + ") Invalid escape '\\u" + hex + "'");
 						}
-						
+
 						i += 4;
 						break;
 					}
-					
+
 					default: {
 						throw new RuntimeException("(index:" + i + ") Invalid character escape '\\" + c + "'");
 					}
@@ -80,7 +81,7 @@ public class StringUtils {
 		
 		for(int i = 0; i < string.length(); i++) {
 			char c = string.charAt(i);
-			
+
 			switch(c) { // Normal escapes
 				case '\r': sb.append("\\r"); continue;
 				case '\n': sb.append("\\n"); continue;
@@ -110,7 +111,7 @@ public class StringUtils {
 	/**
 	 * Escapes a string so that it becomes regex safe.
 	 * @param	string
-	 * @return	
+	 * @return
 	 */
 	public static String regexEscape(String string) {
 		if(string == null) return null;
@@ -119,14 +120,14 @@ public class StringUtils {
 		
 		for(int i = 0; i < string.length(); i++) {
 			char c = string.charAt(i);
-			
+
 			switch(c) { // Normal escapes
 				case '\0': sb.append("\\0"); continue;
 				case '\n': sb.append("\\n"); continue;
 				case '\r': sb.append("\\r"); continue;
 				case '\t': sb.append("\\t"); continue;
 				case '\\': sb.append("\\\\"); continue;
-				
+
 				case '^': case '$': case '?': case '|':
 				case '*': case '/': case '+': case '.':
 				case '(': case ')': case '[': case ']':

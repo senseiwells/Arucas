@@ -1,12 +1,9 @@
 package me.senseiwells.arucas.core;
 
-import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.*;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.nodes.*;
 import me.senseiwells.arucas.tokens.Token;
-import me.senseiwells.arucas.values.Value;
-import me.senseiwells.arucas.values.functions.BuiltInFunction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +14,7 @@ public class Parser {
     private final List<Token> tokens;
     private int operatorTokenIndex;
     private Token currentToken;
-    private final Context context;
+    public final Context context;
 
     public Parser(List<Token> tokens, Context context) {
         this.tokens = tokens;
@@ -153,19 +150,16 @@ public class Parser {
         while (this.currentToken.type == Token.Type.SEMICOLON) {
             this.advance();
         }
-        
-        while (true) {
+
+        do {
             statements.add(this.statement());
-            
+
             while (this.currentToken.type == Token.Type.SEMICOLON) {
                 this.advance();
             }
-            
-            if(this.currentToken.type == Token.Type.RIGHT_CURLY_BRACKET
-            || this.currentToken.type == Token.Type.FINISH) {
-                break;
-            }
-        }
+
+        } while (this.currentToken.type != Token.Type.RIGHT_CURLY_BRACKET
+                && this.currentToken.type != Token.Type.FINISH);
         return new ListNode(statements, startPos, this.currentToken.endPos);
     }
 
@@ -214,7 +208,7 @@ public class Parser {
                     if (error.errorType != CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR)
                         throw error;
                     this.recede(this.operatorTokenIndex - cachedIndex);
-                    return new ReturnNode(null, startPos, this.currentToken.endPos);
+                    return new ReturnNode(new NullNode(this.currentToken), startPos, this.currentToken.endPos);
                 }
             }
             case CONTINUE -> {

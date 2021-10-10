@@ -57,7 +57,7 @@ public class BuiltInFunction extends FunctionValue {
      *  Then at the bottom of this method call a method in your class that is similar to this
      */
     
-    public static Set<BuiltInFunction> initialiseBuiltInFunctions() {
+    public static void initialiseBuiltInFunctions() {
         builtInFunctionSet.addAll(Set.of(
             new BuiltInFunction("run", "path", function -> {
                 StringValue stringValue = (StringValue) function.getValueForType(StringValue.class, 0, null);
@@ -174,7 +174,6 @@ public class BuiltInFunction extends FunctionValue {
         // Injecting method here
         ListFunction.initialiseListFunctions();
 
-        return builtInFunctionSet;
     }
     
     public static Set<BuiltInFunction> getBuiltInFunctions() {

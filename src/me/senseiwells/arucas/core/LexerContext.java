@@ -26,19 +26,19 @@ public class LexerContext {
 	public LexerToken nextToken(String input) {
 		LexerRule selectedRule = null;
 		int longestRule = 1;
-		for(LexerRule rule : rules) {
+		for (LexerRule rule : rules) {
 			int length = rule.getMatchLength(input);
 			
-			if(length >= longestRule) {
+			if (length >= longestRule) {
 				longestRule = length;
 				selectedRule = rule;
 			}
 		}
 		
-		return selectedRule == null ? null:new LexerToken(selectedRule.type, input.substring(0, longestRule));
+		return selectedRule == null ? null : new LexerToken(selectedRule.type, input.substring(0, longestRule));
 	}
 	
-	public class LexerToken {
+	public static class LexerToken {
 		public final Token.Type type;
 		public final String content;
 		public final int length;
@@ -49,8 +49,9 @@ public class LexerContext {
 			this.length = content.length();
 		}
 	}
-	
-	public class LexerRule {
+
+	@SuppressWarnings("UnusedReturnValue")
+	public static class LexerRule {
 		public final List<Pattern> matches;
 		public final Token.Type type;
 		
