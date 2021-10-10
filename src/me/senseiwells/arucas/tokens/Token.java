@@ -5,31 +5,40 @@ import me.senseiwells.arucas.utils.Position;
 public class Token {
 
     public Type type;
+    public String content;
     public Position startPos;
     public Position endPos;
 
-    public Token(Type type, Position startPos, Position endPos) {
+    public Token(Type type, String content, Position startPos, Position endPos) {
         this.type = type;
+        this.content = content;
         this.startPos = startPos;
         this.endPos = endPos;
     }
+    
+    public Token(Type type, Position startPos, Position endPos) {
+        this(type, "", startPos, endPos);
+    }
 
     public Token(Type type, Position startPos) {
-        this(type, startPos, startPos.copy());
+        this(type, "", startPos, startPos.copy());
         this.endPos.advance(null);
     }
 
     @Override
     public String toString() {
-        return "Token{" + "type=" + this.type + '}';
+        return "Token{type=%s,content='%s'}".formatted(type, content);
     }
 
     public enum Type {
-
+        WHITESPACE,
+        
+        // Atoms
         INT,
         FLOAT,
         BOOLEAN,
         STRING,
+        NULL,
         LIST,
 
         PLUS,
@@ -41,11 +50,17 @@ public class Token {
         RIGHT_BRACKET,
         LEFT_SQUARE_BRACKET,
         RIGHT_SQUARE_BRACKET,
+        LEFT_CURLY_BRACKET,
+        RIGHT_CURLY_BRACKET,
 
         IDENTIFIER,
         KEYWORD,
         ASSIGN_OPERATOR,
-
+        
+        NOT,
+        AND,
+        OR,
+        
         EQUALS,
         NOT_EQUALS,
         LESS_THAN,
@@ -53,7 +68,19 @@ public class Token {
         LESS_THAN_EQUAL,
         MORE_THAN_EQUAL,
         COMMA,
-        NEW_LINE,
+        SEMICOLON,
+        
+        IF,
+        WHILE,
+        ELSE,
+        THEN,
+        CONTINUE,
+        BREAK,
+        VAR,
+        CONST,
+        RETURN,
+        FUN,
+        END,
 
         FINISH;
 

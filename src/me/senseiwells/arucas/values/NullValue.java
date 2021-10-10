@@ -19,7 +19,7 @@ public class NullValue extends Value<Object> {
 
     @Override
     public Value<?> copy() {
-        return new NullValue().setContext(this.context).setPos(this.startPos, this.endPos);
+        return this;
     }
 
     @Override

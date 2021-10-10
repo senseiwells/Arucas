@@ -1,17 +1,17 @@
 package me.senseiwells.arucas.nodes;
 
+import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.Interpreter;
-import me.senseiwells.arucas.tokens.Token;
-import me.senseiwells.arucas.values.NumberValue;
+import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
 
-public class NumberNode extends Node {
-    public final NumberValue value;
+public class NullNode extends Node {
+    public final NullValue value;
     
-    public NumberNode(Token token) {
+    public NullNode(Token token) {
         super(token);
-        this.value = new NumberValue(Float.parseFloat(token.content));
+        this.value = new NullValue();
         this.value.setPos(this.startPos, this.endPos);
     }
 

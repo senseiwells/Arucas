@@ -4,7 +4,7 @@ import me.senseiwells.arucas.throwables.Error;
 import me.senseiwells.arucas.throwables.ErrorRuntime;
 import me.senseiwells.arucas.tokens.Token;
 
-public class NumberValue extends Value<Float>{
+public class NumberValue extends Value<Float> {
 
     public NumberValue(float value) {
         super(value);

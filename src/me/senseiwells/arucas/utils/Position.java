@@ -6,14 +6,12 @@ public class Position {
     public int line;
     public int column;
     public final String fileName;
-    public final String fileText;
-
-    public Position(int index, int line, int column, String fileName, String fileText) {
+    
+    public Position(int index, int line, int column, String fileName) {
         this.index = index;
         this.line = line;
         this.column = column;
         this.fileName = fileName;
-        this.fileText = fileText;
     }
 
     public Position advance(Character currentCharacter) {
@@ -34,6 +32,6 @@ public class Position {
     }
 
     public Position copy() {
-        return new Position(this.index, this.line, this.column, this.fileName, this.fileText);
+        return new Position(this.index, this.line, this.column, this.fileName);
     }
 }

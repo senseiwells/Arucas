@@ -1,11 +1,11 @@
 package me.senseiwells.arucas.nodes;
 
+import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.throwables.Error;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.Interpreter;
 import me.senseiwells.arucas.utils.Position;
-import me.senseiwells.arucas.tokens.KeyWordToken;
 import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
 
@@ -14,7 +14,7 @@ public class ReturnNode extends Node {
     Node returnNode;
 
     public ReturnNode(Node returnNode, Position startPos, Position endPos) {
-        super(new KeyWordToken(KeyWordToken.KeyWord.RETURN, startPos, endPos));
+        super(new Token(Token.Type.RETURN, startPos, endPos));
         this.returnNode = returnNode;
     }
 
