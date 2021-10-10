@@ -1,7 +1,7 @@
 package me.senseiwells.arucas.values;
 
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.throwables.Error;
+import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.utils.Position;
 
 public abstract class Value<T> {
@@ -15,19 +15,19 @@ public abstract class Value<T> {
         this.value = value;
     }
 
-    public Value<?> setPos(Position startPos, Position endPos) {
+    public Value<T> setPos(Position startPos, Position endPos) {
         this.startPos = startPos;
         this.endPos = endPos;
         return this;
     }
 
-    public Value<?> setContext(Context context) {
+    public Value<T> setContext(Context context) {
         this.context = context;
         return this;
     }
 
-    public Value<?> addTo(Value<?> other) throws Error {
-        throw new Error(Error.ErrorType.ILLEGAL_OPERATION_ERROR, "The 'add' operator cannot be applied to " + this + " and " + other, this.startPos, this.endPos);
+    public Value<?> addTo(Value<?> other) throws CodeError {
+        throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "The 'add' operator cannot be applied to " + this + " and " + other, this.startPos, this.endPos);
     }
 
     public BooleanValue isEqual(Value<?> other) {

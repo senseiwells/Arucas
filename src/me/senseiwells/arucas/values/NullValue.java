@@ -6,20 +6,19 @@ public class NullValue extends Value<Object> {
         super(null);
     }
 
-    //Must override these methods since 'null' isn't an object, so it cannot call .equals
     @Override
     public BooleanValue isEqual(Value<?> other) {
-        return (BooleanValue) new BooleanValue(this.value == other.value).setContext(this.context);
+        return (BooleanValue) new BooleanValue(other.value == null).setContext(this.context);
     }
 
     @Override
     public BooleanValue isNotEqual(Value<?> other) {
-        return (BooleanValue) new BooleanValue(this.value != other.value).setContext(this.context);
+        return (BooleanValue) new BooleanValue(other.value != null).setContext(this.context);
     }
 
     @Override
     public Value<?> copy() {
-        return this;
+        return new NullValue().setPos(this.startPos, this.endPos).setContext(this.context);
     }
 
     @Override

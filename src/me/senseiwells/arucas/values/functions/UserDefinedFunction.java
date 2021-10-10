@@ -1,7 +1,7 @@
 package me.senseiwells.arucas.values.functions;
 
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.throwables.Error;
+import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.Interpreter;
 import me.senseiwells.arucas.nodes.Node;
@@ -21,7 +21,7 @@ public class UserDefinedFunction extends FunctionValue {
         this.argumentNames = argumentNames;
     }
 
-    public Value<?> execute(List<Value<?>> arguments) throws Error {
+    public Value<?> execute(List<Value<?>> arguments) throws CodeError {
         Interpreter interpreter = new Interpreter();
         Context context = this.generateNewContext();
         this.checkAndPopulateArguments(arguments, this.argumentNames, context);

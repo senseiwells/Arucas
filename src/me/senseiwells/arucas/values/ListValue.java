@@ -9,7 +9,7 @@ public class ListValue extends Value<List<Value<?>>> {
     }
 
     @Override
-    public Value<?> copy() {
-        return new ListValue(this.value).setContext(this.context).setPos(this.startPos, this.endPos);
+    public Value<List<Value<?>>> copy() {
+        return new ListValue(this.value).setPos(this.startPos, this.endPos).setContext(this.context);
     }
 }

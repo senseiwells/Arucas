@@ -3,7 +3,7 @@ package me.senseiwells.arucas.throwables;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.Position;
 
-public class ErrorRuntime extends Error {
+public class ErrorRuntime extends CodeError {
 
     public Context context;
 
@@ -17,7 +17,7 @@ public class ErrorRuntime extends Error {
         Position pos = this.startPos;
         Context context = this.context;
         while (context != null) {
-            result.insert(0, "File: " + pos.fileName + ", Line: " + (pos.line + 1) + ", In: " + context.displayName + "\n");
+            result.insert(0, "File: %s, Line: %d, Column: %d, In: %s\n".formatted(pos.fileName, pos.line + 1, pos.column + 1, context.displayName));
             pos = context.parentEntryPosition;
             context = context.parent;
         }
@@ -26,8 +26,6 @@ public class ErrorRuntime extends Error {
 
     @Override
     public String toString() {
-        String error = this.generateTraceback();
-        error += this.errorType.stringName + " - " +  "'" + this.getMessage() +  "'";
-        return error;
+        return "%s%s - '%s'".formatted(this.generateTraceback(), this.errorType.stringName, this.getMessage());
     }
 }

@@ -1,24 +1,17 @@
 package me.senseiwells.arucas.utils;
 
-import me.senseiwells.arucas.values.BooleanValue;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
-import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class SymbolTable {
-
-    public HashMap<String, Value<?>> symbolMap;
+    public Map<String, Value<?>> symbolMap;
     public SymbolTable parent;
-    public List<String> constants;
 
     public SymbolTable(SymbolTable parent) {
         this.symbolMap = new HashMap<>();
         this.parent = parent;
-        this.constants = new LinkedList<>();
     }
 
     public SymbolTable() {
@@ -28,12 +21,11 @@ public class SymbolTable {
     public SymbolTable setDefaultSymbols(Context context) {
         if (!this.symbolMap.isEmpty())
             return this;
-        this.set("true", new BooleanValue(true).setContext(context));
-        this.set("false", new BooleanValue(false).setContext(context));
-        this.set("null", new NullValue().setContext(context));
-        for (BuiltInFunction function : BuiltInFunction.initialiseBuiltInFunctions()) {
+        
+        for (BuiltInFunction function : BuiltInFunction.getBuiltInFunctions()) {
             this.set(function.value, function.setContext(context));
         }
+        
         return this;
     }
 
@@ -43,41 +35,17 @@ public class SymbolTable {
             return this.parent.get(name);
         return value;
     }
+    
+    public boolean has(String name) {
+        return this.symbolMap.containsKey(name) || (this.parent != null && this.parent.has(name));
+    }
 
     public void set(String name, Value<?> value) {
-        this.symbolMap.put(name, value);
-    }
-
-    public void setConstant(String name, Value<?> value) {
-        this.constants.add(name);
-        this.symbolMap.put(name, value);
-    }
-
-    public boolean isConstant(String name) {
-        for (String constant : this.constants)
-            if (constant.equals(name))
-                return true;
-        return false;
-    }
-
-    public enum Literal {
-
-        TRUE("true"),
-        FALSE("false"),
-        NULL("null");
-
-        String name;
-
-        Literal(String name) {
-            this.name = name;
+        if(!this.symbolMap.containsKey(name) && has(name)) {
+            this.parent.set(name, value);
+            return;
         }
-
-        public static Literal stringToLiteral(String word) {
-            for (Literal value : Literal.values()) {
-                if (word.equals(value.name))
-                    return value;
-            }
-            return null;
-        }
+        
+        this.symbolMap.put(name, value);
     }
 }

@@ -1,6 +1,6 @@
 package me.senseiwells.arucas.utils;
 
-public final class StringUtils {
+public class StringUtils {
 	/**
 	 * Convertes all instances of <code>[\'] [\"] [\\] [\r] [\n] [\b] [\t] [\x..] [&bsol;u....]</code> to the correct character.
 	 * 

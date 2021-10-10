@@ -8,7 +8,6 @@ import me.senseiwells.arucas.utils.Position;
 import me.senseiwells.arucas.values.Value;
 
 public class BreakNode extends Node {
-
     public BreakNode(Position startPos, Position endPos) {
         super(new Token(Token.Type.BREAK, startPos, endPos));
     }
