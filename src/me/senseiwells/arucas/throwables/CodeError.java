@@ -2,25 +2,25 @@ package me.senseiwells.arucas.throwables;
 
 import me.senseiwells.arucas.utils.Position;
 
-public class Error extends Throwable {
+public class CodeError extends Exception {
 
-    public ErrorType errorType;
+    public final ErrorType errorType;
     public final Position startPos;
     public final Position endPos;
-
-
-    public Error(ErrorType errorType, String details, Position startPos, Position endPos) {
+    
+    public CodeError(ErrorType errorType, String details, Position startPos, Position endPos) {
         super(details);
         this.errorType = errorType;
         this.startPos = startPos;
         this.endPos = endPos;
     }
-
+    
     @Override
     public String toString() {
-        String error = this.errorType.stringName + " - " +  "'" + this.getMessage() +  "'";
-        error += "\nFile: " + this.startPos.fileName + ", Line: " + (this.startPos.line + 1);
-        return error;
+        return "%s - '%s'\nFile: %s, Line: %d, Column: %d".formatted(
+            this.errorType.stringName, this.getMessage(),
+            this.startPos.fileName, this.startPos.line + 1, this.startPos.column + 1
+        );
     }
 
     public enum ErrorType {
@@ -30,7 +30,6 @@ public class Error extends Throwable {
         ILLEGAL_OPERATION_ERROR ("Illegal Operation Error"),
         EXPECTED_CHAR_ERROR     ("Expected Character Error"),
         RUNTIME_ERROR           ("Runtime Error"),
-        CAUGHT_ERROR            ("Caught Error"),
         STOP                    ("Program stopped");
 
         public String stringName;

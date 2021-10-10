@@ -1,7 +1,7 @@
 package me.senseiwells.arucas.nodes;
 
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.throwables.Error;
+import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.Interpreter;
 import me.senseiwells.arucas.tokens.Token;
@@ -10,7 +10,6 @@ import me.senseiwells.arucas.values.NumberValue;
 import me.senseiwells.arucas.values.Value;
 
 public class BinaryOperatorNode extends Node {
-
     public final Node leftNode;
     public final Node rightNode;
 
@@ -21,7 +20,7 @@ public class BinaryOperatorNode extends Node {
     }
 
     @Override
-    public Value<?> visit(Interpreter interpreter, Context context) throws Error, ThrowValue {
+    public Value<?> visit(Interpreter interpreter, Context context) throws CodeError, ThrowValue {
         Value<?> left = interpreter.visit(this.leftNode, context);
         Value<?> right = interpreter.visit(this.rightNode, context);
         try {
@@ -37,18 +36,18 @@ public class BinaryOperatorNode extends Node {
                 case LESS_THAN, LESS_THAN_EQUAL, MORE_THAN, MORE_THAN_EQUAL -> result = ((NumberValue) left).compareNumber((NumberValue) right, this.token.type);
                 case AND -> result = ((BooleanValue) left).isAnd((BooleanValue) right);
                 case OR -> result = ((BooleanValue) left).isOr((BooleanValue) right);
-                default -> throw new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected an operator", this.startPos, this.endPos);
+                default -> throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected an operator", this.startPos, this.endPos);
             }
             return result.setPos(this.startPos, this.endPos);
         }
         //When you try to use an operator that doesn't work e.g. true/false
         catch (ClassCastException classCastException) {
-            throw new Error(Error.ErrorType.ILLEGAL_OPERATION_ERROR, "The operation '" + this.token.type + "' cannot be applied to '" + left.value + "' and '" + right.value + "'", this.startPos, this.endPos);
+            throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "The operation '" + this.token.type + "' cannot be applied to '" + left.value + "' and '" + right.value + "'", this.startPos, this.endPos);
         }
     }
 
     @Override
     public String toString() {
-        return '(' + this.leftNode.toString() + " " + this.token.toString() + " " + this.rightNode + ')';
+        return "(%s %s %s)".formatted(this.leftNode, this.token, this.rightNode);
     }
 }

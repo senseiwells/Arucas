@@ -1,6 +1,6 @@
 package me.senseiwells.arucas.throwables;
 
-public class ThrowStop extends Error {
+public class ThrowStop extends CodeError {
 
     public ThrowStop() {
         super(ErrorType.STOP, null, null, null);

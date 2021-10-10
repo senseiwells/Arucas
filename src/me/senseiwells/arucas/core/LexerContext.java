@@ -35,11 +35,7 @@ public class LexerContext {
 			}
 		}
 		
-		if(selectedRule == null) {
-			return new LexerToken(Token.Type.WHITESPACE, " ");
-		}
-		
-		return new LexerToken(selectedRule.type, input.substring(0, longestRule));
+		return selectedRule == null ? null:new LexerToken(selectedRule.type, input.substring(0, longestRule));
 	}
 	
 	public class LexerToken {

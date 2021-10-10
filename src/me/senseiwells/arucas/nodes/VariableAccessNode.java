@@ -20,9 +20,4 @@ public class VariableAccessNode extends Node {
         value.setPos(this.startPos, this.endPos);
         return value;
     }
-
-    public boolean hasValue(Context context) {
-        Value<?> value = context.symbolTable.get(this.token.content);
-        return value != null;
-    }
 }

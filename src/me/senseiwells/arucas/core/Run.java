@@ -1,7 +1,7 @@
 package me.senseiwells.arucas.core;
 
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.throwables.Error;
+import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.Interpreter;
 import me.senseiwells.arucas.utils.SymbolTable;
@@ -31,14 +31,14 @@ public class Run {
                 if (debug)
                     System.out.println(values);
             }
-            catch (Error e) {
+            catch (CodeError e) {
                 String error = e.toString();
                 System.out.println(error);
             }
         }
     }
 
-    public static Value<?> run(String fileName, String line) throws Error {
+    public static Value<?> run(String fileName, String line) throws CodeError {
         String[] fileNameRoot = fileName.split("/");
         Context context = new Context(fileNameRoot[fileNameRoot.length - 1], null, null);
         context.symbolTable = fileName.equals("System.in") ? symbolTable.setDefaultSymbols(context) : new SymbolTable().setDefaultSymbols(context);
@@ -50,7 +50,7 @@ public class Run {
             return new Interpreter().visit(nodeResult, context);
         }
         catch (ThrowValue tv) {
-            throw new Error(Error.ErrorType.ILLEGAL_OPERATION_ERROR, "Cannot use keywords 'break' or 'continue' outside loop, and cannot use 'return' outside function", nodeResult.startPos, nodeResult.endPos);
+            throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "Cannot use keywords 'break' or 'continue' outside loop, and cannot use 'return' outside function", nodeResult.startPos, nodeResult.endPos);
         }
     }
 }

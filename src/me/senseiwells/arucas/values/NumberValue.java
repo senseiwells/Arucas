@@ -1,19 +1,19 @@
 package me.senseiwells.arucas.values;
 
-import me.senseiwells.arucas.throwables.Error;
+import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ErrorRuntime;
 import me.senseiwells.arucas.tokens.Token;
 
-public class NumberValue extends Value<Float> {
+public class NumberValue extends Value<Double> {
 
-    public NumberValue(float value) {
+    public NumberValue(double value) {
         super(value);
     }
 
     @Override
-    public Value<Float> addTo(Value<?> other) throws Error {
+    public NumberValue addTo(Value<?> other) throws CodeError {
         if (!(other instanceof NumberValue otherValue))
-            throw new Error(Error.ErrorType.ILLEGAL_OPERATION_ERROR, "The 'add' operator cannot be applied to " + this + " and " + other, this.startPos, this.endPos);
+            throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "The 'add' operator cannot be applied to " + this + " and " + other, this.startPos, this.endPos);
         return (NumberValue) new NumberValue(this.value + otherValue.value).setContext(this.context);
     }
 
@@ -32,9 +32,10 @@ public class NumberValue extends Value<Float> {
     }
 
     public NumberValue powerBy(NumberValue other) throws ErrorRuntime {
-        if (this.value < 0 && other.value < 1)
+        if (this.value < 0 && (other.value % 1) != 0)
             throw new ErrorRuntime("You cannot calculate imaginary numbers", other.startPos, other.endPos, context);
-        return (NumberValue) new NumberValue((float) Math.pow(this.value, other.value)).setContext(this.context);
+        
+        return (NumberValue) new NumberValue(Math.pow(this.value, other.value)).setContext(this.context);
     }
 
     public BooleanValue compareNumber(NumberValue other, Token.Type type) {
@@ -50,7 +51,7 @@ public class NumberValue extends Value<Float> {
     }
 
     @Override
-    public Value<?> copy() {
+    public Value<Double> copy() {
         return new NumberValue(this.value).setPos(this.startPos, this.endPos).setContext(this.context);
     }
 }

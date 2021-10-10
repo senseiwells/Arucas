@@ -1,7 +1,7 @@
 package me.senseiwells.arucas.values.functions;
 
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.throwables.Error;
+import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ErrorRuntime;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.SymbolTable;
@@ -10,7 +10,6 @@ import me.senseiwells.arucas.values.Value;
 import java.util.List;
 
 public abstract class FunctionValue extends Value<String> {
-
     public FunctionValue(String name) {
         super(name);
     }
@@ -47,11 +46,11 @@ public abstract class FunctionValue extends Value<String> {
         return this.context.symbolTable.get(key);
     }
 
-    public Error throwInvalidParameterError(String details) {
-        return new Error(Error.ErrorType.ILLEGAL_SYNTAX_ERROR, details, this.startPos, this.endPos);
+    public CodeError throwInvalidParameterError(String details) {
+        return new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, details, this.startPos, this.endPos);
     }
 
-    public abstract Value<?> execute(List<Value<?>> arguments) throws Error, ThrowValue;
+    public abstract Value<?> execute(List<Value<?>> arguments) throws CodeError, ThrowValue;
 
     @Override
     public abstract Value<?> copy();

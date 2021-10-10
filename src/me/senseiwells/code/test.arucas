@@ -7,11 +7,17 @@ var valueList = ["foo", 89, true, "bar", null, false, 3.14, "baz"];
 var stringList = [];
 var iterator = 0;
 
+fun testThings(t) {
+    var test = t();
+    print("Testing: " + stringOf(test));
+}
+
 while (len(valueList) > iterator) {
     var value = getIndex(valueList, iterator);
     if (isString(value)) {
         append(stringList, value);
     }
+    var test = testThings(fun() { return value; });
     iterator = iterator + 1;
 }
 print(stringList);

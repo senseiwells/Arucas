@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.senseiwells.arucas.utils.Position;
-import me.senseiwells.arucas.throwables.Error;
+import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.tokens.Token.Type;
 
@@ -72,7 +72,6 @@ public class Lexer {
             .addRule(Type.BREAK, i -> i.addString("break"))
             .addRule(Type.RETURN, i -> i.addString("return"))
             .addRule(Type.VAR, i -> i.addString("var"))
-            .addRule(Type.CONST, i -> i.addString("const"))
             .addRule(Type.FUN, i -> i.addString("fun"))
         ;
     }
@@ -85,7 +84,7 @@ public class Lexer {
         this.fileName = fileName;
     }
     
-    public List<Token> createTokens() throws Error {
+    public List<Token> createTokens() throws CodeError {
         List<Token> tokenList = new ArrayList<>();
         int offset = 0;
         int line = 0;
@@ -95,6 +94,12 @@ public class Lexer {
         
         while(offset < length) {
             LexerContext.LexerToken lexerToken = LEXER.nextToken(input);
+            
+            if(lexerToken == null) {
+                Position errorPos = new Position(offset, line, column, fileName);
+                throw new CodeError(CodeError.ErrorType.ILLEGAL_CHAR_ERROR, "Invalid character", errorPos, errorPos);
+            }
+            
             if(lexerToken.length + offset > length) break;
             
             int old_offset = offset;
@@ -113,21 +118,12 @@ public class Lexer {
             }
             
             if(lexerToken.type != Type.WHITESPACE) {
-                Token token;
-                tokenList.add(token = new Token(
+                tokenList.add(new Token(
                     lexerToken.type,
                     lexerToken.content,
                     new Position(old_offset, old_line, old_column, fileName),
                     new Position(offset, line, column, fileName)
                 ));
-                
-                if(lexerToken.type == Type.RIGHT_CURLY_BRACKET) {
-                    tokenList.add(new Token(
-                        Type.SEMICOLON,
-                        new Position(offset, line, column, fileName),
-                        new Position(offset, line, column, fileName)
-                    ));
-                }
             }
             
             input = input.substring(lexerToken.length);
