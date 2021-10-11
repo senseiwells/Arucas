@@ -65,7 +65,7 @@ public class Lexer {
             
             // Keywords
             .addRule(Type.IF, i -> i.addString("if"))
-            .addRule(Type.THEN, i -> i.addString("then"))
+            .addRule(Type.THEN, i -> i.addStrings("then", "->"))
             .addRule(Type.ELSE, i -> i.addString("else"))
             .addRule(Type.WHILE, i -> i.addString("while"))
             .addRule(Type.CONTINUE, i -> i.addString("continue"))
@@ -92,7 +92,7 @@ public class Lexer {
         int length = text.length();
         String input = text;
         
-        while(offset < length) {
+        while (offset < length) {
             LexerContext.LexerToken lexerToken = LEXER.nextToken(input);
             
             if(lexerToken == null) {
@@ -100,19 +100,21 @@ public class Lexer {
                 throw new CodeError(CodeError.ErrorType.ILLEGAL_CHAR_ERROR, "Invalid character", errorPos, errorPos);
             }
             
-            if(lexerToken.length + offset > length) break;
+            if (lexerToken.length + offset > length)
+                break;
             
             int old_offset = offset;
             int old_line = line;
             int old_column = column;
             
-            for(int i = offset; i < offset + lexerToken.length; i++) {
+            for (int i = offset; i < offset + lexerToken.length; i++) {
                 char c = text.charAt(i);
                 
-                if(c == '\n') {
+                if (c == '\n') {
                     line ++;
                     column = 0;
-                } else {
+                }
+                else {
                     column ++;
                 }
             }

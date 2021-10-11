@@ -1,23 +1,36 @@
-//const path = "E:/Java/Projects/Arucas/src/me/senseiwells/code/test.arucas";
+// run("D:/Java/Arucas/src/me/senseiwells/code/test.arucas");
 // run("C:/Users/Admin/git/Arucas/src/me/senseiwells/code/test.arucas");
 
-// Lets sort this list for only strings
+// Lets sort this list for only realstrings
 
-var valueList = ["foo", 89, true, "bar", null, false, 3.14, "baz"];
-var stringList = [];
-var iterator = 0;
+/* 
+This is a multiline comment
+You can write whatever you want in here
+And it won't get read
+*/
+
+valueList = ["foo", 89, true, "bar", null, "3.14", false, 3.14, "baz"];
+stringList = [];
+iterator = 0;
 
 fun testThings(t) {
-    var test = t();
+    //insideFunction = "this is defined inside the function";
+    print(insideFunction);
+    test = t();
     print("Testing: " + stringOf(test));
+    return "fun";
 }
 
+insideFunction = "this is outside";
+
 while (len(valueList) > iterator) {
-    var value = getIndex(valueList, iterator);
-    if (isString(value)) {
+    sleep(1000);
+    value = getIndex(valueList, iterator);
+    if (isString(value) && numberOf(value) == null) {
         append(stringList, value);
     }
-    var test = testThings(fun() { return value; });
+    test = testThings(fun() { return value; });
+    print(test);
     iterator = iterator + 1;
 }
 print(stringList);

@@ -6,6 +6,7 @@ import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.Interpreter;
 import me.senseiwells.arucas.utils.Position;
 import me.senseiwells.arucas.tokens.Token;
+import me.senseiwells.arucas.utils.SymbolTable;
 import me.senseiwells.arucas.values.Value;
 
 public abstract class Node {

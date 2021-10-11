@@ -92,7 +92,12 @@ public class BuiltInFunction extends FunctionValue {
                     Thread.sleep(numberValue.value.longValue());
                 }
                 catch (InterruptedException e) {
-                    throw new CodeError(CodeError.ErrorType.RUNTIME_ERROR, "An error occurred while trying to call 'sleep()'", function.startPos, function.endPos);
+                    throw new CodeError(
+                            CodeError.ErrorType.RUNTIME_ERROR,
+                            "An error occurred while trying to call 'sleep()'",
+                            function.startPos,
+                            function.endPos
+                    );
                 }
                 return new NullValue();
             }),
@@ -160,6 +165,17 @@ public class BuiltInFunction extends FunctionValue {
             new BuiltInFunction("stringOf", "value", function -> {
                 Value<?> value = function.getValueFromTable(function.argumentNames.get(0));
                 return new StringValue(value.toString());
+            }),
+
+            new BuiltInFunction("numberOf", "value", function -> {
+                Value<?> stringValue = function.getValueFromTable(function.argumentNames.get(0));
+                try {
+                    return new NumberValue(Double.parseDouble(stringValue.toString()));
+                }
+                catch (NumberFormatException e) {
+                    // If you throw error then you cannot check whether a string can be converted to a num
+                    return new NullValue();
+                }
             }),
     
             new BuiltInFunction("getTime", (function) -> new StringValue(DateTimeFormatter.ofPattern("HH:mm:ss").format(LocalTime.now()))),
