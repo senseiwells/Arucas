@@ -47,8 +47,8 @@ public class BuiltInFunction extends FunctionValue {
         return false;
     }
     
-    public static void addBuiltInFunctions(Set<ListFunction> listFunctions) {
-        builtInFunctionSet.addAll(listFunctions);
+    public static void addBuiltInFunctions(Set<BuiltInFunction> builtInFunctions) {
+        builtInFunctionSet.addAll(builtInFunctions);
     }
     
     /**
