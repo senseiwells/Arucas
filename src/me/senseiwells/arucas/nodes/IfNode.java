@@ -22,6 +22,10 @@ public class IfNode extends Node {
 
     @Override
     public Value<?> visit() throws CodeError, ThrowValue {
+        if (this.conditionNode instanceof NullNode && !(this.elseNode instanceof NullNode)) {
+            this.elseNode.visit();
+            return new NullValue().setContext(this.context);
+        }
         Value<?> conditionalValue = this.conditionNode.visit();
         if (!(conditionalValue instanceof BooleanValue booleanValue))
             throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "Condition must result in either 'true' or 'false'", this.startPos, this.endPos);
