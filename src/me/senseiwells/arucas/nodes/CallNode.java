@@ -3,7 +3,6 @@ package me.senseiwells.arucas.nodes;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
-import me.senseiwells.arucas.utils.Interpreter;
 import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.Value;
@@ -14,13 +13,6 @@ import java.util.List;
 public class CallNode extends Node {
     public final List<Node> argumentNodes;
     public final Node callNode;
-
-    @Deprecated
-    public CallNode(Node callNode, List<Node> argumentNodes) {
-        super(callNode.token, callNode.startPos, argumentNodes.size() > 0 ? argumentNodes.get(argumentNodes.size() - 1).endPos : callNode.endPos, null);
-        this.argumentNodes = argumentNodes;
-        this.callNode = callNode;
-    }
 
     public CallNode(Node callNode, List<Node> argumentNodes, Context context) {
         super(callNode.token, callNode.startPos, argumentNodes.size() > 0 ? argumentNodes.get(argumentNodes.size() - 1).endPos : callNode.endPos, context);

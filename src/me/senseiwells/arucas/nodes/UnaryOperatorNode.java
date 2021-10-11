@@ -3,7 +3,6 @@ package me.senseiwells.arucas.nodes;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
-import me.senseiwells.arucas.utils.Interpreter;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.values.BooleanValue;
 import me.senseiwells.arucas.values.NumberValue;
@@ -11,12 +10,6 @@ import me.senseiwells.arucas.values.Value;
 
 public class UnaryOperatorNode extends Node {
     public final Node node;
-
-    @Deprecated
-    public UnaryOperatorNode(Token token, Node node) {
-        super(token, null);
-        this.node = node;
-    }
 
     public UnaryOperatorNode(Token token, Node node, Context context) {
         super(token, context);

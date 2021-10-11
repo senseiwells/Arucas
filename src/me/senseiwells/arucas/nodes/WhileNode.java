@@ -3,7 +3,6 @@ package me.senseiwells.arucas.nodes;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
-import me.senseiwells.arucas.utils.Interpreter;
 import me.senseiwells.arucas.values.BooleanValue;
 import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
@@ -11,13 +10,6 @@ import me.senseiwells.arucas.values.Value;
 public class WhileNode extends Node {
     public final Node condition;
     public final Node body;
-
-    @Deprecated
-    public WhileNode(Node condition, Node body) {
-        super(condition.token, condition.startPos, body.endPos, null);
-        this.condition = condition;
-        this.body = body;
-    }
 
     public WhileNode(Node condition, Node body, Context context) {
         super(condition.token, condition.startPos, body.endPos, context);

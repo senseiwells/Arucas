@@ -14,12 +14,6 @@ import java.util.List;
 public class ListNode extends Node {
     public final List<Node> elementNodes;
 
-    @Deprecated
-    public ListNode(List<Node> elementNodes, Position posStart, Position posEnd) {
-        super(new Token(Token.Type.LIST, posStart, posEnd), null);
-        this.elementNodes = elementNodes;
-    }
-
     public ListNode(List<Node> elementNodes, Position posStart, Position posEnd, Context context) {
         super(new Token(Token.Type.LIST, posStart, posEnd), context);
         this.elementNodes = elementNodes;
