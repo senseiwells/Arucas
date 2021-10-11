@@ -12,20 +12,25 @@ import me.senseiwells.arucas.values.Value;
 public class UnaryOperatorNode extends Node {
     public final Node node;
 
+    @Deprecated
     public UnaryOperatorNode(Token token, Node node) {
-        super(token);
+        super(token, null);
+        this.node = node;
+    }
+
+    public UnaryOperatorNode(Token token, Node node, Context context) {
+        super(token, context);
         this.node = node;
     }
 
     @Override
-    public Value<?> visit(Interpreter interpreter, Context context) throws CodeError, ThrowValue {
-        Value<?> value = interpreter.visit(this.node, context);
+    public Value<?> visit() throws CodeError, ThrowValue {
+        Value<?> value = this.node.visit();
         try {
             switch(this.token.type) {
                 case MINUS -> value = ((NumberValue) value).multiplyBy(new NumberValue(-1));
                 case NOT -> value = ((BooleanValue) value).not();
             }
-            
             return value.setPos(node.startPos, node.endPos);
         }
         catch (ClassCastException classCastException) {

@@ -6,12 +6,12 @@ import me.senseiwells.arucas.values.Value;
 import java.util.*;
 
 public class SymbolTable {
-    public Map<String, Value<?>> symbolMap;
-    public SymbolTable parent;
+    private final Map<String, Value<?>> symbolMap;
+    public SymbolTable parentTable;
 
     public SymbolTable(SymbolTable parent) {
         this.symbolMap = new HashMap<>();
-        this.parent = parent;
+        this.parentTable = parent;
     }
 
     public SymbolTable() {
@@ -31,21 +31,29 @@ public class SymbolTable {
 
     public Value<?> get(String name) {
         Value<?> value = this.symbolMap.get(name);
-        if (value == null && this.parent != null)
-            return this.parent.get(name);
+        if (value == null && this.parentTable != null)
+            return this.parentTable.get(name);
         return value;
     }
     
-    public boolean has(String name) {
-        return this.symbolMap.containsKey(name) || (this.parent != null && this.parent.has(name));
+    public SymbolTable getParent(String name) {
+        SymbolTable parentTable = this.parentTable;
+        if (parentTable != null) {
+            if (parentTable.get(name) != null) {
+                return parentTable;
+            }
+            else
+                return parentTable.getParent(name);
+        }
+        return null;
     }
 
     public void set(String name, Value<?> value) {
-        if(!this.symbolMap.containsKey(name) && has(name)) {
-            this.parent.set(name, value);
+        SymbolTable parentTable = this.getParent(name);
+        if (parentTable == null) {
+            this.symbolMap.put(name, value);
             return;
         }
-        
-        this.symbolMap.put(name, value);
+        parentTable.symbolMap.put(name, value);
     }
 }

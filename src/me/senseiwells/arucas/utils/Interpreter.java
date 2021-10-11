@@ -7,7 +7,8 @@ import me.senseiwells.arucas.values.Value;
 
 public class Interpreter {
 
+    @Deprecated
     public Value<?> visit(Node node, Context context) throws CodeError, ThrowValue {
-        return node.visit(this, context);
+        return node.visit();
     }
 }

@@ -9,15 +9,22 @@ import me.senseiwells.arucas.values.Value;
 
 public class StringNode extends Node {
     public final StringValue value;
-    
+
+    @Deprecated
     public StringNode(Token token) {
-        super(token);
+        super(token, null);
+        this.value = new StringValue(StringUtils.unescapeString(token.content.substring(1, token.content.length() - 1)));
+        this.value.setPos(this.startPos, this.endPos);
+    }
+
+    public StringNode(Token token, Context context) {
+        super(token, context);
         this.value = new StringValue(StringUtils.unescapeString(token.content.substring(1, token.content.length() - 1)));
         this.value.setPos(this.startPos, this.endPos);
     }
 
     @Override
-    public Value<?> visit(Interpreter interpreter, Context context) {
-        return value.setContext(context);
+    public Value<?> visit() {
+        return value.setContext(this.context);
     }
 }

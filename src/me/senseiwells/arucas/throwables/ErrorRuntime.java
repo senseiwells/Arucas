@@ -19,7 +19,7 @@ public class ErrorRuntime extends CodeError {
         while (context != null) {
             result.insert(0, "File: %s, Line: %d, Column: %d, In: %s\n".formatted(pos.fileName, pos.line + 1, pos.column + 1, context.displayName));
             pos = context.parentEntryPosition;
-            context = context.parent;
+            context = context.parentContext;
         }
         return "Traceback (most recent call last): \n" + result;
     }

@@ -22,11 +22,9 @@ public class UserDefinedFunction extends FunctionValue {
     }
 
     public Value<?> execute(List<Value<?>> arguments) throws CodeError {
-        Interpreter interpreter = new Interpreter();
-        Context context = this.generateNewContext();
-        this.checkAndPopulateArguments(arguments, this.argumentNames, context);
+        this.checkAndPopulateArguments(arguments, this.argumentNames, this.bodyNode.context);
         try {
-            interpreter.visit(this.bodyNode, context);
+            this.bodyNode.visit();
             return new NullValue();
         }
         catch (ThrowValue tv) {

@@ -14,7 +14,7 @@ public class Parser {
     private final List<Token> tokens;
     private int operatorTokenIndex;
     private Token currentToken;
-    public final Context context;
+    public Context context;
 
     public Parser(List<Token> tokens, Context context) {
         this.tokens = tokens;
@@ -61,7 +61,7 @@ public class Parser {
                 throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected a ')'", this.currentToken.startPos, this.currentToken.endPos);
         }
         this.advance();
-        return new CallNode(atom, argumentNodes);
+        return new CallNode(atom, argumentNodes, this.context);
     }
 
     private Node atom() throws CodeError {
@@ -69,23 +69,23 @@ public class Parser {
         switch (token.type) {
             case IDENTIFIER -> {
                 this.advance();
-                return new VariableAccessNode(token);
+                return new VariableAccessNode(token, this.context);
             }
             case FLOAT -> {
                 this.advance();
-                return new NumberNode(token);
+                return new NumberNode(token, this.context);
             }
             case BOOLEAN -> {
                 this.advance();
-                return new BooleanNode(token);
+                return new BooleanNode(token, this.context);
             }
             case STRING -> {
                 this.advance();
-                return new StringNode(token);
+                return new StringNode(token, this.context);
             }
             case NULL -> {
                 this.advance();
-                return new NullNode(token);
+                return new NullNode(token, this.context);
             }
             case LEFT_BRACKET -> {
                 this.advance();
@@ -112,7 +112,7 @@ public class Parser {
         if (token.type == Token.Type.PLUS || token.type == Token.Type.MINUS) {
             this.advance();
             Node factor = this.factor();
-            return new UnaryOperatorNode(token, factor);
+            return new UnaryOperatorNode(token, factor, this.context);
         }
         return this.power();
     }
@@ -123,7 +123,7 @@ public class Parser {
             Token operatorToken = this.currentToken;
             this.advance();
             Node right = this.factor();
-            left = new BinaryOperatorNode(left, operatorToken, right);
+            left = new BinaryOperatorNode(left, operatorToken, right, this.context);
         }
         return left;
     }
@@ -134,7 +134,7 @@ public class Parser {
             Token operatorToken = this.currentToken;
             this.advance();
             Node right = this.factor();
-            left = new BinaryOperatorNode(left, operatorToken, right);
+            left = new BinaryOperatorNode(left, operatorToken, right, this.context);
         }
         return left;
     }
@@ -142,25 +142,19 @@ public class Parser {
     private Node statements() throws CodeError {
         List<Node> statements = new ArrayList<>();
         Position startPos = this.currentToken.startPos;
-        
-        if(this.currentToken.type == Token.Type.FINISH) {
-            return new NullNode(this.currentToken);
+        if (this.currentToken.type == Token.Type.FINISH) {
+            return new NullNode(this.currentToken, this.context);
         }
-        
         while (this.currentToken.type == Token.Type.SEMICOLON) {
             this.advance();
         }
-
         do {
             statements.add(this.statement());
-
-            while (this.currentToken.type == Token.Type.SEMICOLON) {
+            while (this.currentToken.type == Token.Type.SEMICOLON)
                 this.advance();
-            }
-
-        } while (this.currentToken.type != Token.Type.RIGHT_CURLY_BRACKET
-                && this.currentToken.type != Token.Type.FINISH);
-        return new ListNode(statements, startPos, this.currentToken.endPos);
+        }
+        while (this.currentToken.type != Token.Type.RIGHT_CURLY_BRACKET && this.currentToken.type != Token.Type.FINISH);
+        return new ListNode(statements, startPos, this.currentToken.endPos, this.context);
     }
 
     private Node statement() throws CodeError {
@@ -168,9 +162,11 @@ public class Parser {
         switch(this.currentToken.type) {
             case LEFT_CURLY_BRACKET -> {
                 this.advance();
+                this.context = this.generateNewContext();
                 Node statement = this.statements();
                 if (this.currentToken.type != Token.Type.RIGHT_CURLY_BRACKET)
                     throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected '}'", this.currentToken.startPos, this.currentToken.endPos);
+                this.context = this.context.parentContext;
                 this.advance();
                 return statement;
             }
@@ -202,13 +198,13 @@ public class Parser {
                 int cachedIndex = this.operatorTokenIndex;
                 try {
                     Node expression = this.expression();
-                    return new ReturnNode(expression, startPos, this.currentToken.endPos);
+                    return new ReturnNode(expression, startPos, this.currentToken.endPos, this.context);
                 }
                 catch (CodeError error) {
                     if (error.errorType != CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR)
                         throw error;
                     this.recede(this.operatorTokenIndex - cachedIndex);
-                    return new ReturnNode(new NullNode(this.currentToken), startPos, this.currentToken.endPos);
+                    return new ReturnNode(new NullNode(this.currentToken, this.context), startPos, this.currentToken.endPos, this.context);
                 }
             }
             case CONTINUE -> {
@@ -231,7 +227,7 @@ public class Parser {
             this.advance();
             if (this.currentToken.type == Token.Type.ASSIGN_OPERATOR) {
                 this.advance();
-                return new VariableAssignNode(cachedToken, this.expression());
+                return new VariableAssignNode(cachedToken, this.expression(), this.context);
             }
             this.recede();
         }
@@ -241,7 +237,7 @@ public class Parser {
             Token operatorToken = this.currentToken;
             this.advance();
             Node right = this.comparisonExpression();
-            left = new BinaryOperatorNode(left, operatorToken, right);
+            left = new BinaryOperatorNode(left, operatorToken, right, this.context);
         }
         return left;
     }
@@ -256,7 +252,7 @@ public class Parser {
             throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected an assignment operator", this.currentToken.startPos, this.currentToken.endPos);
         this.advance();
         Node expression = this.expression();
-        return new VariableAssignNode(token, expression);
+        return new VariableAssignNode(token, expression, this.context);
     }
 
     private Node comparisonExpression() throws CodeError {
@@ -264,14 +260,14 @@ public class Parser {
             Token token = this.currentToken;
             this.advance();
             Node node = this.comparisonExpression();
-            return new UnaryOperatorNode(token, node);
+            return new UnaryOperatorNode(token, node, this.context);
         }
         Node left = this.arithmeticExpression();
         while (this.currentToken.type.isTypeInSet(Set.of(Token.Type.EQUALS, Token.Type.NOT_EQUALS, Token.Type.LESS_THAN, Token.Type.LESS_THAN_EQUAL, Token.Type.MORE_THAN, Token.Type.MORE_THAN_EQUAL))) {
             Token operatorToken = this.currentToken;
             this.advance();
             Node right = this.arithmeticExpression();
-            left = new BinaryOperatorNode(left, operatorToken, right);
+            left = new BinaryOperatorNode(left, operatorToken, right, this.context);
         }
         return left;
     }
@@ -282,53 +278,33 @@ public class Parser {
             Token operatorToken = this.currentToken;
             this.advance();
             Node right = this.term();
-            left = new BinaryOperatorNode(left, operatorToken, right);
+            left = new BinaryOperatorNode(left, operatorToken, right, this.context);
         }
         return left;
     }
 
     private Node ifExpression() throws CodeError {
-        var allCases = this.ifExpressionCases();
-        return new IfNode(allCases.getValue1(), allCases.getValue2());
-    }
-
-    private TwoValues<List<ThreeValues<Node, Node, Boolean>>, TwoValues<Node, Boolean>> ifExpressionCases() throws CodeError {
-        List<ThreeValues<Node, Node, Boolean>> cases = new ArrayList<>();
-        TwoValues<Node, Boolean> elseCase;
         if (this.currentToken.type != Token.Type.IF)
             throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected '" + Token.Type.IF + "'", this.currentToken.startPos, this.currentToken.endPos);
         this.advance();
         if (this.currentHasNoBracket())
             throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected 'if (...)'", this.currentToken.startPos, this.currentToken.endPos);
         Node condition = this.expression();
-        switch (this.currentToken.type) {
-            case LEFT_CURLY_BRACKET -> {
-                this.advance();
-                Node statement = this.statements();
-                cases.add(new ThreeValues<>(condition, statement, true));
-                if (this.currentToken.type != Token.Type.RIGHT_CURLY_BRACKET)
-                    throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected '}'", this.currentToken.startPos, this.currentToken.endPos);
-                this.advance();
-                var allCases = this.elseExpression();
-                elseCase = allCases.getValue2();
-                cases.addAll(allCases.getValue1());
-            }
-            case THEN -> {
-                this.advance();
-                Node expression = this.statement();
-                cases.add(new ThreeValues<>(condition, expression, false));
-                var allCases = this.elseExpression();
-                elseCase = allCases.getValue2();
-                cases.addAll(allCases.getValue1());
-            }
-            default -> throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected 'then','->', or '{'", this.currentToken.startPos, this.currentToken.endPos);
-        }
-        return new TwoValues<>(cases, elseCase);
+        if (this.currentToken.type != Token.Type.LEFT_CURLY_BRACKET)
+            throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected '{'", this.currentToken.startPos, this.currentToken.endPos);
+        this.context = this.generateNewContext();
+        Context ifContext = this.context;
+        this.advance();
+        Node statement = this.statements();
+        if (this.currentToken.type != Token.Type.RIGHT_CURLY_BRACKET)
+            throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected '}'", this.currentToken.startPos, this.currentToken.endPos);
+        this.context = this.context.parentContext;
+        this.advance();
+        var elseNode = this.elseExpression();
+        return new IfNode(condition, statement, elseNode, ifContext);
     }
 
-    private TwoValues<List<ThreeValues<Node, Node, Boolean>>, TwoValues<Node, Boolean>> elseExpression() throws CodeError {
-        List<ThreeValues<Node, Node, Boolean>> cases = new ArrayList<>();
-        TwoValues<Node, Boolean> elseCase;
+    private Node elseExpression() throws CodeError {
         int reverse = 0;
         while (this.currentToken.type == Token.Type.SEMICOLON) {
             this.advance();
@@ -338,31 +314,25 @@ public class Parser {
             this.advance();
             switch (this.currentToken.type) {
                 case IF -> {
-                    var allCases = this.ifExpressionCases();
-                    cases = allCases.getValue1();
-                    elseCase = allCases.getValue2();
-                    return new TwoValues<>(cases, elseCase);
+                    return this.ifExpression();
                 }
                 case LEFT_CURLY_BRACKET -> {
+                    this.context = this.generateNewContext();
                     this.advance();
                     Node statement = this.statements();
-                    elseCase = new TwoValues<>(statement, true);
                     if (this.currentToken.type != Token.Type.RIGHT_CURLY_BRACKET)
                         throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected '}'", this.currentToken.startPos, this.currentToken.endPos);
                     this.advance();
-                    return new TwoValues<>(cases, elseCase);
+                    Node nullNode = new NullNode(this.currentToken, this.context);
+                    Node ifNode = new IfNode(nullNode, nullNode, statement, this.context);
+                    this.context = this.context.parentContext;
+                    return ifNode;
                 }
-                case THEN -> {
-                    this.advance();
-                    Node expression = this.statement();
-                    elseCase = new TwoValues<>(expression, false);
-                    return new TwoValues<>(cases, elseCase);
-                }
-                default -> throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected 'then','->', or '{'", this.currentToken.startPos, this.currentToken.endPos);
+                default -> throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected '{'", this.currentToken.startPos, this.currentToken.endPos);
             }
         }
         this.recede(reverse);
-        return new TwoValues<>(cases, null);
+        return new NullNode(this.currentToken, this.context);
     }
 
     private Node whileExpression() throws CodeError {
@@ -372,15 +342,19 @@ public class Parser {
         Node condition = this.expression();
         if (this.currentToken.type != Token.Type.LEFT_CURLY_BRACKET)
             throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected '{'", this.currentToken.startPos, this.currentToken.endPos);
+        this.context = this.generateNewContext();
         this.advance();
         Node statement = this.statements();
         if (this.currentToken.type != Token.Type.RIGHT_CURLY_BRACKET)
             throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected '}'", this.currentToken.startPos, this.currentToken.endPos);
         this.advance();
-        return new WhileNode(condition, statement);
+        Node whileNode = new WhileNode(condition, statement, this.context);
+        this.context = this.context.parentContext;
+        return whileNode;
     }
     
     private int functionLambdaIndex = 1;
+    //updated
     private Node functionDefinition(boolean isLambda) throws CodeError {
         List<Token> argumentNameTokens = new ArrayList<>();
         Token variableNameToken;
@@ -396,8 +370,6 @@ public class Parser {
                 throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected function name", this.currentToken.startPos, this.currentToken.endPos);
             }
         }
-        
-        
         if (this.currentHasNoBracket())
             throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected '(...)'", this.currentToken.startPos, this.currentToken.endPos);
         this.advance();
@@ -418,12 +390,15 @@ public class Parser {
         this.advance();
         if (this.currentToken.type != Token.Type.LEFT_CURLY_BRACKET)
             throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected '{'", this.currentToken.startPos, this.currentToken.endPos);
+        this.context = this.generateNewContext();
         this.advance();
         Node returnNode = this.statements();
         if (this.currentToken.type != Token.Type.RIGHT_CURLY_BRACKET)
             throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected '}'", this.currentToken.startPos, this.currentToken.endPos);
         this.advance();
-        return new FunctionNode(variableNameToken, argumentNameTokens, returnNode);
+        Node functionNode = new FunctionNode(variableNameToken, argumentNameTokens, returnNode, this.context);
+        this.context = this.context.parentContext;
+        return functionNode;
     }
 
     private Node listExpression() throws CodeError {
@@ -440,11 +415,19 @@ public class Parser {
                 throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected a ']'", this.currentToken.startPos, this.currentToken.endPos);
         }
         this.advance();
-        return new ListNode(elementList, startPos, this.currentToken.endPos);
+        return new ListNode(elementList, startPos, this.currentToken.endPos, this.context);
     }
 
 
     private boolean currentHasNoBracket() {
         return this.currentToken.type != Token.Type.LEFT_BRACKET;
+    }
+
+    private Context generateNewContext() {
+        this.recede();
+        Context context = new Context(this.currentToken.content, this.context, this.currentToken.startPos);
+        this.advance();
+        context.symbolTable = new SymbolTable(context.parentContext.symbolTable);
+        return context;
     }
  }

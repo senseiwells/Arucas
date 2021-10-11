@@ -1,4 +1,5 @@
 // run("D:/Java/Arucas/src/me/senseiwells/code/test.arucas");
+// run("E:/Java/Projects/Arucas/src/me/senseiwells/code/test.arucas");
 // run("C:/Users/Admin/git/Arucas/src/me/senseiwells/code/test.arucas");
 
 // Lets sort this list for only realstrings
@@ -14,23 +15,22 @@ stringList = [];
 iterator = 0;
 
 fun testThings(t) {
-    //insideFunction = "this is defined inside the function";
+    insideFunction = "this is defined inside the function";
     print(insideFunction);
     test = t();
     print("Testing: " + stringOf(test));
     return "fun";
 }
 
-insideFunction = "this is outside";
-
 while (len(valueList) > iterator) {
+    insideFunction = "this is outside";
     sleep(1000);
     value = getIndex(valueList, iterator);
     if (isString(value) && numberOf(value) == null) {
         append(stringList, value);
     }
     test = testThings(fun() { return value; });
-    print(test);
+    print(insideFunction);
     iterator = iterator + 1;
 }
 print(stringList);

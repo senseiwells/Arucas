@@ -8,15 +8,22 @@ import me.senseiwells.arucas.values.Value;
 
 public class NumberNode extends Node {
     public final NumberValue value;
-    
+
+    @Deprecated
     public NumberNode(Token token) {
-        super(token);
+        super(token, null);
+        this.value = new NumberValue(Double.parseDouble(token.content));
+        this.value.setPos(this.startPos, this.endPos);
+    }
+
+    public NumberNode(Token token, Context context) {
+        super(token, context);
         this.value = new NumberValue(Double.parseDouble(token.content));
         this.value.setPos(this.startPos, this.endPos);
     }
 
     @Override
-    public Value<?> visit(Interpreter interpreter, Context context) {
-        return value.setContext(context);
+    public Value<?> visit() {
+        return value.setContext(this.context);
     }
 }

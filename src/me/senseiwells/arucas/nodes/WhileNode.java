@@ -12,22 +12,29 @@ public class WhileNode extends Node {
     public final Node condition;
     public final Node body;
 
+    @Deprecated
     public WhileNode(Node condition, Node body) {
-        super(condition.token, condition.startPos, body.endPos);
+        super(condition.token, condition.startPos, body.endPos, null);
+        this.condition = condition;
+        this.body = body;
+    }
+
+    public WhileNode(Node condition, Node body, Context context) {
+        super(condition.token, condition.startPos, body.endPos, context);
         this.condition = condition;
         this.body = body;
     }
 
     @Override
-    public Value<?> visit(Interpreter interpreter, Context context) throws CodeError, ThrowValue {
+    public Value<?> visit() throws CodeError, ThrowValue {
         while (true) {
-            Value<?> conditionValue = interpreter.visit(this.condition, context);
+            Value<?> conditionValue = this.condition.visit();
             if (!(conditionValue instanceof BooleanValue booleanValue))
                 throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "Condition must result in either 'true' or 'false'", this.startPos, this.endPos);
             if (!booleanValue.value)
                 break;
             try {
-                interpreter.visit(this.body, context);
+                this.body.visit();
             }
             catch (ThrowValue tv) {
                 if (tv.shouldContinue)
@@ -36,7 +43,6 @@ public class WhileNode extends Node {
                     break;
             }
         }
-        
-        return new NullValue().setContext(context);
+        return new NullValue().setContext(this.context);
     }
 }

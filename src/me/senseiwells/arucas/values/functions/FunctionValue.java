@@ -16,7 +16,7 @@ public abstract class FunctionValue extends Value<String> {
 
     public Context generateNewContext() {
         Context context = new Context(this.value, this.context, this.startPos);
-        context.symbolTable = new SymbolTable(context.parent.symbolTable);
+        context.symbolTable = new SymbolTable(context.parentContext.symbolTable);
         return context;
     }
 

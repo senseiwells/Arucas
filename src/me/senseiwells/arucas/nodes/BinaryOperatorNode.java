@@ -3,7 +3,6 @@ package me.senseiwells.arucas.nodes;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
-import me.senseiwells.arucas.utils.Interpreter;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.values.BooleanValue;
 import me.senseiwells.arucas.values.NumberValue;
@@ -13,16 +12,16 @@ public class BinaryOperatorNode extends Node {
     public final Node leftNode;
     public final Node rightNode;
 
-    public BinaryOperatorNode(Node leftNode, Token operatorToken, Node rightNode) {
-        super(operatorToken, leftNode.startPos, rightNode.endPos);
+    public BinaryOperatorNode(Node leftNode, Token operatorToken, Node rightNode, Context context) {
+        super(operatorToken, leftNode.startPos, rightNode.endPos, context);
         this.leftNode = leftNode;
         this.rightNode = rightNode;
     }
 
     @Override
-    public Value<?> visit(Interpreter interpreter, Context context) throws CodeError, ThrowValue {
-        Value<?> left = interpreter.visit(this.leftNode, context);
-        Value<?> right = interpreter.visit(this.rightNode, context);
+    public Value<?> visit() throws CodeError, ThrowValue {
+        Value<?> left = this.leftNode.visit();
+        Value<?> right = this.rightNode.visit();
         try {
             Value<?> result;
             switch (this.token.type) {

@@ -7,15 +7,21 @@ import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.values.Value;
 
 public class VariableAccessNode extends Node {
+    @Deprecated
     public VariableAccessNode(Token token) {
-        super(token, token.startPos, token.endPos);
+        super(token, token.startPos, token.endPos, null);
     }
 
+    public VariableAccessNode(Token token, Context context) {
+        super(token, token.startPos, token.endPos, context);
+    }
+
+
     @Override
-    public Value<?> visit(Interpreter interpreter, Context context) throws ErrorRuntime {
-        Value<?> value = context.symbolTable.get(this.token.content);
+    public Value<?> visit() throws ErrorRuntime {
+        Value<?> value = this.context.symbolTable.get(this.token.content);
         if (value == null)
-            throw new ErrorRuntime(this.token.content + " is not defined", this.startPos, this.endPos, context);
+            throw new ErrorRuntime(this.token.content + " is not defined", this.startPos, this.endPos, this.context);
         value = value.copy();
         value.setPos(this.startPos, this.endPos);
         return value;

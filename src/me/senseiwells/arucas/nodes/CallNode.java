@@ -15,24 +15,31 @@ public class CallNode extends Node {
     public final List<Node> argumentNodes;
     public final Node callNode;
 
+    @Deprecated
     public CallNode(Node callNode, List<Node> argumentNodes) {
-        super(callNode.token, callNode.startPos, argumentNodes.size() > 0 ? argumentNodes.get(argumentNodes.size() - 1).endPos : callNode.endPos);
+        super(callNode.token, callNode.startPos, argumentNodes.size() > 0 ? argumentNodes.get(argumentNodes.size() - 1).endPos : callNode.endPos, null);
+        this.argumentNodes = argumentNodes;
+        this.callNode = callNode;
+    }
+
+    public CallNode(Node callNode, List<Node> argumentNodes, Context context) {
+        super(callNode.token, callNode.startPos, argumentNodes.size() > 0 ? argumentNodes.get(argumentNodes.size() - 1).endPos : callNode.endPos, context);
         this.argumentNodes = argumentNodes;
         this.callNode = callNode;
     }
 
     @Override
-    public Value<?> visit(Interpreter interpreter, Context context) throws CodeError, ThrowValue {
-        Value<?> callValue = interpreter.visit(this.callNode, context);
+    public Value<?> visit() throws CodeError, ThrowValue {
+        Value<?> callValue = this.callNode.visit();
         if (!(callValue instanceof FunctionValue))
-            return new NullValue().setContext(context);
+            return new NullValue().setContext(this.context);
         
         List<Value<?>> argumentValues = new ArrayList<>();
         for (Node node : this.argumentNodes)
-            argumentValues.add(interpreter.visit(node, context));
+            argumentValues.add(node.visit());
         
         callValue = callValue.copy().setPos(this.startPos, this.endPos);
         Value<?> functionValue = ((FunctionValue) callValue).execute(argumentValues);
-        return functionValue.setPos(this.startPos, this.endPos).setContext(context);
+        return functionValue.setPos(this.startPos, this.endPos).setContext(this.context);
     }
 }

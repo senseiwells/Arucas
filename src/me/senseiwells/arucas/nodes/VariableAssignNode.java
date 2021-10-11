@@ -11,18 +11,24 @@ import me.senseiwells.arucas.values.Value;
 public class VariableAssignNode extends Node {
     public final Node node;
 
+    @Deprecated
     public VariableAssignNode(Token token, Node node) {
-        super(token, token.startPos, token.endPos);
+        super(token, token.startPos, token.endPos, null);
+        this.node = node;
+    }
+
+    public VariableAssignNode(Token token, Node node, Context context) {
+        super(token, token.startPos, token.endPos, context);
         this.node = node;
     }
 
     @Override
-    public Value<?> visit(Interpreter interpreter, Context context) throws CodeError, ThrowValue {
+    public Value<?> visit() throws CodeError, ThrowValue {
         String name = this.token.content;
         if (BuiltInFunction.isFunction(name))
             throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "Cannot assign " + name + " value as it is a constant", this.startPos, this.endPos);
-        Value<?> value = interpreter.visit(this.node, context);
-        context.symbolTable.set(name, value);
+        Value<?> value = this.node.visit();
+        this.context.symbolTable.set(name, value);
         return value;
     }
 }
