@@ -29,8 +29,8 @@ while (len(valueList) > iterator) {
     testThings(fun() { 
         return value; 
     });
+    variable1();
     iterator = iterator + 1;
 }
-print(modulus(30, 3));
 
 //Expected list for stringList is ["foo", "bar", "baz"]
