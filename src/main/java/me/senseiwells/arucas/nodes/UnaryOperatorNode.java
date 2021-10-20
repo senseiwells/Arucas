@@ -20,7 +20,7 @@ public class UnaryOperatorNode extends Node {
     public Value<?> visit() throws CodeError, ThrowValue {
         Value<?> value = this.node.visit();
         try {
-            switch(this.token.type) {
+            switch (this.token.type) {
                 case MINUS -> value = ((NumberValue) value).multiplyBy(new NumberValue(-1));
                 case NOT -> value = ((BooleanValue) value).not();
             }

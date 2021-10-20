@@ -95,7 +95,7 @@ public class Lexer {
         while (offset < length) {
             LexerContext.LexerToken lexerToken = LEXER.nextToken(input);
             
-            if(lexerToken == null) {
+            if (lexerToken == null) {
                 Position errorPos = new Position(offset, line, column, fileName);
                 throw new CodeError(CodeError.ErrorType.ILLEGAL_CHAR_ERROR, "Invalid character", errorPos, errorPos);
             }
@@ -119,7 +119,7 @@ public class Lexer {
                 }
             }
             
-            if(lexerToken.type != Type.WHITESPACE) {
+            if (lexerToken.type != Type.WHITESPACE) {
                 tokenList.add(new Token(
                     lexerToken.type,
                     lexerToken.content,

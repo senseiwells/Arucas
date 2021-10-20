@@ -66,7 +66,7 @@ public class LexerContext {
 		}
 		
 		public LexerRule addStrings(String... values) {
-			for(String value : values)
+			for (String value : values)
 				addString(value);
 			return this;
 		}
@@ -77,7 +77,7 @@ public class LexerContext {
 		}
 		
 		public LexerRule addRegexes(String... regexes) {
-			for(String regex : regexes)
+			for (String regex : regexes)
 				addRegex(regex);
 			return this;
 		}
@@ -91,9 +91,10 @@ public class LexerContext {
 			String c = StringUtils.regexEscape(close);
 			
 			String regex;
-			if(escape.isEmpty()) {
+			if (escape.isEmpty()) {
 				regex = s + ".*?" + c;
-			} else {
+			}
+			else {
 				String e = StringUtils.regexEscape(escape);
 				regex = s + "(?:" + e + "(?:" + e + "|" + c + "|(?!" + c + ").)|(?!" + e + "|" + c + ").)*" + c;
 			}
@@ -104,9 +105,9 @@ public class LexerContext {
 		
 		public int getMatchLength(String string) {
 			int length = 0;
-			for(Pattern pattern : matches) {
+			for (Pattern pattern : matches) {
 				Matcher matcher = pattern.matcher(string);
-				if(matcher.lookingAt()) {
+				if (matcher.lookingAt()) {
 					length = Math.max(length, matcher.end());
 				}
 			}
