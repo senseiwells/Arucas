@@ -5,17 +5,17 @@ import me.senseiwells.arucas.values.Value;
 
 public class ThrowValue extends Exception {
 
-    public Value<?> returnValue;
-    public boolean shouldContinue;
-    public boolean shouldBreak;
+	public Value<?> returnValue;
+	public boolean shouldContinue;
+	public boolean shouldBreak;
 
-    public ThrowValue() {
-        this.reset();
-    }
+	public ThrowValue() {
+		this.reset();
+	}
 
-    private void reset() {
-        this.returnValue = new NullValue();
-        this.shouldContinue = false;
-        this.shouldBreak = false;
-    }
+	private void reset() {
+		this.returnValue = new NullValue();
+		this.shouldContinue = false;
+		this.shouldBreak = false;
+	}
 }

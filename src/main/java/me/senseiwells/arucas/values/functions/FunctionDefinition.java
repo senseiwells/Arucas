@@ -5,6 +5,6 @@ import me.senseiwells.arucas.values.Value;
 
 public interface FunctionDefinition {
 
-    Value<?> execute(BuiltInFunction builtInFunctionValue) throws CodeError;
+	Value<?> execute(BuiltInFunction builtInFunctionValue) throws CodeError;
 
 }

@@ -7,14 +7,14 @@ import me.senseiwells.arucas.utils.Position;
 import me.senseiwells.arucas.values.Value;
 
 public class ContinueNode extends Node {
-    public ContinueNode(Position startPos, Position endPos) {
-        super(new Token(Token.Type.CONTINUE, startPos, endPos), null);
-    }
+	public ContinueNode(Position startPos, Position endPos) {
+		super(new Token(Token.Type.CONTINUE, startPos, endPos), null);
+	}
 
-    @Override
-    public Value<?> visit() throws CodeError, ThrowValue {
-        ThrowValue value = new ThrowValue();
-        value.shouldContinue = true;
-        throw value;
-    }
+	@Override
+	public Value<?> visit() throws CodeError, ThrowValue {
+		ThrowValue value = new ThrowValue();
+		value.shouldContinue = true;
+		throw value;
+	}
 }

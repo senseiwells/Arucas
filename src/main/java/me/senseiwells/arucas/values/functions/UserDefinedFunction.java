@@ -10,28 +10,28 @@ import java.util.List;
 
 public class UserDefinedFunction extends FunctionValue {
 
-    Node bodyNode;
-    List<String> argumentNames;
+	Node bodyNode;
+	List<String> argumentNames;
 
-    public UserDefinedFunction(String name, Node bodyNode, List<String> argumentNames) {
-        super(name);
-        this.bodyNode = bodyNode;
-        this.argumentNames = argumentNames;
-    }
+	public UserDefinedFunction(String name, Node bodyNode, List<String> argumentNames) {
+		super(name);
+		this.bodyNode = bodyNode;
+		this.argumentNames = argumentNames;
+	}
 
-    public Value<?> execute(List<Value<?>> arguments) throws CodeError {
-        this.checkAndPopulateArguments(arguments, this.argumentNames, this.bodyNode.context);
-        try {
-            this.bodyNode.visit();
-            return new NullValue();
-        }
-        catch (ThrowValue tv) {
-            return tv.returnValue;
-        }
-    }
+	public Value<?> execute(List<Value<?>> arguments) throws CodeError {
+		this.checkAndPopulateArguments(arguments, this.argumentNames, this.bodyNode.context);
+		try {
+			this.bodyNode.visit();
+			return new NullValue();
+		}
+		catch (ThrowValue tv) {
+			return tv.returnValue;
+		}
+	}
 
-    @Override
-    public Value<?> copy() {
-        return new UserDefinedFunction(this.value, this.bodyNode, this.argumentNames).setPos(this.startPos, this.endPos).setContext(this.context);
-    }
+	@Override
+	public Value<?> copy() {
+		return new UserDefinedFunction(this.value, this.bodyNode, this.argumentNames).setPos(this.startPos, this.endPos).setContext(this.context);
+	}
 }

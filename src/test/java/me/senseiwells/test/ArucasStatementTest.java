@@ -67,13 +67,13 @@ public class ArucasStatementTest {
 	@Test(timeout = 1000)
 	public void testFunctionStatement() {
 		assertEquals("5050.0", ArucasHelper.runSafeFull(
-				"""
-				fun tail(sum, tail) {
-					if(tail == 0) return 0;
-					return tail(sum + tail, tail - 1);
-				}
-				X = tail(0, 100);
-				""", "X"
+			"""
+			fun tail(sum, tail) {
+				if(tail == 0) return 0;
+				return tail(sum + tail, tail - 1);
+			}
+			X = tail(0, 100);
+			""", "X"
 		));
 	}
 }
