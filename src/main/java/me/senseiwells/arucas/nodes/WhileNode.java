@@ -31,16 +31,13 @@ public class WhileNode extends Node {
 			try {
 				this.body.visit(context);
 			}
-			catch (ThrowValue tv) {
-				if (tv.shouldContinue) {
-					context.moveScope(context.symbolTable.getContinueScope());
-					continue;
-				}
-				if (tv.shouldBreak) {
-					context.moveScope(context.symbolTable.getBreakScope());
-					break;
-				}
-				throw tv;
+			catch (ThrowValue.Break tv) {
+				context.moveScope(context.getSymbolTable().getBreakScope());
+				break;
+			}
+			catch (ThrowValue.Continue tv) {
+				context.moveScope(context.getSymbolTable().getContinueScope());
+				continue;
 			}
 		}
 		

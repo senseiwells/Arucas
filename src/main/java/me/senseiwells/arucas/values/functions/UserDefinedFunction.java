@@ -10,9 +10,8 @@ import me.senseiwells.arucas.values.Value;
 import java.util.List;
 
 public class UserDefinedFunction extends FunctionValue {
-
-	Node bodyNode;
-	List<String> argumentNames;
+	private final Node bodyNode;
+	private final List<String> argumentNames;
 
 	public UserDefinedFunction(String name, Node bodyNode, List<String> argumentNames) {
 		super(name);

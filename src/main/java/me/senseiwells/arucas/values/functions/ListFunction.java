@@ -20,15 +20,15 @@ public class ListFunction extends BuiltInFunction {
 			new ListFunction("removeIndex", "index", function -> modifyListIndex(function, true)),
 	
 			new ListFunction("append", "value", function -> {
-				ListValue listValue = (ListValue) function.getValueForType(ListValue.class, 0, null);
+				ListValue listValue = function.getValueForType(ListValue.class, 0, null);
 				Value<?> value = function.getValueFromTable(function.argumentNames.get(1));
 				listValue.value.add(value);
 				return listValue;
 			}),
 	
 			new ListFunction("concat", "otherList", function -> {
-				ListValue list1 = (ListValue) function.getValueForType(ListValue.class, 0, null);
-				ListValue list2 = (ListValue) function.getValueForType(ListValue.class, 1, null);
+				ListValue list1 = function.getValueForType(ListValue.class, 0, null);
+				ListValue list2 = function.getValueForType(ListValue.class, 1, null);
 				list1.value.addAll(list2.value);
 				return list1;
 			})
@@ -36,8 +36,8 @@ public class ListFunction extends BuiltInFunction {
 	}
 
 	private static Value<?> modifyListIndex(BuiltInFunction function, boolean delete) throws CodeError {
-		ListValue listValue = (ListValue) function.getValueForType(ListValue.class, 0, null);
-		NumberValue numberValue = (NumberValue) function.getValueForType(NumberValue.class, 1, null);
+		ListValue listValue = function.getValueForType(ListValue.class, 0, null);
+		NumberValue numberValue = function.getValueForType(NumberValue.class, 1, null);
 		int index = numberValue.value.intValue();
 		if (index >= listValue.value.size() || index < 0)
 			throw function.throwInvalidParameterError("Parameter 2 is out of bounds");

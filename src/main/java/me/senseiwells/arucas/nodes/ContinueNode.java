@@ -14,8 +14,6 @@ public class ContinueNode extends Node {
 
 	@Override
 	public Value<?> visit(Context context) throws CodeError, ThrowValue {
-		ThrowValue value = new ThrowValue();
-		value.shouldContinue = true;
-		throw value;
+		throw new ThrowValue.Continue();
 	}
 }

@@ -54,8 +54,8 @@ public abstract class FunctionValue extends Value<String> {
 			context.popScope();
 			return value;
 		}
-		catch (ThrowValue tv) {
-			context.moveScope(context.symbolTable.getReturnScope());
+		catch (ThrowValue.Return tv) {
+			context.moveScope(context.getSymbolTable().getReturnScope());
 			context.popScope();
 			return tv.returnValue;
 		}
@@ -66,6 +66,6 @@ public abstract class FunctionValue extends Value<String> {
 
 	@Override
 	public String toString() {
-		return "<function " + this.value + ">";
+		return "<function %s>".formatted(this.value);
 	}
 }

@@ -33,7 +33,7 @@ public class ArucasHelper {
 	public static String runUnsafe(String syntax) throws CodeError, ThrowValue {
 		NodeContext nodeContext = compile("_run_value=(fun(){%s})();".formatted(syntax));
 		nodeContext.node.visit(nodeContext.context);
-		return Objects.toString(nodeContext.context.symbolTable.get("_run_value"));
+		return Objects.toString(nodeContext.context.getSymbolTable().get("_run_value"));
 	}
 	
 	public static String runSafe(String syntax) {
@@ -49,7 +49,7 @@ public class ArucasHelper {
 	public static String runUnsafeFull(String syntax, String resultVariable) throws CodeError, ThrowValue {
 		NodeContext nodeContext = compile(syntax);
 		nodeContext.node.visit(nodeContext.context);
-		return Objects.toString(nodeContext.context.symbolTable.get(resultVariable));
+		return Objects.toString(nodeContext.context.getSymbolTable().get(resultVariable));
 	}
 	
 	public static String runSafeFull(String syntax, String resultVariable) {

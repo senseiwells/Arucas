@@ -52,6 +52,28 @@ public class ArucasStatementTest {
 	}
 	
 	@Test(timeout = 1000)
+	public void testWhileStatementContinueBreak() {
+		assertEquals("1.0", ArucasHelper.runSafe("X=0; while(true) { X = X + 1; break; } return X;"));
+		assertEquals("2", ArucasHelper.runSafe("X='0'; while(X == '0') { X = '2'; continue; X = '4'; } return X;"));
+		assertEquals("3", ArucasHelper.runSafeFull(
+			"""
+ 			X = '0';
+ 			while (X == '0') {
+ 				X = '4';
+ 				while (X == '4') {
+ 					X = '2';
+ 					continue;
+ 				}
+ 				if (X == '2') {
+ 					X = '3';
+ 					continue;
+ 				}
+ 			}
+ 			""", "X"
+		));
+	}
+	
+	@Test(timeout = 1000)
 	public void testScopeStatementScope() {
 		assertEquals("1", ArucasHelper.runSafe("X='0'; { X='1'; } return X;"));
 		assertThrows(ErrorRuntime.class, () -> ArucasHelper.runUnsafe("{ X='1'; } return X;"));
@@ -110,12 +132,10 @@ public class ArucasStatementTest {
 			})();
 			""", "Q"
 		));
-		
 		assertEquals("3", ArucasHelper.runSafeFull(
 			"""
 	  		Q = (((fun() { return (fun() { return (fun() { X = '3'; return X; }); }); })())())();
 			""", "Q"
 		));
 	}
-	
 }

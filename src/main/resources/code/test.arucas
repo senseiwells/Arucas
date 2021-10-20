@@ -15,20 +15,20 @@ stringList = [];
 iterator = 0;
 
 fun testThings(t) {
-    test = t();
+    test = t;
     print("Testing: " + stringOf(test));
 }
 
 while (len(valueList) > iterator) {
     insideFunction = "this is outside";
-    sleep(1000);
+    sleep(200);
     value = getIndex(valueList, iterator);
     if (isString(value) && numberOf(value) == null) {
         append(stringList, value);
     }
-    testThings(fun() { 
-        return value; 
-    });
+    testThings(fun(param) {
+        return param;
+    }(value));
     //variable1();
     iterator = iterator + 1;
 }
@@ -43,3 +43,9 @@ fun a(sum, tail) {
 }
 
 print(stringOf(a(0, 100)));
+
+fun g() {
+    return return 0;
+}
+
+g();

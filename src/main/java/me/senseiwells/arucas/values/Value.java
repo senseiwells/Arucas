@@ -5,7 +5,6 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.utils.Position;
 
 public abstract class Value<T> {
-
 	public T value;
 	public Position startPos;
 	public Position endPos;

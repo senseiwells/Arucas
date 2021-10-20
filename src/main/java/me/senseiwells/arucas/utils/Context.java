@@ -13,28 +13,24 @@ public class Context {
 		this.symbolTable = null;
 	}
 	
-	public Position getEntryPosition() {
-		return symbolTable.position;
+	public SymbolTable getSymbolTable() {
+		return symbolTable;
 	}
 	
-	public Context pushScope(Position position) {
+	public void pushScope(Position position) {
 		this.symbolTable = new SymbolTable(this.symbolTable, position, false, false, false);
-		return this;
 	}
 	
-	public Context pushWhileScope(Position position) {
+	public void pushWhileScope(Position position) {
 		this.symbolTable = new SymbolTable(this.symbolTable, position, true, true, false);
-		return this;
 	}
 	
-	public Context pushFunctionScope(Position position) {
+	public void pushFunctionScope(Position position) {
 		this.symbolTable = new FunctionSymbolTable(this.symbolTable, position);
-		return this;
 	}
 	
-	public Context popScope() {
+	public void popScope() {
 		this.symbolTable = this.symbolTable.parentTable;
-		return this;
 	}
 	
 	public void moveScope(SymbolTable symbolTable) {

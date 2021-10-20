@@ -61,7 +61,7 @@ public class BuiltInFunction extends FunctionValue {
 	public static void initialiseBuiltInFunctions() {
 		builtInFunctionSet.addAll(Set.of(
 			new BuiltInFunction("run", "path", function -> {
-				StringValue stringValue = (StringValue) function.getValueForType(StringValue.class, 0, null);
+				StringValue stringValue = function.getValueForType(StringValue.class, 0, null);
 				String fileName = stringValue.value;
 				try {
 					String fileContent = Files.readString(Path.of(fileName));
@@ -78,7 +78,7 @@ public class BuiltInFunction extends FunctionValue {
 			}),
 	
 			new BuiltInFunction("debug", "boolean", function -> {
-				Run.debug = (boolean) function.getValueForType(BooleanValue.class, 0, null).value;
+				Run.debug = function.getValueForType(BooleanValue.class, 0, null).value;
 				return new NullValue();
 			}),
 	
@@ -88,7 +88,7 @@ public class BuiltInFunction extends FunctionValue {
 			}),
 	
 			new BuiltInFunction("sleep", "milliseconds", function -> {
-				NumberValue numberValue = (NumberValue) function.getValueForType(NumberValue.class, 0, null);
+				NumberValue numberValue = function.getValueForType(NumberValue.class, 0, null);
 				try {
 					Thread.sleep(numberValue.value.longValue());
 				}
@@ -104,8 +104,8 @@ public class BuiltInFunction extends FunctionValue {
 			}),
 	
 			new BuiltInFunction("schedule", List.of("milliseconds", "function"), function -> {
-				NumberValue numberValue = (NumberValue) function.getValueForType(NumberValue.class, 0, null);
-				FunctionValue functionValue = (FunctionValue) function.getValueForType(FunctionValue.class, 1, null);
+				NumberValue numberValue = function.getValueForType(NumberValue.class, 0, null);
+				FunctionValue functionValue = function.getValueForType(FunctionValue.class, 1, null);
 				Thread thread = new Thread(() -> {
 					try {
 						Thread.sleep(numberValue.value.longValue());
@@ -121,46 +121,46 @@ public class BuiltInFunction extends FunctionValue {
 			}),
 	
 			new BuiltInFunction("random", "bound", function -> {
-				NumberValue numValue = (NumberValue) function.getValueForType(NumberValue.class, 0, null);
+				NumberValue numValue = function.getValueForType(NumberValue.class, 0, null);
 				return new NumberValue(Math.round(numValue.value));
 			}),
 	
 			new BuiltInFunction("round", "number", function -> {
-				NumberValue numValue = (NumberValue) function.getValueForType(NumberValue.class, 0, null);
+				NumberValue numValue = function.getValueForType(NumberValue.class, 0, null);
 				return new NumberValue(Math.round(numValue.value));
 			}),
 	
 			new BuiltInFunction("roundUp", "number", function -> {
-				NumberValue numValue = (NumberValue) function.getValueForType(NumberValue.class, 0, null);
+				NumberValue numValue = function.getValueForType(NumberValue.class, 0, null);
 				return new NumberValue(Math.ceil(numValue.value));
 			}),
 	
 			new BuiltInFunction("roundDown", "number", function -> {
-				NumberValue numValue = (NumberValue) function.getValueForType(NumberValue.class, 0, null);
+				NumberValue numValue = function.getValueForType(NumberValue.class, 0, null);
 				return new NumberValue(Math.floor(numValue.value));
 			}),
 
 			new BuiltInFunction("modulus", List.of("number1", "number2"), function -> {
-				NumberValue numberValue1 = (NumberValue) function.getValueForType(NumberValue.class, 0, null);
-				NumberValue numberValue2 = (NumberValue) function.getValueForType(NumberValue.class, 1, null);
+				NumberValue numberValue1 = function.getValueForType(NumberValue.class, 0, null);
+				NumberValue numberValue2 = function.getValueForType(NumberValue.class, 1, null);
 				return new NumberValue(numberValue1.value % numberValue2.value);
 			}),
 	
 			new BuiltInFunction("len", "value", function -> {
 				Value<?> value = function.getValueFromTable(function.argumentNames.get(0));
 				if (value instanceof ListValue) {
-					ListValue listValue = (ListValue) function.getValueForType(ListValue.class, 0, null);
+					ListValue listValue = function.getValueForType(ListValue.class, 0, null);
 					return new NumberValue(listValue.value.size());
 				}
 				if (value instanceof StringValue) {
-					StringValue stringValue = (StringValue) function.getValueForType(StringValue.class, 0, null);
+					StringValue stringValue = function.getValueForType(StringValue.class, 0, null);
 					return new NumberValue(stringValue.value.length());
 				}
 				throw new ErrorRuntime("Cannot pass " + value.toString() + " into len()", function.startPos, function.endPos, function.context);
 			}),
 	
 			new BuiltInFunction("stringToList", "string", function -> {
-				StringValue stringValue = (StringValue) function.getValueForType(StringValue.class, 0, null);
+				StringValue stringValue = function.getValueForType(StringValue.class, 0, null);
 				List<Value<?>> stringList = new ArrayList<>();
 				for (char c : stringValue.value.toCharArray()) {
 					stringList.add(new StringValue(String.valueOf(c)));
@@ -211,12 +211,12 @@ public class BuiltInFunction extends FunctionValue {
 	private BooleanValue isType(Class<?> classInstance) {
 		return new BooleanValue(classInstance.isInstance(this.getValueFromTable(this.argumentNames.get(0))));
 	}
-
-	public Value<?> getValueForType(Class<?> clazz, int index, String additionalInfo) throws CodeError {
+	
+	public <T extends Value<?>> T getValueForType(Class<T> clazz, int index, String additionalInfo) throws CodeError {
 		Value<?> value = this.getValueFromTable(this.argumentNames.get(index));
 		if (!(clazz.isInstance(value)))
 			throw this.throwInvalidParameterError("Must pass " + clazz.getSimpleName() + " into parameter " + (index + 1) + " for " + this.value + "()" + (additionalInfo == null ? "" : "\n" + additionalInfo));
-		return value;
+		return clazz.cast(value);
 	}
 
 	@Override

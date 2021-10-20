@@ -13,8 +13,6 @@ public class BreakNode extends Node {
 
 	@Override
 	public Value<?> visit(Context context) throws ThrowValue {
-		ThrowValue throwValue = new ThrowValue();
-		throwValue.shouldBreak = true;
-		throw throwValue;
+		throw new ThrowValue.Break();
 	}
 }

@@ -17,7 +17,7 @@ public class ErrorRuntime extends CodeError {
 		StringBuilder result = new StringBuilder();
 		Position pos = this.startPos;
 		Context context = this.context;
-		SymbolTable table = this.context.symbolTable;
+		SymbolTable table = this.context.getSymbolTable();
 		while (table != null) {
 			result.insert(0, "File: %s, Line: %d, Column: %d, In: %s\n".formatted(pos.fileName, pos.line + 1, pos.column + 1, context.displayName));
 			pos = table.position;

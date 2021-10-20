@@ -221,17 +221,12 @@ public class Parser {
 		switch (this.currentToken.type) {
 			case RETURN -> {
 				this.advance();
-				int cachedIndex = this.operatorTokenIndex;
-				try {
-					Node expression = this.expression();
-					return new ReturnNode(expression, startPos, this.currentToken.endPos);
-				}
-				catch (CodeError error) {
-					if (error.errorType != CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR)
-						throw error;
-					this.recede(this.operatorTokenIndex - cachedIndex);
+				if (this.currentToken.type == Token.Type.SEMICOLON) {
 					return new ReturnNode(new NullNode(this.currentToken), startPos, this.currentToken.endPos);
 				}
+				
+				Node expression = this.sizeComparisonExpression();
+				return new ReturnNode(expression, startPos, this.currentToken.endPos);
 			}
 			case CONTINUE -> {
 				this.advance();
@@ -257,8 +252,13 @@ public class Parser {
 			}
 			this.recede();
 		}
-		Node left = this.comparisonExpression();
+		
+		return sizeComparisonExpression();
+	}
 	
+	private Node sizeComparisonExpression() throws CodeError {
+		Node left = this.comparisonExpression();
+		
 		while (this.currentToken.type == Token.Type.AND || this.currentToken.type == Token.Type.OR) {
 			Token operatorToken = this.currentToken;
 			this.advance();

@@ -20,8 +20,6 @@ public class ReturnNode extends Node {
 	@Override
 	public Value<?> visit(Context context) throws CodeError, ThrowValue {
 		Value<?> value = this.returnNode.visit(context);
-		ThrowValue throwValue = new ThrowValue();
-		throwValue.returnValue = value;
-		throw throwValue;
+		throw new ThrowValue.Return(value);
 	}
 }
