@@ -33,6 +33,7 @@ public class WhileNode extends Node {
                     continue;
                 if (tv.shouldBreak)
                     break;
+                throw tv;
             }
         }
         return new NullValue().setContext(this.context);

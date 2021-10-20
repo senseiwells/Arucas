@@ -41,7 +41,10 @@ public class Lexer {
             // Atoms
             .addRule(Type.IDENTIFIER, i -> i.addRegex("[a-zA-Z_][a-zA-Z0-9_]*"))
             .addRule(Type.BOOLEAN, i -> i.addStrings("true", "false"))
-            .addRule(Type.STRING, i -> i.addMultiline("\"", "\\", "\""))
+            .addRule(Type.STRING, i -> i
+                .addMultiline("\"", "\\", "\"")
+                .addMultiline("\'", "\\", "\'")
+            )
             .addRule(Type.FLOAT, i -> i.addRegexes(
                 "[0-9]+[.][0-9]+",
                 "[0-9]+"
