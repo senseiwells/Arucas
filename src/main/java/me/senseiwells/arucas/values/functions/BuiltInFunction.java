@@ -5,6 +5,7 @@ import me.senseiwells.arucas.throwables.ErrorRuntime;
 import me.senseiwells.arucas.core.Run;
 import me.senseiwells.arucas.throwables.ThrowStop;
 import me.senseiwells.arucas.throwables.ThrowValue;
+import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.*;
 
 import java.io.IOException;
@@ -108,7 +109,7 @@ public class BuiltInFunction extends FunctionValue {
 				Thread thread = new Thread(() -> {
 					try {
 						Thread.sleep(numberValue.value.longValue());
-						functionValue.execute(null);
+						functionValue.call(function.context, null);
 					}
 					catch (InterruptedException | CodeError | ThrowValue e) {
 						if (!(e instanceof ThrowStop))
@@ -202,8 +203,7 @@ public class BuiltInFunction extends FunctionValue {
 	}
 	
 	@Override
-	public Value<?> execute(List<Value<?>> arguments) throws CodeError {
-		this.context = this.generateNewContext();
+	public Value<?> execute(Context context, List<Value<?>> arguments) throws CodeError {
 		this.checkAndPopulateArguments(arguments, this.argumentNames, this.context);
 		return this.function.execute(this);
 	}

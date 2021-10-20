@@ -11,14 +11,14 @@ import me.senseiwells.arucas.values.Value;
 public class UnaryOperatorNode extends Node {
 	public final Node node;
 
-	public UnaryOperatorNode(Token token, Node node, Context context) {
-		super(token, context);
+	public UnaryOperatorNode(Token token, Node node) {
+		super(token);
 		this.node = node;
 	}
 
 	@Override
-	public Value<?> visit() throws CodeError, ThrowValue {
-		Value<?> value = this.node.visit();
+	public Value<?> visit(Context context) throws CodeError, ThrowValue {
+		Value<?> value = this.node.visit(context);
 		try {
 			switch (this.token.type) {
 				case MINUS -> value = ((NumberValue) value).multiplyBy(new NumberValue(-1));

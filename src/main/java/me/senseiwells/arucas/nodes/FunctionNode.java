@@ -14,15 +14,15 @@ public class FunctionNode extends Node {
 	public final List<Token> argumentNameToken;
 	public final Node bodyNode;
 
-	public FunctionNode(Token varNameToken, List<Token> argumentNameToken, Node bodyNode, Context context) {
-		super(bodyNode.token, varNameToken.startPos, bodyNode.endPos, context);
+	public FunctionNode(Token varNameToken, List<Token> argumentNameToken, Node bodyNode) {
+		super(bodyNode.token, varNameToken.startPos, bodyNode.endPos);
 		this.variableNameToken = varNameToken;
 		this.argumentNameToken = argumentNameToken;
 		this.bodyNode = bodyNode;
 	}
 
 	@Override
-	public Value<?> visit() throws CodeError {
+	public Value<?> visit(Context context) throws CodeError {
 		String functionName = this.variableNameToken.content;
 		if (BuiltInFunction.isFunction(functionName))
 			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "Cannot define " + functionName + "() function as it is a predefined function", this.startPos, this.endPos);
@@ -30,8 +30,8 @@ public class FunctionNode extends Node {
 		Value<?> functionValue = new UserDefinedFunction(functionName,
 			this.bodyNode,
 			this.argumentNameToken.stream().map(t -> t.content).toList()
-		).setPos(this.startPos, this.endPos).setContext(this.context);
-		this.context.parentContext.symbolTable.set(functionName, functionValue);
+		).setPos(this.startPos, this.endPos);
+		context.setVariable(functionName, functionValue);
 		
 		return functionValue;
 	}

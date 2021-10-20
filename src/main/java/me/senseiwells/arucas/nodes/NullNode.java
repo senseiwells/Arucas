@@ -8,14 +8,14 @@ import me.senseiwells.arucas.values.Value;
 public class NullNode extends Node {
 	public final NullValue value;
 
-	public NullNode(Token token, Context context) {
-		super(token, context);
+	public NullNode(Token token) {
+		super(token);
 		this.value = new NullValue();
 		this.value.setPos(this.startPos, this.endPos);
 	}
 
 	@Override
-	public Value<?> visit() {
-		return value.setContext(this.context);
+	public Value<?> visit(Context context) {
+		return value.setContext(context);
 	}
 }

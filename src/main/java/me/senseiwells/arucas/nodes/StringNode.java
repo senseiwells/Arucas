@@ -9,14 +9,14 @@ import me.senseiwells.arucas.values.Value;
 public class StringNode extends Node {
 	public final StringValue value;
 
-	public StringNode(Token token, Context context) {
-		super(token, context);
+	public StringNode(Token token) {
+		super(token);
 		this.value = new StringValue(StringUtils.unescapeString(token.content.substring(1, token.content.length() - 1)));
 		this.value.setPos(this.startPos, this.endPos);
 	}
 
 	@Override
-	public Value<?> visit() {
-		return value.setContext(this.context);
+	public Value<?> visit(Context context) {
+		return value.setContext(context);
 	}
 }

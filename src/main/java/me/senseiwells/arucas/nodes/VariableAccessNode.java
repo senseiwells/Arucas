@@ -6,15 +6,15 @@ import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.values.Value;
 
 public class VariableAccessNode extends Node {
-	public VariableAccessNode(Token token, Context context) {
-		super(token, token.startPos, token.endPos, context);
+	public VariableAccessNode(Token token) {
+		super(token, token.startPos, token.endPos);
 	}
 
 	@Override
-	public Value<?> visit() throws ErrorRuntime {
-		Value<?> value = this.context.symbolTable.get(this.token.content);
+	public Value<?> visit(Context context) throws ErrorRuntime {
+		Value<?> value = context.getVariable(this.token.content);
 		if (value == null)
-			throw new ErrorRuntime(this.token.content + " is not defined", this.startPos, this.endPos, this.context);
+			throw new ErrorRuntime(this.token.content + " is not defined", this.startPos, this.endPos, context);
 		value = value.copy();
 		value.setPos(this.startPos, this.endPos);
 		return value;

@@ -44,6 +44,7 @@ public class Token {
 		STRING,
 		NULL,
 		LIST,
+		SCOPE,
 		
 		// Arithmetics
 		PLUS,

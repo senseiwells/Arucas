@@ -12,14 +12,14 @@ import java.util.Objects;
 public class ReturnNode extends Node {
 	public final Node returnNode;
 
-	public ReturnNode(Node returnNode, Position startPos, Position endPos, Context context) {
-		super(new Token(Token.Type.RETURN, startPos, endPos), context);
+	public ReturnNode(Node returnNode, Position startPos, Position endPos) {
+		super(new Token(Token.Type.RETURN, startPos, endPos));
 		this.returnNode = Objects.requireNonNull(returnNode);
 	}
 
 	@Override
-	public Value<?> visit() throws CodeError, ThrowValue {
-		Value<?> value = this.returnNode.visit();
+	public Value<?> visit(Context context) throws CodeError, ThrowValue {
+		Value<?> value = this.returnNode.visit(context);
 		ThrowValue throwValue = new ThrowValue();
 		throwValue.returnValue = value;
 		throw throwValue;

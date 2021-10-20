@@ -5,6 +5,7 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ErrorRuntime;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.SymbolTable;
+import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
 
 import java.util.List;
@@ -13,13 +14,7 @@ public abstract class FunctionValue extends Value<String> {
 	public FunctionValue(String name) {
 		super(name);
 	}
-
-	public Context generateNewContext() {
-		Context context = new Context(this.value, this.context, this.startPos);
-		context.symbolTable = new SymbolTable(context.parentContext.symbolTable);
-		return context;
-	}
-
+	
 	private void checkArguments(List<Value<?>> arguments, List<String> argumentNames) throws ErrorRuntime {
 		int argumentSize = arguments == null ? 0 : arguments.size();
 		if (argumentSize > argumentNames.size())
@@ -33,7 +28,7 @@ public abstract class FunctionValue extends Value<String> {
 			String argumentName = argumentNames.get(i);
 			Value<?> argumentValue = arguments.get(i);
 			argumentValue.setContext(context);
-			context.symbolTable.set(argumentName, argumentValue);
+			context.setVariable(argumentName, argumentValue);
 		}
 	}
 
@@ -43,15 +38,29 @@ public abstract class FunctionValue extends Value<String> {
 	}
 
 	public Value<?> getValueFromTable(String key) {
-		return this.context.symbolTable.get(key);
+		return this.context.getVariable(key);
 	}
 
 	public CodeError throwInvalidParameterError(String details) {
 		return new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, details, this.startPos, this.endPos);
 	}
 
-	public abstract Value<?> execute(List<Value<?>> arguments) throws CodeError, ThrowValue;
-
+	protected abstract Value<?> execute(Context context, List<Value<?>> arguments) throws CodeError, ThrowValue;
+	
+	public final Value<?> call(Context context, List<Value<?>> arguments) throws CodeError, ThrowValue {
+		context.pushFunctionScope(this.startPos);
+		try {
+			Value<?> value = execute(context, arguments);
+			context.popScope();
+			return value;
+		}
+		catch (ThrowValue tv) {
+			context.moveScope(context.symbolTable.getReturnScope());
+			context.popScope();
+			return tv.returnValue;
+		}
+	}
+	
 	@Override
 	public abstract Value<?> copy();
 

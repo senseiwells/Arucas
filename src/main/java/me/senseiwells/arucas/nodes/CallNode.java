@@ -1,5 +1,6 @@
 package me.senseiwells.arucas.nodes;
 
+import me.senseiwells.arucas.throwables.ErrorRuntime;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
@@ -14,24 +15,24 @@ public class CallNode extends Node {
 	public final List<Node> argumentNodes;
 	public final Node callNode;
 
-	public CallNode(Node callNode, List<Node> argumentNodes, Context context) {
-		super(callNode.token, callNode.startPos, argumentNodes.size() > 0 ? argumentNodes.get(argumentNodes.size() - 1).endPos : callNode.endPos, context);
+	public CallNode(Node callNode, List<Node> argumentNodes) {
+		super(callNode.token, callNode.startPos, argumentNodes.size() > 0 ? argumentNodes.get(argumentNodes.size() - 1).endPos : callNode.endPos);
 		this.argumentNodes = argumentNodes;
 		this.callNode = callNode;
 	}
 
 	@Override
-	public Value<?> visit() throws CodeError, ThrowValue {
-		Value<?> callValue = this.callNode.visit();
+	public Value<?> visit(Context context) throws CodeError, ThrowValue {
+		Value<?> callValue = this.callNode.visit(context);
 		if (!(callValue instanceof FunctionValue))
-			return new NullValue().setContext(this.context);
+			throw new ErrorRuntime("Cannot call a non function value", this.startPos, this.endPos, context);
 		
 		List<Value<?>> argumentValues = new ArrayList<>();
 		for (Node node : this.argumentNodes)
-			argumentValues.add(node.visit());
+			argumentValues.add(node.visit(context));
 		
 		callValue = callValue.copy().setPos(this.startPos, this.endPos);
-		Value<?> functionValue = ((FunctionValue) callValue).execute(argumentValues);
-		return functionValue.setPos(this.startPos, this.endPos).setContext(this.context);
+		Value<?> functionValue = ((FunctionValue) callValue).call(context, argumentValues);
+		return functionValue.setPos(this.startPos, this.endPos);
 	}
 }

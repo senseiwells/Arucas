@@ -11,20 +11,18 @@ public abstract class Node {
 	public final Token token;
 	public Position startPos;
 	public Position endPos;
-	public Context context;
 
-	Node(Token token, Position startPos, Position endPos, Context context) {
+	Node(Token token, Position startPos, Position endPos) {
 		this.token = token;
 		this.startPos = startPos;
 		this.endPos = endPos;
-		this.context = context;
 	}
 
-	Node(Token token, Context context) {
-		this(token, token.startPos, token.endPos, context);
+	Node(Token token) {
+		this(token, token.startPos, token.endPos);
 	}
 
-	public abstract Value<?> visit() throws CodeError, ThrowValue;
+	public abstract Value<?> visit(Context context) throws CodeError, ThrowValue;
 
 	@Override
 	public String toString() {

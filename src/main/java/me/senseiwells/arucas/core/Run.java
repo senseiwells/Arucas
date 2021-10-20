@@ -39,14 +39,14 @@ public class Run {
 
 	public static Value<?> run(String fileName, String line) throws CodeError {
 		String[] fileNameRoot = fileName.split("/");
-		Context context = new Context(fileNameRoot[fileNameRoot.length - 1], null, null);
+		Context context = new Context(fileNameRoot[fileNameRoot.length - 1], null);
 		context.symbolTable = fileName.equals("System.in") ? symbolTable.setDefaultSymbols(context) : new SymbolTable().setDefaultSymbols(context);
-
+		
 		List<Token> values = new Lexer(line, fileName).createTokens();
 
 		Node nodeResult = new Parser(values, context).parse();
 		try {
-			return nodeResult.visit();
+			return nodeResult.visit(context);
 		}
 		catch (ThrowValue tv) {
 			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "Cannot use keywords 'break' or 'continue' outside loop, and cannot use 'return' outside function", nodeResult.startPos, nodeResult.endPos);

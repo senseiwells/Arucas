@@ -2,6 +2,7 @@ package me.senseiwells.arucas.throwables;
 
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.Position;
+import me.senseiwells.arucas.utils.SymbolTable;
 
 public class ErrorRuntime extends CodeError {
 
@@ -16,10 +17,11 @@ public class ErrorRuntime extends CodeError {
 		StringBuilder result = new StringBuilder();
 		Position pos = this.startPos;
 		Context context = this.context;
-		while (context != null) {
+		SymbolTable table = this.context.symbolTable;
+		while (table != null) {
 			result.insert(0, "File: %s, Line: %d, Column: %d, In: %s\n".formatted(pos.fileName, pos.line + 1, pos.column + 1, context.displayName));
-			pos = context.parentEntryPosition;
-			context = context.parentContext;
+			pos = table.position;
+			table = table.parentTable;
 		}
 		return "Traceback (most recent call last): \n" + result;
 	}

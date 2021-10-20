@@ -12,16 +12,16 @@ public class BinaryOperatorNode extends Node {
 	public final Node leftNode;
 	public final Node rightNode;
 
-	public BinaryOperatorNode(Node leftNode, Token operatorToken, Node rightNode, Context context) {
-		super(operatorToken, leftNode.startPos, rightNode.endPos, context);
+	public BinaryOperatorNode(Node leftNode, Token operatorToken, Node rightNode) {
+		super(operatorToken, leftNode.startPos, rightNode.endPos);
 		this.leftNode = leftNode;
 		this.rightNode = rightNode;
 	}
 
 	@Override
-	public Value<?> visit() throws CodeError, ThrowValue {
-		Value<?> left = this.leftNode.visit();
-		Value<?> right = this.rightNode.visit();
+	public Value<?> visit(Context context) throws CodeError, ThrowValue {
+		Value<?> left = this.leftNode.visit(context);
+		Value<?> right = this.rightNode.visit(context);
 		try {
 			Value<?> result;
 			switch (this.token.type) {
