@@ -43,3 +43,15 @@ test {
         events "passed", "skipped", "failed"
     }
 }
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId = 'com.github.senseiwells'
+            artifactId = 'Arucas'
+            version = '1.0.0'
+
+            from components.java
+        }
+    }
+}
