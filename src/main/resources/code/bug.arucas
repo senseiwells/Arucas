@@ -1,0 +1,17 @@
+// run("D:/Java/Arucas/src/main/resources/code/bug.arucas");
+// run("E:/Java/Projects/Arucas/src/main/resources/code/bug.arucas");
+// run("C:/Users/Admin/git/Arucas/src/main/resources/code/bug.arucas");
+
+A = 0;
+B = '1';
+C = true;
+
+
+fun test(A, B, C) {
+
+}
+
+test(true, 3, 'text');
+print(stringOf(A));
+print(stringOf(B));
+print(stringOf(C));

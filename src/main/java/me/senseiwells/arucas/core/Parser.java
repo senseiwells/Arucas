@@ -14,12 +14,10 @@ public class Parser {
 	private final List<Token> tokens;
 	private int operatorTokenIndex;
 	private Token currentToken;
-	public Context context;
 
-	public Parser(List<Token> tokens, Context context) {
+	public Parser(List<Token> tokens) {
 		this.tokens = tokens;
 		this.operatorTokenIndex = -1;
-		this.context = context;
 		this.advance();
 	}
 
@@ -54,100 +52,6 @@ public class Parser {
 		return new ListNode(statements, startPos, this.currentToken.endPos);
 	}
 
-	private Node call() throws CodeError {
-		List<Node> argumentNodes = new ArrayList<>();
-		Node atom = this.atom();
-		if (this.currentToken.type != Token.Type.LEFT_BRACKET)
-			return atom;
-		this.advance();
-		if (this.currentToken.type != Token.Type.RIGHT_BRACKET) {
-			argumentNodes.add(this.expression());
-			while (this.currentToken.type == Token.Type.COMMA) {
-				this.advance();
-				argumentNodes.add(this.expression());
-			}
-			if (this.currentToken.type != Token.Type.RIGHT_BRACKET)
-				throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected a ')'", this.currentToken.startPos, this.currentToken.endPos);
-		}
-		this.advance();
-		return new CallNode(atom, argumentNodes);
-	}
-
-	private Node atom() throws CodeError {
-		Token token = this.currentToken;
-		switch (token.type) {
-			case IDENTIFIER -> {
-				this.advance();
-				return new VariableAccessNode(token);
-			}
-			case FLOAT -> {
-				this.advance();
-				return new NumberNode(token);
-			}
-			case BOOLEAN -> {
-				this.advance();
-				return new BooleanNode(token);
-			}
-			case STRING -> {
-				this.advance();
-				return new StringNode(token);
-			}
-			case NULL -> {
-				this.advance();
-				return new NullNode(token);
-			}
-			case LEFT_BRACKET -> {
-				this.advance();
-				Node expression = this.expression();
-				if (this.currentToken.type == Token.Type.RIGHT_BRACKET) {
-					this.advance();
-					return expression;
-				}
-				throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Invalid conditional statement", this.currentToken.startPos, this.currentToken.endPos );
-			}
-			case LEFT_SQUARE_BRACKET -> {
-				return this.listExpression();
-			}
-			case FUN -> {
-				// FunctionLambda
-				return this.functionDefinition(true);
-			}
-		}
-		throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Unexpected Token: " + token, this.currentToken.startPos, this.currentToken.endPos);
-	}
-
-	private Node factor() throws CodeError {
-		Token token = this.currentToken;
-		if (token.type == Token.Type.PLUS || token.type == Token.Type.MINUS) {
-			this.advance();
-			Node factor = this.factor();
-			return new UnaryOperatorNode(token, factor);
-		}
-		return this.power();
-	}
-
-	private Node power() throws CodeError {
-		Node left = this.call();
-		while (this.currentToken.type.isTypeInSet(Set.of(Token.Type.POWER))) {
-			Token operatorToken = this.currentToken;
-			this.advance();
-			Node right = this.factor();
-			left = new BinaryOperatorNode(left, operatorToken, right);
-		}
-		return left;
-	}
-
-	private Node term() throws CodeError {
-		Node left = this.factor();
-		while (this.currentToken.type.isTypeInSet(Set.of(Token.Type.MULTIPLY, Token.Type.DIVIDE))) {
-			Token operatorToken = this.currentToken;
-			this.advance();
-			Node right = this.factor();
-			left = new BinaryOperatorNode(left, operatorToken, right);
-		}
-		return left;
-	}
-
 	private Node statements() throws CodeError {
 		List<Node> statements = new ArrayList<>();
 		Position startPos = this.currentToken.startPos;
@@ -162,6 +66,7 @@ public class Parser {
 				this.advance();
 				
 				if (this.currentToken.type == Token.Type.RIGHT_CURLY_BRACKET) {
+					this.advance();
 					return new NullNode(this.currentToken);
 				}
 	
@@ -394,5 +299,100 @@ public class Parser {
 		}
 		this.advance();
 		return new ListNode(elementList, startPos, this.currentToken.endPos);
+	}
+	
+	
+	private Node call() throws CodeError {
+		List<Node> argumentNodes = new ArrayList<>();
+		Node atom = this.atom();
+		if (this.currentToken.type != Token.Type.LEFT_BRACKET)
+			return atom;
+		this.advance();
+		if (this.currentToken.type != Token.Type.RIGHT_BRACKET) {
+			argumentNodes.add(this.expression());
+			while (this.currentToken.type == Token.Type.COMMA) {
+				this.advance();
+				argumentNodes.add(this.expression());
+			}
+			if (this.currentToken.type != Token.Type.RIGHT_BRACKET)
+				throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected a ')'", this.currentToken.startPos, this.currentToken.endPos);
+		}
+		this.advance();
+		return new CallNode(atom, argumentNodes);
+	}
+	
+	private Node atom() throws CodeError {
+		Token token = this.currentToken;
+		switch (token.type) {
+			case IDENTIFIER -> {
+				this.advance();
+				return new VariableAccessNode(token);
+			}
+			case FLOAT -> {
+				this.advance();
+				return new NumberNode(token);
+			}
+			case BOOLEAN -> {
+				this.advance();
+				return new BooleanNode(token);
+			}
+			case STRING -> {
+				this.advance();
+				return new StringNode(token);
+			}
+			case NULL -> {
+				this.advance();
+				return new NullNode(token);
+			}
+			case LEFT_BRACKET -> {
+				this.advance();
+				Node expression = this.expression();
+				if (this.currentToken.type == Token.Type.RIGHT_BRACKET) {
+					this.advance();
+					return expression;
+				}
+				throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Invalid conditional statement", this.currentToken.startPos, this.currentToken.endPos );
+			}
+			case LEFT_SQUARE_BRACKET -> {
+				return this.listExpression();
+			}
+			case FUN -> {
+				// FunctionLambda
+				return this.functionDefinition(true);
+			}
+		}
+		throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Unexpected Token: " + token, this.currentToken.startPos, this.currentToken.endPos);
+	}
+	
+	private Node factor() throws CodeError {
+		Token token = this.currentToken;
+		if (token.type == Token.Type.PLUS || token.type == Token.Type.MINUS) {
+			this.advance();
+			Node factor = this.factor();
+			return new UnaryOperatorNode(token, factor);
+		}
+		return this.power();
+	}
+	
+	private Node power() throws CodeError {
+		Node left = this.call();
+		while (this.currentToken.type.isTypeInSet(Set.of(Token.Type.POWER))) {
+			Token operatorToken = this.currentToken;
+			this.advance();
+			Node right = this.factor();
+			left = new BinaryOperatorNode(left, operatorToken, right);
+		}
+		return left;
+	}
+	
+	private Node term() throws CodeError {
+		Node left = this.factor();
+		while (this.currentToken.type.isTypeInSet(Set.of(Token.Type.MULTIPLY, Token.Type.DIVIDE))) {
+			Token operatorToken = this.currentToken;
+			this.advance();
+			Node right = this.factor();
+			left = new BinaryOperatorNode(left, operatorToken, right);
+		}
+		return left;
 	}
 }

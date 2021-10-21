@@ -80,7 +80,7 @@ public class Lexer {
 	}
 	
 	private final String text;
-	public final String fileName;
+	private final String fileName;
 
 	public Lexer(String text, String fileName) {
 		this.text = text;
@@ -92,14 +92,14 @@ public class Lexer {
 		int offset = 0;
 		int line = 0;
 		int column = 0;
-		int length = text.length();
-		String input = text;
+		int length = this.text.length();
+		String input = this.text;
 		
 		while (offset < length) {
 			LexerContext.LexerToken lexerToken = LEXER.nextToken(input);
 			
 			if (lexerToken == null) {
-				Position errorPos = new Position(offset, line, column, fileName);
+				Position errorPos = new Position(offset, line, column, this.fileName);
 				throw new CodeError(CodeError.ErrorType.ILLEGAL_CHAR_ERROR, "Invalid character", errorPos, errorPos);
 			}
 			
@@ -111,7 +111,7 @@ public class Lexer {
 			int old_column = column;
 			
 			for (int i = offset; i < offset + lexerToken.length; i++) {
-				char c = text.charAt(i);
+				char c = this.text.charAt(i);
 				
 				if (c == '\n') {
 					line ++;
@@ -126,8 +126,8 @@ public class Lexer {
 				tokenList.add(new Token(
 					lexerToken.type,
 					lexerToken.content,
-					new Position(old_offset, old_line, old_column, fileName),
-					new Position(offset, line, column, fileName)
+					new Position(old_offset, old_line, old_column, this.fileName),
+					new Position(offset, line, column, this.fileName)
 				));
 			}
 			

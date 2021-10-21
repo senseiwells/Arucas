@@ -10,39 +10,40 @@ import java.util.Map;
  * This class is a special symbol table that only allows changing global and local variables.
  */
 public class FunctionSymbolTable extends SymbolTable {
+	private final SymbolTable root;
+	
 	public FunctionSymbolTable(SymbolTable parent, Position position) {
 		super(parent, position, false, false, true);
-	}
-	
-	@Override
-	public SymbolTable setDefaultSymbols(Context context) {
-		return this;
+		this.root = parent.getRoot();
 	}
 	
 	@Override
 	public Value<?> get(String name) {
 		Value<?> value = this.symbolMap.get(name);
 		if (value == null)
-			return this.getRoot().get(name);
+			return this.root.get(name);
 		return value;
 	}
 	
 	@Override
 	public void set(String name, Value<?> value) {
-		SymbolTable parent = this.getParent(name);
-		if (parent != null)
-			parent.set(name, value);
+		if (this.root.get(name) != null)
+			this.root.set(name, value);
 		else
 			this.symbolMap.put(name, value);
 	}
 	
 	@Override
 	public SymbolTable getParent(String name) {
-		SymbolTable root = this.getRoot();
-		if (root.get(name) != null)
-			return root;
+		if (this.root.get(name) != null)
+			return this.root;
 		
 		return null;
+	}
+	
+	@Override
+	public SymbolTable getRoot() {
+		return root;
 	}
 	
 	@Override

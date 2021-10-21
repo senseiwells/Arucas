@@ -43,9 +43,3 @@ fun a(sum, tail) {
 }
 
 print(stringOf(a(0, 100)));
-
-fun g() {
-    return return 0;
-}
-
-g();

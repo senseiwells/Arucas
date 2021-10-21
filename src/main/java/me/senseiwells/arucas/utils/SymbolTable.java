@@ -1,5 +1,6 @@
 package me.senseiwells.arucas.utils;
 
+import me.senseiwells.arucas.api.IArucasExtension;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
 import me.senseiwells.arucas.values.Value;
 
@@ -7,35 +8,31 @@ import java.util.*;
 
 public class SymbolTable {
 	protected final Map<String, Value<?>> symbolMap;
-	public SymbolTable parentTable;
-	public Position position;
+	private final SymbolTable parentTable;
+	private final Position position;
 	
-	protected final boolean breakableScope;
-	protected final boolean continueScope;
-	protected final boolean returnableScope;
+	protected final boolean canContinue;
+	protected final boolean canBreak;
+	protected final boolean canReturn;
 	
-	public SymbolTable(SymbolTable parent, Position position, boolean breakableScope, boolean continueScope, boolean returnableScope) {
+	public SymbolTable(SymbolTable parent, Position position, boolean canBreak, boolean canContinue, boolean canReturn) {
 		this.symbolMap = new HashMap<>();
 		this.parentTable = parent;
 		this.position = position;
-		this.returnableScope = returnableScope;
-		this.breakableScope = breakableScope;
-		this.continueScope = continueScope;
+		this.canContinue = canContinue;
+		this.canReturn = canReturn;
+		this.canBreak = canBreak;
 	}
 
 	public SymbolTable() {
-		this(null, null, false, false, false);
+		this(null, new Position(0, 0, 0, ""), false, false, false);
 	}
-
-	public SymbolTable setDefaultSymbols(Context context) {
-		if (!this.symbolMap.isEmpty())
-			return this;
-		
-		for (BuiltInFunction function : BuiltInFunction.getBuiltInFunctions()) {
-			this.set(function.value, function.setContext(context));
-		}
-		
-		return this;
+	
+	/**
+	 * Returns the scope position that created this table.
+	 */
+	public final Position getPosition() {
+		return this.position;
 	}
 	
 	/**
@@ -46,8 +43,10 @@ public class SymbolTable {
 		if (value != null)
 			return value;
 		
-		SymbolTable parentTable = this.getParent(name);
-		return parentTable != null ? parentTable.symbolMap.get(name):null;
+		if (this.parentTable != null)
+			return this.parentTable.get(name);
+		
+		return null;
 	}
 	
 	/**
@@ -71,6 +70,7 @@ public class SymbolTable {
 			else
 				return this.parentTable.getParent(name);
 		}
+		
 		return null;
 	}
 	
@@ -81,8 +81,12 @@ public class SymbolTable {
 		return this.parentTable != null ? this.parentTable.getRoot():this;
 	}
 	
+	public SymbolTable getParentTable() {
+		return this.parentTable;
+	}
+	
 	public SymbolTable getReturnScope() {
-		if (this.returnableScope)
+		if (this.canReturn)
 			return this;
 		
 		if (this.parentTable != null)
@@ -92,7 +96,7 @@ public class SymbolTable {
 	}
 	
 	public SymbolTable getBreakScope() {
-		if (this.breakableScope)
+		if (this.canBreak)
 			return this;
 		
 		if (this.parentTable != null)
@@ -102,13 +106,31 @@ public class SymbolTable {
 	}
 	
 	public SymbolTable getContinueScope() {
-		if (this.continueScope)
+		if (this.canContinue)
 			return this;
 		
 		if (this.parentTable != null)
 			return this.parentTable.getContinueScope();
 		
 		return null;
+	}
+	
+	public Iterator<SymbolTable> iterator() {
+		return new Iterator<>() {
+			private SymbolTable object = SymbolTable.this;
+			
+			@Override
+			public boolean hasNext() {
+				return this.object != null;
+			}
+			
+			@Override
+			public SymbolTable next() {
+				SymbolTable current = this.object;
+				this.object = this.object.parentTable;
+				return current;
+			}
+		};
 	}
 	
 	@Override

@@ -24,15 +24,14 @@ public class CodeError extends Exception {
 	}
 
 	public enum ErrorType {
-
-		ILLEGAL_CHAR_ERROR	  ("Illegal Character Error"),
-		ILLEGAL_SYNTAX_ERROR	("Illegal Syntax Error"),
+		ILLEGAL_CHAR_ERROR      ("Illegal Character Error"),
+		ILLEGAL_SYNTAX_ERROR    ("Illegal Syntax Error"),
 		ILLEGAL_OPERATION_ERROR ("Illegal Operation Error"),
-		EXPECTED_CHAR_ERROR	 ("Expected Character Error"),
-		RUNTIME_ERROR		   ("Runtime Error"),
-		STOP					("Program stopped");
+		EXPECTED_CHAR_ERROR     ("Expected Character Error"),
+		RUNTIME_ERROR           ("Runtime Error"),
+		STOP                    ("Program stopped");
 
-		public String stringName;
+		public final String stringName;
 
 		ErrorType(String stringName) {
 			this.stringName = stringName;

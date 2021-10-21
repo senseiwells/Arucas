@@ -1,16 +1,19 @@
 package me.senseiwells.test;
 
+import me.senseiwells.arucas.api.ContextBuilder;
 import me.senseiwells.arucas.core.Lexer;
 import me.senseiwells.arucas.core.Parser;
+import me.senseiwells.arucas.extensions.ArucasBuiltInExtension;
+import me.senseiwells.arucas.extensions.ArucasListExtension;
 import me.senseiwells.arucas.nodes.Node;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.utils.SymbolTable;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 public class ArucasHelper {
 	private static class NodeContext {
@@ -22,12 +25,15 @@ public class ArucasHelper {
 			this.context = context;
 		}
 	}
+	
 	public static NodeContext compile(String syntax) throws CodeError {
-		Context context = new Context("root", null);
-		context.symbolTable = new SymbolTable().setDefaultSymbols(context);
+		Context context = new ContextBuilder()
+			.setDisplayName("root")
+			.setExtensions(Set.of(ArucasBuiltInExtension.class, ArucasListExtension.class))
+			.create();
 		
 		List<Token> tokens = new Lexer(syntax, "").createTokens();
-		return new NodeContext(new Parser(tokens, context).parse(), context);
+		return new NodeContext(new Parser(tokens).parse(), context);
 	}
 	
 	public static String runUnsafe(String syntax) throws CodeError, ThrowValue {

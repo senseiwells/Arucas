@@ -101,6 +101,11 @@ public class ArucasStatementTest {
 	}
 	
 	@Test
+	public void testFunctionStatement() {
+		assertEquals("0", ArucasHelper.runSafeFull("fun test(A, B, C) {} Q = '0';", "Q"));
+	}
+	
+	@Test
 	public void testFunctionStatementScope() {
 		assertEquals("0", ArucasHelper.runSafeFull(
 			"""

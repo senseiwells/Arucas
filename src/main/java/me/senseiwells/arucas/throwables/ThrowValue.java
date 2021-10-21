@@ -4,6 +4,7 @@ import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
 
 public abstract class ThrowValue extends Exception {
+	
 	public static class Continue extends ThrowValue {
 	
 	}
