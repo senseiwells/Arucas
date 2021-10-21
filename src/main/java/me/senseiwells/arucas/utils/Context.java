@@ -40,16 +40,26 @@ public class Context {
 		this(displayName, null, extensions);
 	}
 	
-	private Context(Context branch) {
+	private Context(Context branch, SymbolTable symbolTable) {
 		this.displayName = branch.displayName;
-		this.symbolTable = branch.symbolTable;
+		this.symbolTable = symbolTable;
 		this.extensions = branch.extensions;
 		this.builtInFunctions = branch.builtInFunctions;
 		this.parentContext = branch.parentContext;
 	}
 	
 	public Context createBranch() {
-		return new Context(this);
+		return new Context(this, this.symbolTable);
+	}
+	
+	public Context createRootBranch() {
+		return new Context(this, this.symbolTable.getRoot());
+	}
+	
+	public Context createBranchFromPosition(SymbolTable symbolTable) {
+		if (this.symbolTable.getRoot() == symbolTable.getRoot())
+			return new Context(this, symbolTable);
+		return null;
 	}
 	
 	public Context createChildContext(String displayName) {
