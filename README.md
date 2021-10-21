@@ -1,4 +1,5 @@
 # Arucas
+[![Release](https://jitpack.io/v/senseiwells/Arucas.svg)](https://jitpack.io/#senseiwells/Arucas)
 
 Arucas is an Interpreted Language using Java, with similar syntax to Java.
 

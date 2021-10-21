@@ -11,7 +11,7 @@ sourceCompatibility = JavaVersion.VERSION_16
 targetCompatibility = JavaVersion.VERSION_16
 
 group 'me.senseiwells'
-version '0.1'
+version '1.0.0'
 
 sourceSets {
     main {
