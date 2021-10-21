@@ -19,7 +19,6 @@ public class WhileNode extends Node {
 
 	@Override
 	public Value<?> visit(Context context) throws CodeError, ThrowValue {
-		// Push while scope
 		context.pushWhileScope(this.startPos);
 		
 		while (true) {
@@ -41,7 +40,6 @@ public class WhileNode extends Node {
 			}
 		}
 		
-		// Pop while scope
 		context.popScope();
 		return new NullValue();
 	}

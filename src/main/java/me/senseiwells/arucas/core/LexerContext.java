@@ -13,20 +13,20 @@ public class LexerContext {
 	private final List<LexerRule> rules;
 	
 	public LexerContext() {
-		rules = new ArrayList<>();
+		this.rules = new ArrayList<>();
 	}
 	
 	public LexerContext addRule(Token.Type type, Consumer<LexerRule> consumer) {
 		LexerRule rule = new LexerRule(type);
 		consumer.accept(rule);
-		rules.add(rule);
+		this.rules.add(rule);
 		return this;
 	}
 	
 	public LexerToken nextToken(String input) {
 		LexerRule selectedRule = null;
 		int longestRule = 1;
-		for (LexerRule rule : rules) {
+		for (LexerRule rule : this.rules) {
 			int length = rule.getMatchLength(input);
 			
 			if (length >= longestRule) {
@@ -105,7 +105,7 @@ public class LexerContext {
 		
 		public int getMatchLength(String string) {
 			int length = 0;
-			for (Pattern pattern : matches) {
+			for (Pattern pattern : this.matches) {
 				Matcher matcher = pattern.matcher(string);
 				if (matcher.lookingAt()) {
 					length = Math.max(length, matcher.end());

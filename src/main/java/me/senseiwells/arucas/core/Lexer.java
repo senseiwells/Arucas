@@ -135,7 +135,7 @@ public class Lexer {
 			offset += lexerToken.length;
 		}
 	
-		tokenList.add(new Token(Type.FINISH, new Position(offset, line, column, fileName)));
+		tokenList.add(new Token(Type.FINISH, new Position(offset, line, column, this.fileName)));
 		return tokenList;
 	}
 }

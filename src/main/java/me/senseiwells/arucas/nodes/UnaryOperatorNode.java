@@ -27,7 +27,7 @@ public class UnaryOperatorNode extends Node {
 			return value.setPos(node.startPos, node.endPos);
 		}
 		catch (ClassCastException classCastException) {
-			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "The operation '" + this.token.type + "' cannot be applied to '" + value.value + "'", this.startPos, this.endPos);
+			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "The operation '%s' cannot be applied to '%s'".formatted(this.token.type, value.value), this.startPos, this.endPos);
 		}
 	}
 

@@ -14,7 +14,7 @@ public abstract class ThrowValue extends Exception {
 	}
 	
 	public static class Return extends ThrowValue {
-		public Value<?> returnValue;
+		public final Value<?> returnValue;
 		public Return(Value<?> returnValue) {
 			this.returnValue = returnValue;
 		}

@@ -16,6 +16,6 @@ public class BooleanNode extends Node {
 
 	@Override
 	public Value<?> visit(Context context) {
-		return value;
+		return this.value;
 	}
 }

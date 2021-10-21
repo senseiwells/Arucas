@@ -16,9 +16,9 @@ public abstract class FunctionValue extends Value<String> {
 	private void checkArguments(Context context, List<Value<?>> arguments, List<String> argumentNames) throws ErrorRuntime {
 		int argumentSize = arguments == null ? 0 : arguments.size();
 		if (argumentSize > argumentNames.size())
-			throw new ErrorRuntime(arguments.size() - argumentNames.size() + " too many arguments passed into " + this.value, this.startPos, this.endPos, context);
+			throw new ErrorRuntime("%s too many arguments passed into %s".formatted(arguments.size() - argumentNames.size(), this.value), this.startPos, this.endPos, context);
 		if (argumentSize < argumentNames.size())
-			throw new ErrorRuntime(argumentNames.size() - argumentSize + " too few arguments passed into " + this.value, this.startPos, this.endPos, context);
+			throw new ErrorRuntime("%s too few arguments passed into %s".formatted(argumentNames.size() - argumentSize, this.value), this.startPos, this.endPos, context);
 	}
 
 	private void populateArguments(Context context, List<Value<?>> arguments, List<String> argumentNames) {
@@ -43,7 +43,7 @@ public abstract class FunctionValue extends Value<String> {
 	public final Value<?> call(Context context, List<Value<?>> arguments) throws CodeError, ThrowValue {
 		context.pushFunctionScope(this.startPos);
 		try {
-			Value<?> value = execute(context, arguments);
+			Value<?> value = this.execute(context, arguments);
 			context.popScope();
 			return value;
 		}

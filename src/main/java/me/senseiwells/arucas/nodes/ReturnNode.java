@@ -14,7 +14,7 @@ public class ReturnNode extends Node {
 
 	public ReturnNode(Node returnNode, Position startPos, Position endPos) {
 		super(new Token(Token.Type.RETURN, startPos, endPos));
-		this.returnNode = Objects.requireNonNull(returnNode);
+		this.returnNode = returnNode;
 	}
 
 	@Override

@@ -14,7 +14,7 @@ public class VariableAccessNode extends Node {
 	public Value<?> visit(Context context) throws ErrorRuntime {
 		Value<?> value = context.getVariable(this.token.content);
 		if (value == null)
-			throw new ErrorRuntime(this.token.content + " is not defined", this.startPos, this.endPos, context);
+			throw new ErrorRuntime("%s is not defined".formatted(this.token.content), this.startPos, this.endPos, context);
 		value = value.copy();
 		value.setPos(this.startPos, this.endPos);
 		return value;

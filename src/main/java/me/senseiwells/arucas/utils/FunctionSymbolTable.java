@@ -39,7 +39,7 @@ public class FunctionSymbolTable extends SymbolTable {
 	
 	@Override
 	public SymbolTable getRoot() {
-		return root;
+		return this.root;
 	}
 	
 	@Override

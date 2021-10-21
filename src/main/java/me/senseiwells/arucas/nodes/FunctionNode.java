@@ -31,7 +31,7 @@ public class FunctionNode extends Node {
 	public Value<?> visit(Context context) throws CodeError {
 		String functionName = this.variableNameToken.content;
 		if (context.isBuiltInFunction(functionName))
-			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "Cannot define " + functionName + "() function as it is a predefined function", this.startPos, this.endPos);
+			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "Cannot define %s() function as it is a predefined function".formatted(functionName), this.startPos, this.endPos);
 		
 		context.setVariable(functionName, this.functionValue);
 		return this.functionValue;

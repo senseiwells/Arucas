@@ -18,21 +18,16 @@ fun test(A, B, C) {
     g();
 }
 
-schedule(1300, fun() {
+WAIT = true;
+LIST = [ 1, 2 ];
+schedule(10, fun() {
     // thread 2
     // scope + 1
-    (fun() {
-        // FunctionScope + 1
-        W = 8;
-        while(true) {
-            sleep(400);
-            print('thread - sleep');
-            W = W - 1;
-            debug(true);
+    while(true) {
+        if(!WAIT) {
+            append(LIST, 0);
         }
-        // ((-1) ^ 2);
-        // FunctionScope - 1
-    })();
+    }
     // scope -1
 });
 
@@ -41,12 +36,12 @@ schedule(1300, fun() {
 {
     W = 12;
     local_var = 'fun_string';
-    while (W > 5) {
-        sleep(400);
-        print('My local variable -> ' + stringOf(local_var));
-        W = W - 1;
+    WAIT = false;
+    while (true) {
+        len(LIST);
     }
 }
+
 
 test(true, 3, 'text');
 print('Outside call');

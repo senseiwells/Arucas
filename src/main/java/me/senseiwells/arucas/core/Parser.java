@@ -423,7 +423,7 @@ public class Parser {
 					this.advance();
 					return expression;
 				}
-				throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Invalid conditional statement", this.currentToken.startPos, this.currentToken.endPos );
+				throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Invalid conditional statement", this.currentToken.startPos, this.currentToken.endPos);
 			}
 			case LEFT_SQUARE_BRACKET -> {
 				return this.listExpression();

@@ -37,7 +37,12 @@ public class BuiltInFunction extends FunctionValue {
 	}
 	
 	public Value<?> getParameterValue(Context context, int index) {
-		return context.getVariable(this.argumentNames.get(index));
+		Value<?> param = context.getVariable(this.argumentNames.get(index));
+		if (param == null) {
+			return new NullValue();
+		}
+		
+		return param;
 	}
 	
 	public <T extends Value<?>> T getParameterValueOfType(Context context, Class<T> clazz, int index) throws CodeError {

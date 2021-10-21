@@ -15,7 +15,7 @@ public class DirectAccessNode extends Node {
 	}
 
 	@Override
-	public Value<?> visit(Context context) throws CodeError, ThrowValue {
+	public Value<?> visit(Context context) {
 		return this.value;
 	}
 }

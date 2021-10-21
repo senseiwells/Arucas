@@ -41,7 +41,7 @@ public class BinaryOperatorNode extends Node {
 		}
 		//When you try to use an operator that doesn't work e.g. true/false
 		catch (ClassCastException classCastException) {
-			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "The operation '" + this.token.type + "' cannot be applied to '" + left.value + "' and '" + right.value + "'", this.startPos, this.endPos);
+			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "The operation '%s' cannot be applied to '%s' and '%s'".formatted(this.token.type, left.value, right.value), this.startPos, this.endPos);
 		}
 	}
 

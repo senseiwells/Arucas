@@ -30,7 +30,7 @@ public class ContextBuilder {
 	public Context create() {
 		Set<IArucasExtension> set = new HashSet<>();
 		
-		for (Class<? extends IArucasExtension> clazz : extensions) {
+		for (Class<? extends IArucasExtension> clazz : this.extensions) {
 			try {
 				set.add(clazz.getDeclaredConstructor().newInstance());
 			}
@@ -39,6 +39,6 @@ public class ContextBuilder {
 			}
 		}
 		
-		return new Context(displayName, set);
+		return new Context(this.displayName, set);
 	}
 }

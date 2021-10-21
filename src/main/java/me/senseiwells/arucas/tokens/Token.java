@@ -27,7 +27,7 @@ public class Token {
 	
 	@Override
 	public String toString() {
-		return "Token{type=%s, content='%s'}".formatted(type, content);
+		return "Token{type=%s, content='%s'}".formatted(this.type, this.content);
 	}
 	
 	public enum Type {
