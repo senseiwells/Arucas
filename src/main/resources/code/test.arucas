@@ -1,0 +1,45 @@
+// run("D:/Java/Arucas/src/main/resources/code/test.arucas");
+// run("E:/Java/Projects/Arucas/src/main/resources/code/test.arucas");
+// run("C:/Users/Admin/git/Arucas/src/main/resources/code/test.arucas");
+
+// Lets sort this list for only realstrings
+
+/* 
+This is a multiline comment
+You can write whatever you want in here
+And it won't get read
+*/
+
+valueList = ["foo", 89, true, "bar", null, "3.14", false, 3.14, "baz"];
+stringList = [];
+iterator = 0;
+
+fun testThings(t) {
+    test = t;
+    print("Testing: " + stringOf(test));
+}
+
+while (len(valueList) > iterator) {
+    insideFunction = "this is outside";
+    sleep(200);
+    value = getIndex(valueList, iterator);
+    if (isString(value) && numberOf(value) == null) {
+        append(stringList, value);
+    }
+    testThings(fun(param) {
+        return param;
+    }(value));
+    //variable1();
+    iterator = iterator + 1;
+}
+
+//Expected list for stringList is ["foo", "bar", "baz"]
+
+fun a(sum, tail) {
+    print(stringOf(sum) + ", " + stringOf(tail));
+    if(tail == 0)
+        return sum;
+    return a(sum + tail, tail - 1);
+}
+
+print(stringOf(a(0, 100)));
