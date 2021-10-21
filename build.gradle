@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'idea'
+    id 'maven-publish'
 }
 
 repositories {
@@ -40,5 +41,17 @@ test {
     }
     testLogging {
         events "passed", "skipped", "failed"
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId = 'com.github.senseiwells'
+            artifactId = 'Arucas'
+            version = '1.0.0'
+
+            from components.java
+        }
     }
 }

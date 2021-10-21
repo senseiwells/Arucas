@@ -11,3 +11,14 @@ large amount of code has been rewritten by myself to function with Java,
 as the reference code was written in python.
 
 This was made largely for a project for a Minecraft mod that can be found [here](https://github.com/senseiwells/EssentialClient)
+
+# Usage
+```gradle
+repositories {
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    implementation 'com.github.senseiwells:Arucas:version'
+}
+```
