@@ -1,10 +1,6 @@
 package me.senseiwells.arucas.utils;
 
 import me.senseiwells.arucas.values.Value;
-import me.senseiwells.arucas.values.functions.BuiltInFunction;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * This class is a special symbol table that only allows changing global and local variables.

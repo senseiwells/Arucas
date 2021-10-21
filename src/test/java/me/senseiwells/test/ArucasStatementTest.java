@@ -31,8 +31,8 @@ public class ArucasStatementTest {
 	public void testIfStatementScope() {
 		assertEquals("1", ArucasHelper.runSafe("X='0'; if(true)  { X='1'; } else { X='2'; } return X;"));
 		assertEquals("2", ArucasHelper.runSafe("X='0'; if(false) { X='1'; } else { X='2'; } return X;"));
-		assertThrows(ErrorRuntime.class, () -> ArucasHelper.runUnsafe("if(true) { X='1'; } return X;"));
-		assertThrows(ErrorRuntime.class, () -> ArucasHelper.runUnsafe("if(true)   X='1';   return X;"));
+		assertThrows(CodeError.class, () -> ArucasHelper.compile("if(true) { X='1'; } return X;"));
+		assertThrows(CodeError.class, () -> ArucasHelper.compile("if(true)   X='1';   return X;"));
 		assertEquals("1", ArucasHelper.runSafe("X='0'; if(true) X='1'; return X;"));
 	}
 	
@@ -76,7 +76,7 @@ public class ArucasStatementTest {
 	@Test(timeout = 1000)
 	public void testScopeStatementScope() {
 		assertEquals("1", ArucasHelper.runSafe("X='0'; { X='1'; } return X;"));
-		assertThrows(ErrorRuntime.class, () -> ArucasHelper.runUnsafe("{ X='1'; } return X;"));
+		assertThrows(CodeError.class, () -> ArucasHelper.compile("{ X='1'; } return X;"));
 		assertEquals("0", ArucasHelper.runSafe("X='0'; { (fun(){X='1';})(); } return X;"));
 		
 	}
@@ -106,6 +106,28 @@ public class ArucasStatementTest {
 	}
 	
 	@Test
+	public void testFunctionCallScope() {
+		assertEquals("valid", ArucasHelper.runSafeFull(
+			"""
+			A = null;
+	 		{
+	 			fun g() { return 'valid'; }
+				fun test() { return g(); }
+				A = test;
+			}
+			X = A();
+			""", "X"
+		));
+		assertEquals("1", ArucasHelper.runSafeFull(
+			"""
+			X = '1';
+			fun test(X) {}
+			test(100);
+			""", "X"
+		));
+	}
+	
+	@Test
 	public void testFunctionStatementScope() {
 		assertEquals("0", ArucasHelper.runSafeFull(
 			"""
@@ -117,7 +139,7 @@ public class ArucasStatementTest {
 			}();
 			""", "X"
 		));
-		assertThrows(ErrorRuntime.class, () -> ArucasHelper.runUnsafeFull(
+		assertThrows(CodeError.class, () -> ArucasHelper.runUnsafeFull(
 			"""
 	  		X = fun() {
 				A = fun() { return Y; };

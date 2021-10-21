@@ -32,11 +32,11 @@ public class Main {
 					System.out.println(values);
 			}
 			catch (ThrowStop e) {
-				System.out.println(e.toString());
+				System.out.println(e.toString(context));
 				break;
 			}
 			catch (CodeError e) {
-				System.out.println(e.toString());
+				System.out.println(e.toString(context));
 			}
 		}
 	}

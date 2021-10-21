@@ -4,8 +4,6 @@ import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ErrorRuntime;
 import me.senseiwells.arucas.throwables.ThrowValue;
-import me.senseiwells.arucas.utils.SymbolTable;
-import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
 
 import java.util.List;
@@ -15,30 +13,25 @@ public abstract class FunctionValue extends Value<String> {
 		super(name);
 	}
 	
-	private void checkArguments(List<Value<?>> arguments, List<String> argumentNames) throws ErrorRuntime {
+	private void checkArguments(Context context, List<Value<?>> arguments, List<String> argumentNames) throws ErrorRuntime {
 		int argumentSize = arguments == null ? 0 : arguments.size();
 		if (argumentSize > argumentNames.size())
-			throw new ErrorRuntime(arguments.size() - argumentNames.size() + " too many arguments passed into " + this.value, this.startPos, this.endPos, this.context);
+			throw new ErrorRuntime(arguments.size() - argumentNames.size() + " too many arguments passed into " + this.value, this.startPos, this.endPos, context);
 		if (argumentSize < argumentNames.size())
-			throw new ErrorRuntime(argumentNames.size() - argumentSize + " too few arguments passed into " + this.value, this.startPos, this.endPos, this.context);
+			throw new ErrorRuntime(argumentNames.size() - argumentSize + " too few arguments passed into " + this.value, this.startPos, this.endPos, context);
 	}
 
-	private void populateArguments(List<Value<?>> arguments, List<String> argumentNames, Context context) {
+	private void populateArguments(Context context, List<Value<?>> arguments, List<String> argumentNames) {
 		for (int i = 0; i < argumentNames.size(); i++) {
 			String argumentName = argumentNames.get(i);
 			Value<?> argumentValue = arguments.get(i);
-			argumentValue.setContext(context);
-			context.setVariable(argumentName, argumentValue);
+			context.setLocal(argumentName, argumentValue);
 		}
 	}
 
-	public void checkAndPopulateArguments(List<Value<?>> arguments, List<String> argumentNames, Context context) throws ErrorRuntime {
-		this.checkArguments(arguments, argumentNames);
-		this.populateArguments(arguments, argumentNames, context);
-	}
-
-	public Value<?> getValueFromTable(String key) {
-		return this.context.getVariable(key);
+	public void checkAndPopulateArguments(Context context, List<Value<?>> arguments, List<String> argumentNames) throws ErrorRuntime {
+		this.checkArguments(context, arguments, argumentNames);
+		this.populateArguments(context, arguments, argumentNames);
 	}
 
 	public CodeError throwInvalidParameterError(String details) {

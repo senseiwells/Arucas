@@ -2,7 +2,7 @@ package me.senseiwells.arucas.utils;
 
 import me.senseiwells.arucas.api.IArucasExtension;
 import me.senseiwells.arucas.values.Value;
-import me.senseiwells.arucas.values.functions.BuiltInFunction;
+import me.senseiwells.arucas.extensions.BuiltInFunction;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -13,31 +13,55 @@ import java.util.Set;
  */
 public class Context {
 	private final Set<String> builtInFunctions;
+	private final Set<IArucasExtension> extensions;
 	
 	private final String displayName;
+	private final Context parentContext;
 	private SymbolTable symbolTable;
 	private boolean isDebug;
 	
-	public Context(String displayName, Set<IArucasExtension> extensions) {
+	private Context(String displayName, Context parentContext, Set<IArucasExtension> extensions) {
 		this.builtInFunctions = new HashSet<>();
 		
 		this.displayName = displayName;
 		this.symbolTable = new SymbolTable();
+		this.parentContext = parentContext;
+		this.extensions = extensions;
 		
 		for (IArucasExtension extension : extensions) {
 			for (BuiltInFunction function : extension.getDefinedFunctions()) {
 				this.builtInFunctions.add(function.value);
-				this.symbolTable.set(function.value, function.setContext(this));
+				this.symbolTable.set(function.value, function);
 			}
 		}
 	}
 	
+	public Context(String displayName, Set<IArucasExtension> extensions) {
+		this(displayName, null, extensions);
+	}
+	
+	private Context(Context branch) {
+		this.displayName = branch.displayName;
+		this.symbolTable = branch.symbolTable;
+		this.extensions = branch.extensions;
+		this.builtInFunctions = branch.builtInFunctions;
+		this.parentContext = branch.parentContext;
+	}
+	
+	public Context createBranch() {
+		return new Context(this);
+	}
+	
+	public Context createChildContext(String displayName) {
+		return new Context(displayName, this, this.extensions);
+	}
+	
 	public String getDisplayName() {
-		return displayName;
+		return this.displayName;
 	}
 	
 	public SymbolTable getSymbolTable() {
-		return symbolTable;
+		return this.symbolTable;
 	}
 	
 	public void pushScope(Position position) {
@@ -87,7 +111,24 @@ public class Context {
 		this.symbolTable.set(name, value);
 	}
 	
+	public void setLocal(String name, Value<?> value) {
+		this.symbolTable.setLocal(name, value);
+	}
+	
 	public Value<?> getVariable(String name) {
 		return this.symbolTable.get(name);
+	}
+	
+	@Deprecated
+	public void dumpScopes() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("----------------------------\n");
+		
+		Iterator<SymbolTable> iter = this.symbolTable.iterator();
+		while (iter.hasNext()) {
+			sb.append(iter.next()).append("\n");
+		}
+		
+		System.out.println(sb.toString());
 	}
 }

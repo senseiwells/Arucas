@@ -43,6 +43,6 @@ public class WhileNode extends Node {
 		
 		// Pop while scope
 		context.popScope();
-		return new NullValue().setContext(context);
+		return new NullValue();
 	}
 }

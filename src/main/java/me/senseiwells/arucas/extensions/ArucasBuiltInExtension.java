@@ -1,6 +1,5 @@
 package me.senseiwells.arucas.extensions;
 
-import me.senseiwells.arucas.api.ContextBuilder;
 import me.senseiwells.arucas.api.IArucasExtension;
 import me.senseiwells.arucas.core.Run;
 import me.senseiwells.arucas.throwables.CodeError;
@@ -9,14 +8,12 @@ import me.senseiwells.arucas.throwables.ThrowStop;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.*;
-import me.senseiwells.arucas.values.functions.BuiltInFunction;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -33,60 +30,66 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 	@Override
 	public Set<BuiltInFunction> getDefinedFunctions() {
 		return Set.of(
-			new BuiltInFunction("run", "path", function -> {
-				StringValue stringValue = function.getValueForType(StringValue.class, 0, null);
+			new BuiltInFunction("run", "path", (context, function) -> {
+				StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
 				String filePath = stringValue.value;
 				try {
+					Context childContext = context.createChildContext(filePath);
+					
 					String fileContent = Files.readString(Path.of(filePath));
-					Run.run(function.context, filePath, fileContent);
+					Run.run(childContext, filePath, fileContent);
 				}
 				catch (IOException | InvalidPathException e) {
-					throw new ErrorRuntime("Failed to execute script '" + filePath + "' \n" + e, function.startPos, function.endPos, function.context);
+					throw new ErrorRuntime("Failed to execute script '" + filePath + "' \n" + e, function.startPos, function.endPos, context);
 				}
 				return new NullValue();
 			}),
 			
-			new BuiltInFunction("stop", function -> {
+			new BuiltInFunction("stop", (context, function) -> {
 				throw new ThrowStop();
 			}),
 			
-			new BuiltInFunction("debug", "boolean", function -> {
-				function.context.setDebug(function.getValueForType(BooleanValue.class, 0, null).value);
+			new BuiltInFunction("debug", "boolean", (context, function) -> {
+				context.setDebug(function.getParameterValueOfType(context, BooleanValue.class, 0).value);
 				return new NullValue();
 			}),
 			
-			new BuiltInFunction("print", "printValue", function -> {
-				System.out.println(function.getValueFromTable(function.argumentNames.get(0)));
+			new BuiltInFunction("print", "printValue", (context, function) -> {
+				System.out.println(function.getParameterValue(context, 0));
 				return new NullValue();
 			}),
 			
-			new BuiltInFunction("sleep", "milliseconds", function -> {
-				NumberValue numberValue = function.getValueForType(NumberValue.class, 0, null);
+			new BuiltInFunction("sleep", "milliseconds", (context, function) -> {
+				NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 0);
 				try {
 					Thread.sleep(numberValue.value.longValue());
 				}
 				catch (InterruptedException e) {
-					throw new CodeError(
-						CodeError.ErrorType.RUNTIME_ERROR,
+					throw new ErrorRuntime(
 						"An error occurred while trying to call 'sleep()'",
 						function.startPos,
-						function.endPos
+						function.endPos,
+						context
 					);
 				}
 				return new NullValue();
 			}),
 			
-			new BuiltInFunction("schedule", List.of("milliseconds", "function"), function -> {
-				NumberValue numberValue = function.getValueForType(NumberValue.class, 0, null);
-				FunctionValue functionValue = function.getValueForType(FunctionValue.class, 1, null);
+			new BuiltInFunction("schedule", List.of("milliseconds", "function"), (context, function) -> {
+				NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 0);
+				FunctionValue functionValue = function.getParameterValueOfType(context, FunctionValue.class, 1);
+				
+				Context branchContext = context.createBranch();
 				Thread thread = new Thread(() -> {
 					try {
 						Thread.sleep(numberValue.value.longValue());
-						functionValue.call(function.context, null);
+						functionValue.call(branchContext, List.of());
 					}
-					catch (InterruptedException | CodeError | ThrowValue e) {
-						if (!(e instanceof ThrowStop))
-							System.out.println("WARN: An error was caught in schedule() call, check that you are passing in a valid function");
+					catch (InterruptedException | ThrowValue e) {
+						System.out.println("WARN: An error was caught in schedule() call, check that you are passing in a valid function");
+					}
+					catch (CodeError e) {
+						System.out.println(e.toString(context));
 					}
 				}, "Schedule Thread");
 				thread.setDaemon(true);
@@ -94,47 +97,47 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 				return new NullValue();
 			}),
 			
-			new BuiltInFunction("random", "bound", function -> {
-				NumberValue numValue = function.getValueForType(NumberValue.class, 0, null);
+			new BuiltInFunction("random", "bound", (context, function) -> {
+				NumberValue numValue = function.getParameterValueOfType(context, NumberValue.class, 0);
 				return new NumberValue(Math.random() * numValue.value);
 			}),
 			
-			new BuiltInFunction("round", "number", function -> {
-				NumberValue numValue = function.getValueForType(NumberValue.class, 0, null);
+			new BuiltInFunction("round", "number", (context, function) -> {
+				NumberValue numValue = function.getParameterValueOfType(context, NumberValue.class, 0);
 				return new NumberValue(Math.round(numValue.value));
 			}),
 			
-			new BuiltInFunction("roundUp", "number", function -> {
-				NumberValue numValue = function.getValueForType(NumberValue.class, 0, null);
+			new BuiltInFunction("roundUp", "number", (context, function) -> {
+				NumberValue numValue = function.getParameterValueOfType(context, NumberValue.class, 0);
 				return new NumberValue(Math.ceil(numValue.value));
 			}),
 			
-			new BuiltInFunction("roundDown", "number", function -> {
-				NumberValue numValue = function.getValueForType(NumberValue.class, 0, null);
+			new BuiltInFunction("roundDown", "number", (context, function) -> {
+				NumberValue numValue = function.getParameterValueOfType(context, NumberValue.class, 0);
 				return new NumberValue(Math.floor(numValue.value));
 			}),
 			
-			new BuiltInFunction("modulus", List.of("number1", "number2"), function -> {
-				NumberValue numberValue1 = function.getValueForType(NumberValue.class, 0, null);
-				NumberValue numberValue2 = function.getValueForType(NumberValue.class, 1, null);
+			new BuiltInFunction("modulus", List.of("number1", "number2"), (context, function) -> {
+				NumberValue numberValue1 = function.getParameterValueOfType(context, NumberValue.class, 0);
+				NumberValue numberValue2 = function.getParameterValueOfType(context, NumberValue.class, 1);
 				return new NumberValue(numberValue1.value % numberValue2.value);
 			}),
 			
-			new BuiltInFunction("len", "value", function -> {
-				Value<?> value = function.getValueFromTable(function.argumentNames.get(0));
+			new BuiltInFunction("len", "value", (context, function) -> {
+				Value<?> value = function.getParameterValue(context, 0);
 				if (value instanceof ListValue) {
-					ListValue listValue = function.getValueForType(ListValue.class, 0, null);
+					ListValue listValue = function.getParameterValueOfType(context, ListValue.class, 0);
 					return new NumberValue(listValue.value.size());
 				}
 				if (value instanceof StringValue) {
-					StringValue stringValue = function.getValueForType(StringValue.class, 0, null);
+					StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
 					return new NumberValue(stringValue.value.length());
 				}
-				throw new ErrorRuntime("Cannot pass " + value.toString() + " into len()", function.startPos, function.endPos, function.context);
+				throw new ErrorRuntime("Cannot pass " + value.toString() + " into len()", function.startPos, function.endPos, context);
 			}),
 			
-			new BuiltInFunction("stringToList", "string", function -> {
-				StringValue stringValue = function.getValueForType(StringValue.class, 0, null);
+			new BuiltInFunction("stringToList", "string", (context, function) -> {
+				StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
 				List<Value<?>> stringList = new ArrayList<>();
 				for (char c : stringValue.value.toCharArray()) {
 					stringList.add(new StringValue(String.valueOf(c)));
@@ -142,13 +145,13 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 				return new ListValue(stringList);
 			}),
 			
-			new BuiltInFunction("stringOf", "value", function -> {
-				Value<?> value = function.getValueFromTable(function.argumentNames.get(0));
+			new BuiltInFunction("stringOf", "value", (context, function) -> {
+				Value<?> value = function.getParameterValue(context, 0);
 				return new StringValue(value.toString());
 			}),
 			
-			new BuiltInFunction("numberOf", "value", function -> {
-				Value<?> stringValue = function.getValueFromTable(function.argumentNames.get(0));
+			new BuiltInFunction("numberOf", "value", (context, function) -> {
+				Value<?> stringValue = function.getParameterValue(context, 0);
 				try {
 					return new NumberValue(Double.parseDouble(stringValue.toString()));
 				}
@@ -158,13 +161,13 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 				}
 			}),
 			
-			new BuiltInFunction("getTime", (function) -> new StringValue(DateTimeFormatter.ofPattern("HH:mm:ss").format(LocalTime.now()))),
+			new BuiltInFunction("getTime", (context, function) -> new StringValue(DateTimeFormatter.ofPattern("HH:mm:ss").format(LocalTime.now()))),
 			
-			new BuiltInFunction("isString", "value", function -> function.isType(StringValue.class)),
-			new BuiltInFunction("isNumber", "value", function -> function.isType(NumberValue.class)),
-			new BuiltInFunction("isBoolean", "value", function -> function.isType(BooleanValue.class)),
-			new BuiltInFunction("isFunction", "value", function -> function.isType(FunctionValue.class)),
-			new BuiltInFunction("isList", "value", function -> function.isType(ListValue.class))
+			new BuiltInFunction("isString", "value", (context, function) -> function.isType(context, StringValue.class)),
+			new BuiltInFunction("isNumber", "value", (context, function) -> function.isType(context, NumberValue.class)),
+			new BuiltInFunction("isBoolean", "value", (context, function) -> function.isType(context, BooleanValue.class)),
+			new BuiltInFunction("isFunction", "value", (context, function) -> function.isType(context, FunctionValue.class)),
+			new BuiltInFunction("isList", "value", (context, function) -> function.isType(context, ListValue.class))
 		);
 	}
 }

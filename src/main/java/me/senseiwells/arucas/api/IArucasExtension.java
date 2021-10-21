@@ -1,6 +1,6 @@
 package me.senseiwells.arucas.api;
 
-import me.senseiwells.arucas.values.functions.BuiltInFunction;
+import me.senseiwells.arucas.extensions.BuiltInFunction;
 
 import java.util.Set;
 

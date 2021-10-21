@@ -1,7 +1,5 @@
 package me.senseiwells.arucas.utils;
 
-import me.senseiwells.arucas.api.IArucasExtension;
-import me.senseiwells.arucas.values.functions.BuiltInFunction;
 import me.senseiwells.arucas.values.Value;
 
 import java.util.*;
@@ -58,6 +56,13 @@ public class SymbolTable {
 			parentTable.symbolMap.put(name, value);
 		else
 			this.symbolMap.put(name, value);
+	}
+	
+	/**
+	 * Change the value of a local variable called name.
+	 */
+	public void setLocal(String name, Value<?> value) {
+		this.symbolMap.put(name, value);
 	}
 	
 	/**

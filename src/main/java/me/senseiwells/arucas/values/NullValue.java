@@ -8,17 +8,17 @@ public class NullValue extends Value<Object> {
 
 	@Override
 	public BooleanValue isEqual(Value<?> other) {
-		return (BooleanValue) new BooleanValue(other.value == null).setContext(this.context);
+		return new BooleanValue(other.value == null);
 	}
 
 	@Override
 	public BooleanValue isNotEqual(Value<?> other) {
-		return (BooleanValue) new BooleanValue(other.value != null).setContext(this.context);
+		return new BooleanValue(other.value != null);
 	}
 
 	@Override
 	public Value<?> copy() {
-		return new NullValue().setPos(this.startPos, this.endPos).setContext(this.context);
+		return new NullValue().setPos(this.startPos, this.endPos);
 	}
 
 	@Override

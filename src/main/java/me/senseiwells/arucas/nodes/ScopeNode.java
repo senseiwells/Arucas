@@ -28,6 +28,6 @@ public class ScopeNode extends Node {
 			elements.add(elementNode.visit(context));
 		
 		context.popScope();
-		return new ListValue(elements).setPos(this.startPos, this.endPos).setContext(context);
+		return new ListValue(elements).setPos(this.startPos, this.endPos);
 	}
 }

@@ -33,7 +33,7 @@ public class ArucasHelper {
 			.create();
 		
 		List<Token> tokens = new Lexer(syntax, "").createTokens();
-		return new NodeContext(new Parser(tokens).parse(), context);
+		return new NodeContext(new Parser(tokens, context).parse(), context);
 	}
 	
 	public static String runUnsafe(String syntax) throws CodeError, ThrowValue {

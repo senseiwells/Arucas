@@ -17,6 +17,6 @@ public class StringNode extends Node {
 
 	@Override
 	public Value<?> visit(Context context) {
-		return value.setContext(context);
+		return this.value;
 	}
 }

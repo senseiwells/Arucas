@@ -36,6 +36,6 @@ public class IfNode extends Node {
 			this.elseNode.visit(context);
 		
 		context.popScope();
-		return new NullValue().setContext(context);
+		return new NullValue();
 	}
 }

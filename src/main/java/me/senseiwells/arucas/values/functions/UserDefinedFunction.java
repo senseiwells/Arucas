@@ -20,13 +20,13 @@ public class UserDefinedFunction extends FunctionValue {
 	}
 
 	public Value<?> execute(Context context, List<Value<?>> arguments) throws CodeError, ThrowValue {
-		this.checkAndPopulateArguments(arguments, this.argumentNames, context);
+		this.checkAndPopulateArguments(context, arguments, this.argumentNames);
 		this.bodyNode.visit(context);
 		return new NullValue();
 	}
 
 	@Override
 	public Value<?> copy() {
-		return new UserDefinedFunction(this.value, this.bodyNode, this.argumentNames).setPos(this.startPos, this.endPos).setContext(this.context);
+		return new UserDefinedFunction(this.value, this.bodyNode, this.argumentNames).setPos(this.startPos, this.endPos);
 	}
 }

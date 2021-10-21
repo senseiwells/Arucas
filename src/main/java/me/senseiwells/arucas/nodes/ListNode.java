@@ -25,6 +25,6 @@ public class ListNode extends Node {
 		for (Node elementNode : this.elementNodes)
 			elements.add(elementNode.visit(context));
 		
-		return new ListValue(elements).setPos(this.startPos, this.endPos).setContext(context);
+		return new ListValue(elements).setPos(this.startPos, this.endPos);
 	}
 }

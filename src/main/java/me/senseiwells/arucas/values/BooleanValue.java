@@ -7,19 +7,19 @@ public class BooleanValue extends Value<Boolean> {
 	}
 
 	public BooleanValue isAnd(BooleanValue other) {
-		return (BooleanValue) new BooleanValue(this.value && other.value).setContext(this.context);
+		return new BooleanValue(this.value && other.value);
 	}
 
 	public BooleanValue isOr(BooleanValue other) {
-		return (BooleanValue) new BooleanValue(this.value || other.value).setContext(this.context);
+		return new BooleanValue(this.value || other.value);
 	}
 
 	public BooleanValue not() {
-		return (BooleanValue) new BooleanValue(!this.value).setContext(this.context);
+		return new BooleanValue(!this.value);
 	}
 
 	@Override
 	public Value<Boolean> copy() {
-		return new BooleanValue(this.value).setPos(this.startPos, this.endPos).setContext(this.context);
+		return new BooleanValue(this.value).setPos(this.startPos, this.endPos);
 	}
 }

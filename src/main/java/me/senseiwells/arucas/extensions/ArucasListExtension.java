@@ -2,10 +2,10 @@ package me.senseiwells.arucas.extensions;
 
 import me.senseiwells.arucas.api.IArucasExtension;
 import me.senseiwells.arucas.throwables.CodeError;
+import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.ListValue;
 import me.senseiwells.arucas.values.NumberValue;
 import me.senseiwells.arucas.values.Value;
-import me.senseiwells.arucas.values.functions.BuiltInFunction;
 import me.senseiwells.arucas.values.functions.FunctionDefinition;
 
 import java.util.List;
@@ -21,28 +21,28 @@ public class ArucasListExtension implements IArucasExtension {
 	@Override
 	public Set<BuiltInFunction> getDefinedFunctions() {
 		return Set.of(
-			new ListFunction("getIndex", "index", function -> modifyListIndex(function, false)),
-			new ListFunction("removeIndex", "index", function -> modifyListIndex(function, true)),
+			new ListFunction("getIndex", "index", (context, function) -> modifyListIndex(context, function, false)),
+			new ListFunction("removeIndex", "index", (context, function) -> modifyListIndex(context, function, true)),
 			
-			new ListFunction("append", "value", function -> {
-				ListValue listValue = function.getValueForType(ListValue.class, 0, null);
-				Value<?> value = function.getValueFromTable(function.argumentNames.get(1));
+			new ListFunction("append", "value", (context, function) -> {
+				ListValue listValue = function.getParameterValueOfType(context, ListValue.class, 0);
+				Value<?> value = function.getParameterValue(context, 1);
 				listValue.value.add(value);
 				return listValue;
 			}),
 			
-			new ListFunction("concat", "otherList", function -> {
-				ListValue list1 = function.getValueForType(ListValue.class, 0, null);
-				ListValue list2 = function.getValueForType(ListValue.class, 1, null);
+			new ListFunction("concat", "otherList", (context, function) -> {
+				ListValue list1 = function.getParameterValueOfType(context, ListValue.class, 0);
+				ListValue list2 = function.getParameterValueOfType(context, ListValue.class, 1);
 				list1.value.addAll(list2.value);
 				return list1;
 			})
 		);
 	}
 	
-	private static Value<?> modifyListIndex(BuiltInFunction function, boolean delete) throws CodeError {
-		ListValue listValue = function.getValueForType(ListValue.class, 0, null);
-		NumberValue numberValue = function.getValueForType(NumberValue.class, 1, null);
+	private static Value<?> modifyListIndex(Context context, BuiltInFunction function, boolean delete) throws CodeError {
+		ListValue listValue = function.getParameterValueOfType(context, ListValue.class, 0);
+		NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 1);
 		int index = numberValue.value.intValue();
 		if (index >= listValue.value.size() || index < 0)
 			throw function.throwInvalidParameterError("Parameter 2 is out of bounds");

@@ -6,12 +6,50 @@ A = 0;
 B = '1';
 C = true;
 
+fun g() {
+    return A;
+}
 
 fun test(A, B, C) {
+    print('Inside call');
+    print('-> A = ' + stringOf(A));
+    print('-> B = ' + stringOf(B));
+    print('-> C = ' + stringOf(C));
+    g();
+}
 
+schedule(1300, fun() {
+    // thread 2
+    // scope + 1
+    (fun() {
+        // FunctionScope + 1
+        W = 8;
+        while(true) {
+            sleep(400);
+            print('thread - sleep');
+            W = W - 1;
+            debug(true);
+        }
+        // ((-1) ^ 2);
+        // FunctionScope - 1
+    })();
+    // scope -1
+});
+
+
+// thread 1
+{
+    W = 12;
+    local_var = 'fun_string';
+    while (W > 5) {
+        sleep(400);
+        print('My local variable -> ' + stringOf(local_var));
+        W = W - 1;
+    }
 }
 
 test(true, 3, 'text');
-print(stringOf(A));
-print(stringOf(B));
-print(stringOf(C));
+print('Outside call');
+print('-> A = ' + stringOf(A));
+print('-> B = ' + stringOf(B));
+print('-> C = ' + stringOf(C));

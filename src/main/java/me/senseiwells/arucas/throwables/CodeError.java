@@ -1,5 +1,6 @@
 package me.senseiwells.arucas.throwables;
 
+import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.Position;
 
 public class CodeError extends Exception {
@@ -17,6 +18,10 @@ public class CodeError extends Exception {
 	
 	@Override
 	public String toString() {
+		return toString(null);
+	}
+	
+	public String toString(Context context) {
 		return "%s - '%s'\nFile: %s, Line: %d, Column: %d".formatted(
 			this.errorType.stringName, this.getMessage(),
 			this.startPos.fileName, this.startPos.line + 1, this.startPos.column + 1
@@ -26,6 +31,7 @@ public class CodeError extends Exception {
 	public enum ErrorType {
 		ILLEGAL_CHAR_ERROR      ("Illegal Character Error"),
 		ILLEGAL_SYNTAX_ERROR    ("Illegal Syntax Error"),
+		UNKNOWN_IDENTIFIER      ("Variable or function was not found"),
 		ILLEGAL_OPERATION_ERROR ("Illegal Operation Error"),
 		EXPECTED_CHAR_ERROR     ("Expected Character Error"),
 		RUNTIME_ERROR           ("Runtime Error"),

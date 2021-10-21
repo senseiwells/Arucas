@@ -13,7 +13,7 @@ public class Run {
 	
 	public static Value<?> run(Context context, String fileName, String fileContent) throws CodeError {
 		List<Token> values = new Lexer(fileContent, fileName).createTokens();
-		Node nodeResult = new Parser(values).parse();
+		Node nodeResult = new Parser(values, context).parse();
 		try {
 			return nodeResult.visit(context);
 		}
