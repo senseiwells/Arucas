@@ -122,6 +122,9 @@ public class Parser {
 				// FunctionDeclaration
 				return this.functionDefinition(false);
 			}
+			case TRY -> {
+				return this.tryExpression();
+			}
 		}
 		
 		Node node = this.expression();
@@ -190,8 +193,6 @@ public class Parser {
 	}
 
 	private Node ifExpression() throws CodeError {
-		if (this.currentToken.type != Token.Type.IF)
-			throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected '" + Token.Type.IF + "'", this.currentToken.startPos, this.currentToken.endPos);
 		this.advance();
 		if (this.currentToken.type != Token.Type.LEFT_BRACKET)
 			throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected 'if (...)'", this.currentToken.startPos, this.currentToken.endPos);
@@ -274,6 +275,18 @@ public class Parser {
 		valueDelegate.setDelegate(functionNode.functionValue);
 		this.context.setVariable(variableNameToken.content, functionNode.functionValue);
 		return functionNode;
+	}
+
+	private Node tryExpression() throws CodeError {
+		this.advance();
+		Node tryStatements = this.statements();
+
+		if (this.currentToken.type != Token.Type.CATCH)
+			throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected 'catch' after 'try'", this.currentToken.startPos, this.currentToken.endPos);
+
+		this.advance();
+		Node catchStatements = this.statements();
+		return new TryNode(tryStatements, catchStatements);
 	}
 
 	private Node listExpression() throws CodeError {

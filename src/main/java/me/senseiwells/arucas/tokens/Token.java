@@ -86,7 +86,9 @@ public class Token {
 		BREAK,
 		VAR,
 		RETURN,
-		FUN
+		FUN,
+		TRY,
+		CATCH
 		;
 		
 		public boolean isTypeInSet(Set<Type> types) {

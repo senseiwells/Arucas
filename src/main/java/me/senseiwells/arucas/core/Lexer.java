@@ -76,6 +76,8 @@ public class Lexer {
 			.addRule(Type.RETURN, i -> i.addString("return"))
 			.addRule(Type.VAR, i -> i.addString("var"))
 			.addRule(Type.FUN, i -> i.addString("fun"))
+			.addRule(Type.TRY, i -> i.addString("try"))
+			.addRule(Type.CATCH, i -> i.addString("catch"))
 		;
 	}
 	

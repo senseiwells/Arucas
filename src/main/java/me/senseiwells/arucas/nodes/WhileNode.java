@@ -21,7 +21,7 @@ public class WhileNode extends Node {
 	public Value<?> visit(Context context) throws CodeError, ThrowValue {
 		context.pushWhileScope(this.startPos);
 		
-		while (true) {
+		while (!Thread.currentThread().isInterrupted()) {
 			Value<?> conditionValue = this.condition.visit(context);
 			if (!(conditionValue instanceof BooleanValue booleanValue))
 				throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "Condition must result in either 'true' or 'false'", this.startPos, this.endPos);
@@ -36,7 +36,6 @@ public class WhileNode extends Node {
 			}
 			catch (ThrowValue.Continue tv) {
 				context.moveScope(context.getSymbolTable().getContinueScope());
-				continue;
 			}
 		}
 		
