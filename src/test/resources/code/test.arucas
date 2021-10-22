@@ -1,6 +1,6 @@
-// run("D:/Java/Arucas/src/main/resources/code/test.arucas");
-// run("E:/Java/Projects/Arucas/src/main/resources/code/test.arucas");
-// run("C:/Users/Admin/git/Arucas/src/main/resources/code/test.arucas");
+// run("D:/Java/Arucas/src/test/resources/code/test.arucas");
+// run("E:/Java/Projects/Arucas/src/test/resources/code/test.arucas");
+// run("C:/Users/Admin/git/Arucas/src/test/resources/code/test.arucas");
 
 // Lets sort this list for only realstrings
 

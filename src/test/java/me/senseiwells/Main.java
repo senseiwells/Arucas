@@ -16,7 +16,7 @@ public class Main {
 	public static void main(String[] args) {
 		Context context = new ContextBuilder()
 			.setDisplayName("System.in")
-			.setExtensions(Set.of(ArucasBuiltInExtension.class, ArucasListExtension.class))
+			.setExtensions(ArucasBuiltInExtension.class, ArucasListExtension.class)
 			.create();
 		
 		while (true) {
