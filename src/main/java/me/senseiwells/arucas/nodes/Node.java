@@ -9,8 +9,8 @@ import me.senseiwells.arucas.values.Value;
 
 public abstract class Node {
 	public final Token token;
-	public Position startPos;
-	public Position endPos;
+	public final Position startPos;
+	public final Position endPos;
 
 	Node(Token token, Position startPos, Position endPos) {
 		this.token = token;

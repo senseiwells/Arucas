@@ -7,8 +7,6 @@ import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.Position;
 import me.senseiwells.arucas.values.Value;
 
-import java.util.Objects;
-
 public class ReturnNode extends Node {
 	public final Node returnNode;
 

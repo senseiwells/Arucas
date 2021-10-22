@@ -21,7 +21,8 @@ public class ContextBuilder {
 		this.displayName = Objects.requireNonNull(displayName);
 		return this;
 	}
-	
+
+	@SuppressWarnings("unused")
 	public ContextBuilder setExtensions(List<Class<? extends IArucasExtension>> extensions) {
 		this.extensions = Objects.requireNonNull(extensions);
 		return this;

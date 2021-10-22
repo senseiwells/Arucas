@@ -1,7 +1,6 @@
 package me.senseiwells.arucas.utils;
 
 public class Position {
-	
 	public final String fileName;
 	public final int index;
 	public final int line;

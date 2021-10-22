@@ -2,10 +2,8 @@ package me.senseiwells.arucas.extensions;
 
 import me.senseiwells.arucas.api.IArucasExtension;
 import me.senseiwells.arucas.core.Run;
-import me.senseiwells.arucas.throwables.CodeError;
-import me.senseiwells.arucas.throwables.ErrorRuntime;
+import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowStop;
-import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.*;
 import me.senseiwells.arucas.values.functions.FunctionValue;
@@ -18,6 +16,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 public class ArucasBuiltInExtension implements IArucasExtension {
@@ -40,7 +39,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 					Run.run(childContext, filePath, fileContent);
 				}
 				catch (IOException | InvalidPathException e) {
-					throw new ErrorRuntime("Failed to execute script '" + filePath + "' \n" + e, function.startPos, function.endPos, context);
+					throw new RuntimeError("Failed to execute script '" + filePath + "' \n" + e, function.startPos, function.endPos, context);
 				}
 				return new NullValue();
 			}),
@@ -65,7 +64,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 					Thread.sleep(numberValue.value.longValue());
 				}
 				catch (InterruptedException e) {
-					throw new ErrorRuntime(
+					throw new RuntimeError(
 						"An error occurred while trying to call 'sleep()'",
 						function.startPos,
 						function.endPos,
@@ -102,7 +101,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
    
 			new BuiltInFunction("random", "bound", (context, function) -> {
 				NumberValue numValue = function.getParameterValueOfType(context, NumberValue.class, 0);
-				return new NumberValue(Math.random() * numValue.value);
+				return new NumberValue(new Random().nextInt(numValue.value.intValue()));
 			}),
 			
 			new BuiltInFunction("round", "number", (context, function) -> {
@@ -136,7 +135,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 					StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
 					return new NumberValue(stringValue.value.length());
 				}
-				throw new ErrorRuntime("Cannot pass " + value.toString() + " into len()", function.startPos, function.endPos, context);
+				throw new RuntimeError("Cannot pass " + value.toString() + " into len()", function.startPos, function.endPos, context);
 			}),
 			
 			new BuiltInFunction("stringToList", "string", (context, function) -> {
@@ -154,14 +153,18 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 			}),
 			
 			new BuiltInFunction("numberOf", "value", (context, function) -> {
-				Value<?> stringValue = function.getParameterValue(context, 0);
+				Value<?> value = function.getParameterValue(context, 0);
 				try {
-					return new NumberValue(Double.parseDouble(stringValue.toString()));
+					return new NumberValue(Double.parseDouble(value.toString()));
 				}
 				catch (NumberFormatException e) {
-					// If you throw error then you cannot check whether a string can be converted to a num
-					return new NullValue();
+					throw new RuntimeError("Cannot parse %s as a NumberValue".formatted(value), function.startPos, function.endPos, context);
 				}
+			}),
+
+			new BuiltInFunction("throwRuntimeError", "message", (context, function) -> {
+				StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
+				throw new RuntimeError(stringValue.value, function.startPos, function.endPos, context);
 			}),
 			
 			new BuiltInFunction("getTime", (context, function) -> new StringValue(DateTimeFormatter.ofPattern("HH:mm:ss").format(LocalTime.now()))),

@@ -53,7 +53,7 @@ public class ArucasListExtension implements IArucasExtension {
 			NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 1);
 			int index = numberValue.value.intValue();
 			if (index >= listValue.value.size() || index < 0)
-				throw function.throwInvalidParameterError("Parameter 2 is out of bounds");
+				throw function.throwInvalidParameterError("Parameter 2 is out of bounds", context);
 			
 			return listValue.value.remove(index);
 		}
@@ -65,7 +65,7 @@ public class ArucasListExtension implements IArucasExtension {
 			NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 1);
 			int index = numberValue.value.intValue();
 			if (index >= listValue.value.size() || index < 0)
-				throw function.throwInvalidParameterError("Parameter 2 is out of bounds");
+				throw function.throwInvalidParameterError("Parameter 2 is out of bounds", context);
 			
 			return listValue.value.get(index);
 		}

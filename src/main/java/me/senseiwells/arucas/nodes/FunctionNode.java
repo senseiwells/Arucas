@@ -3,7 +3,6 @@ package me.senseiwells.arucas.nodes;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.tokens.Token;
-import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.functions.UserDefinedFunction;
 import me.senseiwells.arucas.values.Value;
 
@@ -11,18 +10,18 @@ import java.util.List;
 
 public class FunctionNode extends Node {
 	public final Token variableNameToken;
-	public final List<Token> argumentNameToken;
+	public final List<String> argumentNames;
 	public final Node bodyNode;
 	public final UserDefinedFunction functionValue;
 
-	public FunctionNode(Token varNameToken, List<Token> argumentNameToken, Node bodyNode) {
+	public FunctionNode(Token varNameToken, List<String> argumentNames, Node bodyNode) {
 		super(bodyNode.token, varNameToken.startPos, bodyNode.endPos);
 		this.variableNameToken = varNameToken;
-		this.argumentNameToken = argumentNameToken;
+		this.argumentNames = argumentNames;
 		this.bodyNode = bodyNode;
 		this.functionValue = new UserDefinedFunction(varNameToken.content,
 			this.bodyNode,
-			this.argumentNameToken.stream().map(t -> t.content).toList()
+			this.argumentNames
 		);
 		this.functionValue.setPos(this.startPos, this.endPos);
 	}

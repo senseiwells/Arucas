@@ -1,5 +1,6 @@
 package me.senseiwells.arucas.nodes;
 
+import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
@@ -39,9 +40,11 @@ public class BinaryOperatorNode extends Node {
 			}
 			return result.setPos(this.startPos, this.endPos);
 		}
-		//When you try to use an operator that doesn't work e.g. true/false
 		catch (ClassCastException classCastException) {
-			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "The operation '%s' cannot be applied to '%s' and '%s'".formatted(this.token.type, left.value, right.value), this.startPos, this.endPos);
+			throw new RuntimeError("The operation '%s' cannot be applied to '%s' and '%s'".formatted(this.token.type, left.value, right.value), this.startPos, this.endPos, context);
+		}
+		catch (RuntimeError e) {
+			throw e.setContext(context);
 		}
 	}
 

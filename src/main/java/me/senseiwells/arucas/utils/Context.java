@@ -48,15 +48,18 @@ public class Context {
 		this.builtInFunctions = branch.builtInFunctions;
 		this.parentContext = branch.parentContext;
 	}
-	
+
+	@SuppressWarnings("unused")
 	public Context createBranch() {
 		return new Context(this, this.symbolTable);
 	}
-	
+
+	@SuppressWarnings("unused")
 	public Context createRootBranch() {
 		return new Context(this, this.symbolTable.getRoot());
 	}
-	
+
+	@SuppressWarnings("unused")
 	public Context createBranchFromPosition(SymbolTable symbolTable) {
 		if (this.symbolTable.getRoot() == symbolTable.getRoot())
 			return new Context(this, symbolTable);

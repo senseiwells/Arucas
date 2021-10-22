@@ -8,7 +8,6 @@ import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
 
 public class IfNode extends Node {
-
 	public final Node conditionNode;
 	public final Node bodyNode;
 	public final Node elseNode;

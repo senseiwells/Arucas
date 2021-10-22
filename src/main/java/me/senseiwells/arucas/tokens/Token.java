@@ -90,10 +90,14 @@ public class Token {
 		TRY,
 		CATCH
 		;
-		
-		public boolean isTypeInSet(Set<Type> types) {
-			return types.contains(this);
-		}
+
+		public static Set<Type> comparisonTokens = Set.of(
+				EQUALS,
+				NOT_EQUALS,
+				LESS_THAN,
+				MORE_THAN,
+				LESS_THAN_EQUAL,
+				MORE_THAN_EQUAL
+		);
 	}
-	
 }

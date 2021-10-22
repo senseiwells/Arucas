@@ -1,7 +1,7 @@
 package me.senseiwells.test;
 
 import me.senseiwells.arucas.throwables.CodeError;
-import me.senseiwells.arucas.throwables.ErrorRuntime;
+import me.senseiwells.arucas.throwables.RuntimeError;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -57,19 +57,19 @@ public class ArucasStatementTest {
 		assertEquals("2", ArucasHelper.runSafe("X='0'; while(X == '0') { X = '2'; continue; X = '4'; } return X;"));
 		assertEquals("3", ArucasHelper.runSafeFull(
 			"""
- 			X = '0';
- 			while (X == '0') {
- 				X = '4';
- 				while (X == '4') {
- 					X = '2';
- 					continue;
- 				}
- 				if (X == '2') {
- 					X = '3';
- 					continue;
- 				}
- 			}
- 			""", "X"
+			X = '0';
+			while (X == '0') {
+				X = '4';
+				while (X == '4') {
+					X = '2';
+					continue;
+				}
+				if (X == '2') {
+					X = '3';
+					continue;
+				}
+			}
+			""", "X"
 		));
 	}
 	
@@ -96,7 +96,7 @@ public class ArucasStatementTest {
 	
 	@Test
 	public void testCallStatementNonFunction() {
-		assertThrows(ErrorRuntime.class, () -> ArucasHelper.runUnsafeFull("X = 3; X();", "X"));
+		assertThrows(RuntimeError.class, () -> ArucasHelper.runUnsafeFull("X = 3; X();", "X"));
 		assertEquals("3", ArucasHelper.runSafeFull("fun X() { return '3'; } Y = X();", "Y"));
 	}
 	
@@ -110,8 +110,8 @@ public class ArucasStatementTest {
 		assertEquals("valid", ArucasHelper.runSafeFull(
 			"""
 			A = null;
-	 		{
-	 			fun g() { return 'valid'; }
+			{
+				fun g() { return 'valid'; }
 				fun test() { return g(); }
 				A = test;
 			}
@@ -131,7 +131,7 @@ public class ArucasStatementTest {
 	public void testFunctionStatementScope() {
 		assertEquals("0", ArucasHelper.runSafeFull(
 			"""
-	  		X = fun() {
+			X = fun() {
 				Y = '0';
 				A = fun() { Y = '1'; };
 				A();
@@ -141,7 +141,7 @@ public class ArucasStatementTest {
 		));
 		assertThrows(CodeError.class, () -> ArucasHelper.runUnsafeFull(
 			"""
-	  		X = fun() {
+			X = fun() {
 				A = fun() { return Y; };
 				Y = '0';
 				A();
@@ -152,7 +152,7 @@ public class ArucasStatementTest {
 		assertEquals("2", ArucasHelper.runSafeFull(
 			"""
 			Q = '0';
-	  		(fun() {
+			(fun() {
 				A = fun() { Q = '2'; };
 				Q = '1';
 				A();
@@ -161,8 +161,74 @@ public class ArucasStatementTest {
 		));
 		assertEquals("3", ArucasHelper.runSafeFull(
 			"""
-	  		Q = (((fun() { return (fun() { return (fun() { X = '3'; return X; }); }); })())())();
+			Q = (((fun() { return (fun() { return (fun() { X = '3'; return X; }); }); })())())();
 			""", "Q"
+		));
+	}
+
+	@Test
+	public void testTryStatement() {
+		assertEquals("1", ArucasHelper.runSafeFull("X = '1'; try; catch (error);", "X" ));
+		assertThrows(CodeError.class, () -> ArucasHelper.runUnsafeFull(" try;", "X"));
+		assertEquals("1", ArucasHelper.runSafeFull(
+				"""
+				X = '0';
+				try {
+					X = '1';
+					throwRuntimeError("Error");
+					X = '2';
+				}
+				catch (error);
+				""", "X"
+		));
+		assertEquals("1.0", ArucasHelper.runSafeFull(
+				"""
+				X = true;
+				I = 0;
+				while (I < 10) {
+					try {
+						X = X + 1;
+					}
+					catch(error) {
+						X = -8;
+					}
+					I = I + 1;
+				}
+				""", "X"
+		));
+		assertEquals("1", ArucasHelper.runSafeFull(
+				"""
+				X = null;
+				I = 0;
+				while (I < 10) {
+					try {
+						X = fun () {
+							return '1';
+						};
+						if (I == 9) {
+							X = null;
+						}
+						X();
+					}
+					catch(error) {
+						X = '1';
+					}
+					I = I + 1;
+				}
+				""", "X"
+		));
+		assertThrows(CodeError.class, () -> ArucasHelper.runUnsafeFull(
+				"""
+				try {
+					if (true) {
+						X = '1';
+						throwRuntimeError("error");
+					}
+				}
+				catch (error) {
+					print(X);
+				}
+				""", "X"
 		));
 	}
 }

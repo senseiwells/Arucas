@@ -1,7 +1,7 @@
 package me.senseiwells.arucas.values;
 
 import me.senseiwells.arucas.throwables.CodeError;
-import me.senseiwells.arucas.throwables.ErrorRuntime;
+import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.tokens.Token;
 
 public class NumberValue extends Value<Double> {
@@ -13,7 +13,7 @@ public class NumberValue extends Value<Double> {
 	@Override
 	public NumberValue addTo(Value<?> other) throws CodeError {
 		if (!(other instanceof NumberValue otherValue))
-			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "The 'add' operator cannot be applied to %s and %s".formatted(this, other), this.startPos, this.endPos);
+			throw new RuntimeError("The 'add' operator cannot be applied to %s and %s".formatted(this, other), this.startPos, this.endPos);
 		return new NumberValue(this.value + otherValue.value);
 	}
 
@@ -25,15 +25,15 @@ public class NumberValue extends Value<Double> {
 		return new NumberValue(this.value * other.value);
 	}
 
-	public NumberValue divideBy(NumberValue other) throws ErrorRuntime {
+	public NumberValue divideBy(NumberValue other) throws RuntimeError {
 		if (other.value == 0)
-			throw new ErrorRuntime("You cannot divide by 0", other.startPos, other.endPos);
+			throw new RuntimeError("You cannot divide by 0", other.startPos, other.endPos);
 		return new NumberValue(this.value / other.value);
 	}
 
-	public NumberValue powerBy(NumberValue other) throws ErrorRuntime {
+	public NumberValue powerBy(NumberValue other) throws RuntimeError {
 		if (this.value < 0 || (other.value % 1) != 0)
-			throw new ErrorRuntime("You cannot calculate imaginary numbers", other.startPos, other.endPos);
+			throw new RuntimeError("You cannot calculate imaginary numbers", other.startPos, other.endPos);
 		
 		return new NumberValue(Math.pow(this.value, other.value));
 	}

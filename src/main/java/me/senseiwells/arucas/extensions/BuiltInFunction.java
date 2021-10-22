@@ -54,7 +54,7 @@ public class BuiltInFunction extends FunctionValue {
 		if (!clazz.isInstance(value)) {
 			throw this.throwInvalidParameterError("Must pass %s into parameter %d for %s()%s".formatted(
 				clazz.getSimpleName(), index + 1, this.value, additionalInfo == null ? "" : ("\n" + additionalInfo)
-			));
+			), context);
 		}
 		return clazz.cast(value);
 	}

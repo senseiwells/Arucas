@@ -1,5 +1,6 @@
 package me.senseiwells.arucas.nodes;
 
+import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
@@ -27,7 +28,7 @@ public class UnaryOperatorNode extends Node {
 			return value.setPos(node.startPos, node.endPos);
 		}
 		catch (ClassCastException classCastException) {
-			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "The operation '%s' cannot be applied to '%s'".formatted(this.token.type, value.value), this.startPos, this.endPos);
+			throw new RuntimeError("The operation '%s' cannot be applied to '%s'".formatted(this.token.type, value.value), this.startPos, this.endPos, context);
 		}
 	}
 

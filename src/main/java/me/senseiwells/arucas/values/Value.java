@@ -1,10 +1,11 @@
 package me.senseiwells.arucas.values;
 
 import me.senseiwells.arucas.throwables.CodeError;
+import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.Position;
 
 public abstract class Value<T> {
-	public T value;
+	public final T value;
 	public Position startPos;
 	public Position endPos;
 	
@@ -19,7 +20,7 @@ public abstract class Value<T> {
 	}
 	
 	public Value<?> addTo(Value<?> other) throws CodeError {
-		throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "The 'add' operator cannot be applied to %s and %s".formatted(this, other), this.startPos, this.endPos);
+		throw new RuntimeError("The 'add' operator cannot be applied to %s and %s".formatted(this, other), this.startPos, this.endPos);
 	}
 
 	public BooleanValue isEqual(Value<?> other) {
