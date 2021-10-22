@@ -6,6 +6,7 @@ import me.senseiwells.arucas.extensions.BuiltInFunction;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -13,14 +14,14 @@ import java.util.Set;
  */
 public class Context {
 	private final Set<String> builtInFunctions;
-	private final Set<IArucasExtension> extensions;
+	private final List<IArucasExtension> extensions;
 	
 	private final String displayName;
 	private final Context parentContext;
 	private SymbolTable symbolTable;
 	private boolean isDebug;
 	
-	private Context(String displayName, Context parentContext, Set<IArucasExtension> extensions) {
+	private Context(String displayName, Context parentContext, List<IArucasExtension> extensions) {
 		this.builtInFunctions = new HashSet<>();
 		
 		this.displayName = displayName;
@@ -36,7 +37,7 @@ public class Context {
 		}
 	}
 	
-	public Context(String displayName, Set<IArucasExtension> extensions) {
+	public Context(String displayName, List<IArucasExtension> extensions) {
 		this(displayName, null, extensions);
 	}
 	

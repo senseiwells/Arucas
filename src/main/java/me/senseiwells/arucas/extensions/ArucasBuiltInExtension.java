@@ -75,6 +75,8 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 				return new NullValue();
 			}),
 			
+            /*
+            // Implement when (I/O) is added to the language
 			new BuiltInFunction("schedule", List.of("milliseconds", "function"), (context, function) -> {
 				NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 0);
 				FunctionValue functionValue = function.getParameterValueOfType(context, FunctionValue.class, 1);
@@ -96,7 +98,8 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 				thread.start();
 				return new NullValue();
 			}),
-			
+			*/
+   
 			new BuiltInFunction("random", "bound", (context, function) -> {
 				NumberValue numValue = function.getParameterValueOfType(context, NumberValue.class, 0);
 				return new NumberValue(Math.random() * numValue.value);

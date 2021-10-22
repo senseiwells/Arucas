@@ -1,0 +1,14 @@
+// run("D:/Java/Arucas/src/test/resources/code/bug2.arucas");
+// run("E:/Java/Projects/Arucas/src/test/resources/code/bug2.arucas");
+// run("C:/Users/Admin/git/Arucas/src/test/resources/code/bug2.arucas");
+
+A = null;
+
+{
+    fun g() { return 1; }
+    fun test() { return g(); }
+    A = test;
+}
+
+result = A();
+print('result -> ' + stringOf(result));

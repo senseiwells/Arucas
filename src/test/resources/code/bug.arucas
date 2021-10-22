@@ -1,6 +1,6 @@
-// run("D:/Java/Arucas/src/main/resources/code/bug.arucas");
-// run("E:/Java/Projects/Arucas/src/main/resources/code/bug.arucas");
-// run("C:/Users/Admin/git/Arucas/src/main/resources/code/bug.arucas");
+// run("D:/Java/Arucas/src/test/resources/code/bug.arucas");
+// run("E:/Java/Projects/Arucas/src/test/resources/code/bug.arucas");
+// run("C:/Users/Admin/git/Arucas/src/test/resources/code/bug.arucas");
 
 A = 0;
 B = '1';
