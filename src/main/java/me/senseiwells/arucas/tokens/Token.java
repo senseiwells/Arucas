@@ -1,6 +1,8 @@
 package me.senseiwells.arucas.tokens;
 
 import me.senseiwells.arucas.utils.Position;
+
+import java.util.Map;
 import java.util.Set;
 
 public class Token {
@@ -34,6 +36,7 @@ public class Token {
 		// Delimiters
 		WHITESPACE,
 		SEMICOLON,
+		COLON,
 		IDENTIFIER,
 		COMMA,
 		FINISH,
@@ -68,6 +71,8 @@ public class Token {
 		
 		// Memory Operator
 		ASSIGN_OPERATOR,
+		INCREMENT,
+		DECREMENT,
 		
 		// Comparisons
 		EQUALS,
@@ -88,7 +93,8 @@ public class Token {
 		RETURN,
 		FUN,
 		TRY,
-		CATCH
+		CATCH,
+		FOR
 		;
 
 		public static Set<Type> comparisonTokens = Set.of(
@@ -98,6 +104,11 @@ public class Token {
 				MORE_THAN,
 				LESS_THAN_EQUAL,
 				MORE_THAN_EQUAL
+		);
+
+		public static Map<Type, Type> modifyVariableMap = Map.of(
+				INCREMENT, PLUS,
+				DECREMENT, MINUS
 		);
 	}
 }

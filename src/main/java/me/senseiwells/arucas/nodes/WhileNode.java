@@ -19,7 +19,7 @@ public class WhileNode extends Node {
 
 	@Override
 	public Value<?> visit(Context context) throws CodeError, ThrowValue {
-		context.pushWhileScope(this.startPos);
+		context.pushLoopScope(this.startPos);
 		
 		while (!Thread.currentThread().isInterrupted()) {
 			Value<?> conditionValue = this.condition.visit(context);

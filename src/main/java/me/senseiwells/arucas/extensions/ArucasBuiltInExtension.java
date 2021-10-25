@@ -14,10 +14,7 @@ import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 public class ArucasBuiltInExtension implements IArucasExtension {
 	
@@ -146,7 +143,24 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 				}
 				return new ListValue(stringList);
 			}),
-			
+
+			new BuiltInFunction("replaceAll", List.of("string", "remove", "replace"), (context, function) -> {
+				StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
+				StringValue remove = function.getParameterValueOfType(context, StringValue.class, 1);
+				StringValue replace = function.getParameterValueOfType(context, StringValue.class, 2);
+				return new StringValue(stringValue.value.replaceAll(remove.value, replace.value));
+			}),
+
+			new BuiltInFunction("uppercase", "string", (context, function) -> {
+				StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
+				return new StringValue(stringValue.value.toUpperCase(Locale.ROOT));
+			}),
+
+			new BuiltInFunction("lowercase", "string", (context, function) -> {
+				StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
+				return new StringValue(stringValue.value.toLowerCase(Locale.ROOT));
+			}),
+
 			new BuiltInFunction("stringOf", "value", (context, function) -> {
 				Value<?> value = function.getParameterValue(context, 0);
 				return new StringValue(value.toString());

@@ -43,7 +43,7 @@ public class Lexer {
 			.addRule(Type.BOOLEAN, i -> i.addStrings("true", "false"))
 			.addRule(Type.STRING, i -> i
 				.addMultiline("\"", "\\", "\"")
-				.addMultiline("\'", "\\", "\'")
+				.addMultiline("'", "\\", "'")
 			)
 			.addRule(Type.FLOAT, i -> i.addRegexes(
 				"[0-9]+[.][0-9]+",
@@ -53,6 +53,8 @@ public class Lexer {
 			
 			// Memory operations
 			.addRule(Type.ASSIGN_OPERATOR, i -> i.addString("="))
+			.addRule(Type.INCREMENT, i -> i.addString("++"))
+			.addRule(Type.DECREMENT, i -> i.addString("--"))
 			
 			// Brackets
 			.addRule(Type.LEFT_BRACKET, i -> i.addString("("))
@@ -64,6 +66,7 @@ public class Lexer {
 			
 			// Delimiters
 			.addRule(Type.SEMICOLON, i -> i.addString(";"))
+			.addRule(Type.COLON, i -> i.addString(":"))
 			.addRule(Type.COMMA, i -> i.addString(","))
 			
 			// Keywords
@@ -78,6 +81,7 @@ public class Lexer {
 			.addRule(Type.FUN, i -> i.addString("fun"))
 			.addRule(Type.TRY, i -> i.addString("try"))
 			.addRule(Type.CATCH, i -> i.addString("catch"))
+			.addRule(Type.FOR, i -> i.addString("for"))
 		;
 	}
 	

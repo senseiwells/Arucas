@@ -72,6 +72,18 @@ public class ArucasStatementTest {
 			""", "X"
 		));
 	}
+
+	@Test
+	public void testForStatement() {
+		assertEquals("15.0", ArucasHelper.runSafeFull(
+				"""
+				X = 0;
+				list = [1, 2, 3, 4, 5];
+				for (number : list)
+					X = X + number;
+				""", "X"
+		));
+	}
 	
 	@Test(timeout = 1000)
 	public void testScopeStatementScope() {

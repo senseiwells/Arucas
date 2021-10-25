@@ -116,6 +116,9 @@ public class Parser {
 			case TRY -> {
 				return this.tryExpression();
 			}
+			case FOR -> {
+				return this.forExpression();
+			}
 		}
 		
 		Node node = this.expression();
@@ -155,9 +158,15 @@ public class Parser {
 		//If identifier is already a variable -> can assign value without 'var' keyword
 		else if (this.currentToken.type == Token.Type.IDENTIFIER) {
 			this.advance();
-			if (this.currentToken.type == Token.Type.ASSIGN_OPERATOR) {
-				this.recede();
-				return setVariable();
+			switch (this.currentToken.type) {
+				case ASSIGN_OPERATOR -> {
+					this.recede();
+					return setVariable();
+				}
+				case INCREMENT, DECREMENT -> {
+					this.recede();
+					return modifyVariable();
+				}
 			}
 			this.recede();
 		}
@@ -183,6 +192,25 @@ public class Parser {
 		
 		this.context.setVariable(variableName.content, new NullValue());
 		return new VariableAssignNode(variableName, expression);
+	}
+
+	private VariableAssignNode modifyVariable() throws CodeError {
+		this.throwIfNotType(Token.Type.IDENTIFIER, "Expected an identifier");
+		Token variableName = this.currentToken;
+		if (this.context.isBuiltInFunction(variableName.content))
+			throw new CodeError(
+					CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
+					"Cannot modify builtIn function " + variableName + "()",
+					variableName.startPos,
+					variableName.endPos
+			);
+		Node atom = this.atom();
+		Token.Type operatorType	 = Token.Type.modifyVariableMap.get(this.currentToken.type);
+		this.advance();
+		Node numberNode = new NumberNode(new Token(Token.Type.FLOAT, "1", this.currentToken.startPos, this.currentToken.endPos));
+
+		this.context.setVariable(variableName.content, new NullValue());
+		return new VariableAssignNode(variableName, new BinaryOperatorNode(atom, new Token(operatorType, this.currentToken.startPos, this.currentToken.endPos), numberNode));
 	}
 
 	private Node ifExpression() throws CodeError {
@@ -289,6 +317,29 @@ public class Parser {
 
 		Node catchStatements = this.statements();
 		return new TryNode(tryStatements, catchStatements, errorParameterName);
+	}
+
+	private Node forExpression() throws CodeError {
+		this.advance();
+
+		this.throwIfNotType(Token.Type.LEFT_BRACKET, "Expected '(...)'");
+		this.advance();
+
+		this.throwIfNotType(Token.Type.IDENTIFIER, "Expected Identifier");
+		String forParameterName = this.currentToken.content;
+		this.context.setLocal(forParameterName, new NullValue());
+		this.advance();
+
+		this.throwIfNotType(Token.Type.COLON, "Expected ':'");
+		this.advance();
+
+		Node atom = this.atom();
+
+		this.throwIfNotType(Token.Type.RIGHT_BRACKET, "Expected ')'");
+		this.advance();
+
+		Node statements = this.statements();
+		return new ForNode(atom, statements, forParameterName);
 	}
 
 	private Node listExpression() throws CodeError {

@@ -82,7 +82,7 @@ public class Context {
 		this.symbolTable = new SymbolTable(this.symbolTable, position, false, false, false);
 	}
 	
-	public void pushWhileScope(Position position) {
+	public void pushLoopScope(Position position) {
 		this.symbolTable = new SymbolTable(this.symbolTable, position, true, true, false);
 	}
 	
