@@ -86,7 +86,6 @@ public class Token {
 		IF,
 		WHILE,
 		ELSE,
-		THEN,
 		CONTINUE,
 		BREAK,
 		VAR,
@@ -94,21 +93,16 @@ public class Token {
 		FUN,
 		TRY,
 		CATCH,
-		FOR
+		FOREACH
 		;
 
 		public static Set<Type> comparisonTokens = Set.of(
-				EQUALS,
-				NOT_EQUALS,
-				LESS_THAN,
-				MORE_THAN,
-				LESS_THAN_EQUAL,
-				MORE_THAN_EQUAL
-		);
-
-		public static Map<Type, Type> modifyVariableMap = Map.of(
-				INCREMENT, PLUS,
-				DECREMENT, MINUS
+			EQUALS,
+			NOT_EQUALS,
+			LESS_THAN,
+			MORE_THAN,
+			LESS_THAN_EQUAL,
+			MORE_THAN_EQUAL
 		);
 	}
 }

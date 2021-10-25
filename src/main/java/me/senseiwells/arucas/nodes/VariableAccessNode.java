@@ -13,8 +13,10 @@ public class VariableAccessNode extends Node {
 	@Override
 	public Value<?> visit(Context context) throws CodeError {
 		Value<?> value = context.getVariable(this.token.content);
-		if (value == null)
+		if (value == null) {
 			throw new CodeError(CodeError.ErrorType.UNKNOWN_IDENTIFIER, "%s is not defined".formatted(this.token.content), this.startPos, this.endPos);
+		}
+		
 		value = value.copy();
 		value.setPos(this.startPos, this.endPos);
 		return value;

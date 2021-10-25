@@ -2,13 +2,29 @@
 // run("E:/Java/Projects/Arucas/src/test/resources/code/bug2.arucas");
 // run("C:/Users/Admin/git/Arucas/src/test/resources/code/bug2.arucas");
 
-A = null;
+list = [ 1, 2.0, 3.1, 4.999999999999999, 7205759403792793.3223, 'asd, 1, 1, 1, f', fun() { fun test() { return test; } return test(); }(), fun() {} ];
 
-{
-    fun g() { return 1; }
-    fun test() { return g(); }
-    A = test;
+append(list, list);
+
+print('' + list);
+
+fun test() {
+    // run("C:/Users/Admin/git/Arucas/src/test/resources/code/bug2.arucas");
+    /*
+    try {
+        // Sleep forever
+        sleep(2147483647);
+    } catch(e) {
+        print('I escaped closing muhahahhaha :))))');
+        test();
+    }
+    */
 }
 
-result = A();
-print('result -> ' + stringOf(result));
+test();
+
+foreach(a : list) {
+    // append(list, a);
+    print(a);
+    print('size: ' + a + ', ' + len(list));
+}

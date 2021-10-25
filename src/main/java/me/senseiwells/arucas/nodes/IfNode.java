@@ -29,10 +29,12 @@ public class IfNode extends Node {
 			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "Condition must result in either 'true' or 'false'", this.startPos, this.endPos);
 		}
 		
-		if (booleanValue.value)
+		if (booleanValue.value) {
 			this.bodyNode.visit(context);
-		else if (!(this.elseNode instanceof NullNode))
+		}
+		else if (!(this.elseNode instanceof NullNode)) {
 			this.elseNode.visit(context);
+		}
 		
 		context.popScope();
 		return new NullValue();

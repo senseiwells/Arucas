@@ -27,19 +27,19 @@ public class ContextBuilder {
 		this.extensions = Objects.requireNonNull(extensions);
 		return this;
 	}
-    
-    @SafeVarargs
-    public final ContextBuilder setExtensions(Class<? extends IArucasExtension>... extensions) {
-        this.extensions = List.of(extensions);
-        return this;
-    }
+	
+	@SafeVarargs
+	public final ContextBuilder setExtensions(Class<? extends IArucasExtension>... extensions) {
+		this.extensions = List.of(extensions);
+		return this;
+	}
 	
 	public Context create() {
 		List<IArucasExtension> list = new ArrayList<>();
-		
+  
 		for (Class<? extends IArucasExtension> clazz : this.extensions) {
 			try {
-                list.add(clazz.getDeclaredConstructor().newInstance());
+				list.add(clazz.getDeclaredConstructor().newInstance());
 			}
 			catch (Exception e) {
 				e.printStackTrace();

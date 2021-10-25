@@ -2,6 +2,7 @@ package me.senseiwells.arucas.extensions;
 
 import me.senseiwells.arucas.api.IArucasExtension;
 import me.senseiwells.arucas.core.Run;
+import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowStop;
 import me.senseiwells.arucas.utils.Context;
@@ -36,7 +37,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 					Run.run(childContext, filePath, fileContent);
 				}
 				catch (IOException | InvalidPathException e) {
-					throw new RuntimeError("Failed to execute script '" + filePath + "' \n" + e, function.startPos, function.endPos, context);
+					throw new RuntimeError("Failed to execute script '%s' \n%s".formatted(filePath, e), function.startPos, function.endPos, context);
 				}
 				return new NullValue();
 			}),
@@ -61,18 +62,18 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 					Thread.sleep(numberValue.value.longValue());
 				}
 				catch (InterruptedException e) {
-					throw new RuntimeError(
-						"An error occurred while trying to call 'sleep()'",
+					throw new CodeError(
+						CodeError.ErrorType.INTERRUPTED_ERROR,
+						"",
 						function.startPos,
-						function.endPos,
-						context
+						function.endPos
 					);
 				}
 				return new NullValue();
 			}),
 			
-            /*
-            // Implement when (I/O) is added to the language
+			/*
+			// Implement when (I/O) is added to the language
 			new BuiltInFunction("schedule", List.of("milliseconds", "function"), (context, function) -> {
 				NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 0);
 				FunctionValue functionValue = function.getParameterValueOfType(context, FunctionValue.class, 1);
@@ -132,7 +133,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 					StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
 					return new NumberValue(stringValue.value.length());
 				}
-				throw new RuntimeError("Cannot pass " + value.toString() + " into len()", function.startPos, function.endPos, context);
+				throw new RuntimeError("Cannot pass %s into len()".formatted(value), function.startPos, function.endPos, context);
 			}),
 			
 			new BuiltInFunction("stringToList", "string", (context, function) -> {

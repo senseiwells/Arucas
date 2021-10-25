@@ -23,11 +23,18 @@ public class ForNode extends Node {
 	public Value<?> visit(Context context) throws CodeError, ThrowValue {
 		context.pushLoopScope(this.startPos);
 		Value<?> forValue = this.list.visit(context);
-		if (!(forValue instanceof ListValue listValue))
+		if (!(forValue instanceof ListValue listValue)) {
 			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "For loop must contain a list", this.startPos, this.endPos);
-		for (Value<?> value : listValue.value) {
-			if (Thread.currentThread().isInterrupted())
+		}
+		
+		for (int i = 0; i < listValue.value.size(); i++) {
+			if (Thread.currentThread().isInterrupted()) {
 				break;
+			}
+			
+			// Not thread safe
+			Value<?> value = listValue.value.get(i);
+			
 			context.setLocal(this.forParameterName, value);
 			try {
 				this.body.visit(context);

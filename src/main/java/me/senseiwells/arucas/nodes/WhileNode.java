@@ -23,10 +23,14 @@ public class WhileNode extends Node {
 		
 		while (!Thread.currentThread().isInterrupted()) {
 			Value<?> conditionValue = this.condition.visit(context);
-			if (!(conditionValue instanceof BooleanValue booleanValue))
+			if (!(conditionValue instanceof BooleanValue booleanValue)) {
 				throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "Condition must result in either 'true' or 'false'", this.startPos, this.endPos);
-			if (!booleanValue.value)
+			}
+			
+			if (!booleanValue.value) {
 				break;
+			}
+			
 			try {
 				this.body.visit(context);
 			}
