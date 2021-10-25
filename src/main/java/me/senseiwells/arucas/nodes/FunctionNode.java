@@ -29,8 +29,9 @@ public class FunctionNode extends Node {
 	@Override
 	public Value<?> visit(Context context) throws CodeError {
 		String functionName = this.variableNameToken.content;
-		if (context.isBuiltInFunction(functionName))
+		if (context.isBuiltInFunction(functionName)) {
 			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "Cannot define %s() function as it is a predefined function".formatted(functionName), this.startPos, this.endPos);
+		}
 		
 		context.setVariable(functionName, this.functionValue);
 		return this.functionValue;

@@ -47,13 +47,13 @@ public class ArucasStatementTest {
 	public void testWhileStatementScope() {
 		assertEquals("1", ArucasHelper.runSafe("X='0'; while(true)   return '1';  "));
 		assertEquals("1", ArucasHelper.runSafe("X='0'; while(X == '0') { X='1'; } return X;"));
-		assertEquals("10.0", ArucasHelper.runSafe("X=0; while(X < 10) { X = X + 1; } return X;"));
-		assertEquals("2.0", ArucasHelper.runSafe("X=0; while(X == 0) { while(true) { X = X + 1; break; } X = 2; } return X;"));
+		assertEquals("10", ArucasHelper.runSafe("X=0; while(X < 10) { X = X + 1; } return X;"));
+		assertEquals("2", ArucasHelper.runSafe("X=0; while(X == 0) { while(true) { X = X + 1; break; } X = 2; } return X;"));
 	}
 	
 	@Test(timeout = 1000)
 	public void testWhileStatementContinueBreak() {
-		assertEquals("1.0", ArucasHelper.runSafe("X=0; while(true) { X = X + 1; break; } return X;"));
+		assertEquals("1", ArucasHelper.runSafe("X=0; while(true) { X = X + 1; break; } return X;"));
 		assertEquals("2", ArucasHelper.runSafe("X='0'; while(X == '0') { X = '2'; continue; X = '4'; } return X;"));
 		assertEquals("3", ArucasHelper.runSafeFull(
 			"""
@@ -74,14 +74,14 @@ public class ArucasStatementTest {
 	}
 
 	@Test
-	public void testForStatement() {
-		assertEquals("15.0", ArucasHelper.runSafeFull(
-				"""
-				X = 0;
-				list = [1, 2, 3, 4, 5];
-				for (number : list)
-					X = X + number;
-				""", "X"
+	public void testForEachStatement() {
+		assertEquals("15", ArucasHelper.runSafeFull(
+			"""
+			X = 0;
+			list = [1, 2, 3, 4, 5];
+			foreach (number : list)
+				X = X + number;
+			""", "X"
 		));
 	}
 	
@@ -95,7 +95,7 @@ public class ArucasStatementTest {
 	
 	@Test(timeout = 1000)
 	public void testCallStatementRecursion() {
-		assertEquals("5050.0", ArucasHelper.runSafeFull(
+		assertEquals("5050", ArucasHelper.runSafeFull(
 			"""
 			fun recursion(sum, tail) {
 				if(tail == 0) return sum;
@@ -181,66 +181,66 @@ public class ArucasStatementTest {
 	@Test
 	public void testTryStatement() {
 		assertEquals("1", ArucasHelper.runSafeFull("X = '1'; try; catch (error);", "X" ));
-		assertThrows(CodeError.class, () -> ArucasHelper.runUnsafeFull(" try;", "X"));
+		assertThrows(CodeError.class, () -> ArucasHelper.compile(" try;"));
 		assertEquals("1", ArucasHelper.runSafeFull(
-				"""
-				X = '0';
+			"""
+			X = '0';
+			try {
+				X = '1';
+				throwRuntimeError("Error");
+				X = '2';
+			}
+			catch (error);
+			""", "X"
+		));
+		assertEquals("1", ArucasHelper.runSafeFull(
+			"""
+			X = true;
+			I = 0;
+			while (I < 10) {
 				try {
+					X = X + 1;
+				}
+				catch(error) {
+					X = -8;
+				}
+				I = I + 1;
+			}
+			""", "X"
+		));
+		assertEquals("1", ArucasHelper.runSafeFull(
+			"""
+			X = null;
+			I = 0;
+			while (I < 10) {
+				try {
+					X = fun () {
+						return '1';
+					};
+					if (I == 9) {
+						X = null;
+					}
+					X();
+				}
+				catch(error) {
 					X = '1';
-					throwRuntimeError("Error");
-					X = '2';
 				}
-				catch (error);
-				""", "X"
+				I = I + 1;
+			}
+			""", "X"
 		));
-		assertEquals("1.0", ArucasHelper.runSafeFull(
-				"""
-				X = true;
-				I = 0;
-				while (I < 10) {
-					try {
-						X = X + 1;
-					}
-					catch(error) {
-						X = -8;
-					}
-					I = I + 1;
+		assertThrows(CodeError.class, () -> ArucasHelper.compile(
+			"""
+			try {
+				if (true) {
+					X = '1';
+					throwRuntimeError("error");
 				}
-				""", "X"
-		));
-		assertEquals("1", ArucasHelper.runSafeFull(
-				"""
-				X = null;
-				I = 0;
-				while (I < 10) {
-					try {
-						X = fun () {
-							return '1';
-						};
-						if (I == 9) {
-							X = null;
-						}
-						X();
-					}
-					catch(error) {
-						X = '1';
-					}
-					I = I + 1;
-				}
-				""", "X"
-		));
-		assertThrows(CodeError.class, () -> ArucasHelper.runUnsafeFull(
-				"""
-				try {
-					if (true) {
-						X = '1';
-						throwRuntimeError("error");
-					}
-				}
-				catch (error) {
-					print(X);
-				}
-				""", "X"
+			}
+			catch (error) {
+				print(X);
+			}
+			"""
 		));
 	}
 }

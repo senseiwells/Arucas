@@ -23,12 +23,18 @@ public class CallNode extends Node {
 	@Override
 	public Value<?> visit(Context context) throws CodeError, ThrowValue {
 		Value<?> callValue = this.callNode.visit(context);
-		if (!(callValue instanceof FunctionValue))
-			throw new RuntimeError("Cannot call a non function value '%s'".formatted(callValue), this.startPos, this.endPos, context);
+		if (!(callValue instanceof FunctionValue)) {
+			throw new RuntimeError("Cannot call the non function value '%s'".formatted(callValue), this.startPos, this.endPos, context);
+		}
+		
+		if (Thread.currentThread().isInterrupted()) {
+			throw new CodeError(CodeError.ErrorType.INTERRUPTED_ERROR, "", this.startPos, this.endPos);
+		}
 		
 		List<Value<?>> argumentValues = new ArrayList<>();
-		for (Node node : this.argumentNodes)
+		for (Node node : this.argumentNodes) {
 			argumentValues.add(node.visit(context));
+		}
 		
 		callValue = callValue.copy().setPos(this.startPos, this.endPos);
 		Value<?> functionValue = ((FunctionValue) callValue).call(context, argumentValues);

@@ -22,8 +22,9 @@ public class ListNode extends Node {
 	@Override
 	public Value<?> visit(Context context) throws CodeError, ThrowValue {
 		List<Value<?>> elements = new ArrayList<>();
-		for (Node elementNode : this.elementNodes)
+		for (Node elementNode : this.elementNodes) {
 			elements.add(elementNode.visit(context));
+		}
 		
 		return new ListValue(elements).setPos(this.startPos, this.endPos);
 	}

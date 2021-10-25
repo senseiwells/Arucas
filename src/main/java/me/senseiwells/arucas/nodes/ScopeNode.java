@@ -6,6 +6,7 @@ import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.Position;
 import me.senseiwells.arucas.values.ListValue;
+import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
 
 import java.util.ArrayList;
@@ -23,11 +24,11 @@ public class ScopeNode extends Node {
 	public Value<?> visit(Context context) throws CodeError, ThrowValue {
 		context.pushScope(this.startPos);
 		
-		List<Value<?>> elements = new ArrayList<>();
-		for (Node elementNode : this.elementNodes)
-			elements.add(elementNode.visit(context));
+		for (Node elementNode : this.elementNodes) {
+			elementNode.visit(context);
+		}
 		
 		context.popScope();
-		return new ListValue(elements).setPos(this.startPos, this.endPos);
+		return new NullValue();
 	}
 }

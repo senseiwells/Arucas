@@ -71,7 +71,6 @@ public class Lexer {
 			
 			// Keywords
 			.addRule(Type.IF, i -> i.addString("if"))
-			.addRule(Type.THEN, i -> i.addStrings("then", "->"))
 			.addRule(Type.ELSE, i -> i.addString("else"))
 			.addRule(Type.WHILE, i -> i.addString("while"))
 			.addRule(Type.CONTINUE, i -> i.addString("continue"))
@@ -81,7 +80,7 @@ public class Lexer {
 			.addRule(Type.FUN, i -> i.addString("fun"))
 			.addRule(Type.TRY, i -> i.addString("try"))
 			.addRule(Type.CATCH, i -> i.addString("catch"))
-			.addRule(Type.FOR, i -> i.addString("for"))
+			.addRule(Type.FOREACH, i -> i.addString("foreach"))
 		;
 	}
 	

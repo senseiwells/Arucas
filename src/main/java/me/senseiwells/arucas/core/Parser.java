@@ -11,7 +11,6 @@ import me.senseiwells.arucas.values.functions.FunctionValueDelegate;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class Parser {
 
@@ -44,8 +43,9 @@ public class Parser {
 		// The initial program contains only special statements
 		while (this.currentToken.type != Token.Type.FINISH) {
 			// Remove all semicolons
-			while (this.currentToken.type == Token.Type.SEMICOLON)
+			while (this.currentToken.type == Token.Type.SEMICOLON) {
 				this.advance();
+			}
 			
 			statements.add(this.statement());
 		}
@@ -75,13 +75,15 @@ public class Parser {
 					return new NullNode(this.currentToken);
 				}
 	
-				while (this.currentToken.type == Token.Type.SEMICOLON)
+				while (this.currentToken.type == Token.Type.SEMICOLON) {
 					this.advance();
+				}
 	
 				do {
 					statements.add(this.statement());
-					while (this.currentToken.type == Token.Type.SEMICOLON)
+					while (this.currentToken.type == Token.Type.SEMICOLON) {
 						this.advance();
+					}
 				}
 				while (this.currentToken.type != Token.Type.RIGHT_CURLY_BRACKET && this.currentToken.type != Token.Type.FINISH);
 
@@ -89,7 +91,6 @@ public class Parser {
 	
 				this.advance();
 			}
-			// Read one statement only
 			default -> statements.add(this.statement());
 		}
 		
@@ -116,8 +117,8 @@ public class Parser {
 			case TRY -> {
 				return this.tryExpression();
 			}
-			case FOR -> {
-				return this.forExpression();
+			case FOREACH -> {
+				return this.forEachExpression();
 			}
 		}
 		
@@ -177,13 +178,14 @@ public class Parser {
 	private VariableAssignNode setVariable() throws CodeError {
 		this.throwIfNotType(Token.Type.IDENTIFIER, "Expected an identifier");
 		Token variableName = this.currentToken;
-		if (this.context.isBuiltInFunction(variableName.content))
+		if (this.context.isBuiltInFunction(variableName.content)) {
 			throw new CodeError(
-					CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
-					"Cannot override builtIn function " + variableName + "()",
-					variableName.startPos,
-					variableName.endPos
+				CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
+				"Cannot override builtIn function %s()".formatted(variableName),
+				variableName.startPos,
+				variableName.endPos
 			);
+		}
 		
 		this.advance();
 		this.throwIfNotType(Token.Type.ASSIGN_OPERATOR, "Expected an assignment operator");
@@ -197,20 +199,29 @@ public class Parser {
 	private VariableAssignNode modifyVariable() throws CodeError {
 		this.throwIfNotType(Token.Type.IDENTIFIER, "Expected an identifier");
 		Token variableName = this.currentToken;
-		if (this.context.isBuiltInFunction(variableName.content))
+		if (this.context.isBuiltInFunction(variableName.content)) {
 			throw new CodeError(
-					CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
-					"Cannot modify builtIn function " + variableName + "()",
-					variableName.startPos,
-					variableName.endPos
+				CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
+				"Cannot modify builtIn function %s()".formatted(variableName),
+				variableName.startPos,
+				variableName.endPos
 			);
+		}
 		Node atom = this.atom();
-		Token.Type operatorType	 = Token.Type.modifyVariableMap.get(this.currentToken.type);
+		Token operatorToken = this.currentToken;
+		Token.Type operatorType = switch (this.currentToken.type) {
+			case INCREMENT -> Token.Type.PLUS;
+			case DECREMENT -> Token.Type.MINUS;
+			default -> throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Unknown unary memory operator", operatorToken.startPos, operatorToken.endPos);
+		};
+		
 		this.advance();
-		Node numberNode = new NumberNode(new Token(Token.Type.FLOAT, "1", this.currentToken.startPos, this.currentToken.endPos));
-
+		Node numberNode = new NumberNode(new Token(Token.Type.FLOAT, "1", operatorToken.startPos, operatorToken.endPos));
+		
 		this.context.setVariable(variableName.content, new NullValue());
-		return new VariableAssignNode(variableName, new BinaryOperatorNode(atom, new Token(operatorType, this.currentToken.startPos, this.currentToken.endPos), numberNode));
+		return new VariableAssignNode(variableName,
+			new BinaryOperatorNode(atom, new Token(operatorType, operatorToken.startPos, operatorToken.endPos), numberNode)
+		);
 	}
 
 	private Node ifExpression() throws CodeError {
@@ -246,21 +257,22 @@ public class Parser {
 		
 		if (isLambda) {
 			variableNameToken = new Token(
-					Token.Type.IDENTIFIER, "%d$lambda".formatted(functionLambdaIndex++),
-					this.currentToken.startPos,
-					this.currentToken.endPos
+				Token.Type.IDENTIFIER, "%d$lambda".formatted(functionLambdaIndex++),
+				this.currentToken.startPos,
+				this.currentToken.endPos
 			);
 		}
 		else {
 			throwIfNotType(Token.Type.IDENTIFIER, "Expected function name");
 
 			variableNameToken = this.currentToken;
-			if (this.context.isBuiltInFunction(variableNameToken.content))
+			if (this.context.isBuiltInFunction(variableNameToken.content)) {
 				throw new CodeError(
-						CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "Cannot override builtIn function " + variableNameToken + "()",
-						variableNameToken.startPos,
-						variableNameToken.endPos
+					CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "Cannot override builtIn function %s()".formatted(variableNameToken),
+					variableNameToken.startPos,
+					variableNameToken.endPos
 				);
+			}
 
 			this.advance();
 		}
@@ -319,7 +331,7 @@ public class Parser {
 		return new TryNode(tryStatements, catchStatements, errorParameterName);
 	}
 
-	private Node forExpression() throws CodeError {
+	private Node forEachExpression() throws CodeError {
 		this.advance();
 
 		this.throwIfNotType(Token.Type.LEFT_BRACKET, "Expected '(...)'");
@@ -389,7 +401,7 @@ public class Parser {
 	
 	private Node arithmeticExpression() throws CodeError {
 		Node left = this.term();
-		while (Set.of(Token.Type.PLUS, Token.Type.MINUS).contains(this.currentToken.type)) {
+		while (this.currentToken.type == Token.Type.PLUS || this.currentToken.type == Token.Type.MINUS) {
 			Token operatorToken = this.currentToken;
 			this.advance();
 			Node right = this.term();
@@ -400,7 +412,7 @@ public class Parser {
 	
 	private Node term() throws CodeError {
 		Node left = this.factor();
-		while (Set.of(Token.Type.MULTIPLY, Token.Type.DIVIDE).contains(this.currentToken.type)) {
+		while (this.currentToken.type == Token.Type.MULTIPLY || this.currentToken.type == Token.Type.DIVIDE) {
 			Token operatorToken = this.currentToken;
 			this.advance();
 			Node right = this.factor();
@@ -433,8 +445,9 @@ public class Parser {
 	private Node call() throws CodeError {
 		List<Node> argumentNodes = new ArrayList<>();
 		Node atom = this.atom();
-		if (this.currentToken.type != Token.Type.LEFT_BRACKET)
+		if (this.currentToken.type != Token.Type.LEFT_BRACKET) {
 			return atom;
+		}
 		this.advance();
 		if (this.currentToken.type != Token.Type.RIGHT_BRACKET) {
 			argumentNodes.add(this.expression());
@@ -499,8 +512,9 @@ public class Parser {
 	}
 
 	private void throwIfNotType(Token.Type type, String errorMessage) throws CodeError {
-		if (this.currentToken.type != type)
+		if (this.currentToken.type != type) {
 			throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, errorMessage, this.currentToken.startPos, this.currentToken.endPos);
+		}
 	}
 
 }

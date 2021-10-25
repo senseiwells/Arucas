@@ -34,6 +34,7 @@ public class CodeError extends Exception {
 		UNKNOWN_IDENTIFIER      ("Variable or function was not found"),
 		ILLEGAL_OPERATION_ERROR ("Illegal Operation Error"),
 		EXPECTED_CHAR_ERROR     ("Expected Character Error"),
+		INTERRUPTED_ERROR       ("Program interrupted"),
 		RUNTIME_ERROR           ("Runtime Error"),
 		STOP                    ("Program stopped");
 
