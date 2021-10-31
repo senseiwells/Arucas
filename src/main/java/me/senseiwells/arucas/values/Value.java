@@ -1,8 +1,12 @@
 package me.senseiwells.arucas.values;
 
+import me.senseiwells.arucas.extensions.BuiltInFunction;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.Position;
+import me.senseiwells.arucas.values.functions.MemberFunction;
+
+import java.util.Set;
 
 public abstract class Value<T> {
 	public final T value;
@@ -29,6 +33,10 @@ public abstract class Value<T> {
 
 	public BooleanValue isNotEqual(Value<?> other) {
 		return new BooleanValue(!this.value.equals(other.value));
+	}
+
+	public Set<? extends MemberFunction> getMembers() {
+		return Set.of();
 	}
 
 	public abstract Value<?> copy();

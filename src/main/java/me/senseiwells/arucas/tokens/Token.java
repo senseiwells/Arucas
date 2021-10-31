@@ -93,7 +93,10 @@ public class Token {
 		FUN,
 		TRY,
 		CATCH,
-		FOREACH
+		FOREACH,
+
+		// Dot
+		DOT,
 		;
 
 		public static Set<Type> comparisonTokens = Set.of(

@@ -207,7 +207,7 @@ public class Parser {
 				variableName.endPos
 			);
 		}
-		Node atom = this.atom();
+		Node member = this.member();
 		Token operatorToken = this.currentToken;
 		Token.Type operatorType = switch (this.currentToken.type) {
 			case INCREMENT -> Token.Type.PLUS;
@@ -220,7 +220,7 @@ public class Parser {
 		
 		this.context.setVariable(variableName.content, new NullValue());
 		return new VariableAssignNode(variableName,
-			new BinaryOperatorNode(atom, new Token(operatorType, operatorToken.startPos, operatorToken.endPos), numberNode)
+			new BinaryOperatorNode(member, new Token(operatorType, operatorToken.startPos, operatorToken.endPos), numberNode)
 		);
 	}
 
@@ -345,13 +345,13 @@ public class Parser {
 		this.throwIfNotType(Token.Type.COLON, "Expected ':'");
 		this.advance();
 
-		Node atom = this.atom();
+		Node member = this.member();
 
 		this.throwIfNotType(Token.Type.RIGHT_BRACKET, "Expected ')'");
 		this.advance();
 
 		Node statements = this.statements();
-		return new ForNode(atom, statements, forParameterName);
+		return new ForNode(member, statements, forParameterName);
 	}
 
 	private Node listExpression() throws CodeError {
@@ -444,10 +444,9 @@ public class Parser {
 	
 	private Node call() throws CodeError {
 		List<Node> argumentNodes = new ArrayList<>();
-		Node atom = this.atom();
-		if (this.currentToken.type != Token.Type.LEFT_BRACKET) {
-			return atom;
-		}
+		Node member = this.member();
+		if (this.currentToken.type != Token.Type.LEFT_BRACKET)
+			return member;
 		this.advance();
 		if (this.currentToken.type != Token.Type.RIGHT_BRACKET) {
 			argumentNodes.add(this.expression());
@@ -458,13 +457,39 @@ public class Parser {
 			this.throwIfNotType(Token.Type.RIGHT_BRACKET, "Expected a ')'");
 		}
 		this.advance();
-		return new CallNode(atom, argumentNodes);
+		return new CallNode(member, argumentNodes);
 	}
-	
+
+	private Node member() throws CodeError {
+		Node left = this.atom();
+
+		while (this.currentToken.type == Token.Type.DOT) {
+			this.advance();
+			List<Node> argumentNodes = new ArrayList<>();
+			Node right = this.member();
+			if (this.currentToken.type == Token.Type.LEFT_BRACKET) {
+				this.advance();
+				if (this.currentToken.type != Token.Type.RIGHT_BRACKET) {
+					argumentNodes.add(this.expression());
+					while (this.currentToken.type == Token.Type.COMMA) {
+						this.advance();
+						argumentNodes.add(this.expression());
+					}
+					this.throwIfNotType(Token.Type.RIGHT_BRACKET, "Expected a ')'");
+				}
+				this.advance();
+			}
+			left = new MemberCallNode(left, right, argumentNodes);
+		}
+
+		return left;
+	}
+
 	private Node atom() throws CodeError {
 		Token token = this.currentToken;
 		switch (token.type) {
 			case IDENTIFIER -> {
+				// this needs to properly support member functions
 				this.advance();
 				Value<?> value = this.context.getVariable(token.content);
 				if (value == null) {

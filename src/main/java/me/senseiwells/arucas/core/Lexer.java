@@ -81,6 +81,9 @@ public class Lexer {
 			.addRule(Type.TRY, i -> i.addString("try"))
 			.addRule(Type.CATCH, i -> i.addString("catch"))
 			.addRule(Type.FOREACH, i -> i.addString("foreach"))
+
+			// Dot operator
+			.addRule(Type.DOT, i -> i.addString("."))
 		;
 	}
 	
