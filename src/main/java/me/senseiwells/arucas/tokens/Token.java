@@ -93,7 +93,14 @@ public class Token {
 		FUN,
 		TRY,
 		CATCH,
+<<<<<<< Updated upstream
 		FOREACH
+=======
+		FOR,
+
+		// Dot
+		DOT,
+>>>>>>> Stashed changes
 		;
 
 		public static Set<Type> comparisonTokens = Set.of(
