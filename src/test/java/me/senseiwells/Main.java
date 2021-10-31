@@ -15,22 +15,20 @@ public class Main {
 	public static void main(String[] args) {
 		Context context = new ContextBuilder()
 			.setDisplayName("System.in")
-			.setExtensions(ArucasBuiltInExtension.class, ArucasListExtension.class) // this will be removed later
+			.setExtensions(ArucasBuiltInExtension.class, ArucasListExtension.class)
 			.create();
 		
 		while (true) {
 			Scanner scanner = new Scanner(System.in);
 			String line = scanner.nextLine();
-			if (line.trim().equals("")) {
+			if (line.trim().equals(""))
 				continue;
-			}
 			
 			Value<?> values;
 			try {
 				values = Run.run(context, "System.in", line);
-				if (context.isDebug()) {
+				if (context.isDebug())
 					System.out.println(values);
-				}
 			}
 			catch (ThrowStop e) {
 				System.out.println(e.toString(context));

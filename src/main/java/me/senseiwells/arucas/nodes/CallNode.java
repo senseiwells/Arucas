@@ -24,7 +24,6 @@ public class CallNode extends Node {
 	public Value<?> visit(Context context) throws CodeError, ThrowValue {
 		Value<?> callValue = this.callNode.visit(context);
 		if (!(callValue instanceof FunctionValue)) {
-<<<<<<< Updated upstream
 			throw new RuntimeError("Cannot call the non function value '%s'".formatted(callValue), this.startPos, this.endPos, context);
 		}
 		
@@ -32,11 +31,6 @@ public class CallNode extends Node {
 			throw new CodeError(CodeError.ErrorType.INTERRUPTED_ERROR, "", this.startPos, this.endPos);
 		}
 		
-=======
-			throw new RuntimeError("Cannot call a non function value '%s'".formatted(callValue), this.startPos, this.endPos, context);
-		}
-
->>>>>>> Stashed changes
 		List<Value<?>> argumentValues = new ArrayList<>();
 		for (Node node : this.argumentNodes) {
 			argumentValues.add(node.visit(context));

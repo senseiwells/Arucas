@@ -80,14 +80,7 @@ public class Lexer {
 			.addRule(Type.FUN, i -> i.addString("fun"))
 			.addRule(Type.TRY, i -> i.addString("try"))
 			.addRule(Type.CATCH, i -> i.addString("catch"))
-<<<<<<< Updated upstream
 			.addRule(Type.FOREACH, i -> i.addString("foreach"))
-=======
-			.addRule(Type.FOR, i -> i.addString("for"))
-
-			// Dot operator
-			.addRule(Type.DOT, i -> i.addString("."))
->>>>>>> Stashed changes
 		;
 	}
 	

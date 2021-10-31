@@ -29,7 +29,7 @@ public class ArucasHelper {
 	public static NodeContext compile(String syntax) throws CodeError {
 		Context context = new ContextBuilder()
 			.setDisplayName("root")
-			.setExtensions(ArucasBuiltInExtension.class)
+			.setExtensions(ArucasBuiltInExtension.class, ArucasListExtension.class)
 			.create();
 		
 		List<Token> tokens = new Lexer(syntax, "").createTokens();

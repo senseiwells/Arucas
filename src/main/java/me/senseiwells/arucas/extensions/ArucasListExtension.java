@@ -11,7 +11,6 @@ import me.senseiwells.arucas.values.functions.FunctionDefinition;
 import java.util.List;
 import java.util.Set;
 
-@Deprecated // This still needs to be here because of how it checks for functions
 public class ArucasListExtension implements IArucasExtension {
 	private final Object LIST_ACCESS_LOCK = new Object();
 	
@@ -38,7 +37,7 @@ public class ArucasListExtension implements IArucasExtension {
 			return list1;
 		}
 	}
-
+	
 	private Value<?> appendList(Context context, BuiltInFunction function) throws CodeError {
 		synchronized (LIST_ACCESS_LOCK) {
 			ListValue listValue = function.getParameterValueOfType(context, ListValue.class, 0);
@@ -47,7 +46,7 @@ public class ArucasListExtension implements IArucasExtension {
 			return listValue;
 		}
 	}
-
+	
 	private Value<?> removeListIndex(Context context, BuiltInFunction function) throws CodeError {
 		synchronized (LIST_ACCESS_LOCK) {
 			ListValue listValue = function.getParameterValueOfType(context, ListValue.class, 0);
@@ -55,11 +54,11 @@ public class ArucasListExtension implements IArucasExtension {
 			int index = numberValue.value.intValue();
 			if (index >= listValue.value.size() || index < 0)
 				throw function.throwInvalidParameterError("Parameter 2 is out of bounds", context);
-
+			
 			return listValue.value.remove(index);
 		}
 	}
-
+	
 	private Value<?> getListIndex(Context context, BuiltInFunction function) throws CodeError {
 		synchronized (LIST_ACCESS_LOCK) {
 			ListValue listValue = function.getParameterValueOfType(context, ListValue.class, 0);
@@ -67,14 +66,14 @@ public class ArucasListExtension implements IArucasExtension {
 			int index = numberValue.value.intValue();
 			if (index >= listValue.value.size() || index < 0)
 				throw function.throwInvalidParameterError("Parameter 2 is out of bounds", context);
-
+			
 			return listValue.value.get(index);
 		}
 	}
 	
 	public static class ListFunction extends BuiltInFunction {
 		public ListFunction(String name, String argument, FunctionDefinition function) {
-			super(name, List.of("this", argument), function);
+			super(name, List.of("list", argument), function);
 		}
 	}
 }
