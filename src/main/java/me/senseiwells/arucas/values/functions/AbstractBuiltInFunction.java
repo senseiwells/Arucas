@@ -24,11 +24,7 @@ public abstract class AbstractBuiltInFunction<S extends AbstractBuiltInFunction<
 
 	public Value<?> getParameterValue(Context context, int index) {
 		Value<?> param = context.getVariable(this.argumentNames.get(index));
-		if (param == null) {
-			return new NullValue();
-		}
-
-		return param;
+		return param == null ? new NullValue() : param;
 	}
 
 	public <T extends Value<?>> T getParameterValueOfType(Context context, Class<T> clazz, int index) throws CodeError {
