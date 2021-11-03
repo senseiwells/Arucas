@@ -6,7 +6,6 @@ import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.functions.FunctionValue;
-import me.senseiwells.arucas.values.functions.MemberFunction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,9 +23,6 @@ public class MemberCallNode extends CallNode {
 		Value<?> callValue = this.callNode.visit(context);
 		if (!(callValue instanceof FunctionValue)) {
 			throw new RuntimeError("Cannot call a non function value '%s'".formatted(callValue), this.startPos, this.endPos, context);
-		}
-		if (!(callValue instanceof MemberFunction)) {
-			throw new RuntimeError("Cannot call %s() as a member function".formatted(callValue), this.startPos, this.endPos, context);
 		}
 
 		List<Value<?>> argumentValues = new ArrayList<>();

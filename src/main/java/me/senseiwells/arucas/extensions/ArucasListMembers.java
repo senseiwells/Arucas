@@ -3,7 +3,6 @@ package me.senseiwells.arucas.extensions;
 import me.senseiwells.arucas.api.IArucasExtension;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.values.BooleanValue;
 import me.senseiwells.arucas.values.ListValue;
 import me.senseiwells.arucas.values.NumberValue;
 import me.senseiwells.arucas.values.Value;
@@ -28,8 +27,7 @@ public class ArucasListMembers implements IArucasExtension {
 		new MemberFunction("getIndex", "index", this::getListIndex),
 		new MemberFunction("removeIndex", "index", this::removeListIndex),
 		new MemberFunction("append", "value", this::appendList),
-		new MemberFunction("concat", "otherList", this::concatList),
-		new MemberFunction("contains", "value", this::listContains)
+		new MemberFunction("concat", "otherList", this::concatList)
 	);
 
 	private Value<?> appendList(Context context, MemberFunction function) throws CodeError {
@@ -73,14 +71,6 @@ public class ArucasListMembers implements IArucasExtension {
 			ListValue list2 = function.getParameterValueOfType(context, ListValue.class, 1);
 			list1.value.addAll(list2.value);
 			return list1;
-		}
-	}
-
-	private BooleanValue listContains(Context context, MemberFunction function) throws CodeError {
-		synchronized (LIST_LOCK) {
-			ListValue listValue = function.getParameterValueOfType(context, ListValue.class, 0);
-			Value<?> value = function.getParameterValue(context, 1);
-			return new BooleanValue(listValue.value.contains(value));
 		}
 	}
 }

@@ -26,9 +26,6 @@ public class ListValue extends Value<List<Value<?>>> {
 			else if (element instanceof StringValue) {
 				sb.append(", \"%s\"".formatted(element.toString()));
 			}
-			else if (element instanceof MapValue) {
-				sb.append(", <map>");
-			}
 			else {
 				sb.append(", ").append(element);
 			}
