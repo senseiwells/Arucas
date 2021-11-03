@@ -16,8 +16,12 @@ public class MemberFunction extends AbstractBuiltInFunction<MemberFunction> {
 		this(name, List.of(argument), function);
 	}
 
+	public MemberFunction(String name, FunctionDefinition<MemberFunction> function) {
+		this(name, List.of(), function);
+	}
+
 	private static List<String> addThis(List<String> stringList) {
-		if (!stringList.get(0).equals("this")) {
+		if (stringList.isEmpty() || !stringList.get(0).equals("this")) {
 			stringList = new ArrayList<>(stringList);
 			stringList.add(0, "this");
 		}
@@ -51,6 +55,6 @@ public class MemberFunction extends AbstractBuiltInFunction<MemberFunction> {
 
 	@Override
 	public Value<?> copy() {
-		return new MemberFunction(this.value, this.argumentNames, this.function);
+		return new MemberFunction(this.value, this.argumentNames, this.function).setPos(this.startPos, this.endPos);
 	}
 }
