@@ -1,5 +1,6 @@
 package me.senseiwells.arucas.values;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class MapValue extends Value<Map<Value<?>, Value<?>>> {
@@ -9,12 +10,19 @@ public class MapValue extends Value<Map<Value<?>, Value<?>>> {
 
 	@Override
 	public MapValue copy() {
-		return (MapValue) new MapValue(Map.copyOf(this.value)).setPos(this.startPos, this.endPos);
+		return (MapValue) new MapValue(this.value).setPos(this.startPos, this.endPos);
+	}
+
+	@Override
+	public Value<?> newCopy() {
+		return new MapValue(new HashMap<>(this.value)).setPos(this.startPos, this.endPos);
 	}
 
 	@Override
 	public String toString() {
-		final Map<Value<?>, Value<?>> map = this.copy().value;
+		final Map<Value<?>, Value<?>> map = Map.copyOf(this.value);
+		if (map.isEmpty()) return "{}";
+
 		StringBuilder sb = new StringBuilder();
 		map.forEach((value1, value2) -> {
 			sb.append(", ");

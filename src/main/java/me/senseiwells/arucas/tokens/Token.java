@@ -2,7 +2,6 @@ package me.senseiwells.arucas.tokens;
 
 import me.senseiwells.arucas.utils.Position;
 
-import java.util.Map;
 import java.util.Set;
 
 public class Token {

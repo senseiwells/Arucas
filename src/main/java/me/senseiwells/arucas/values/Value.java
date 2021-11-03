@@ -33,6 +33,27 @@ public abstract class Value<T> {
 
 	public abstract Value<?> copy();
 
+	public Value<?> newCopy() {
+		return this.copy();
+	}
+
+	/**
+	 * We only care about comparing the value not the position
+	 * So overriding the equals and hashCode methods for maps
+	 */
+	@Override
+	public boolean equals(Object other) {
+		if (!(other instanceof Value<?> otherValue)) {
+			return false;
+		}
+		return this.value == null || otherValue.value == null ? this.value == otherValue.value : this.value.equals(otherValue.value);
+	}
+
+	@Override
+	public int hashCode() {
+		return this.value.hashCode();
+	}
+
 	@Override
 	public String toString() {
 		return this.value.toString();

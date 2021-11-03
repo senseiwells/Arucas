@@ -3,7 +3,7 @@ package me.senseiwells.test;
 import me.senseiwells.arucas.api.ContextBuilder;
 import me.senseiwells.arucas.core.Lexer;
 import me.senseiwells.arucas.core.Parser;
-import me.senseiwells.arucas.extensions.ArucasBuiltInExtension;
+import me.senseiwells.arucas.extensions.*;
 import me.senseiwells.arucas.nodes.Node;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
@@ -12,13 +12,12 @@ import me.senseiwells.arucas.utils.Context;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 public class ArucasHelper {
 	private static class NodeContext {
 		private final Node node;
 		private final Context context;
-		
+
 		public NodeContext(Node node, Context context) {
 			this.node = node;
 			this.context = context;
@@ -28,7 +27,13 @@ public class ArucasHelper {
 	public static NodeContext compile(String syntax) throws CodeError {
 		Context context = new ContextBuilder()
 			.setDisplayName("root")
-			.setExtensions(ArucasBuiltInExtension.class)
+			.setExtensions(
+					ArucasBuiltInExtension.class,
+					ArucasListMembers.class,
+					ArucasNumberMembers.class,
+					ArucasStringMembers.class,
+					ArucasMapMembers.class
+			)
 			.create();
 		
 		List<Token> tokens = new Lexer(syntax, "").createTokens();

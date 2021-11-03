@@ -32,12 +32,15 @@ public class ArucasListMembers implements IArucasExtension {
 		new MemberFunction("contains", "value", this::listContains)
 	);
 
-	private Value<?> appendList(Context context, MemberFunction function) throws CodeError {
+	private Value<?> getListIndex(Context context, MemberFunction function) throws CodeError {
 		synchronized (LIST_LOCK) {
 			ListValue listValue = function.getParameterValueOfType(context, ListValue.class, 0);
-			Value<?> value = function.getParameterValue(context, 1);
-			listValue.value.add(value);
-			return listValue;
+			NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 1);
+			int index = numberValue.value.intValue();
+			if (index >= listValue.value.size() || index < 0) {
+				throw function.throwInvalidParameterError("Index is out of bounds", context);
+			}
+			return listValue.value.get(index);
 		}
 	}
 
@@ -47,23 +50,18 @@ public class ArucasListMembers implements IArucasExtension {
 			NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 1);
 			int index = numberValue.value.intValue();
 			if (index >= listValue.value.size() || index < 0) {
-				throw function.throwInvalidParameterError("Parameter 2 is out of bounds", context);
+				throw function.throwInvalidParameterError("Index is out of bounds", context);
 			}
-
 			return listValue.value.remove(index);
 		}
 	}
 
-	private Value<?> getListIndex(Context context, MemberFunction function) throws CodeError {
+	private Value<?> appendList(Context context, MemberFunction function) throws CodeError {
 		synchronized (LIST_LOCK) {
 			ListValue listValue = function.getParameterValueOfType(context, ListValue.class, 0);
-			NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 1);
-			int index = numberValue.value.intValue();
-			if (index >= listValue.value.size() || index < 0) {
-				throw function.throwInvalidParameterError("Parameter 2 is out of bounds", context);
-			}
-
-			return listValue.value.get(index);
+			Value<?> value = function.getParameterValue(context, 1);
+			listValue.value.add(value);
+			return listValue;
 		}
 	}
 

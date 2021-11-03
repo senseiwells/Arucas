@@ -33,89 +33,89 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 	}
 
 	private final Set<? extends AbstractBuiltInFunction<?>> builtInFunctions = Set.of(
-		new BuiltInFunction("run", "path", (context, function) -> {
-			StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
-			String filePath = stringValue.value;
-			try {
-				Context childContext = context.createChildContext(filePath);
-
-				String fileContent = Files.readString(Path.of(filePath));
-				return Run.run(childContext, filePath, fileContent);
-			}
-			catch (IOException | InvalidPathException e) {
-				throw new RuntimeError("Failed to execute script '%s' \n%s".formatted(filePath, e), function.startPos, function.endPos, context);
-			}
-		}),
-
-		new BuiltInFunction("stop", (context, function) -> {
-			throw new ThrowStop();
-		}),
-
-		new BuiltInFunction("debug", "boolean", (context, function) -> {
-			context.setDebug(function.getParameterValueOfType(context, BooleanValue.class, 0).value);
-			return new NullValue();
-		}),
-
-		new BuiltInFunction("print", "printValue", (context, function) -> {
-			System.out.println(function.getParameterValue(context, 0));
-			return new NullValue();
-		}),
-
-		new BuiltInFunction("sleep", "milliseconds", (context, function) -> {
-			NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 0);
-			try {
-				Thread.sleep(numberValue.value.longValue());
-			}
-			catch (InterruptedException e) {
-				throw new CodeError(
-						CodeError.ErrorType.INTERRUPTED_ERROR,
-						"",
-						function.startPos,
-						function.endPos
-				);
-			}
-			return new NullValue();
-		}),
-
-		new BuiltInFunction("random", "bound", (context, function) -> {
-			NumberValue numValue = function.getParameterValueOfType(context, NumberValue.class, 0);
-			return new NumberValue(new Random().nextInt(numValue.value.intValue()));
-		}),
-
-		new BuiltInFunction("len", "value", (context, function) -> {
-			Value<?> value = function.getParameterValue(context, 0);
-			if (value instanceof ListValue) {
-				ListValue listValue = function.getParameterValueOfType(context, ListValue.class, 0);
-				return new NumberValue(listValue.value.size());
-			}
-			if (value instanceof StringValue) {
-				StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
-				return new NumberValue(stringValue.value.length());
-			}
-			if (value instanceof MapValue) {
-				MapValue mapValue = function.getParameterValueOfType(context, MapValue.class, 0);
-				return new NumberValue(mapValue.value.size());
-			}
-			throw new RuntimeError("Cannot pass %s into len()".formatted(value), function.startPos, function.endPos, context);
-		}),
-
-		new BuiltInFunction("throwRuntimeError", "message", (context, function) -> {
-			StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
-			throw new RuntimeError(stringValue.value, function.startPos, function.endPos, context);
-		}),
-
+		new BuiltInFunction("run", "path", this::run),
+		new BuiltInFunction("stop", this::stop),
+		new BuiltInFunction("sleep", "milliseconds", this::sleep),
+		new BuiltInFunction("print", "printValue", this::print),
+		new BuiltInFunction("debug", "boolean", this::debug),
+		new BuiltInFunction("random", "bound", this::random),
 		new BuiltInFunction("getTime", (context, function) -> new StringValue(DateTimeFormatter.ofPattern("HH:mm:ss").format(LocalTime.now()))),
+		new BuiltInFunction("len", "value", this::len),
+		new BuiltInFunction("throwRuntimeError", "message", this::throwRuntimeError),
 
 		new MemberFunction("isString", (context, function) -> function.isType(context, StringValue.class)),
 		new MemberFunction("isNumber", (context, function) -> function.isType(context, NumberValue.class)),
 		new MemberFunction("isBoolean", (context, function) -> function.isType(context, BooleanValue.class)),
 		new MemberFunction("isFunction", (context, function) -> function.isType(context, FunctionValue.class)),
 		new MemberFunction("isList", (context, function) -> function.isType(context, ListValue.class)),
-		new MemberFunction("isMap", ((context, function) -> function.isType(context, MapValue.class))),
-
-		new MemberFunction("toString", (context, function) -> {
-			Value<?> value = function.getParameterValue(context, 0);
-			return new StringValue(value.toString());
-		})
+		new MemberFunction("isMap", (context, function) -> function.isType(context, MapValue.class)),
+		new MemberFunction("copy", (context, function) -> function.getParameterValue(context, 0).newCopy()),
+		new MemberFunction("toString", (context, function) -> new StringValue(function.getParameterValue(context, 0).toString()))
 	);
+
+	private Value<?> run(Context context, BuiltInFunction function) throws CodeError {
+		StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
+		String filePath = stringValue.value;
+		try {
+			Context childContext = context.createChildContext(filePath);
+
+			String fileContent = Files.readString(Path.of(filePath));
+			return Run.run(childContext, filePath, fileContent);
+		}
+		catch (IOException | InvalidPathException e) {
+			throw new RuntimeError("Failed to execute script '%s' \n%s".formatted(filePath, e), function.startPos, function.endPos, context);
+		}
+	}
+
+	private Value<?> stop(Context context, BuiltInFunction function) throws CodeError {
+		throw new ThrowStop();
+	}
+
+	private Value<?> sleep(Context context, BuiltInFunction function) throws CodeError {
+		NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 0);
+		try {
+			Thread.sleep(numberValue.value.longValue());
+		}
+		catch (InterruptedException e) {
+			throw new CodeError(CodeError.ErrorType.INTERRUPTED_ERROR, "", function.startPos, function.endPos);
+		}
+		return new NullValue();
+	}
+
+	private Value<?> print(Context context, BuiltInFunction function) {
+		System.out.println(function.getParameterValue(context, 0));
+		return new NullValue();
+	}
+
+	private Value<?> debug(Context context, BuiltInFunction function) throws CodeError {
+		context.setDebug(function.getParameterValueOfType(context, BooleanValue.class, 0).value);
+		return new NullValue();
+	}
+
+	private Value<?> random(Context context, BuiltInFunction function) throws CodeError {
+		NumberValue numValue = function.getParameterValueOfType(context, NumberValue.class, 0);
+		return new NumberValue(new Random().nextInt(numValue.value.intValue()));
+	}
+
+	private Value<?> len(Context context, BuiltInFunction function) throws CodeError {
+		Value<?> value = function.getParameterValue(context, 0);
+		if (value instanceof ListValue) {
+			ListValue listValue = function.getParameterValueOfType(context, ListValue.class, 0);
+			return new NumberValue(listValue.value.size());
+		}
+		if (value instanceof StringValue) {
+			StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
+			return new NumberValue(stringValue.value.length());
+		}
+		if (value instanceof MapValue) {
+			MapValue mapValue = function.getParameterValueOfType(context, MapValue.class, 0);
+			return new NumberValue(mapValue.value.size());
+		}
+		throw new RuntimeError("Cannot pass %s into len()".formatted(value), function.startPos, function.endPos, context);
+	}
+
+	private Value<?> throwRuntimeError(Context context, BuiltInFunction function) throws CodeError {
+		StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
+		throw new RuntimeError(stringValue.value, function.startPos, function.endPos, context);
+	}
 }

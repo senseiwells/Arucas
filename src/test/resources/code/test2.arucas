@@ -2,13 +2,23 @@
 // run("E:/Java/Projects/Arucas/src/test/resources/code/test2.arucas");
 // run("C:/Users/Admin/git/Arucas/src/test/resources/code/test2.arucas");
 
-number = 1;
-
-mapValue = {
-    "bonk" : "one",
-    2.0 : "two",
-    3.0 : "three",
-    4.0 : "four"
+map = {
+    2 : 2,
+    1 : 2
 };
 
-print(mapValue.get("bonk"));
+mapCopy = map.copy();
+
+list = map.getValues();
+
+list2 = {}.getValues();
+
+print(list);
+print(list2);
+
+map.remove(1);
+
+
+X = mapCopy.get(1);
+
+print(map);

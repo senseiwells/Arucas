@@ -1,5 +1,6 @@
 package me.senseiwells.arucas.values;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ListValue extends Value<List<Value<?>>> {
@@ -12,7 +13,12 @@ public class ListValue extends Value<List<Value<?>>> {
 	public Value<List<Value<?>>> copy() {
 		return new ListValue(this.value).setPos(this.startPos, this.endPos);
 	}
-	
+
+	@Override
+	public Value<?> newCopy() {
+		return new ListValue(new ArrayList<>(this.value)).setPos(this.startPos, this.endPos);
+	}
+
 	@Override
 	public String toString() {
 		final Value<?>[] array = this.value.toArray(Value<?>[]::new);

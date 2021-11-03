@@ -5,11 +5,9 @@ import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.Position;
-import me.senseiwells.arucas.values.ListValue;
 import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ScopeNode extends Node {
