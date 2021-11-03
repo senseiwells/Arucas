@@ -8,6 +8,7 @@ import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.functions.FunctionValueDelegate;
+import me.senseiwells.arucas.values.functions.MemberFunction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -207,7 +208,7 @@ public class Parser {
 				variableName.endPos
 			);
 		}
-		Node member = this.member();
+		Node member = this.member(false);
 		Token operatorToken = this.currentToken;
 		Token.Type operatorType = switch (this.currentToken.type) {
 			case INCREMENT -> Token.Type.PLUS;
@@ -345,7 +346,7 @@ public class Parser {
 		this.throwIfNotType(Token.Type.COLON, "Expected ':'");
 		this.advance();
 
-		Node member = this.member();
+		Node member = this.member(false);
 
 		this.throwIfNotType(Token.Type.RIGHT_BRACKET, "Expected ')'");
 		this.advance();
@@ -444,7 +445,7 @@ public class Parser {
 	
 	private Node call() throws CodeError {
 		List<Node> argumentNodes = new ArrayList<>();
-		Node member = this.member();
+		Node member = this.member(false);
 		if (this.currentToken.type != Token.Type.LEFT_BRACKET)
 			return member;
 		this.advance();
@@ -460,13 +461,15 @@ public class Parser {
 		return new CallNode(member, argumentNodes);
 	}
 
-	private Node member() throws CodeError {
-		Node left = this.atom();
+	private Node member(boolean isMember) throws CodeError {
+		//System.out.println(this.currentToken.content);
+		Node left = this.atom(isMember);
 
 		while (this.currentToken.type == Token.Type.DOT) {
+			//System.out.println(this.currentToken.content);
 			this.advance();
 			List<Node> argumentNodes = new ArrayList<>();
-			Node right = this.member();
+			Node right = this.member(true);
 			if (this.currentToken.type == Token.Type.LEFT_BRACKET) {
 				this.advance();
 				if (this.currentToken.type != Token.Type.RIGHT_BRACKET) {
@@ -485,7 +488,7 @@ public class Parser {
 		return left;
 	}
 
-	private Node atom() throws CodeError {
+	private Node atom(boolean isMember) throws CodeError {
 		Token token = this.currentToken;
 		switch (token.type) {
 			case IDENTIFIER -> {
@@ -494,6 +497,9 @@ public class Parser {
 				Value<?> value = this.context.getVariable(token.content);
 				if (value == null) {
 					throw new CodeError(CodeError.ErrorType.UNKNOWN_IDENTIFIER, "Could not find '" + token.content + "'", token.startPos, token.endPos);
+				}
+				if (value instanceof MemberFunction && !isMember) {
+					throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "Members must be called from Values", token.startPos, token.endPos);
 				}
 				
 				if (value instanceof FunctionValue) {

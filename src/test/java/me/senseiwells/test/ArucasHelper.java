@@ -4,7 +4,6 @@ import me.senseiwells.arucas.api.ContextBuilder;
 import me.senseiwells.arucas.core.Lexer;
 import me.senseiwells.arucas.core.Parser;
 import me.senseiwells.arucas.extensions.ArucasBuiltInExtension;
-import me.senseiwells.arucas.extensions.ArucasListExtension;
 import me.senseiwells.arucas.nodes.Node;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowValue;

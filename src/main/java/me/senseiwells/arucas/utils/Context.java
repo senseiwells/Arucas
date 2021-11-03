@@ -2,7 +2,7 @@ package me.senseiwells.arucas.utils;
 
 import me.senseiwells.arucas.api.IArucasExtension;
 import me.senseiwells.arucas.values.Value;
-import me.senseiwells.arucas.extensions.BuiltInFunction;
+import me.senseiwells.arucas.values.functions.AbstractBuiltInFunction;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -30,7 +30,7 @@ public class Context {
 		this.extensions = extensions;
 		
 		for (IArucasExtension extension : extensions) {
-			for (BuiltInFunction function : extension.getDefinedFunctions()) {
+			for (AbstractBuiltInFunction<?> function : extension.getDefinedFunctions()) {
 				this.builtInFunctions.add(function.value);
 				this.symbolTable.set(function.value, function);
 			}

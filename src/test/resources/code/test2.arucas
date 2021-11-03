@@ -2,4 +2,4 @@
 // run("E:/Java/Projects/Arucas/src/test/resources/code/test2.arucas");
 // run("C:/Users/Admin/git/Arucas/src/test/resources/code/test2.arucas");
 
-["hi"].append("hi");
+print(["apple", "thing"].append("orange").getIndex(1));

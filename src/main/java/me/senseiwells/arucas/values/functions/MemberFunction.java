@@ -1,20 +1,33 @@
 package me.senseiwells.arucas.values.functions;
 
-import me.senseiwells.arucas.extensions.BuiltInFunction;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.Value;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class MemberFunction extends BuiltInFunction {
-	public MemberFunction(String name, List<String> argumentNames, FunctionDefinition function) {
-		super(name, argumentNames, function);
-		argumentNames.add(0, "this");
+public class MemberFunction extends AbstractBuiltInFunction<MemberFunction> {
+	public MemberFunction(String name, List<String> argumentNames, FunctionDefinition<MemberFunction> function) {
+		super(name, addThis(argumentNames), function);
 	}
 
-	public MemberFunction(String name, String argument, FunctionDefinition function) {
+	public MemberFunction(String name, String argument, FunctionDefinition<MemberFunction> function) {
 		this(name, List.of(argument), function);
+	}
+
+	private static List<String> addThis(List<String> stringList) {
+		if (!stringList.get(0).equals("this")) {
+			stringList = new ArrayList<>(stringList);
+			stringList.add(0, "this");
+		}
+		return stringList;
+	}
+
+	@Override
+	public Value<?> execute(Context context, List<Value<?>> arguments) throws CodeError {
+		this.checkAndPopulateArguments(context, arguments, this.argumentNames);
+		return this.function.execute(context, this);
 	}
 
 	@Override
@@ -34,5 +47,10 @@ public class MemberFunction extends BuiltInFunction {
 	@Override
 	public <T extends Value<?>> T getParameterValueOfType(Context context, Class<T> clazz, int index) throws CodeError {
 		return this.getParameterValueOfType(context, clazz, index, null);
+	}
+
+	@Override
+	public Value<?> copy() {
+		return new MemberFunction(this.value, this.argumentNames, this.function);
 	}
 }

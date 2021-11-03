@@ -3,7 +3,7 @@ package me.senseiwells;
 import me.senseiwells.arucas.api.ContextBuilder;
 import me.senseiwells.arucas.core.Run;
 import me.senseiwells.arucas.extensions.ArucasBuiltInExtension;
-import me.senseiwells.arucas.extensions.ArucasListExtension;
+import me.senseiwells.arucas.extensions.ArucasListMembers;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowStop;
 import me.senseiwells.arucas.utils.Context;
@@ -15,7 +15,7 @@ public class Main {
 	public static void main(String[] args) {
 		Context context = new ContextBuilder()
 			.setDisplayName("System.in")
-			.setExtensions(ArucasBuiltInExtension.class, ArucasListExtension.class) // this will be removed later
+			.setExtensions(ArucasBuiltInExtension.class, ArucasListMembers.class)
 			.create();
 		
 		while (true) {
