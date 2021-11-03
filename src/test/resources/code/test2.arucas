@@ -1,5 +1,14 @@
-// run("D:/Java/Arucas/src/test/resources/code/test2.arucas");
+// run("D:/Java/ArucasExperimental/src/test/resources/code/test2.arucas");
 // run("E:/Java/Projects/Arucas/src/test/resources/code/test2.arucas");
 // run("C:/Users/Admin/git/Arucas/src/test/resources/code/test2.arucas");
 
-print(["apple", "thing"].append("orange").getIndex(1));
+number = 1;
+
+mapValue = {
+    "bonk" : "one",
+    2.0 : "two",
+    3.0 : "three",
+    4.0 : "four"
+};
+
+print(mapValue.get("bonk"));

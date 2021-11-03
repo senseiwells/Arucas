@@ -47,6 +47,7 @@ public class Token {
 		STRING,
 		NULL,
 		LIST,
+		MAP,
 		SCOPE,
 		
 		// Arithmetics

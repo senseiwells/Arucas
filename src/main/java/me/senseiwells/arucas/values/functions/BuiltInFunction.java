@@ -26,7 +26,7 @@ public class BuiltInFunction extends AbstractBuiltInFunction<BuiltInFunction> {
 	}
 
 	@Override
-	public Value<?> copy() {
+	public Value<?>  copy() {
 		return new BuiltInFunction(this.value, this.argumentNames, this.function).setPos(this.startPos, this.endPos);
 	}
 }

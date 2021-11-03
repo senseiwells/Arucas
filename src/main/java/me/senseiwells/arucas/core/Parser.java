@@ -11,7 +11,9 @@ import me.senseiwells.arucas.values.functions.FunctionValueDelegate;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Parser {
 
@@ -182,7 +184,7 @@ public class Parser {
 		if (this.context.isBuiltInFunction(variableName.content)) {
 			throw new CodeError(
 				CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
-				"Cannot override builtIn function %s()".formatted(variableName),
+				"Cannot override built in function %s()".formatted(variableName.content),
 				variableName.startPos,
 				variableName.endPos
 			);
@@ -277,7 +279,7 @@ public class Parser {
 
 			this.advance();
 		}
-		this.throwIfNotType(Token.Type.LEFT_BRACKET, "Expected '(...)'");
+		this.throwIfNotType(Token.Type.LEFT_BRACKET, "Expected 'fun (...)'");
 		this.advance();
 		
 		this.context.pushScope(this.currentToken.startPos);
@@ -369,6 +371,27 @@ public class Parser {
 		}
 		this.advance();
 		return new ListNode(elementList, startPos, this.currentToken.endPos);
+	}
+
+	private Node mapExpression() throws CodeError {
+		Map<Node, Node> elementMap = new HashMap<>();
+		Position startPos = this.currentToken.startPos;
+		this.advance();
+		if (this.currentToken.type != Token.Type.RIGHT_CURLY_BRACKET) {
+			this.recede();
+			do {
+				this.advance();
+				Node keyNode = this.expression();
+				this.throwIfNotType(Token.Type.COLON, "Expected a ':' between key and value");
+				this.advance();
+				Node valueNode = this.expression();
+				elementMap.put(keyNode, valueNode);
+			}
+			while (this.currentToken.type == Token.Type.COMMA);
+			this.throwIfNotType(Token.Type.RIGHT_CURLY_BRACKET, "Expected a '}'");
+		}
+		this.advance();
+		return new MapNode(elementMap, startPos, this.currentToken.endPos);
 	}
 	
 	private Node sizeComparisonExpression() throws CodeError {
@@ -462,11 +485,9 @@ public class Parser {
 	}
 
 	private Node member(boolean isMember) throws CodeError {
-		//System.out.println(this.currentToken.content);
 		Node left = this.atom(isMember);
 
 		while (this.currentToken.type == Token.Type.DOT) {
-			//System.out.println(this.currentToken.content);
 			this.advance();
 			List<Node> argumentNodes = new ArrayList<>();
 			Node right = this.member(true);
@@ -537,6 +558,9 @@ public class Parser {
 			case FUN -> {
 				// FunctionLambda
 				return this.functionDefinition(true);
+			}
+			case LEFT_CURLY_BRACKET -> {
+				return this.mapExpression();
 			}
 		}
 		throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Unexpected Token: " + token, this.currentToken.startPos, this.currentToken.endPos);
