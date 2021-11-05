@@ -22,8 +22,8 @@ public class ArucasNumberMembers implements IArucasExtension {
 
 	private final Set<MemberFunction> numberFunctions = Set.of(
 		new MemberFunction("round", this::numberRound),
-		new MemberFunction("roundUp", this::numbrRoundUp),
-		new MemberFunction("roundDown", this::numberRoundDown),
+		new MemberFunction("ceil", this::numberCeil),
+		new MemberFunction("floor", this::numberFloor),
 		new MemberFunction("modulus", "otherNumber", this::numberModulus)
 	);
 
@@ -32,12 +32,12 @@ public class ArucasNumberMembers implements IArucasExtension {
 		return new NumberValue(Math.round(numValue.value));
 	}
 
-	private NumberValue numbrRoundUp(Context context, MemberFunction function) throws CodeError {
+	private NumberValue numberCeil(Context context, MemberFunction function) throws CodeError {
 		NumberValue numValue = function.getParameterValueOfType(context, NumberValue.class, 0);
 		return new NumberValue(Math.ceil(numValue.value));
 	}
 
-	private NumberValue numberRoundDown(Context context, MemberFunction function) throws CodeError {
+	private NumberValue numberFloor(Context context, MemberFunction function) throws CodeError {
 		NumberValue numValue = function.getParameterValueOfType(context, NumberValue.class, 0);
 		return new NumberValue(Math.floor(numValue.value));
 	}
@@ -47,5 +47,4 @@ public class ArucasNumberMembers implements IArucasExtension {
 		NumberValue numberValue2 = function.getParameterValueOfType(context, NumberValue.class, 1);
 		return new NumberValue(numberValue1.value % numberValue2.value);
 	}
-
 }

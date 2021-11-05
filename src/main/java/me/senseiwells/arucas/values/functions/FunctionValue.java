@@ -15,10 +15,12 @@ public abstract class FunctionValue extends Value<String> {
 	
 	private void checkArguments(List<Value<?>> arguments, List<String> argumentNames) throws CodeError {
 		int argumentSize = arguments == null ? 0 : arguments.size();
-		if (argumentSize > argumentNames.size())
+		if (argumentSize > argumentNames.size()) {
 			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "%s too many arguments passed into %s".formatted(arguments.size() - argumentNames.size(), this.value), this.startPos, this.endPos);
-		if (argumentSize < argumentNames.size())
+		}
+		if (argumentSize < argumentNames.size()) {
 			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "%s too few arguments passed into %s".formatted(argumentNames.size() - argumentSize, this.value), this.startPos, this.endPos);
+		}
 	}
 
 	private void populateArguments(Context context, List<Value<?>> arguments, List<String> argumentNames) {

@@ -48,14 +48,18 @@ public class ArucasMapMembers implements IArucasExtension {
 	private Value<?> mapGetKeys(Context context, MemberFunction function) throws CodeError {
 		synchronized (MAP_LOCK) {
 			MapValue mapValue = function.getParameterValueOfType(context, MapValue.class, 0);
-			return new ListValue(mapValue.value.keySet().stream().toList());
+			List<Value<?>> valueList = new ArrayList<>();
+			mapValue.value.keySet().forEach(value -> valueList.add(value.newCopy()));
+			return new ListValue(valueList);
 		}
 	}
 
 	private Value<?> mapGetValues(Context context, MemberFunction function) throws CodeError {
 		synchronized (MAP_LOCK) {
 			MapValue mapValue = function.getParameterValueOfType(context, MapValue.class, 0);
-			return new ListValue(mapValue.value.values().stream().toList());
+			List<Value<?>> valueList = new ArrayList<>();
+			mapValue.value.values().forEach(value -> valueList.add(value.newCopy()));
+			return new ListValue(valueList);
 		}
 	}
 
