@@ -41,7 +41,7 @@ public class ArucasMapMembers implements IArucasExtension {
 				throw new RuntimeError("Cannot get null from a map", function.startPos, function.endPos, context);
 			}
 			Value<?> value = mapValue.value.get(key);
-			return value == null ? new NullValue() : value;
+			return value == null ? new NullValue() : value.newCopy();
 		}
 	}
 
@@ -67,7 +67,8 @@ public class ArucasMapMembers implements IArucasExtension {
 			if (key.value == null || value.value == null) {
 				throw new RuntimeError("Cannot put null into a map", function.startPos, function.endPos, context);
 			}
-			return mapValue.value.put(key, value);
+			Value<?> returnValue = mapValue.value.put(key, value);
+			return returnValue == null ? new NullValue() : returnValue.newCopy();
 		}
 	}
 
@@ -79,7 +80,8 @@ public class ArucasMapMembers implements IArucasExtension {
 			if (key.value == null || value.value == null) {
 				throw new RuntimeError("Cannot put null into a map", function.startPos, function.endPos, context);
 			}
-			return mapValue.value.putIfAbsent(key, value);
+			Value<?> returnValue = mapValue.value.putIfAbsent(key, value);
+			return returnValue == null ? new NullValue() : returnValue.newCopy();
 		}
 	}
 
@@ -100,7 +102,7 @@ public class ArucasMapMembers implements IArucasExtension {
 				throw new RuntimeError("Cannot remove null from a map", function.startPos, function.endPos, context);
 			}
 			Value<?> removedValue = mapValue.value.remove(key);
-			return removedValue == null ? new NullValue() : removedValue;
+			return removedValue == null ? new NullValue() : removedValue.newCopy();
 		}
 	}
 

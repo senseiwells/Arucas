@@ -4,21 +4,7 @@
 
 map = {
     2 : 2,
-    1 : 2
+    1 : [2]
 };
 
-mapCopy = map.copy();
 
-list = map.getValues();
-
-list2 = {}.getValues();
-
-print(list);
-print(list2);
-
-map.remove(1);
-
-
-X = mapCopy.get(1);
-
-print(map);
