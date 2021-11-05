@@ -5,20 +5,26 @@ import me.senseiwells.arucas.utils.Context;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * Runtime context class of the programming language
  */
 public class ContextBuilder {
 	private List<Class<? extends IArucasExtension>> extensions = List.of();
+	private Consumer<String> printDeprecated = System.out::println;
 	private String displayName = "";
 	
-	public ContextBuilder() {
-	
-	}
+	public ContextBuilder() { }
 	
 	public ContextBuilder setDisplayName(String displayName) {
 		this.displayName = Objects.requireNonNull(displayName);
+		return this;
+	}
+
+	@SuppressWarnings("unused")
+	public ContextBuilder setPrintDeprecated(Consumer<String> printDeprecated) {
+		this.printDeprecated = printDeprecated;
 		return this;
 	}
 
@@ -27,7 +33,7 @@ public class ContextBuilder {
 		this.extensions = Objects.requireNonNull(extensions);
 		return this;
 	}
-	
+
 	@SafeVarargs
 	public final ContextBuilder setExtensions(Class<? extends IArucasExtension>... extensions) {
 		this.extensions = List.of(extensions);
@@ -45,7 +51,7 @@ public class ContextBuilder {
 				e.printStackTrace();
 			}
 		}
-		
-		return new Context(this.displayName, list);
+
+		return new Context(this.displayName, list, this.printDeprecated);
 	}
 }

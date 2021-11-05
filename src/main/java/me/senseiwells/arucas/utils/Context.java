@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * Runtime context class of the programming language
@@ -15,19 +16,23 @@ import java.util.Set;
 public class Context {
 	private final Set<String> builtInFunctions;
 	private final List<IArucasExtension> extensions;
+	private final Consumer<String> printDeprecated;
 	
 	private final String displayName;
 	private final Context parentContext;
 	private SymbolTable symbolTable;
 	private boolean isDebug;
+	private boolean suppressDeprecated;
 	
-	private Context(String displayName, Context parentContext, List<IArucasExtension> extensions) {
+	private Context(String displayName, Context parentContext, List<IArucasExtension> extensions, Consumer<String> printDeprecated) {
 		this.builtInFunctions = new HashSet<>();
 		
 		this.displayName = displayName;
 		this.symbolTable = new SymbolTable();
 		this.parentContext = parentContext;
 		this.extensions = extensions;
+
+		this.printDeprecated = printDeprecated;
 		
 		for (IArucasExtension extension : extensions) {
 			for (AbstractBuiltInFunction<?> function : extension.getDefinedFunctions()) {
@@ -37,8 +42,8 @@ public class Context {
 		}
 	}
 	
-	public Context(String displayName, List<IArucasExtension> extensions) {
-		this(displayName, null, extensions);
+	public Context(String displayName, List<IArucasExtension> extensions, Consumer<String> printDeprecated) {
+		this(displayName, null, extensions, printDeprecated);
 	}
 	
 	private Context(Context branch, SymbolTable symbolTable) {
@@ -47,6 +52,7 @@ public class Context {
 		this.extensions = branch.extensions;
 		this.builtInFunctions = branch.builtInFunctions;
 		this.parentContext = branch.parentContext;
+		this.printDeprecated = branch.printDeprecated;
 	}
 
 	@SuppressWarnings("unused")
@@ -67,7 +73,7 @@ public class Context {
 	}
 	
 	public Context createChildContext(String displayName) {
-		return new Context(displayName, this, this.extensions);
+		return new Context(displayName, this, this.extensions, this.printDeprecated);
 	}
 	
 	public String getDisplayName() {
@@ -116,7 +122,15 @@ public class Context {
 	public boolean isDebug() {
 		return this.isDebug;
 	}
-	
+
+	public void setSuppressDeprecated(boolean suppressed) {
+		this.suppressDeprecated = suppressed;
+	}
+
+	public boolean isSuppressDeprecated() {
+		return this.suppressDeprecated;
+	}
+
 	public boolean isBuiltInFunction(String name) {
 		return this.builtInFunctions.contains(name);
 	}
@@ -131,6 +145,10 @@ public class Context {
 	
 	public Value<?> getVariable(String name) {
 		return this.symbolTable.get(name);
+	}
+
+	public void printDeprecated(String message) {
+		this.printDeprecated.accept(message);
 	}
 	
 	@Deprecated

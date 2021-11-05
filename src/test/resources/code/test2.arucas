@@ -7,4 +7,12 @@ map = {
     1 : [2]
 };
 
+valueList = map.getValues();
 
+foreach (value : valueList) {
+    if (value.isList()) {
+        value.append(3);
+    }
+}
+
+print(map.get(1));

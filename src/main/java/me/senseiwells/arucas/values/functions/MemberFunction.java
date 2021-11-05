@@ -8,16 +8,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MemberFunction extends AbstractBuiltInFunction<MemberFunction> {
+	public MemberFunction(String name, List<String> argumentNames, FunctionDefinition<MemberFunction> function, boolean isDeprecated) {
+		super(name, addThis(argumentNames), function, isDeprecated);
+	}
+
 	public MemberFunction(String name, List<String> argumentNames, FunctionDefinition<MemberFunction> function) {
-		super(name, addThis(argumentNames), function);
+		super(name, addThis(argumentNames), function, false);
 	}
 
 	public MemberFunction(String name, String argument, FunctionDefinition<MemberFunction> function) {
-		this(name, List.of(argument), function);
+		this(name, List.of(argument), function, false);
 	}
 
 	public MemberFunction(String name, FunctionDefinition<MemberFunction> function) {
-		this(name, List.of(), function);
+		this(name, List.of(), function, false);
 	}
 
 	private static List<String> addThis(List<String> stringList) {
@@ -30,6 +34,7 @@ public class MemberFunction extends AbstractBuiltInFunction<MemberFunction> {
 
 	@Override
 	public Value<?> execute(Context context, List<Value<?>> arguments) throws CodeError {
+		this.checkDeprecated(context);
 		this.checkAndPopulateArguments(context, arguments, this.argumentNames);
 		return this.function.execute(context, this);
 	}
@@ -55,6 +60,6 @@ public class MemberFunction extends AbstractBuiltInFunction<MemberFunction> {
 
 	@Override
 	public Value<?> copy() {
-		return new MemberFunction(this.value, this.argumentNames, this.function).setPos(this.startPos, this.endPos);
+		return new MemberFunction(this.value, this.argumentNames, this.function, this.isDeprecated).setPos(this.startPos, this.endPos);
 	}
 }
