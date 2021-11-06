@@ -20,17 +20,6 @@ public class Lexer {
 				.addRegex("[ \t\r\n]")
 			)
 			
-			// Comparisons
-			.addRule(Type.EQUALS, i -> i.addString("=="))
-			.addRule(Type.NOT_EQUALS, i -> i.addString("!="))
-			.addRule(Type.LESS_THAN_EQUAL, i -> i.addString("<="))
-			.addRule(Type.MORE_THAN_EQUAL, i -> i.addString(">="))
-			.addRule(Type.LESS_THAN, i -> i.addString("<"))
-			.addRule(Type.MORE_THAN, i -> i.addString(">"))
-			.addRule(Type.NOT, i -> i.addStrings("!", "not"))
-			.addRule(Type.AND, i -> i.addStrings("&&", "and"))
-			.addRule(Type.OR, i -> i.addStrings("||", "or"))
-			
 			// Arithmetics
 			.addRule(Type.PLUS, i -> i.addString("+"))
 			.addRule(Type.MINUS, i -> i.addString("-"))
@@ -50,6 +39,17 @@ public class Lexer {
 				"[0-9]+"
 			))
 			.addRule(Type.NULL, i -> i.addStrings("null"))
+
+			// Comparisons - This must be defined AFTER identifiers
+			.addRule(Type.EQUALS, i -> i.addString("=="))
+			.addRule(Type.NOT_EQUALS, i -> i.addString("!="))
+			.addRule(Type.LESS_THAN_EQUAL, i -> i.addString("<="))
+			.addRule(Type.MORE_THAN_EQUAL, i -> i.addString(">="))
+			.addRule(Type.LESS_THAN, i -> i.addString("<"))
+			.addRule(Type.MORE_THAN, i -> i.addString(">"))
+			.addRule(Type.NOT, i -> i.addStrings("!", "not"))
+			.addRule(Type.AND, i -> i.addStrings("&&", "and"))
+			.addRule(Type.OR, i -> i.addStrings("||", "or"))
 			
 			// Memory operations
 			.addRule(Type.ASSIGN_OPERATOR, i -> i.addString("="))

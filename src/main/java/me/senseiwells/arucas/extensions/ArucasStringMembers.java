@@ -4,16 +4,10 @@ import me.senseiwells.arucas.api.IArucasExtension;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.values.ListValue;
-import me.senseiwells.arucas.values.NumberValue;
-import me.senseiwells.arucas.values.StringValue;
-import me.senseiwells.arucas.values.Value;
+import me.senseiwells.arucas.values.*;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 
 public class ArucasStringMembers implements IArucasExtension {
 
@@ -32,7 +26,8 @@ public class ArucasStringMembers implements IArucasExtension {
 		new MemberFunction("replaceAll", List.of("regex", "replace"), this::stringReplaceAll),
 		new MemberFunction("uppercase", this::stringUppercase),
 		new MemberFunction("lowercase", this::stringLowercase),
-		new MemberFunction("toNumber", this::stringToNumber)
+		new MemberFunction("toNumber", this::stringToNumber),
+		new MemberFunction("formatted", "values", this::stringFormatted)
 	);
 
 	private Value<?> stringToList(Context context, MemberFunction function) throws CodeError {
@@ -69,5 +64,21 @@ public class ArucasStringMembers implements IArucasExtension {
 		catch (NumberFormatException e) {
 			throw new RuntimeError("Cannot parse %s as a NumberValue".formatted(value), function.startPos, function.endPos, context);
 		}
+	}
+
+	private Value<?> stringFormatted(Context context, MemberFunction function) throws CodeError {
+		String string = function.getParameterValueOfType(context, StringValue.class, 0).value;
+		final Value<?>[] array = function.getParameterValueOfType(context, ListValue.class, 1).value.toArray(Value<?>[]::new);
+		int i = 0;
+		while (string.contains("%s")) {
+			try {
+				string = string.replaceFirst("%s", array[i].toString());
+			}
+			catch (IndexOutOfBoundsException e) {
+				throw new RuntimeError("You are missing values to be formatted!", function.startPos, function.endPos, context);
+			}
+			i++;
+		}
+		return new StringValue(string);
 	}
 }

@@ -7,7 +7,7 @@ public class StringValue extends Value<String> {
 
 	@Override
 	public StringValue addTo(Value<?> other) {
-		return new StringValue(this.value + other);
+		return new StringValue(this.value + other.toString());
 	}
 
 	@Override

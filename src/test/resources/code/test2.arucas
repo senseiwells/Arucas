@@ -1,9 +1,7 @@
-// run("D:/Java/ArucasExperimental/src/test/resources/code/test2.arucas");
-// run("E:/Java/Projects/Arucas/src/test/resources/code/test2.arucas");
-// run("C:/Users/Admin/git/Arucas/src/test/resources/code/test2.arucas");
-
+// run(getDirectory() + "/src/test/resources/code/test2.arucas");
+/*
 fun schedule(milliseconds, function) {
-    threaded(fun(ms, func) { 
+    runThreaded(fun(ms, func) { 
         sleep(ms); 
         func(); 
     }, [milliseconds, function]);
@@ -24,3 +22,38 @@ schedule(1000, fun() {
 
 string = input("input 1");
 print(string);
+*/
+/*
+personMap = { };
+
+while (true) {
+    name = input("What is your name?");
+    age = null;
+    while (true) {
+        age = input("How old are you?");
+        try {
+            age = age.toNumber();
+            if (age > 100 or age < 5) 
+                throwRuntimeError("");
+        }
+        catch (e) print("That is an invalid age!");
+        break;
+    }
+    personMap.put(name, age);
+    exit = input("Would you like to exit? (y/n)");
+    if (exit == "y")
+        break;
+}
+
+personMapString = personMap.toString().replaceAll("\\{", "").replaceAll("\\}", "").replaceAll(", ", "\n");
+writeFile(getDirectory() + "/src/test/resources/code/personMap.txt", personMapString);
+
+print("Saved map to file");
+*/
+
+string = "Hi my name is %s%s%s%s";
+
+string = string.formatted(["bonk and I am ", 18, " years old ", []]);
+
+print(string);
+

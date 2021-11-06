@@ -22,25 +22,36 @@ public class BinaryOperatorNode extends Node {
 	@Override
 	public Value<?> visit(Context context) throws CodeError, ThrowValue {
 		Value<?> left = this.leftNode.visit(context);
-		Value<?> right = this.rightNode.visit(context);
+		Value<?> right = null;
 		try {
-			Value<?> result;
-			switch (this.token.type) {
-				case PLUS -> result = left.addTo(right);
-				case MINUS -> result = ((NumberValue) left).subtractBy((NumberValue) right);
-				case MULTIPLY -> result = ((NumberValue) left).multiplyBy((NumberValue) right);
-				case DIVIDE -> result = ((NumberValue) left).divideBy((NumberValue) right);
-				case POWER -> result = ((NumberValue) left).powerBy((NumberValue) right);
-				case EQUALS -> result = left.isEqual(right);
-				case NOT_EQUALS -> result = left.isNotEqual(right);
-				case LESS_THAN, LESS_THAN_EQUAL, MORE_THAN, MORE_THAN_EQUAL -> result = ((NumberValue) left).compareNumber((NumberValue) right, this.token.type);
-				case AND -> result = ((BooleanValue) left).isAnd((BooleanValue) right);
-				case OR -> result = ((BooleanValue) left).isOr((BooleanValue) right);
-				default -> throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected an operator", this.startPos, this.endPos);
-			}
+			Value<?> result = switch (this.token.type) {
+				case AND -> {
+					BooleanValue leftBoolean = (BooleanValue) left;
+					yield (!leftBoolean.value) ? new BooleanValue(false) : leftBoolean.isAnd((BooleanValue) (right = this.rightNode.visit(context)));
+				}
+				case OR -> {
+					BooleanValue leftBoolean = (BooleanValue) left;
+					yield leftBoolean.value ? new BooleanValue(true) : leftBoolean.isOr((BooleanValue) (right = this.rightNode.visit(context)));
+				}
+				default -> {
+					right = this.rightNode.visit(context);
+					yield switch (this.token.type) {
+						case PLUS -> left.addTo(right);
+						case MINUS -> ((NumberValue) left).subtractBy((NumberValue) right);
+						case MULTIPLY -> ((NumberValue) left).multiplyBy((NumberValue) right);
+						case DIVIDE -> ((NumberValue) left).divideBy((NumberValue) right);
+						case POWER -> ((NumberValue) left).powerBy((NumberValue) right);
+						case EQUALS -> left.isEqual(right);
+						case NOT_EQUALS -> left.isNotEqual(right);
+						case LESS_THAN, LESS_THAN_EQUAL, MORE_THAN, MORE_THAN_EQUAL -> ((NumberValue) left).compareNumber((NumberValue) right, this.token.type);
+						default -> throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected an operator", this.startPos, this.endPos);
+					};
+				}
+			};
 			return result.setPos(this.startPos, this.endPos);
 		}
 		catch (ClassCastException classCastException) {
+			right = right == null ? this.rightNode.visit(context) : right;
 			throw new RuntimeError("The operation '%s' cannot be applied to '%s' and '%s'".formatted(this.token.type, left.value, right.value), this.startPos, this.endPos, context);
 		}
 		catch (RuntimeError e) {

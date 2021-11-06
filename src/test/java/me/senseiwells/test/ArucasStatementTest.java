@@ -263,11 +263,11 @@ public class ArucasStatementTest {
 			}
 			""", "X"
 		));
-		assertEquals("[\"one\", \"two\"]", ArucasHelper.runSafeFull(
+		assertEquals("[\"one\", \"one\"]", ArucasHelper.runSafeFull(
 			"""
 			map = {
 				1 : 'one',
-				2 : 'two'
+				2 : 'one'
 			};
 			X = map.getValues();
 			""", "X"

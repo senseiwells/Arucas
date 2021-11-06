@@ -52,10 +52,7 @@ public class SymbolTable {
 	 */
 	public void set(String name, Value<?> value) {
 		SymbolTable parentTable = this.getParent(name);
-		if (parentTable != null)
-			parentTable.symbolMap.put(name, value);
-		else
-			this.symbolMap.put(name, value);
+		Objects.requireNonNullElse(parentTable, this).symbolMap.put(name, value);
 	}
 	
 	/**
