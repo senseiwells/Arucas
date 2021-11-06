@@ -58,5 +58,4 @@ public abstract class Value<T> {
 	public String toString() {
 		return this.value.toString();
 	}
-
 }

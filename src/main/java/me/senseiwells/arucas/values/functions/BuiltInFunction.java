@@ -11,6 +11,14 @@ public class BuiltInFunction extends AbstractBuiltInFunction<BuiltInFunction> {
 		super(name, argumentNames, function, isDeprecated);
 	}
 
+	public BuiltInFunction(String name, String argument, FunctionDefinition<BuiltInFunction> function, boolean isDeprecated) {
+		this(name, List.of(argument), function, isDeprecated);
+	}
+
+	public BuiltInFunction(String name, List<String> argumentNames, FunctionDefinition<BuiltInFunction> function) {
+		this(name, argumentNames, function, false);
+	}
+
 	public BuiltInFunction(String name, String argument, FunctionDefinition<BuiltInFunction> function) {
 		this(name, List.of(argument), function, false);
 	}
@@ -27,7 +35,7 @@ public class BuiltInFunction extends AbstractBuiltInFunction<BuiltInFunction> {
 	}
 
 	@Override
-	public Value<?>  copy() {
+	public Value<?> copy() {
 		return new BuiltInFunction(this.value, this.argumentNames, this.function, this.isDeprecated).setPos(this.startPos, this.endPos);
 	}
 }

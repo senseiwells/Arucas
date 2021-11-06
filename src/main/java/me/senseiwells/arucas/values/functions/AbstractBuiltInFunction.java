@@ -31,7 +31,7 @@ public abstract class AbstractBuiltInFunction<S extends AbstractBuiltInFunction<
 
 	public void checkDeprecated(Context context) {
 		if (this.isDeprecated && !context.isSuppressDeprecated()) {
-			context.printDeprecated("The function %s() is deprecated and will be removed!".formatted(this.value));
+			context.printDeprecated("The function %s() is deprecated and will be removed in the future!".formatted(this.value));
 		}
 	}
 

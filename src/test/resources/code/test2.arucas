@@ -2,17 +2,25 @@
 // run("E:/Java/Projects/Arucas/src/test/resources/code/test2.arucas");
 // run("C:/Users/Admin/git/Arucas/src/test/resources/code/test2.arucas");
 
-map = {
-    2 : 2,
-    1 : [2]
-};
-
-valueList = map.getValues();
-
-foreach (value : valueList) {
-    if (value.isList()) {
-        value.append(3);
-    }
+fun schedule(milliseconds, function) {
+    threaded(fun(ms, func) { 
+        sleep(ms); 
+        func(); 
+    }, [milliseconds, function]);
 }
 
-print(map.get(1));
+schedule(1000, fun() {
+    print("This will print second!");
+});
+
+print("This will print first!");
+
+sleep(2000);
+
+schedule(1000, fun() {
+    string = input("input 2");
+    print(string);
+});
+
+string = input("input 1");
+print(string);

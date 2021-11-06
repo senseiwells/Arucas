@@ -2,7 +2,6 @@ package me.senseiwells;
 
 import me.senseiwells.arucas.api.ContextBuilder;
 import me.senseiwells.arucas.core.Run;
-import me.senseiwells.arucas.extensions.*;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowStop;
 import me.senseiwells.arucas.utils.Context;
@@ -13,15 +12,9 @@ public class Main {
 	public static void main(String[] args) {
 		Context context = new ContextBuilder()
 			.setDisplayName("System.in")
-			.setPrintDeprecated((s -> System.out.printf("ERROR! : %s%n", s)))
-			.setExtensions(
-				ArucasBuiltInExtension.class,
-				ArucasListMembers.class,
-				ArucasNumberMembers.class,
-				ArucasStringMembers.class,
-				ArucasMapMembers.class
-			)
-			.create();
+			.addDefaultExtensions()
+			.addDefaultValues()
+			.build();
 		
 		while (true) {
 			Scanner scanner = new Scanner(System.in);
