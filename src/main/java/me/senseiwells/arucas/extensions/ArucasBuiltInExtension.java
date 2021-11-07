@@ -49,7 +49,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		new BuiltInFunction("getTime", (context, function) -> new StringValue(DateTimeFormatter.ofPattern("HH:mm:ss").format(LocalTime.now()))),
 		new BuiltInFunction("getDirectory", (context, function) -> new StringValue(System.getProperty("user.dir"))),
 		new BuiltInFunction("len", "value", this::len),
-		new BuiltInFunction("runThreaded", List.of("function", "parameters"), this::threaded),
+		new BuiltInFunction("runThreaded", List.of("function", "parameters"), this::runThreaded),
 		new BuiltInFunction("readFile", "path", this::readFile),
 		new BuiltInFunction("writeFile", List.of("path", "string"), this::writeFile),
 		new BuiltInFunction("throwRuntimeError", "message", this::throwRuntimeError),
@@ -136,7 +136,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 	}
 
 	// This should be overwritten if you are implementing the language
-	private Value<?> threaded(Context context, BuiltInFunction function) throws CodeError {
+	private Value<?> runThreaded(Context context, BuiltInFunction function) throws CodeError {
 		FunctionValue functionValue = function.getParameterValueOfType(context, FunctionValue.class, 0);
 		List<Value<?>> list = function.getParameterValueOfType(context, ListValue.class, 1).value;
 		Context functionContext = context.createBranch();
@@ -198,7 +198,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 
 	private Value<?> instanceOf(Context context, MemberFunction function) throws CodeError {
 		StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 1);
-		Class<? extends Value<?>> clazz = context.getValueClassFromString(stringValue.value);
+		Class<?> clazz = context.getValueClassFromString(stringValue.value);
 		if (clazz == null) {
 			throw new RuntimeError("Invalid value type in instanceOf() method \"%s\"".formatted(stringValue.value), function.startPos, function.endPos, context);
 		}

@@ -111,8 +111,9 @@ public class Lexer {
 				throw new CodeError(CodeError.ErrorType.ILLEGAL_CHAR_ERROR, "Invalid character", errorPos, errorPos);
 			}
 			
-			if (lexerToken.length + offset > length)
+			if (lexerToken.length + offset > length) {
 				break;
+			}
 			
 			int old_offset = offset;
 			int old_line = line;

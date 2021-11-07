@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 public class Context {
 	private final Set<String> builtInFunctions;
 	private final List<IArucasExtension> extensions;
-	private final Map<String, Class<? extends Value<?>>> valueMap;
+	private final Map<String, Class<?>> valueMap;
 	private final Consumer<String> printDeprecated;
 	
 	private final String displayName;
@@ -22,7 +22,7 @@ public class Context {
 	private boolean isDebug;
 	private boolean suppressDeprecated;
 
-	private Context(String displayName, Context parentContext, List<IArucasExtension> extensions, Map<String, Class<? extends Value<?>>> valueMap, Consumer<String> printDeprecated) {
+	private Context(String displayName, Context parentContext, List<IArucasExtension> extensions, Map<String, Class<?>> valueMap, Consumer<String> printDeprecated) {
 		this.builtInFunctions = new HashSet<>();
 		this.extensions = extensions;
 		this.valueMap = valueMap;
@@ -40,7 +40,7 @@ public class Context {
 		}
 	}
 	
-	public Context(String displayName, List<IArucasExtension> extensions, Map<String, Class<? extends Value<?>>> valueMap, Consumer<String> printDeprecated) {
+	public Context(String displayName, List<IArucasExtension> extensions, Map<String, Class<?>> valueMap, Consumer<String> printDeprecated) {
 		this(displayName, null, extensions, valueMap, printDeprecated);
 	}
 	
@@ -146,7 +146,7 @@ public class Context {
 		return this.symbolTable.get(name);
 	}
 
-	public Class<? extends Value<?>> getValueClassFromString(String string) {
+	public Class<?> getValueClassFromString(String string) {
 		return this.valueMap.get(string);
 	}
 

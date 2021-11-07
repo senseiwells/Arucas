@@ -38,13 +38,7 @@ public class SymbolTable {
 	 */
 	public Value<?> get(String name) {
 		Value<?> value = this.symbolMap.get(name);
-		if (value != null)
-			return value;
-		
-		if (this.parentTable != null)
-			return this.parentTable.get(name);
-		
-		return null;
+		return value != null ? value : this.parentTable != null ? this.parentTable.get(name) : null;
 	}
 	
 	/**
@@ -66,14 +60,9 @@ public class SymbolTable {
 	 * Returns the first parent that contains the value name.
 	 */
 	public SymbolTable getParent(String name) {
-		if (this.parentTable != null) {
-			if (this.parentTable.symbolMap.get(name) != null)
-				return this.parentTable;
-			else
-				return this.parentTable.getParent(name);
-		}
-		
-		return null;
+		return this.parentTable != null ?
+			this.parentTable.symbolMap.get(name) != null ?
+			this.parentTable : this.parentTable.getParent(name) : null;
 	}
 	
 	/**
@@ -88,33 +77,15 @@ public class SymbolTable {
 	}
 	
 	public SymbolTable getReturnScope() {
-		if (this.canReturn)
-			return this;
-		
-		if (this.parentTable != null)
-			return this.parentTable.getReturnScope();
-		
-		return null;
+		return this.canReturn ? this : this.parentTable != null ? this.parentTable.getReturnScope() : null;
 	}
 	
 	public SymbolTable getBreakScope() {
-		if (this.canBreak)
-			return this;
-		
-		if (this.parentTable != null)
-			return this.parentTable.getBreakScope();
-		
-		return null;
+		return this.canBreak ? this : this.parentTable != null ? this.parentTable.getBreakScope() : null;
 	}
 	
 	public SymbolTable getContinueScope() {
-		if (this.canContinue)
-			return this;
-		
-		if (this.parentTable != null)
-			return this.parentTable.getContinueScope();
-		
-		return null;
+		return this.canContinue ? this : this.parentTable != null ? this.parentTable.getContinueScope() : null;
 	}
 	
 	public Iterator<SymbolTable> iterator() {

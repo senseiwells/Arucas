@@ -9,9 +9,10 @@ public class StringUtils {
 	 * @return	a unescaped string
 	 */
 	public static String unescapeString(String string) {
-		if (string == null)
+		if (string == null) {
 			return null;
-		
+		}
+
 		StringBuilder sb = new StringBuilder();
 		boolean escape = false;
 		
@@ -29,8 +30,9 @@ public class StringUtils {
 					case 'b': sb.append('\b'); break;
 					case 't': sb.append('\t'); break;
 					case 'x': {
-						if (i + 3 > string.length())
+						if (i + 3 > string.length()) {
 							throw new RuntimeException("(index:" + i + ") Not enough characters for '\\x..' escape.");
+						}
 
 						String hex = string.substring(i + 1, i + 3);
 
@@ -46,8 +48,9 @@ public class StringUtils {
 					}
 					
 					case 'u': {
-						if (i + 5 > string.length())
+						if (i + 5 > string.length()) {
 							throw new RuntimeException("(index:" + i + ") Not enough characters for '\\u....' escape.");
+						}
 
 						String hex = string.substring(i + 1, i + 5);
 
@@ -66,18 +69,21 @@ public class StringUtils {
 						throw new RuntimeException("(index:" + i + ") Invalid character escape '\\" + c + "'");
 				}
 			}
-			else if (c == '\\')
+			else if (c == '\\') {
 				escape = true;
-			else
+			}
+			else {
 				sb.append(c);
+			}
 		}
 		
 		return sb.toString();
 	}
 	
 	public static String escapeString(String string) {
-		if (string == null)
+		if (string == null) {
 			return null;
+		}
 		
 		StringBuilder sb = new StringBuilder();
 		
@@ -116,8 +122,9 @@ public class StringUtils {
 	 * @return
 	 */
 	public static String regexEscape(String string) {
-		if (string == null)
+		if (string == null) {
 			return null;
+		}
 		
 		StringBuilder sb = new StringBuilder();
 		
@@ -162,8 +169,9 @@ public class StringUtils {
 	 * @return	a hex string
 	 */
 	public static String toHexString(long value, int length) {
-		if (length < 1)
+		if (length < 1) {
 			throw new IllegalArgumentException("The minimum length of the returned string cannot be less than one.");
+		}
 		return String.format("%0" + length + "x", value);
 	}
 }

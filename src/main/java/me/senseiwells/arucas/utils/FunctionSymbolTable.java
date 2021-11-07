@@ -16,25 +16,21 @@ public class FunctionSymbolTable extends SymbolTable {
 	@Override
 	public Value<?> get(String name) {
 		Value<?> value = this.symbolMap.get(name);
-		if (value == null)
-			return this.root.get(name);
-		return value;
+		return value == null ? this.root.get(name) : value;
 	}
 	
 	@Override
 	public void set(String name, Value<?> value) {
-		if (this.root.get(name) != null)
+		if (this.root.get(name) != null) {
 			this.root.set(name, value);
-		else
-			this.symbolMap.put(name, value);
+			return;
+		}
+		this.symbolMap.put(name, value);
 	}
 	
 	@Override
 	public SymbolTable getParent(String name) {
-		if (this.root.get(name) != null)
-			return this.root;
-		
-		return null;
+		return this.root.get(name) != null ? this.root : null;
 	}
 	
 	@Override

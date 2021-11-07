@@ -14,7 +14,7 @@ import java.util.function.Consumer;
 @SuppressWarnings("unused")
 public class ContextBuilder {
 	private final List<Class<? extends IArucasExtension>> extensions = new ArrayList<>();
-	private final List<Class<? extends Value<?>>> valueList = new ArrayList<>();
+	private final List<Class<?>> valueList = new ArrayList<>();
 	private Consumer<String> printDeprecated = System.out::println;
 	private String displayName = "";
 	
@@ -64,13 +64,12 @@ public class ContextBuilder {
 		return this;
 	}
 
-	public ContextBuilder addValues(List<Class<? extends Value<?>>> values) {
+	public ContextBuilder addValues(List<Class<?>> values) {
 		this.valueList.addAll(values);
 		return this;
 	}
 
-	@SafeVarargs
-	public final ContextBuilder addValues(Class<? extends Value<?>>... values) {
+	public final ContextBuilder addValues(Class<?>... values) {
 		this.valueList.addAll(List.of(values));
 		return this;
 	}
@@ -87,9 +86,9 @@ public class ContextBuilder {
 			}
 		}
 
-		Map<String, Class<? extends Value<?>>> valueMap = new HashMap<>();
+		Map<String, Class<?>> valueMap = new HashMap<>();
 
-		for (Class<? extends Value<?>> clazz : this.valueList) {
+		for (Class<?> clazz : this.valueList) {
 			String className = clazz.getSimpleName();
 			valueMap.put(className, clazz);
 			if (className.endsWith("Value")) {
