@@ -1,5 +1,7 @@
 package me.senseiwells.arucas.values;
 
+import me.senseiwells.arucas.utils.StringUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,28 +18,19 @@ public class ListValue extends Value<List<Value<?>>> {
 
 	@Override
 	public Value<?> newCopy() {
+		// TODO: Is this thread safe?
 		return new ListValue(new ArrayList<>(this.value)).setPos(this.startPos, this.endPos);
 	}
 
 	@Override
 	public String toString() {
+		// TODO: Is this thread safe?
 		final Value<?>[] array = this.value.toArray(Value<?>[]::new);
-		if (array.length == 0) return "[]";
+		if(array.length == 0) return "[]";
 		
 		StringBuilder sb = new StringBuilder();
 		for (Value<?> element : array) {
-			if (element instanceof ListValue) {
-				sb.append(", <list>");
-			}
-			else if (element instanceof StringValue) {
-				sb.append(", \"%s\"".formatted(element.toString()));
-			}
-			else if (element instanceof MapValue) {
-				sb.append(", <map>");
-			}
-			else {
-				sb.append(", ").append(element);
-			}
+			sb.append(", ").append(StringUtils.toPlainString(element));
 		}
 		sb.deleteCharAt(0);
 		

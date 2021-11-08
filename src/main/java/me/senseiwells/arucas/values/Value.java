@@ -4,6 +4,8 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.Position;
 
+import java.util.Objects;
+
 public abstract class Value<T> {
 	public final T value;
 	public Position startPos;
@@ -46,7 +48,9 @@ public abstract class Value<T> {
 		if (!(other instanceof Value<?> otherValue)) {
 			return false;
 		}
-		return this.value == null || otherValue.value == null ? this.value == otherValue.value : this.value.equals(otherValue.value);
+		
+		// Object.equals takes null values into perspective.
+		return Objects.equals(this.value, otherValue.value);
 	}
 
 	@Override

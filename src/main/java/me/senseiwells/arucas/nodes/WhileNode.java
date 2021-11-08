@@ -35,11 +35,11 @@ public class WhileNode extends Node {
 				this.body.visit(context);
 			}
 			catch (ThrowValue.Break tv) {
-				context.moveScope(context.getSymbolTable().getBreakScope());
+				context.moveScope(context.getBreakScope());
 				break;
 			}
 			catch (ThrowValue.Continue tv) {
-				context.moveScope(context.getSymbolTable().getContinueScope());
+				context.moveScope(context.getContinueScope());
 			}
 		}
 		

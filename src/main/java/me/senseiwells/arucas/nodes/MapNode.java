@@ -29,6 +29,7 @@ public class MapNode extends Node {
 			if (key.value == null || value.value == null) {
 				throw new RuntimeError("Cannot put null inside a map", this.startPos, this.endPos, context);
 			}
+			
 			valueMap.put(key, value);
 		}
 		return new MapValue(valueMap);

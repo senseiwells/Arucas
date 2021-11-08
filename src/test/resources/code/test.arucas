@@ -9,7 +9,7 @@ And it won't get read
 */
 
 suppressDeprecated(true);
-
+/*
 valueList = ["foo", 89, true, "bar", null, "3.14", false, 3.14, "baz"];
 stringList = [];
 
@@ -33,6 +33,7 @@ foreach (value : valueList) {
 
 //Expected list for stringList is ["foo", "bar", "baz"]
 
+
 fun a(sum, tail) {
     print(sum.toString() + ", " + tail.toString());
     if(tail == 0)
@@ -41,3 +42,38 @@ fun a(sum, tail) {
 }
 
 print(a(0, 100));
+
+
+// run(getDirectory() + "/src/test/resources/code/test.arucas");
+map = {
+    test: 'abcdefg',
+    -43: 'testing'
+};
+
+fun test() { test(); }
+try {
+    test();
+} catch(testError) {
+    print("testError says: " + testError);
+}
+
+print(map.get("test"));
+print(map.get(-43));
+
+//map = { "crash": fun() { return map.get("crash")(); } };
+//map.get("crash")();
+
+map.put(0.15, "test");
+
+print(map.get(0.1 + 0.05));
+if("a" && ("b" && (fun() { throwRuntimeError("I'm crashing before the class cast exception"); }() ))) {
+
+}
+*/
+
+map = {
+    0.15: 'test'
+};
+
+print(map.get(0.1 + 0.05));
+

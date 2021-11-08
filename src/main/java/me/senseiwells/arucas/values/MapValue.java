@@ -1,5 +1,8 @@
 package me.senseiwells.arucas.values;
 
+import me.senseiwells.arucas.utils.StringUtils;
+
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,38 +18,23 @@ public class MapValue extends Value<Map<Value<?>, Value<?>>> {
 
 	@Override
 	public Value<?> newCopy() {
+		// TODO: Is this thread safe?
 		return new MapValue(new HashMap<>(this.value)).setPos(this.startPos, this.endPos);
 	}
 
 	@Override
 	public String toString() {
+		// TODO: Is this thread safe?
 		final Map<Value<?>, Value<?>> map = Map.copyOf(this.value);
 		if (map.isEmpty()) return "{}";
-
+		
 		StringBuilder sb = new StringBuilder();
 		map.forEach((value1, value2) -> {
-			sb.append(", ");
-			this.makeString(value1, sb);
-			sb.append(" : ");
-			this.makeString(value2, sb);
+			sb.append(", ").append(StringUtils.toPlainString(value1))
+			  .append(" : ").append(StringUtils.toPlainString(value2));
 		});
 		sb.deleteCharAt(0);
 
 		return "{%s}".formatted(sb.toString().trim());
-	}
-
-	private void makeString(Value<?> element, StringBuilder sb) {
-		if (element instanceof ListValue) {
-			sb.append("<list>");
-		}
-		else if (element instanceof StringValue) {
-			sb.append("\"%s\"".formatted(element.toString()));
-		}
-		else if (element instanceof MapValue) {
-			sb.append("<map>");
-		}
-		else {
-			sb.append(element);
-		}
 	}
 }

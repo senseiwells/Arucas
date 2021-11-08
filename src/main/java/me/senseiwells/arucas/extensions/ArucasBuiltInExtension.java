@@ -14,6 +14,7 @@ import me.senseiwells.arucas.values.functions.BuiltInFunction;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
@@ -69,7 +70,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 
 	private Value<?> run(Context context, BuiltInFunction function) throws CodeError {
 		StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
-		String filePath = stringValue.value;
+		String filePath = new File(stringValue.value).getAbsolutePath();
 		try {
 			Context childContext = context.createChildContext(filePath);
 			String fileContent = Files.readString(Path.of(filePath));
@@ -96,13 +97,13 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 	}
 
 	private Value<?> print(Context context, BuiltInFunction function) {
-		System.out.println(function.getParameterValue(context, 0));
+		context.getOutput().println(function.getParameterValue(context, 0));
 		return new NullValue();
 	}
 
 	private synchronized Value<?> input(Context context, BuiltInFunction function) throws CodeError {
 		StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
-		System.out.println(stringValue.value);
+		context.getOutput().println(stringValue.value);
 		return new StringValue(this.scanner.nextLine());
 	}
 
@@ -146,7 +147,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 				functionValue.call(functionContext, list);
 			}
 			catch (CodeError e) {
-				System.out.printf("An error occurred in a separate thread: %s%n", e.toString(functionContext));
+				context.getOutput().printf("An error occurred in a separate thread: %s%n", e.toString(functionContext));
 			}
 			catch (ThrowValue ignored) { }
 		});

@@ -2,7 +2,7 @@ package me.senseiwells.arucas.throwables;
 
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.Position;
-import me.senseiwells.arucas.utils.SymbolTable;
+import me.senseiwells.arucas.utils.StackTable;
 
 import java.util.Iterator;
 
@@ -32,9 +32,9 @@ public class RuntimeError extends CodeError {
 		));
 		
 		// Iterate through all branches before this point
-		Iterator<SymbolTable> iterator = context.getSymbolTable().iterator();
+		Iterator<StackTable> iterator = context.getStackTable().iterator();
 		while (iterator.hasNext()) {
-			SymbolTable table = iterator.next();
+			StackTable table = iterator.next();
 			Position pos = table.getPosition();
 			result.append("File: %s, Line: %d, Column: %d, In: %s\n".formatted(
 				pos.fileName, pos.line + 1, pos.column + 1, context.getDisplayName()

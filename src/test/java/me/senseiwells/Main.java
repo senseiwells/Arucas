@@ -5,6 +5,7 @@ import me.senseiwells.arucas.core.Run;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowStop;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.StringUtils;
 
 import java.util.Scanner;
 

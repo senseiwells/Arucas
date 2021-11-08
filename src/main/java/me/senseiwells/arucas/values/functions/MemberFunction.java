@@ -47,7 +47,7 @@ public class MemberFunction extends AbstractBuiltInFunction<MemberFunction> {
 		Value<?> value = this.getParameterValue(context, index);
 		if (!clazz.isInstance(value)) {
 			throw this.throwInvalidParameterError("Only %s can call the method %s()%s".formatted(
-					clazz.getSimpleName(), this.value, additionalInfo == null ? "" : ("\n" + additionalInfo)
+				clazz.getSimpleName(), this.value, additionalInfo == null ? "" : ("\n" + additionalInfo)
 			), context);
 		}
 		return clazz.cast(value);

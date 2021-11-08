@@ -41,7 +41,7 @@ public class Token {
 		FINISH,
 		
 		// Atoms
-		FLOAT,
+		NUMBER,
 		BOOLEAN,
 		STRING,
 		NULL,

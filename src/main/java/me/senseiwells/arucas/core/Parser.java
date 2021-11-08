@@ -165,17 +165,17 @@ public class Parser {
 			switch (this.currentToken.type) {
 				case ASSIGN_OPERATOR -> {
 					this.recede();
-					return setVariable();
+					return this.setVariable();
 				}
 				case INCREMENT, DECREMENT -> {
 					this.recede();
-					return modifyVariable();
+					return this.modifyVariable();
 				}
 			}
 			this.recede();
 		}
 		
-		return sizeComparisonExpression();
+		return this.sizeComparisonExpression();
 	}
 	
 	private VariableAssignNode setVariable() throws CodeError {
@@ -210,6 +210,7 @@ public class Parser {
 				variableName.endPos
 			);
 		}
+		
 		Node member = this.member(false);
 		Token operatorToken = this.currentToken;
 		Token.Type operatorType = switch (this.currentToken.type) {
@@ -219,7 +220,7 @@ public class Parser {
 		};
 		
 		this.advance();
-		Node numberNode = new NumberNode(new Token(Token.Type.FLOAT, "1", operatorToken.startPos, operatorToken.endPos));
+		Node numberNode = new NumberNode(new Token(Token.Type.NUMBER, "1", operatorToken.startPos, operatorToken.endPos));
 		
 		this.context.setVariable(variableName.content, new NullValue());
 		return new VariableAssignNode(variableName,
@@ -469,8 +470,10 @@ public class Parser {
 	private Node call() throws CodeError {
 		List<Node> argumentNodes = new ArrayList<>();
 		Node member = this.member(false);
-		if (this.currentToken.type != Token.Type.LEFT_BRACKET)
+		if (this.currentToken.type != Token.Type.LEFT_BRACKET) {
 			return member;
+		}
+		
 		this.advance();
 		if (this.currentToken.type != Token.Type.RIGHT_BRACKET) {
 			argumentNodes.add(this.expression());
@@ -517,8 +520,9 @@ public class Parser {
 				this.advance();
 				Value<?> value = this.context.getVariable(token.content);
 				if (value == null) {
-					throw new CodeError(CodeError.ErrorType.UNKNOWN_IDENTIFIER, "Could not find '" + token.content + "'", token.startPos, token.endPos);
+					throw new CodeError(CodeError.ErrorType.UNKNOWN_IDENTIFIER, "Could not find '%s'".formatted(token.content), token.startPos, token.endPos);
 				}
+				
 				if (value instanceof MemberFunction && !isMember) {
 					throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "Members must be called from Values", token.startPos, token.endPos);
 				}
@@ -529,7 +533,7 @@ public class Parser {
 				
 				return new VariableAccessNode(token);
 			}
-			case FLOAT -> {
+			case NUMBER -> {
 				this.advance();
 				return new NumberNode(token);
 			}
@@ -556,7 +560,6 @@ public class Parser {
 				return this.listExpression();
 			}
 			case FUN -> {
-				// FunctionLambda
 				return this.functionDefinition(true);
 			}
 			case LEFT_CURLY_BRACKET -> {

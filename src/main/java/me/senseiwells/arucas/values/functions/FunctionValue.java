@@ -50,9 +50,12 @@ public abstract class FunctionValue extends Value<String> {
 			return value;
 		}
 		catch (ThrowValue.Return tv) {
-			context.moveScope(context.getSymbolTable().getReturnScope());
+			context.moveScope(context.getReturnScope());
 			context.popScope();
 			return tv.returnValue;
+		}
+		catch (StackOverflowError e) {
+			throw new RuntimeError("StackOverflow: Call stack went too deep", this.startPos, this.endPos, context);
 		}
 	}
 	

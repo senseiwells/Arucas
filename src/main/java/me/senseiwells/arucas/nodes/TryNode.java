@@ -4,7 +4,7 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.utils.SymbolTable;
+import me.senseiwells.arucas.utils.StackTable;
 import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.StringValue;
 import me.senseiwells.arucas.values.Value;
@@ -23,7 +23,7 @@ public class TryNode extends Node {
 
 	@Override
 	public Value<?> visit(Context context) throws CodeError, ThrowValue {
-		SymbolTable originalScope = context.getSymbolTable();
+		StackTable originalScope = context.getStackTable();
 		context.pushScope(this.startPos);
 		try {
 			this.bodyNode.visit(context);

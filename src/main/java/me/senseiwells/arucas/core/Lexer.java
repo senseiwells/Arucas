@@ -34,7 +34,7 @@ public class Lexer {
 				.addMultiline("\"", "\\", "\"")
 				.addMultiline("'", "\\", "'")
 			)
-			.addRule(Type.FLOAT, i -> i.addRegexes(
+			.addRule(Type.NUMBER, i -> i.addRegexes(
 				"[0-9]+[.][0-9]+",
 				"[0-9]+"
 			))
