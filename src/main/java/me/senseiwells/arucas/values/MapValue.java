@@ -1,13 +1,14 @@
 package me.senseiwells.arucas.values;
 
+import me.senseiwells.arucas.utils.ArucasValueMap;
 import me.senseiwells.arucas.utils.StringUtils;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MapValue extends Value<Map<Value<?>, Value<?>>> {
-	public MapValue(Map<Value<?>, Value<?>> value) {
+public class MapValue extends Value<ArucasValueMap> {
+	public MapValue(ArucasValueMap value) {
 		super(value);
 	}
 
@@ -17,15 +18,16 @@ public class MapValue extends Value<Map<Value<?>, Value<?>>> {
 	}
 
 	@Override
-	public Value<?> newCopy() {
-		// TODO: Is this thread safe?
-		return new MapValue(new HashMap<>(this.value)).setPos(this.startPos, this.endPos);
+	public MapValue newCopy() {
+		return (MapValue) new MapValue(new ArucasValueMap(this.value)).setPos(this.startPos, this.endPos);
 	}
 
 	@Override
 	public String toString() {
-		// TODO: Is this thread safe?
-		final Map<Value<?>, Value<?>> map = Map.copyOf(this.value);
+		ArucasValueMap map = this.value;
+		
+		// Because ArucasMapValue is a subclass of ConcurrentHashMap
+		// it will never throw an ConcurrentModificationException.
 		if (map.isEmpty()) return "{}";
 		
 		StringBuilder sb = new StringBuilder();

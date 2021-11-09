@@ -43,7 +43,7 @@ public abstract class AbstractBuiltInFunction<S extends AbstractBuiltInFunction<
 		Value<?> value = this.getParameterValue(context, index);
 		if (!clazz.isInstance(value)) {
 			throw this.throwInvalidParameterError("Must pass %s into parameter %d for %s()%s".formatted(
-					clazz.getSimpleName(), index + 1, this.value, additionalInfo == null ? "" : ("\n" + additionalInfo)
+				clazz.getSimpleName(), index + 1, this.value, additionalInfo == null ? "" : ("\n" + additionalInfo)
 			), context);
 		}
 		return clazz.cast(value);

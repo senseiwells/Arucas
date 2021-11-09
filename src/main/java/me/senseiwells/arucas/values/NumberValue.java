@@ -60,8 +60,8 @@ public class NumberValue extends Value<Double> {
 	}
 
 	@Override
-	public Value<Double> copy() {
-		return new NumberValue(this.value).setPos(this.startPos, this.endPos);
+	public NumberValue copy() {
+		return (NumberValue) new NumberValue(this.value).setPos(this.startPos, this.endPos);
 	}
 	
 	@Override

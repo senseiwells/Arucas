@@ -76,6 +76,9 @@ public class Context {
 		return new Context(displayName, this, this.extensions, this.valueMap, this.arucasOutput);
 	}
 	
+	/**
+	 * Returns this contexts output object.
+	 */
 	public IArucasOutput getOutput() {
 		return this.arucasOutput;
 	}
@@ -117,7 +120,7 @@ public class Context {
 	}
 	
 	public void moveScope(StackTable stackTable) {
-		// We do not want to jump to an arbitrary symbolTable
+		// We do not want to jump to an arbitrary stackTable
 		
 		Iterator<StackTable> iter = this.stackTable.iterator();
 		while (iter.hasNext()) {

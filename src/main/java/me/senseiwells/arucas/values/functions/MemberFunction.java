@@ -59,7 +59,7 @@ public class MemberFunction extends AbstractBuiltInFunction<MemberFunction> {
 	}
 
 	@Override
-	public Value<?> copy() {
-		return new MemberFunction(this.value, this.argumentNames, this.function, this.isDeprecated).setPos(this.startPos, this.endPos);
+	public MemberFunction copy() {
+		return (MemberFunction) new MemberFunction(this.value, this.argumentNames, this.function, this.isDeprecated).setPos(this.startPos, this.endPos);
 	}
 }

@@ -1,35 +1,31 @@
 package me.senseiwells.arucas.values;
 
+import me.senseiwells.arucas.utils.ArucasValueList;
 import me.senseiwells.arucas.utils.StringUtils;
 
-import java.util.ArrayList;
-import java.util.List;
+public class ListValue extends Value<ArucasValueList> {
 
-public class ListValue extends Value<List<Value<?>>> {
-
-	public ListValue(List<Value<?>> value) {
+	public ListValue(ArucasValueList value) {
 		super(value);
 	}
 
 	@Override
-	public Value<List<Value<?>>> copy() {
-		return new ListValue(this.value).setPos(this.startPos, this.endPos);
+	public ListValue copy() {
+		return (ListValue) new ListValue(this.value).setPos(this.startPos, this.endPos);
 	}
 
 	@Override
-	public Value<?> newCopy() {
-		// TODO: Is this thread safe?
-		return new ListValue(new ArrayList<>(this.value)).setPos(this.startPos, this.endPos);
+	public ListValue newCopy() {
+		return (ListValue) new ListValue(new ArucasValueList(this.value)).setPos(this.startPos, this.endPos);
 	}
 
 	@Override
 	public String toString() {
-		// TODO: Is this thread safe?
-		final Value<?>[] array = this.value.toArray(Value<?>[]::new);
-		if(array.length == 0) return "[]";
+		ArucasValueList list = this.value;
+		if(list.isEmpty()) return "[]";
 		
 		StringBuilder sb = new StringBuilder();
-		for (Value<?> element : array) {
+		for (Value<?> element : list) {
 			sb.append(", ").append(StringUtils.toPlainString(element));
 		}
 		sb.deleteCharAt(0);

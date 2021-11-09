@@ -32,10 +32,12 @@ public abstract class Value<T> {
 	public BooleanValue isNotEqual(Value<?> other) {
 		return new BooleanValue(!this.value.equals(other.value));
 	}
+	
+	// public abstract Value<?> getMember(Value<?> other);
 
-	public abstract Value<?> copy();
+	public abstract Value<T> copy();
 
-	public Value<?> newCopy() {
+	public Value<T> newCopy() {
 		return this.copy();
 	}
 

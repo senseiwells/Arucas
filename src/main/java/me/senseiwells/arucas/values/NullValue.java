@@ -17,8 +17,8 @@ public class NullValue extends Value<Object> {
 	}
 
 	@Override
-	public Value<?> copy() {
-		return new NullValue().setPos(this.startPos, this.endPos);
+	public NullValue copy() {
+		return (NullValue) new NullValue().setPos(this.startPos, this.endPos);
 	}
 
 	@Override

@@ -46,9 +46,10 @@ public class RuntimeError extends CodeError {
 	
 	@Override
 	public String toString(Context context) {
-		return this.context != null ?
-			"%s%s - '%s'".formatted(this.generateTraceback(this.context), this.errorType.stringName, this.getMessage()) : context != null ?
-			"%s%s - '%s'".formatted(this.generateTraceback(context), this.errorType.stringName, this.getMessage()) :
-			super.toString(null);
+		// If this context is not null use that instead
+		context = this.context != null ? this.context : context;
+		return context != null
+			? "%s%s - '%s'".formatted(this.generateTraceback(context), this.errorType.stringName, this.getMessage())
+			: super.toString(null);
 	}
 }

@@ -6,6 +6,7 @@ import java.util.function.Consumer;
 /**
  * Print interface for arucas
  */
+@SuppressWarnings("unused")
 public interface IArucasOutput {
 	// Declare methods that pipeline the output stream.
 	void setOutputHandler(Consumer<String> outputHandler);

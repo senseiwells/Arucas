@@ -3,6 +3,7 @@ package me.senseiwells.arucas.extensions;
 import me.senseiwells.arucas.api.IArucasExtension;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
+import me.senseiwells.arucas.utils.ArucasValueList;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.*;
 import me.senseiwells.arucas.values.functions.MemberFunction;
@@ -32,7 +33,7 @@ public class ArucasStringMembers implements IArucasExtension {
 
 	private Value<?> stringToList(Context context, MemberFunction function) throws CodeError {
 		StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
-		List<Value<?>> stringList = new ArrayList<>();
+		ArucasValueList stringList = new ArucasValueList();
 		for (char c : stringValue.value.toCharArray()) {
 			stringList.add(new StringValue(String.valueOf(c)));
 		}

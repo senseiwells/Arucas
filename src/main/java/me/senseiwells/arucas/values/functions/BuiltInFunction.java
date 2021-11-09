@@ -35,7 +35,8 @@ public class BuiltInFunction extends AbstractBuiltInFunction<BuiltInFunction> {
 	}
 
 	@Override
-	public Value<?> copy() {
-		return new BuiltInFunction(this.value, this.argumentNames, this.function, this.isDeprecated).setPos(this.startPos, this.endPos);
+	public BuiltInFunction copy() {
+		return (BuiltInFunction) new BuiltInFunction(this.value, this.argumentNames, this.function, this.isDeprecated)
+			.setPos(this.startPos, this.endPos);
 	}
 }

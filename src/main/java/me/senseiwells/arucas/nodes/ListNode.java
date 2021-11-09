@@ -1,5 +1,6 @@
 package me.senseiwells.arucas.nodes;
 
+import me.senseiwells.arucas.utils.ArucasValueList;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
@@ -21,7 +22,7 @@ public class ListNode extends Node {
 
 	@Override
 	public Value<?> visit(Context context) throws CodeError, ThrowValue {
-		List<Value<?>> elements = new ArrayList<>();
+		ArucasValueList elements = new ArucasValueList();
 		for (Node elementNode : this.elementNodes) {
 			elements.add(elementNode.visit(context));
 		}

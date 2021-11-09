@@ -71,9 +71,52 @@ if("a" && ("b" && (fun() { throwRuntimeError("I'm crashing before the class cast
 }
 */
 
-map = {
-    0.15: 'test'
-};
+value = (-1) ^ (2 ^ 0.5);
+value = 1 ^ (((-0.5) ^ 1));
+print(value);
 
-print(map.get(0.1 + 0.05));
+/*
+// map = { 0.15: 'test' };
+// print(map.get(0.1 + 0.05));
+list = [ 1, 2, 3 ];
 
+runThreaded(fun() {
+    while(true) {
+        list.removeIndex(2);
+        list.append(1);
+        list.removeIndex(2);
+        list.append(1);
+        list.removeIndex(2);
+        list.append(1);
+        list.removeIndex(2);
+        list.append(1);
+        list.removeIndex(2);
+        list.append(1);
+        list.removeIndex(2);
+        list.append(1);
+        list.removeIndex(2);
+        list.append(1);
+        list.removeIndex(2);
+        list.append(1);
+        list.removeIndex(2);
+        list.append(1);
+        list.removeIndex(2);
+        list.append(1);
+    }
+}, []);
+
+while(true) {
+    list.getIndex(0);
+    list.getIndex(0);
+    list.getIndex(0);
+    list.getIndex(0);
+    list.getIndex(0);
+    list.getIndex(0);
+    list.getIndex(0);
+    list.getIndex(0);
+    list.getIndex(0);
+    list.getIndex(0);
+    list.getIndex(0);
+    print(list);
+}
+*/

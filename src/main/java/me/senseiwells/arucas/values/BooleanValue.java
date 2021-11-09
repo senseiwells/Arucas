@@ -19,7 +19,7 @@ public class BooleanValue extends Value<Boolean> {
 	}
 
 	@Override
-	public Value<Boolean> copy() {
-		return new BooleanValue(this.value).setPos(this.startPos, this.endPos);
+	public BooleanValue copy() {
+		return (BooleanValue) new BooleanValue(this.value).setPos(this.startPos, this.endPos);
 	}
 }

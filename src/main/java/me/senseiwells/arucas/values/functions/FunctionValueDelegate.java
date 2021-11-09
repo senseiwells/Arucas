@@ -24,7 +24,7 @@ public class FunctionValueDelegate extends FunctionValue {
 	}
 	
 	@Override
-	public Value<?> copy() {
+	public FunctionValue copy() {
 		return this.delegate.copy();
 	}
 	

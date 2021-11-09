@@ -4,12 +4,12 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.tokens.Token;
+import me.senseiwells.arucas.utils.ArucasValueMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.Position;
 import me.senseiwells.arucas.values.MapValue;
 import me.senseiwells.arucas.values.Value;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class MapNode extends Node {
@@ -22,7 +22,7 @@ public class MapNode extends Node {
 
 	@Override
 	public Value<?> visit(Context context) throws CodeError, ThrowValue {
-		Map<Value<?>, Value<?>> valueMap = new HashMap<>();
+		ArucasValueMap valueMap = new ArucasValueMap();
 		for (Map.Entry<Node, Node> entry : this.mapNode.entrySet()) {
 			Value<?> key = entry.getKey().visit(context);
 			Value<?> value = entry.getValue().visit(context);

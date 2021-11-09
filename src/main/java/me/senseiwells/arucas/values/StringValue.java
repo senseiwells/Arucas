@@ -11,7 +11,7 @@ public class StringValue extends Value<String> {
 	}
 
 	@Override
-	public Value<String> copy() {
-		return new StringValue(this.value).setPos(this.startPos, this.endPos);
+	public StringValue copy() {
+		return (StringValue) new StringValue(this.value).setPos(this.startPos, this.endPos);
 	}
 }

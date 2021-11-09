@@ -60,7 +60,7 @@ public abstract class FunctionValue extends Value<String> {
 	}
 	
 	@Override
-	public abstract Value<?> copy();
+	public abstract FunctionValue copy();
 
 	@Override
 	public String toString() {

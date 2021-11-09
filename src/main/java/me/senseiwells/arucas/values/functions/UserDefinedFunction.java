@@ -26,7 +26,8 @@ public class UserDefinedFunction extends FunctionValue {
 	}
 
 	@Override
-	public Value<?> copy() {
-		return new UserDefinedFunction(this.value, this.bodyNode, this.argumentNames).setPos(this.startPos, this.endPos);
+	public UserDefinedFunction copy() {
+		return (UserDefinedFunction) new UserDefinedFunction(this.value, this.bodyNode, this.argumentNames)
+			.setPos(this.startPos, this.endPos);
 	}
 }
