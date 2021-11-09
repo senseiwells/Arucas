@@ -1,5 +1,6 @@
 package me.senseiwells.arucas.utils;
 
+import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.values.Value;
 
 /**
@@ -8,8 +9,8 @@ import me.senseiwells.arucas.values.Value;
 public class FunctionStackTable extends StackTable {
 	private final StackTable root;
 	
-	public FunctionStackTable(StackTable parent, Position position) {
-		super(parent, position, false, false, true);
+	public FunctionStackTable(StackTable parent, ISyntax syntaxPosition) {
+		super(parent, syntaxPosition, false, false, true);
 		this.root = parent.getRoot();
 	}
 	

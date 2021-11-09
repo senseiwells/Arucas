@@ -1,5 +1,6 @@
 package me.senseiwells.arucas.tokens;
 
+import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.utils.Position;
 
 import java.util.Set;
@@ -8,22 +9,24 @@ public class Token {
 	
 	public final Type type;
 	public final String content;
-	public final Position startPos;
-	public final Position endPos;
+	public final ISyntax syntaxPosition;
 	
 	public Token(Type type, String content, Position startPos, Position endPos) {
 		this.type = type;
 		this.content = content;
-		this.startPos = startPos;
-		this.endPos = endPos;
+		this.syntaxPosition = ISyntax.of(startPos, endPos);
 	}
 	
-	public Token(Type type, Position startPos, Position endPos) {
-		this(type, "", startPos, endPos);
+	public Token(Type type, String content, ISyntax syntaxPosition) {
+		this(type, content, syntaxPosition.getStartPos(), syntaxPosition.getEndPos());
 	}
 	
-	public Token(Type type, Position startPos) {
-		this(type, "", startPos, new Position(startPos.index + 1, startPos.line, startPos.column + 1, startPos.fileName));
+	public Token(Type type, ISyntax startPos, ISyntax endPos) {
+		this(type, "", startPos.getStartPos(), endPos.getEndPos());
+	}
+	
+	public Token(Type type, ISyntax syntaxPosition) {
+		this(type, "", syntaxPosition.getStartPos(), syntaxPosition.getEndPos());
 	}
 	
 	@Override

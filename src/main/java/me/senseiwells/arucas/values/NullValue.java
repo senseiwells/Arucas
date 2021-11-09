@@ -7,18 +7,14 @@ public class NullValue extends Value<Object> {
 	}
 
 	@Override
-	public BooleanValue isEqual(Value<?> other) {
-		return new BooleanValue(other.value == null);
-	}
-
-	@Override
-	public BooleanValue isNotEqual(Value<?> other) {
-		return new BooleanValue(other.value != null);
-	}
-
-	@Override
 	public NullValue copy() {
-		return (NullValue) new NullValue().setPos(this.startPos, this.endPos);
+		return this;
+	}
+
+	@Override
+	public int hashCode() {
+		// This value is taken from Arrays.hash( ... )
+		return 0;
 	}
 
 	@Override

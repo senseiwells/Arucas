@@ -39,7 +39,7 @@ public class ArucasMapMembers implements IArucasExtension {
 			MapValue mapValue = function.getParameterValueOfType(context, MapValue.class, 0);
 			Value<?> key = function.getParameterValue(context, 1);
 			if (key.value == null) {
-				throw new RuntimeError("Cannot get null from a map", function.startPos, function.endPos, context);
+				throw new RuntimeError("Cannot get null from a map", function.syntaxPosition, context);
 			}
 			Value<?> value = mapValue.value.get(key);
 			return value == null ? new NullValue() : value.newCopy();
@@ -70,7 +70,7 @@ public class ArucasMapMembers implements IArucasExtension {
 			Value<?> key = function.getParameterValue(context, 1);
 			Value<?> value = function.getParameterValue(context, 2);
 			if (key.value == null || value.value == null) {
-				throw new RuntimeError("Cannot put null into a map", function.startPos, function.endPos, context);
+				throw new RuntimeError("Cannot put null into a map", function.syntaxPosition, context);
 			}
 			Value<?> returnValue = mapValue.value.put(key, value);
 			return returnValue == null ? new NullValue() : returnValue.newCopy();
@@ -83,7 +83,7 @@ public class ArucasMapMembers implements IArucasExtension {
 			Value<?> key = function.getParameterValue(context, 1);
 			Value<?> value = function.getParameterValue(context, 2);
 			if (key.value == null || value.value == null) {
-				throw new RuntimeError("Cannot put null into a map", function.startPos, function.endPos, context);
+				throw new RuntimeError("Cannot put null into a map", function.syntaxPosition, context);
 			}
 			Value<?> returnValue = mapValue.value.putIfAbsent(key, value);
 			return returnValue == null ? new NullValue() : returnValue.newCopy();
@@ -104,7 +104,7 @@ public class ArucasMapMembers implements IArucasExtension {
 			MapValue mapValue = function.getParameterValueOfType(context, MapValue.class, 0);
 			Value<?> key = function.getParameterValue(context, 1);
 			if (key.value == null) {
-				throw new RuntimeError("Cannot remove null from a map", function.startPos, function.endPos, context);
+				throw new RuntimeError("Cannot remove null from a map", function.syntaxPosition, context);
 			}
 			Value<?> removedValue = mapValue.value.remove(key);
 			return removedValue == null ? new NullValue() : removedValue.newCopy();

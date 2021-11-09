@@ -17,9 +17,14 @@ public class BooleanValue extends Value<Boolean> {
 	public BooleanValue not() {
 		return new BooleanValue(!this.value);
 	}
-
+	
 	@Override
 	public BooleanValue copy() {
-		return (BooleanValue) new BooleanValue(this.value).setPos(this.startPos, this.endPos);
+		return this;
+	}
+	
+	@Override
+	public int hashCode() {
+		return this.value.hashCode();
 	}
 }

@@ -16,8 +16,8 @@ import java.util.stream.Collectors;
 @SuppressWarnings("unused")
 public class ContextBuilder {
 	private final List<Class<? extends IArucasExtension>> extensions = new ArrayList<>();
-	private final List<Class<? extends Value<?>>> valueList = new ArrayList<>();
-	private Consumer<String> outputHandler = System.out::println;
+	private final List<Class<?>> valueList = new ArrayList<>();
+	private Consumer<String> outputHandler = System.out::print;
 	private boolean suppressDeprecated;
 	private String displayName = "";
 	
@@ -40,16 +40,15 @@ public class ContextBuilder {
 	}
 
 	public ContextBuilder addDefaultExtensions() {
-		this.extensions.addAll(List.of(
+		return this.addExtensions(List.of(
 			ArucasBuiltInExtension.class,
 			ArucasListMembers.class,
 			ArucasNumberMembers.class,
 			ArucasStringMembers.class,
 			ArucasMapMembers.class
 		));
-		return this;
 	}
-
+	
 	public ContextBuilder addExtensions(List<Class<? extends IArucasExtension>> extensions) {
 		this.extensions.addAll(extensions);
 		return this;
@@ -60,9 +59,9 @@ public class ContextBuilder {
 		this.extensions.addAll(List.of(extensions));
 		return this;
 	}
-
+	
 	public ContextBuilder addDefaultValues() {
-		this.valueList.addAll(List.of(
+		return this.addValues(List.of(
 			StringValue.class,
 			NumberValue.class,
 			MapValue.class,
@@ -70,15 +69,14 @@ public class ContextBuilder {
 			BooleanValue.class,
 			FunctionValue.class
 		));
-		return this;
 	}
-
-	public ContextBuilder addValues(List<Class<? extends Value<?>>> values) {
+	
+	public ContextBuilder addValues(List<Class<?>> values) {
 		this.valueList.addAll(values);
 		return this;
 	}
 
-	public final ContextBuilder addValues(Class<? extends Value<?>>... values) {
+	public final ContextBuilder addValues(Class<?>... values) {
 		this.valueList.addAll(List.of(values));
 		return this;
 	}

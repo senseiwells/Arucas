@@ -23,10 +23,10 @@ public class MemberCallNode extends CallNode {
 	public Value<?> visit(Context context) throws CodeError, ThrowValue {
 		Value<?> callValue = this.callNode.visit(context);
 		if (!(callValue instanceof FunctionValue)) {
-			throw new RuntimeError("Cannot call a non function value '%s'".formatted(callValue), this.startPos, this.endPos, context);
+			throw new RuntimeError("Cannot call a non function value '%s'".formatted(callValue), this.syntaxPosition, context);
 		}
 		if (!(callValue instanceof MemberFunction)) {
-			throw new RuntimeError("Cannot call %s() as a member function".formatted(callValue), this.startPos, this.endPos, context);
+			throw new RuntimeError("Cannot call %s() as a member function".formatted(callValue), this.syntaxPosition, context);
 		}
 
 		List<Value<?>> argumentValues = new ArrayList<>();
@@ -34,9 +34,11 @@ public class MemberCallNode extends CallNode {
 		for (Node node : this.argumentNodes) {
 			argumentValues.add(node.visit(context));
 		}
-
-		callValue = callValue.copy().setPos(this.startPos, this.endPos);
-		Value<?> functionValue = ((FunctionValue) callValue).call(context, argumentValues);
-		return functionValue.setPos(this.startPos, this.endPos);
+		
+		// We push a new scope to make StackTraces easier to read.
+		context.pushScope(this.syntaxPosition);
+		Value<?> result = ((FunctionValue) callValue).call(context, argumentValues);
+		context.popScope();
+		return result;
 	}
 }

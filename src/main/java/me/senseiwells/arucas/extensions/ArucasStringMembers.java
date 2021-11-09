@@ -63,7 +63,7 @@ public class ArucasStringMembers implements IArucasExtension {
 			return new NumberValue(Double.parseDouble(value.value));
 		}
 		catch (NumberFormatException e) {
-			throw new RuntimeError("Cannot parse %s as a NumberValue".formatted(value), function.startPos, function.endPos, context);
+			throw new RuntimeError("Cannot parse %s as a NumberValue".formatted(value), function.syntaxPosition, context);
 		}
 	}
 
@@ -76,7 +76,7 @@ public class ArucasStringMembers implements IArucasExtension {
 				string = string.replaceFirst("%s", array[i].toString());
 			}
 			catch (IndexOutOfBoundsException e) {
-				throw new RuntimeError("You are missing values to be formatted!", function.startPos, function.endPos, context);
+				throw new RuntimeError("You are missing values to be formatted!", function.syntaxPosition, context);
 			}
 			i++;
 		}

@@ -77,7 +77,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 			return Run.run(childContext, filePath, fileContent);
 		}
 		catch (IOException | InvalidPathException e) {
-			throw new RuntimeError("Failed to execute script '%s' \n%s".formatted(filePath, e), function.startPos, function.endPos, context);
+			throw new RuntimeError("Failed to execute script '%s' \n%s".formatted(filePath, e), function.syntaxPosition, context);
 		}
 	}
 
@@ -91,7 +91,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 			Thread.sleep(numberValue.value.longValue());
 		}
 		catch (InterruptedException e) {
-			throw new CodeError(CodeError.ErrorType.INTERRUPTED_ERROR, "", function.startPos, function.endPos);
+			throw new CodeError(CodeError.ErrorType.INTERRUPTED_ERROR, "", function.syntaxPosition);
 		}
 		return new NullValue();
 	}
@@ -133,7 +133,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		if (value instanceof MapValue mapValue) {
 			return new NumberValue(mapValue.value.size());
 		}
-		throw new RuntimeError("Cannot pass %s into len()".formatted(value), function.startPos, function.endPos, context);
+		throw new RuntimeError("Cannot pass %s into len()".formatted(value), function.syntaxPosition, context);
 	}
 
 	// This should be overwritten if you are implementing the language
@@ -147,7 +147,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 				functionValue.call(functionContext, list);
 			}
 			catch (CodeError e) {
-				context.getOutput().printf("An error occurred in a separate thread: %s%n", e.toString(functionContext));
+				context.getOutput().printf("An error occurred in a separate thread: %s\n", e.toString(functionContext));
 			}
 			catch (ThrowValue ignored) { }
 		});
@@ -166,8 +166,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		catch (IOException e) {
 			throw new RuntimeError(
 				"There was an error reading the file: \"%s\"\n%s".formatted(stringValue.value, ExceptionUtils.getStackTrace(e)),
-				function.startPos,
-				function.endPos,
+				function.syntaxPosition,
 				context
 			);
 		}
@@ -185,8 +184,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		catch (IOException e) {
 			throw new RuntimeError(
 				"There was an error writing the file: \"%s\"\n%s".formatted(stringValue.value, ExceptionUtils.getStackTrace(e)),
-				function.startPos,
-				function.endPos,
+				function.syntaxPosition,
 				context
 			);
 		}
@@ -194,14 +192,14 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 
 	private Value<?> throwRuntimeError(Context context, BuiltInFunction function) throws CodeError {
 		StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
-		throw new RuntimeError(stringValue.value, function.startPos, function.endPos, context);
+		throw new RuntimeError(stringValue.value, function.syntaxPosition, context);
 	}
 
 	private Value<?> instanceOf(Context context, MemberFunction function) throws CodeError {
 		StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 1);
 		Class<?> clazz = context.getValueClassFromString(stringValue.value);
 		if (clazz == null) {
-			throw new RuntimeError("Invalid value type in instanceOf() method \"%s\"".formatted(stringValue.value), function.startPos, function.endPos, context);
+			throw new RuntimeError("Invalid value type in instanceOf() method \"%s\"".formatted(stringValue.value), function.syntaxPosition, context);
 		}
 		Value<?> value = function.getParameterValue(context, 0);
 		return new BooleanValue(clazz.isInstance(value));

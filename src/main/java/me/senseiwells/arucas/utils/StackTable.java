@@ -1,5 +1,6 @@
 package me.senseiwells.arucas.utils;
 
+import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.values.Value;
 
 import java.util.*;
@@ -7,30 +8,30 @@ import java.util.*;
 public class StackTable {
 	protected final Map<String, Value<?>> symbolMap;
 	private final StackTable parentTable;
-	private final Position position;
+	private final ISyntax syntaxPosition;
 	
 	protected final boolean canContinue;
 	protected final boolean canBreak;
 	protected final boolean canReturn;
 	
-	public StackTable(StackTable parent, Position position, boolean canBreak, boolean canContinue, boolean canReturn) {
+	public StackTable(StackTable parent, ISyntax syntaxPosition, boolean canBreak, boolean canContinue, boolean canReturn) {
 		this.symbolMap = new HashMap<>();
 		this.parentTable = parent;
-		this.position = position;
+		this.syntaxPosition = syntaxPosition;
 		this.canContinue = canContinue;
 		this.canReturn = canReturn;
 		this.canBreak = canBreak;
 	}
 
 	public StackTable() {
-		this(null, new Position(0, 0, 0, ""), false, false, false);
+		this(null, ISyntax.empty(), false, false, false);
 	}
 	
 	/**
 	 * Returns the scope position that created this table.
 	 */
-	public final Position getPosition() {
-		return this.position;
+	public final ISyntax getPosition() {
+		return this.syntaxPosition;
 	}
 	
 	/**

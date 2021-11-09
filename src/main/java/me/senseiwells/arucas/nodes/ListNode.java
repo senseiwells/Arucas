@@ -1,22 +1,21 @@
 package me.senseiwells.arucas.nodes;
 
+import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.utils.ArucasValueList;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
-import me.senseiwells.arucas.utils.Position;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.values.ListValue;
 import me.senseiwells.arucas.values.Value;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ListNode extends Node {
-	public final List<Node> elementNodes;
+	private final List<Node> elementNodes;
 
-	public ListNode(List<Node> elementNodes, Position posStart, Position posEnd) {
-		super(new Token(Token.Type.LIST, posStart, posEnd));
+	public ListNode(List<Node> elementNodes, ISyntax startPos, ISyntax endPos) {
+		super(new Token(Token.Type.LIST, startPos, endPos));
 		this.elementNodes = elementNodes;
 	}
 
@@ -27,6 +26,6 @@ public class ListNode extends Node {
 			elements.add(elementNode.visit(context));
 		}
 		
-		return new ListValue(elements).setPos(this.startPos, this.endPos);
+		return new ListValue(elements);
 	}
 }

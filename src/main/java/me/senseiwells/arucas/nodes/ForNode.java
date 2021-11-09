@@ -2,13 +2,11 @@ package me.senseiwells.arucas.nodes;
 
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
+import me.senseiwells.arucas.utils.ArucasValueList;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.ListValue;
 import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
-
-import java.util.ConcurrentModificationException;
-import java.util.List;
 
 public class ForNode extends Node {
 	private final Node list;
@@ -16,7 +14,7 @@ public class ForNode extends Node {
 	private final String forParameterName;
 
 	public ForNode(Node list, Node body, String forParameterName) {
-		super(list.token, list.startPos, body.endPos);
+		super(list.token, list.syntaxPosition, body.syntaxPosition);
 		this.list = list;
 		this.body = body;
 		this.forParameterName = forParameterName;
@@ -24,22 +22,22 @@ public class ForNode extends Node {
 
 	@Override
 	public Value<?> visit(Context context) throws CodeError, ThrowValue {
-		context.pushLoopScope(this.startPos);
+		context.pushLoopScope(this.syntaxPosition);
 		Value<?> forValue = this.list.visit(context);
 		if (!(forValue instanceof ListValue listValue)) {
-			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "For loop must contain a list", this.startPos, this.endPos);
+			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "For loop must contain a list", this.syntaxPosition);
 		}
 		
-		final List<Value<?>> list = listValue.value;
+		final ArucasValueList list = listValue.value;
 		
-		// This for loop must not iterate over the elements in the list
-		// with 'for(element : list)' because this would allow for ConcurrentModificationException.
+		// This for loop must not iterate over the elements in the list with 'for (element : list)'
+		// because this would cause an ConcurrentModificationException.
 		for (int i = 0; i < list.size(); i++) {
 			if (Thread.currentThread().isInterrupted()) {
 				break;
 			}
 			
-			// Not thread safe
+			// If the list is not synchronized this could cause an IndexOutOfBoundsException.
 			Value<?> value = list.get(i);
 			
 			context.setLocal(this.forParameterName, value);

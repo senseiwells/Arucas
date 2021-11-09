@@ -2,6 +2,7 @@ package me.senseiwells.arucas.utils;
 
 import me.senseiwells.arucas.api.IArucasExtension;
 import me.senseiwells.arucas.api.IArucasOutput;
+import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.functions.AbstractBuiltInFunction;
 
@@ -103,16 +104,16 @@ public class Context {
 		return this.stackTable.getReturnScope();
 	}
 	
-	public void pushScope(Position position) {
-		this.stackTable = new StackTable(this.stackTable, position, false, false, false);
+	public void pushScope(ISyntax syntaxPosition) {
+		this.stackTable = new StackTable(this.stackTable, syntaxPosition, false, false, false);
 	}
 	
-	public void pushLoopScope(Position position) {
-		this.stackTable = new StackTable(this.stackTable, position, true, true, false);
+	public void pushLoopScope(ISyntax syntaxPosition) {
+		this.stackTable = new StackTable(this.stackTable, syntaxPosition, true, true, false);
 	}
 	
-	public void pushFunctionScope(Position position) {
-		this.stackTable = new FunctionStackTable(this.stackTable, position);
+	public void pushFunctionScope(ISyntax syntaxPosition) {
+		this.stackTable = new FunctionStackTable(this.stackTable, syntaxPosition);
 	}
 	
 	public void popScope() {

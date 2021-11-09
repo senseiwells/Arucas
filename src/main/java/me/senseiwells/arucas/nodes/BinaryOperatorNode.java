@@ -10,11 +10,11 @@ import me.senseiwells.arucas.values.NumberValue;
 import me.senseiwells.arucas.values.Value;
 
 public class BinaryOperatorNode extends Node {
-	public final Node leftNode;
-	public final Node rightNode;
+	private final Node leftNode;
+	private final Node rightNode;
 
 	public BinaryOperatorNode(Node leftNode, Token operatorToken, Node rightNode) {
-		super(operatorToken, leftNode.startPos, rightNode.endPos);
+		super(operatorToken, leftNode.syntaxPosition, rightNode.syntaxPosition);
 		this.leftNode = leftNode;
 		this.rightNode = rightNode;
 	}
@@ -43,21 +43,21 @@ public class BinaryOperatorNode extends Node {
 			}
 			
 			switch (this.token.type) {
-				case PLUS -> result = left.addTo(right);
+				case PLUS -> result = left.addTo(right, this.syntaxPosition);
 				case MINUS -> result = ((NumberValue) left).subtractBy((NumberValue) right);
 				case MULTIPLY -> result = ((NumberValue) left).multiplyBy((NumberValue) right);
-				case DIVIDE -> result = ((NumberValue) left).divideBy((NumberValue) right);
-				case POWER -> result = ((NumberValue) left).powerBy((NumberValue) right);
+				case DIVIDE -> result = ((NumberValue) left).divideBy((NumberValue) right, this.syntaxPosition);
+				case POWER -> result = ((NumberValue) left).powerBy((NumberValue) right, this.syntaxPosition);
 				case EQUALS -> result = left.isEqual(right);
 				case NOT_EQUALS -> result = left.isNotEqual(right);
 				case LESS_THAN, LESS_THAN_EQUAL, MORE_THAN, MORE_THAN_EQUAL -> result = ((NumberValue) left).compareNumber((NumberValue) right, this.token.type);
 			}
 			
 			if (result == null) {
-				throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected an operator", this.startPos, this.endPos);
+				throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected an operator", this.syntaxPosition);
 			}
 			
-			return result.setPos(this.startPos, this.endPos);
+			return result;
 		}
 		catch (ClassCastException classCastException) {
 			String message;
@@ -68,7 +68,7 @@ public class BinaryOperatorNode extends Node {
 				message = "'%s' and '%s'".formatted(left.value, right.value);
 			}
 			
-			throw new RuntimeError("The operation '%s' cannot be applied to %s".formatted(this.token.type, message), this.startPos, this.endPos, context);
+			throw new RuntimeError("The operation '%s' cannot be applied to %s".formatted(this.token.type, message), this.syntaxPosition, context);
 		}
 		catch (RuntimeError e) {
 			throw e.setContext(context);

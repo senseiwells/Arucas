@@ -15,7 +15,7 @@ public class TryNode extends Node {
 	private final String catchParameterName;
 	
 	public TryNode(Node bodyNode, Node catchNode, String catchParameterName) {
-		super(bodyNode.token, bodyNode.startPos, catchNode.endPos);
+		super(bodyNode.token, bodyNode.syntaxPosition, catchNode.syntaxPosition);
 		this.bodyNode = bodyNode;
 		this.catchNode = catchNode;
 		this.catchParameterName = catchParameterName;
@@ -24,13 +24,13 @@ public class TryNode extends Node {
 	@Override
 	public Value<?> visit(Context context) throws CodeError, ThrowValue {
 		StackTable originalScope = context.getStackTable();
-		context.pushScope(this.startPos);
+		context.pushScope(this.syntaxPosition);
 		try {
 			this.bodyNode.visit(context);
 		}
 		catch (RuntimeError e) {
 			context.moveScope(originalScope);
-			context.pushScope(this.startPos);
+			context.pushScope(this.syntaxPosition);
 			context.setLocal(this.catchParameterName, new StringValue(e.getMessage()));
 			this.catchNode.visit(context);
 		}

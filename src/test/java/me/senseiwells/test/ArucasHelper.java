@@ -26,6 +26,7 @@ public class ArucasHelper {
 	public static NodeContext compile(String syntax) throws CodeError {
 		Context context = new ContextBuilder()
 			.setDisplayName("root")
+			.setOutputHandler(System.out::print)
 			.addDefaultExtensions()
 			.addDefaultValues()
 			.build();

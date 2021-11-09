@@ -33,10 +33,4 @@ public class BuiltInFunction extends AbstractBuiltInFunction<BuiltInFunction> {
 		this.checkAndPopulateArguments(context, arguments, this.argumentNames);
 		return this.function.execute(context, this);
 	}
-
-	@Override
-	public BuiltInFunction copy() {
-		return (BuiltInFunction) new BuiltInFunction(this.value, this.argumentNames, this.function, this.isDeprecated)
-			.setPos(this.startPos, this.endPos);
-	}
 }

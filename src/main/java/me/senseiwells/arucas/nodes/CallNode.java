@@ -11,11 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CallNode extends Node {
-	public final List<Node> argumentNodes;
-	public final Node callNode;
+	protected final List<Node> argumentNodes;
+	protected final Node callNode;
 
 	public CallNode(Node callNode, List<Node> argumentNodes) {
-		super(callNode.token, callNode.startPos, argumentNodes.size() > 0 ? argumentNodes.get(argumentNodes.size() - 1).endPos : callNode.endPos);
+		super(callNode.token, callNode.syntaxPosition, (argumentNodes.size() > 0 ? argumentNodes.get(argumentNodes.size() - 1) : callNode).syntaxPosition);
 		this.argumentNodes = argumentNodes;
 		this.callNode = callNode;
 	}
@@ -24,11 +24,11 @@ public class CallNode extends Node {
 	public Value<?> visit(Context context) throws CodeError, ThrowValue {
 		Value<?> callValue = this.callNode.visit(context);
 		if (!(callValue instanceof FunctionValue)) {
-			throw new RuntimeError("Cannot call the non function value '%s'".formatted(callValue), this.startPos, this.endPos, context);
+			throw new RuntimeError("Cannot call the non function value '%s'".formatted(callValue), this.syntaxPosition, context);
 		}
 		
 		if (Thread.currentThread().isInterrupted()) {
-			throw new CodeError(CodeError.ErrorType.INTERRUPTED_ERROR, "", this.startPos, this.endPos);
+			throw new CodeError(CodeError.ErrorType.INTERRUPTED_ERROR, "", this.syntaxPosition);
 		}
 		
 		List<Value<?>> argumentValues = new ArrayList<>();
@@ -36,8 +36,10 @@ public class CallNode extends Node {
 			argumentValues.add(node.visit(context));
 		}
 		
-		callValue = callValue.copy().setPos(this.startPos, this.endPos);
-		Value<?> functionValue = ((FunctionValue) callValue).call(context, argumentValues);
-		return functionValue.setPos(this.startPos, this.endPos);
+		// We push a new scope to make StackTraces easier to read.
+		context.pushScope(this.syntaxPosition);
+		Value<?> result = ((FunctionValue) callValue).call(context, argumentValues);
+		context.popScope();
+		return result;
 	}
 }

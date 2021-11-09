@@ -3,10 +3,6 @@ package me.senseiwells.arucas.values;
 import me.senseiwells.arucas.utils.ArucasValueMap;
 import me.senseiwells.arucas.utils.StringUtils;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-
 public class MapValue extends Value<ArucasValueMap> {
 	public MapValue(ArucasValueMap value) {
 		super(value);
@@ -14,12 +10,12 @@ public class MapValue extends Value<ArucasValueMap> {
 
 	@Override
 	public MapValue copy() {
-		return (MapValue) new MapValue(this.value).setPos(this.startPos, this.endPos);
+		return new MapValue(this.value);
 	}
 
 	@Override
 	public MapValue newCopy() {
-		return (MapValue) new MapValue(new ArucasValueMap(this.value)).setPos(this.startPos, this.endPos);
+		return new MapValue(new ArucasValueMap(this.value));
 	}
 
 	@Override
@@ -31,10 +27,10 @@ public class MapValue extends Value<ArucasValueMap> {
 		if (map.isEmpty()) return "{}";
 		
 		StringBuilder sb = new StringBuilder();
-		map.forEach((value1, value2) -> {
+		map.forEach((value1, value2) ->
 			sb.append(", ").append(StringUtils.toPlainString(value1))
-			  .append(" : ").append(StringUtils.toPlainString(value2));
-		});
+			  .append(" : ").append(StringUtils.toPlainString(value2))
+		);
 		sb.deleteCharAt(0);
 
 		return "{%s}".formatted(sb.toString().trim());

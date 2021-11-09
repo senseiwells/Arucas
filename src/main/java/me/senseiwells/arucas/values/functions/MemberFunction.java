@@ -57,9 +57,4 @@ public class MemberFunction extends AbstractBuiltInFunction<MemberFunction> {
 	public <T extends Value<?>> T getParameterValueOfType(Context context, Class<T> clazz, int index) throws CodeError {
 		return this.getParameterValueOfType(context, clazz, index, null);
 	}
-
-	@Override
-	public MemberFunction copy() {
-		return (MemberFunction) new MemberFunction(this.value, this.argumentNames, this.function, this.isDeprecated).setPos(this.startPos, this.endPos);
-	}
 }

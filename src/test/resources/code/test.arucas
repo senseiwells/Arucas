@@ -8,8 +8,9 @@ You can write whatever you want in here
 And it won't get read
 */
 
-suppressDeprecated(true);
 /*
+suppressDeprecated(true);
+
 valueList = ["foo", 89, true, "bar", null, "3.14", false, 3.14, "baz"];
 stringList = [];
 
@@ -44,13 +45,12 @@ fun a(sum, tail) {
 print(a(0, 100));
 
 
-// run(getDirectory() + "/src/test/resources/code/test.arucas");
+fun test() { test(); }
 map = {
     test: 'abcdefg',
     -43: 'testing'
 };
 
-fun test() { test(); }
 try {
     test();
 } catch(testError) {
@@ -69,54 +69,31 @@ print(map.get(0.1 + 0.05));
 if("a" && ("b" && (fun() { throwRuntimeError("I'm crashing before the class cast exception"); }() ))) {
 
 }
-*/
 
 value = (-1) ^ (2 ^ 0.5);
 value = 1 ^ (((-0.5) ^ 1));
 print(value);
 
-/*
 // map = { 0.15: 'test' };
 // print(map.get(0.1 + 0.05));
 list = [ 1, 2, 3 ];
-
-runThreaded(fun() {
-    while(true) {
-        list.removeIndex(2);
-        list.append(1);
-        list.removeIndex(2);
-        list.append(1);
-        list.removeIndex(2);
-        list.append(1);
-        list.removeIndex(2);
-        list.append(1);
-        list.removeIndex(2);
-        list.append(1);
-        list.removeIndex(2);
-        list.append(1);
-        list.removeIndex(2);
-        list.append(1);
-        list.removeIndex(2);
-        list.append(1);
-        list.removeIndex(2);
-        list.append(1);
-        list.removeIndex(2);
-        list.append(1);
-    }
-}, []);
-
-while(true) {
-    list.getIndex(0);
-    list.getIndex(0);
-    list.getIndex(0);
-    list.getIndex(0);
-    list.getIndex(0);
-    list.getIndex(0);
-    list.getIndex(0);
-    list.getIndex(0);
-    list.getIndex(0);
-    list.getIndex(0);
-    list.getIndex(0);
-    print(list);
-}
 */
+
+// run(getDirectory() + "/src/test/resources/code/test.arucas");
+fun test(a) {
+    try {
+        print(a);
+        return test(a + 1);
+    } catch(error) {
+        return test(a + 1);
+    }
+}
+
+quest = fun(a) {
+    return 0;
+};
+
+//test();
+//quest();
+
+test(0);

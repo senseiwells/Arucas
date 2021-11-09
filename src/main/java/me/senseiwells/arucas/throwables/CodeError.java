@@ -1,19 +1,20 @@
 package me.senseiwells.arucas.throwables;
 
+import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.Position;
+
+import java.util.Objects;
 
 public class CodeError extends Exception {
 
 	public final ErrorType errorType;
-	public final Position startPos;
-	public final Position endPos;
+	public final ISyntax syntaxPosition;
 	
-	public CodeError(ErrorType errorType, String details, Position startPos, Position endPos) {
+	public CodeError(ErrorType errorType, String details, ISyntax syntaxPosition) {
 		super(details);
 		this.errorType = errorType;
-		this.startPos = startPos;
-		this.endPos = endPos;
+		this.syntaxPosition = Objects.requireNonNull(syntaxPosition);
 	}
 	
 	@Override
@@ -22,9 +23,11 @@ public class CodeError extends Exception {
 	}
 	
 	public String toString(Context context) {
+		Position startPos = syntaxPosition.getStartPos();
+		
 		return "%s - '%s'\nFile: %s, Line: %d, Column: %d".formatted(
 			this.errorType.stringName, this.getMessage(),
-			this.startPos.fileName, this.startPos.line + 1, this.startPos.column + 1
+			startPos.fileName, startPos.line + 1, startPos.column + 1
 		);
 	}
 

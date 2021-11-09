@@ -1,11 +1,12 @@
 package me.senseiwells.arucas.throwables;
 
+import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.utils.Context;
 
 public class ThrowStop extends CodeError {
 
 	public ThrowStop() {
-		super(ErrorType.STOP, null, null, null);
+		super(ErrorType.STOP, "Program has stopped", ISyntax.empty());
 	}
 	
 	@Override
