@@ -66,8 +66,9 @@ public class LexerContext {
 		}
 		
 		public LexerRule addStrings(String... values) {
-			for (String value : values)
+			for (String value : values) {
 				addString(value);
+			}
 			return this;
 		}
 		
@@ -77,8 +78,9 @@ public class LexerContext {
 		}
 		
 		public LexerRule addRegexes(String... regexes) {
-			for (String regex : regexes)
+			for (String regex : regexes) {
 				addRegex(regex);
+			}
 			return this;
 		}
 		
@@ -97,6 +99,7 @@ public class LexerContext {
 			else {
 				String e = StringUtils.regexEscape(escape);
 				regex = s + "(?:" + e + "(?:" + e + "|" + c + "|(?!" + c + ").)|(?!" + e + "|" + c + ").)*" + c;
+				//regex = "%s(?:%s(?:%s|%s|(?!%s).)|(?!%s|%s).)*%s".formatted(s, e, e, c, c, e, c, c);
 			}
 			
 			this.matches.add(Pattern.compile(regex, Pattern.DOTALL));

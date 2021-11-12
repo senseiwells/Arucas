@@ -8,6 +8,7 @@ You can write whatever you want in here
 And it won't get read
 */
 
+/*
 suppressDeprecated(true);
 
 valueList = ["foo", 89, true, "bar", null, "3.14", false, 3.14, "baz"];
@@ -33,6 +34,7 @@ foreach (value : valueList) {
 
 //Expected list for stringList is ["foo", "bar", "baz"]
 
+
 fun a(sum, tail) {
     print(sum.toString() + ", " + tail.toString());
     if(tail == 0)
@@ -41,3 +43,57 @@ fun a(sum, tail) {
 }
 
 print(a(0, 100));
+
+
+fun test() { test(); }
+map = {
+    test: 'abcdefg',
+    -43: 'testing'
+};
+
+try {
+    test();
+} catch(testError) {
+    print("testError says: " + testError);
+}
+
+print(map.get("test"));
+print(map.get(-43));
+
+//map = { "crash": fun() { return map.get("crash")(); } };
+//map.get("crash")();
+
+map.put(0.15, "test");
+
+print(map.get(0.1 + 0.05));
+if("a" && ("b" && (fun() { throwRuntimeError("I'm crashing before the class cast exception"); }() ))) {
+
+}
+
+value = (-1) ^ (2 ^ 0.5);
+value = 1 ^ (((-0.5) ^ 1));
+print(value);
+
+// map = { 0.15: 'test' };
+// print(map.get(0.1 + 0.05));
+list = [ 1, 2, 3 ];
+*/
+
+// run(getDirectory() + "/src/test/resources/code/test.arucas");
+fun test(a) {
+    try {
+        print(a);
+        return test(a + 1);
+    } catch(error) {
+        return test(a + 1);
+    }
+}
+
+quest = fun(a) {
+    return 0;
+};
+
+//test();
+//quest();
+
+test(0);

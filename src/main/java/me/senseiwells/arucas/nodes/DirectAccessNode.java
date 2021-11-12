@@ -5,10 +5,10 @@ import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.Value;
 
 public class DirectAccessNode extends Node {
-	public final Value<?> value;
+	private final Value<?> value;
 
 	public DirectAccessNode(Token token, Value<?> value) {
-		super(token, token.startPos, token.endPos);
+		super(token);
 		this.value = value;
 	}
 

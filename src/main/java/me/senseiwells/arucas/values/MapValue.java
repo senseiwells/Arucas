@@ -1,52 +1,38 @@
 package me.senseiwells.arucas.values;
 
-import java.util.HashMap;
-import java.util.Map;
+import me.senseiwells.arucas.utils.ArucasValueMap;
+import me.senseiwells.arucas.utils.StringUtils;
 
-public class MapValue extends Value<Map<Value<?>, Value<?>>> {
-	public MapValue(Map<Value<?>, Value<?>> value) {
+public class MapValue extends Value<ArucasValueMap> {
+	public MapValue(ArucasValueMap value) {
 		super(value);
 	}
 
 	@Override
 	public MapValue copy() {
-		return (MapValue) new MapValue(this.value).setPos(this.startPos, this.endPos);
+		return new MapValue(this.value);
 	}
 
 	@Override
-	public Value<?> newCopy() {
-		return new MapValue(new HashMap<>(this.value)).setPos(this.startPos, this.endPos);
+	public MapValue newCopy() {
+		return new MapValue(new ArucasValueMap(this.value));
 	}
 
 	@Override
 	public String toString() {
-		final Map<Value<?>, Value<?>> map = Map.copyOf(this.value);
+		ArucasValueMap map = this.value;
+		
+		// Because ArucasMapValue is a subclass of ConcurrentHashMap
+		// it will never throw an ConcurrentModificationException.
 		if (map.isEmpty()) return "{}";
-
+		
 		StringBuilder sb = new StringBuilder();
-		map.forEach((value1, value2) -> {
-			sb.append(", ");
-			this.makeString(value1, sb);
-			sb.append(" : ");
-			this.makeString(value2, sb);
-		});
+		map.forEach((value1, value2) ->
+			sb.append(", ").append(StringUtils.toPlainString(value1))
+			  .append(" : ").append(StringUtils.toPlainString(value2))
+		);
 		sb.deleteCharAt(0);
 
 		return "{%s}".formatted(sb.toString().trim());
-	}
-
-	private void makeString(Value<?> element, StringBuilder sb) {
-		if (element instanceof ListValue) {
-			sb.append("<list>");
-		}
-		else if (element instanceof StringValue) {
-			sb.append("\"%s\"".formatted(element.toString()));
-		}
-		else if (element instanceof MapValue) {
-			sb.append("<map>");
-		}
-		else {
-			sb.append(element);
-		}
 	}
 }

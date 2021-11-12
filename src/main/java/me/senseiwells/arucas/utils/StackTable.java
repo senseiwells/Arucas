@@ -1,36 +1,37 @@
 package me.senseiwells.arucas.utils;
 
+import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.values.Value;
 
 import java.util.*;
 
-public class SymbolTable {
+public class StackTable {
 	protected final Map<String, Value<?>> symbolMap;
-	private final SymbolTable parentTable;
-	private final Position position;
+	private final StackTable parentTable;
+	private final ISyntax syntaxPosition;
 	
 	protected final boolean canContinue;
 	protected final boolean canBreak;
 	protected final boolean canReturn;
 	
-	public SymbolTable(SymbolTable parent, Position position, boolean canBreak, boolean canContinue, boolean canReturn) {
+	public StackTable(StackTable parent, ISyntax syntaxPosition, boolean canBreak, boolean canContinue, boolean canReturn) {
 		this.symbolMap = new HashMap<>();
 		this.parentTable = parent;
-		this.position = position;
+		this.syntaxPosition = syntaxPosition;
 		this.canContinue = canContinue;
 		this.canReturn = canReturn;
 		this.canBreak = canBreak;
 	}
 
-	public SymbolTable() {
-		this(null, new Position(0, 0, 0, ""), false, false, false);
+	public StackTable() {
+		this(null, ISyntax.empty(), false, false, false);
 	}
 	
 	/**
 	 * Returns the scope position that created this table.
 	 */
-	public final Position getPosition() {
-		return this.position;
+	public final ISyntax getPosition() {
+		return this.syntaxPosition;
 	}
 	
 	/**
@@ -38,15 +39,28 @@ public class SymbolTable {
 	 */
 	public Value<?> get(String name) {
 		Value<?> value = this.symbolMap.get(name);
-		return value != null ? value : this.parentTable != null ? this.parentTable.get(name) : null;
+		if (value != null) {
+			return value;
+		}
+		
+		if (this.parentTable != null) {
+			return this.parentTable.get(name);
+		}
+		
+		return null;
 	}
 	
 	/**
 	 * Change the value of a variable called name.
 	 */
 	public void set(String name, Value<?> value) {
-		SymbolTable parentTable = this.getParent(name);
-		Objects.requireNonNullElse(parentTable, this).symbolMap.put(name, value);
+		StackTable parentTable = this.getParent(name);
+		if (parentTable != null) {
+			parentTable.symbolMap.put(name, value);
+		}
+		else {
+			this.symbolMap.put(name, value);
+		}
 	}
 	
 	/**
@@ -59,38 +73,45 @@ public class SymbolTable {
 	/**
 	 * Returns the first parent that contains the value name.
 	 */
-	public SymbolTable getParent(String name) {
-		return this.parentTable != null ?
-			this.parentTable.symbolMap.get(name) != null ?
-			this.parentTable : this.parentTable.getParent(name) : null;
+	public StackTable getParent(String name) {
+		if (this.parentTable != null) {
+			if (this.parentTable.symbolMap.get(name) != null) {
+				return this.parentTable;
+			}
+			else {
+				return this.parentTable.getParent(name);
+			}
+		}
+		
+		return null;
 	}
 	
 	/**
 	 * Returns the root table.
 	 */
-	public SymbolTable getRoot() {
+	public StackTable getRoot() {
 		return this.parentTable != null ? this.parentTable.getRoot():this;
 	}
 	
-	public SymbolTable getParentTable() {
+	public StackTable getParentTable() {
 		return this.parentTable;
 	}
 	
-	public SymbolTable getReturnScope() {
+	public StackTable getReturnScope() {
 		return this.canReturn ? this : this.parentTable != null ? this.parentTable.getReturnScope() : null;
 	}
 	
-	public SymbolTable getBreakScope() {
+	public StackTable getBreakScope() {
 		return this.canBreak ? this : this.parentTable != null ? this.parentTable.getBreakScope() : null;
 	}
 	
-	public SymbolTable getContinueScope() {
+	public StackTable getContinueScope() {
 		return this.canContinue ? this : this.parentTable != null ? this.parentTable.getContinueScope() : null;
 	}
 	
-	public Iterator<SymbolTable> iterator() {
+	public Iterator<StackTable> iterator() {
 		return new Iterator<>() {
-			private SymbolTable object = SymbolTable.this;
+			private StackTable object = StackTable.this;
 			
 			@Override
 			public boolean hasNext() {
@@ -98,8 +119,8 @@ public class SymbolTable {
 			}
 			
 			@Override
-			public SymbolTable next() {
-				SymbolTable current = this.object;
+			public StackTable next() {
+				StackTable current = this.object;
 				this.object = this.object.parentTable;
 				return current;
 			}
@@ -108,6 +129,6 @@ public class SymbolTable {
 	
 	@Override
 	public String toString() {
-		return "%s%s".formatted(this.parentTable == null ? "RootTable":"SymbolTable", this.symbolMap);
+		return "%s%s".formatted(this.parentTable == null ? "RootTable":"StackTable", this.symbolMap);
 	}
 }

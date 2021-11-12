@@ -7,10 +7,10 @@ import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.values.Value;
 
 public class VariableAssignNode extends Node {
-	public final Node node;
+	private final Node node;
 
 	public VariableAssignNode(Token token, Node node) {
-		super(token, token.startPos, token.endPos);
+		super(token);
 		this.node = node;
 	}
 
@@ -18,7 +18,7 @@ public class VariableAssignNode extends Node {
 	public Value<?> visit(Context context) throws CodeError, ThrowValue {
 		String name = this.token.content;
 		if (context.isBuiltInFunction(name)) {
-			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "Cannot declare variable '%s' as it is a predefined function".formatted(name), this.startPos, this.endPos);
+			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "Cannot declare variable '%s' as it is a predefined function".formatted(name), this.syntaxPosition);
 		}
 		
 		Value<?> value = this.node.visit(context);

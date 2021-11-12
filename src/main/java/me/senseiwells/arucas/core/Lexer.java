@@ -3,6 +3,7 @@ package me.senseiwells.arucas.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.utils.Position;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.tokens.Token;
@@ -34,7 +35,7 @@ public class Lexer {
 				.addMultiline("\"", "\\", "\"")
 				.addMultiline("'", "\\", "'")
 			)
-			.addRule(Type.FLOAT, i -> i.addRegexes(
+			.addRule(Type.NUMBER, i -> i.addRegexes(
 				"[0-9]+[.][0-9]+",
 				"[0-9]+"
 			))
@@ -107,8 +108,7 @@ public class Lexer {
 			LexerContext.LexerToken lexerToken = LEXER.nextToken(input);
 			
 			if (lexerToken == null) {
-				Position errorPos = new Position(offset, line, column, this.fileName);
-				throw new CodeError(CodeError.ErrorType.ILLEGAL_CHAR_ERROR, "Invalid character", errorPos, errorPos);
+				throw new CodeError(CodeError.ErrorType.ILLEGAL_CHAR_ERROR, "Invalid character", ISyntax.of(new Position(offset, line, column, this.fileName)));
 			}
 			
 			if (lexerToken.length + offset > length) {
@@ -144,7 +144,7 @@ public class Lexer {
 			offset += lexerToken.length;
 		}
 	
-		tokenList.add(new Token(Type.FINISH, new Position(offset, line, column, this.fileName)));
+		tokenList.add(new Token(Type.FINISH, ISyntax.of(new Position(offset, line, column, this.fileName))));
 		return tokenList;
 	}
 }

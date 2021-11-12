@@ -1,15 +1,16 @@
 package me.senseiwells.arucas.utils;
 
+import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.values.Value;
 
 /**
  * This class is a special symbol table that only allows changing global and local variables.
  */
-public class FunctionSymbolTable extends SymbolTable {
-	private final SymbolTable root;
+public class FunctionStackTable extends StackTable {
+	private final StackTable root;
 	
-	public FunctionSymbolTable(SymbolTable parent, Position position) {
-		super(parent, position, false, false, true);
+	public FunctionStackTable(StackTable parent, ISyntax syntaxPosition) {
+		super(parent, syntaxPosition, false, false, true);
 		this.root = parent.getRoot();
 	}
 	
@@ -29,32 +30,32 @@ public class FunctionSymbolTable extends SymbolTable {
 	}
 	
 	@Override
-	public SymbolTable getParent(String name) {
+	public StackTable getParent(String name) {
 		return this.root.get(name) != null ? this.root : null;
 	}
 	
 	@Override
-	public SymbolTable getRoot() {
+	public StackTable getRoot() {
 		return this.root;
 	}
 	
 	@Override
-	public SymbolTable getBreakScope() {
+	public StackTable getBreakScope() {
 		return null;
 	}
 	
 	@Override
-	public SymbolTable getContinueScope() {
+	public StackTable getContinueScope() {
 		return null;
 	}
 	
 	@Override
-	public SymbolTable getReturnScope() {
+	public StackTable getReturnScope() {
 		return this;
 	}
 	
 	@Override
 	public String toString() {
-		return "FunctionSymbolTable%s".formatted(this.symbolMap);
+		return "FunctionStackTable%s".formatted(this.symbolMap);
 	}
 }

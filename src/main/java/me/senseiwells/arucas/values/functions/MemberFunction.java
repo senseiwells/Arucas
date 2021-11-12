@@ -47,7 +47,7 @@ public class MemberFunction extends AbstractBuiltInFunction<MemberFunction> {
 		Value<?> value = this.getParameterValue(context, index);
 		if (!clazz.isInstance(value)) {
 			throw this.throwInvalidParameterError("Only %s can call the method %s()%s".formatted(
-					clazz.getSimpleName(), this.value, additionalInfo == null ? "" : ("\n" + additionalInfo)
+				clazz.getSimpleName(), this.value, additionalInfo == null ? "" : ("\n" + additionalInfo)
 			), context);
 		}
 		return clazz.cast(value);
@@ -56,10 +56,5 @@ public class MemberFunction extends AbstractBuiltInFunction<MemberFunction> {
 	@Override
 	public <T extends Value<?>> T getParameterValueOfType(Context context, Class<T> clazz, int index) throws CodeError {
 		return this.getParameterValueOfType(context, clazz, index, null);
-	}
-
-	@Override
-	public Value<?> copy() {
-		return new MemberFunction(this.value, this.argumentNames, this.function, this.isDeprecated).setPos(this.startPos, this.endPos);
 	}
 }

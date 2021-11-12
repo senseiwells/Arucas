@@ -3,6 +3,7 @@ package me.senseiwells.arucas.extensions;
 import me.senseiwells.arucas.api.IArucasExtension;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
+import me.senseiwells.arucas.utils.ArucasValueList;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.*;
 import me.senseiwells.arucas.values.functions.MemberFunction;
@@ -32,7 +33,7 @@ public class ArucasStringMembers implements IArucasExtension {
 
 	private Value<?> stringToList(Context context, MemberFunction function) throws CodeError {
 		StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
-		List<Value<?>> stringList = new ArrayList<>();
+		ArucasValueList stringList = new ArucasValueList();
 		for (char c : stringValue.value.toCharArray()) {
 			stringList.add(new StringValue(String.valueOf(c)));
 		}
@@ -62,7 +63,7 @@ public class ArucasStringMembers implements IArucasExtension {
 			return new NumberValue(Double.parseDouble(value.value));
 		}
 		catch (NumberFormatException e) {
-			throw new RuntimeError("Cannot parse %s as a NumberValue".formatted(value), function.startPos, function.endPos, context);
+			throw new RuntimeError("Cannot parse %s as a NumberValue".formatted(value), function.syntaxPosition, context);
 		}
 	}
 
@@ -75,7 +76,7 @@ public class ArucasStringMembers implements IArucasExtension {
 				string = string.replaceFirst("%s", array[i].toString());
 			}
 			catch (IndexOutOfBoundsException e) {
-				throw new RuntimeError("You are missing values to be formatted!", function.startPos, function.endPos, context);
+				throw new RuntimeError("You are missing values to be formatted!", function.syntaxPosition, context);
 			}
 			i++;
 		}

@@ -1,5 +1,6 @@
 package me.senseiwells.arucas.values.functions;
 
+import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.BooleanValue;
@@ -10,14 +11,10 @@ import java.util.List;
 
 public abstract class AbstractBuiltInFunction<S extends AbstractBuiltInFunction<?>> extends FunctionValue {
 	public final FunctionDefinition<S> function;
-	public final List<String> argumentNames;
-	public final boolean isDeprecated;
 
 	public AbstractBuiltInFunction(String name, List<String> argumentNames, FunctionDefinition<S> function, boolean isDeprecated) {
-		super(name);
+		super(name, ISyntax.emptyOf("Arucas/%s".formatted(name)), argumentNames, isDeprecated);
 		this.function = function;
-		this.argumentNames = argumentNames;
-		this.isDeprecated = isDeprecated;
 	}
 
 	public BooleanValue isType(Context context, Class<?> classInstance) {
@@ -43,7 +40,7 @@ public abstract class AbstractBuiltInFunction<S extends AbstractBuiltInFunction<
 		Value<?> value = this.getParameterValue(context, index);
 		if (!clazz.isInstance(value)) {
 			throw this.throwInvalidParameterError("Must pass %s into parameter %d for %s()%s".formatted(
-					clazz.getSimpleName(), index + 1, this.value, additionalInfo == null ? "" : ("\n" + additionalInfo)
+				clazz.getSimpleName(), index + 1, this.value, additionalInfo == null ? "" : ("\n" + additionalInfo)
 			), context);
 		}
 		return clazz.cast(value);

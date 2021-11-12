@@ -3,6 +3,7 @@ package me.senseiwells.arucas.extensions;
 import me.senseiwells.arucas.api.IArucasExtension;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
+import me.senseiwells.arucas.utils.ArucasValueList;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.*;
 import me.senseiwells.arucas.values.functions.MemberFunction;
@@ -38,7 +39,7 @@ public class ArucasMapMembers implements IArucasExtension {
 			MapValue mapValue = function.getParameterValueOfType(context, MapValue.class, 0);
 			Value<?> key = function.getParameterValue(context, 1);
 			if (key.value == null) {
-				throw new RuntimeError("Cannot get null from a map", function.startPos, function.endPos, context);
+				throw new RuntimeError("Cannot get null from a map", function.syntaxPosition, context);
 			}
 			Value<?> value = mapValue.value.get(key);
 			return value == null ? new NullValue() : value.newCopy();
@@ -48,7 +49,7 @@ public class ArucasMapMembers implements IArucasExtension {
 	private Value<?> mapGetKeys(Context context, MemberFunction function) throws CodeError {
 		synchronized (MAP_LOCK) {
 			MapValue mapValue = function.getParameterValueOfType(context, MapValue.class, 0);
-			List<Value<?>> valueList = new ArrayList<>();
+			ArucasValueList valueList = new ArucasValueList();
 			mapValue.value.keySet().forEach(value -> valueList.add(value.newCopy()));
 			return new ListValue(valueList);
 		}
@@ -57,8 +58,8 @@ public class ArucasMapMembers implements IArucasExtension {
 	private Value<?> mapGetValues(Context context, MemberFunction function) throws CodeError {
 		synchronized (MAP_LOCK) {
 			MapValue mapValue = function.getParameterValueOfType(context, MapValue.class, 0);
-			List<Value<?>> valueList = new ArrayList<>();
-			mapValue.value.values().forEach(value -> valueList.add(value.newCopy()));
+			ArucasValueList valueList = new ArucasValueList();
+			valueList.addAll(mapValue.value.values().stream().map(Value::newCopy).toList());
 			return new ListValue(valueList);
 		}
 	}
@@ -69,7 +70,7 @@ public class ArucasMapMembers implements IArucasExtension {
 			Value<?> key = function.getParameterValue(context, 1);
 			Value<?> value = function.getParameterValue(context, 2);
 			if (key.value == null || value.value == null) {
-				throw new RuntimeError("Cannot put null into a map", function.startPos, function.endPos, context);
+				throw new RuntimeError("Cannot put null into a map", function.syntaxPosition, context);
 			}
 			Value<?> returnValue = mapValue.value.put(key, value);
 			return returnValue == null ? new NullValue() : returnValue.newCopy();
@@ -82,7 +83,7 @@ public class ArucasMapMembers implements IArucasExtension {
 			Value<?> key = function.getParameterValue(context, 1);
 			Value<?> value = function.getParameterValue(context, 2);
 			if (key.value == null || value.value == null) {
-				throw new RuntimeError("Cannot put null into a map", function.startPos, function.endPos, context);
+				throw new RuntimeError("Cannot put null into a map", function.syntaxPosition, context);
 			}
 			Value<?> returnValue = mapValue.value.putIfAbsent(key, value);
 			return returnValue == null ? new NullValue() : returnValue.newCopy();
@@ -103,7 +104,7 @@ public class ArucasMapMembers implements IArucasExtension {
 			MapValue mapValue = function.getParameterValueOfType(context, MapValue.class, 0);
 			Value<?> key = function.getParameterValue(context, 1);
 			if (key.value == null) {
-				throw new RuntimeError("Cannot remove null from a map", function.startPos, function.endPos, context);
+				throw new RuntimeError("Cannot remove null from a map", function.syntaxPosition, context);
 			}
 			Value<?> removedValue = mapValue.value.remove(key);
 			return removedValue == null ? new NullValue() : removedValue.newCopy();

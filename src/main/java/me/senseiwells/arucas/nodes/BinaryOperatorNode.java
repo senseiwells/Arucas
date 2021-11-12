@@ -10,11 +10,11 @@ import me.senseiwells.arucas.values.NumberValue;
 import me.senseiwells.arucas.values.Value;
 
 public class BinaryOperatorNode extends Node {
-	public final Node leftNode;
-	public final Node rightNode;
+	private final Node leftNode;
+	private final Node rightNode;
 
 	public BinaryOperatorNode(Node leftNode, Token operatorToken, Node rightNode) {
-		super(operatorToken, leftNode.startPos, rightNode.endPos);
+		super(operatorToken, leftNode.syntaxPosition, rightNode.syntaxPosition);
 		this.leftNode = leftNode;
 		this.rightNode = rightNode;
 	}
@@ -24,35 +24,51 @@ public class BinaryOperatorNode extends Node {
 		Value<?> left = this.leftNode.visit(context);
 		Value<?> right = null;
 		try {
-			Value<?> result = switch (this.token.type) {
+			Value<?> result = null;
+			switch (this.token.type) {
 				case AND -> {
 					BooleanValue leftBoolean = (BooleanValue) left;
-					yield (!leftBoolean.value) ? new BooleanValue(false) : leftBoolean.isAnd((BooleanValue) (right = this.rightNode.visit(context)));
+					result = (!leftBoolean.value) ? new BooleanValue(false) : leftBoolean.isAnd((BooleanValue) (right = this.rightNode.visit(context)));
 				}
 				case OR -> {
 					BooleanValue leftBoolean = (BooleanValue) left;
-					yield leftBoolean.value ? new BooleanValue(true) : leftBoolean.isOr((BooleanValue) (right = this.rightNode.visit(context)));
+					result = leftBoolean.value ? new BooleanValue(true) : leftBoolean.isOr((BooleanValue) (right = this.rightNode.visit(context)));
 				}
 				default -> {
+					// AND, OR has a special property that the right hand side is not evaluated
+					// unless the value we read is either true or false. This means that we need
+					// to specify this value after we have checked for AND, OR.
 					right = this.rightNode.visit(context);
-					yield switch (this.token.type) {
-						case PLUS -> left.addTo(right);
-						case MINUS -> ((NumberValue) left).subtractBy((NumberValue) right);
-						case MULTIPLY -> ((NumberValue) left).multiplyBy((NumberValue) right);
-						case DIVIDE -> ((NumberValue) left).divideBy((NumberValue) right);
-						case POWER -> ((NumberValue) left).powerBy((NumberValue) right);
-						case EQUALS -> left.isEqual(right);
-						case NOT_EQUALS -> left.isNotEqual(right);
-						case LESS_THAN, LESS_THAN_EQUAL, MORE_THAN, MORE_THAN_EQUAL -> ((NumberValue) left).compareNumber((NumberValue) right, this.token.type);
-						default -> throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected an operator", this.startPos, this.endPos);
-					};
 				}
-			};
-			return result.setPos(this.startPos, this.endPos);
+			}
+			
+			switch (this.token.type) {
+				case PLUS -> result = left.addTo(right, this.syntaxPosition);
+				case MINUS -> result = ((NumberValue) left).subtractBy((NumberValue) right);
+				case MULTIPLY -> result = ((NumberValue) left).multiplyBy((NumberValue) right);
+				case DIVIDE -> result = ((NumberValue) left).divideBy((NumberValue) right, this.syntaxPosition);
+				case POWER -> result = ((NumberValue) left).powerBy((NumberValue) right, this.syntaxPosition);
+				case EQUALS -> result = left.isEqual(right);
+				case NOT_EQUALS -> result = left.isNotEqual(right);
+				case LESS_THAN, LESS_THAN_EQUAL, MORE_THAN, MORE_THAN_EQUAL -> result = ((NumberValue) left).compareNumber((NumberValue) right, this.token.type);
+			}
+			
+			if (result == null) {
+				throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected an operator", this.syntaxPosition);
+			}
+			
+			return result;
 		}
 		catch (ClassCastException classCastException) {
-			right = right == null ? this.rightNode.visit(context) : right;
-			throw new RuntimeError("The operation '%s' cannot be applied to '%s' and '%s'".formatted(this.token.type, left.value, right.value), this.startPos, this.endPos, context);
+			String message;
+			if (right == null) {
+				message = "'%s'".formatted(left.value);
+			}
+			else {
+				message = "'%s' and '%s'".formatted(left.value, right.value);
+			}
+			
+			throw new RuntimeError("The operation '%s' cannot be applied to %s".formatted(this.token.type, message), this.syntaxPosition, context);
 		}
 		catch (RuntimeError e) {
 			throw e.setContext(context);

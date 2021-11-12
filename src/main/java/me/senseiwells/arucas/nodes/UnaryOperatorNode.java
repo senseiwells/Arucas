@@ -10,7 +10,7 @@ import me.senseiwells.arucas.values.NumberValue;
 import me.senseiwells.arucas.values.Value;
 
 public class UnaryOperatorNode extends Node {
-	public final Node node;
+	private final Node node;
 
 	public UnaryOperatorNode(Token token, Node node) {
 		super(token);
@@ -25,10 +25,10 @@ public class UnaryOperatorNode extends Node {
 				case MINUS -> value = ((NumberValue) value).multiplyBy(new NumberValue(-1));
 				case NOT -> value = ((BooleanValue) value).not();
 			}
-			return value.setPos(node.startPos, node.endPos);
+			return value;
 		}
 		catch (ClassCastException classCastException) {
-			throw new RuntimeError("The operation '%s' cannot be applied to '%s'".formatted(this.token.type, value.value), this.startPos, this.endPos, context);
+			throw new RuntimeError("The operation '%s' cannot be applied to '%s'".formatted(this.token.type, value.value), this.syntaxPosition, context);
 		}
 	}
 

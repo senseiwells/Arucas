@@ -4,7 +4,7 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.utils.SymbolTable;
+import me.senseiwells.arucas.utils.StackTable;
 import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.StringValue;
 import me.senseiwells.arucas.values.Value;
@@ -15,7 +15,7 @@ public class TryNode extends Node {
 	private final String catchParameterName;
 	
 	public TryNode(Node bodyNode, Node catchNode, String catchParameterName) {
-		super(bodyNode.token, bodyNode.startPos, catchNode.endPos);
+		super(bodyNode.token, bodyNode.syntaxPosition, catchNode.syntaxPosition);
 		this.bodyNode = bodyNode;
 		this.catchNode = catchNode;
 		this.catchParameterName = catchParameterName;
@@ -23,14 +23,14 @@ public class TryNode extends Node {
 
 	@Override
 	public Value<?> visit(Context context) throws CodeError, ThrowValue {
-		SymbolTable originalScope = context.getSymbolTable();
-		context.pushScope(this.startPos);
+		StackTable originalScope = context.getStackTable();
+		context.pushScope(this.syntaxPosition);
 		try {
 			this.bodyNode.visit(context);
 		}
 		catch (RuntimeError e) {
 			context.moveScope(originalScope);
-			context.pushScope(this.startPos);
+			context.pushScope(this.syntaxPosition);
 			context.setLocal(this.catchParameterName, new StringValue(e.getMessage()));
 			this.catchNode.visit(context);
 		}
