@@ -32,8 +32,7 @@ public class ContextBuilder {
 		this.suppressDeprecated = suppressDeprecated;
 		return this;
 	}
-	
-	@SuppressWarnings("unsued")
+
 	public ContextBuilder setOutputHandler(Consumer<String> outputHandler) {
 		this.outputHandler = outputHandler;
 		return this;

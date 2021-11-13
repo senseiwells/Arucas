@@ -13,11 +13,11 @@ public class MutableSyntaxImpl implements ISyntax {
 	
 	@Override
 	public Position getStartPos() {
-		return start;
+		return this.start;
 	}
 	
 	@Override
 	public Position getEndPos() {
-		return end;
+		return this.end;
 	}
 }
