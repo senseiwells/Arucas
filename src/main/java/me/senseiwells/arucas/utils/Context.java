@@ -1,13 +1,12 @@
 package me.senseiwells.arucas.utils;
 
 import me.senseiwells.arucas.api.IArucasExtension;
+import me.senseiwells.arucas.api.IArucasOutput;
+import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.values.Value;
-import me.senseiwells.arucas.extensions.BuiltInFunction;
+import me.senseiwells.arucas.values.functions.AbstractBuiltInFunction;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Runtime context class of the programming language
@@ -15,93 +14,120 @@ import java.util.Set;
 public class Context {
 	private final Set<String> builtInFunctions;
 	private final List<IArucasExtension> extensions;
+	private final Map<String, Class<?>> valueMap;
+	private final IArucasOutput arucasOutput;
 	
 	private final String displayName;
 	private final Context parentContext;
-	private SymbolTable symbolTable;
+	private StackTable stackTable;
 	private boolean isDebug;
-	
-	private Context(String displayName, Context parentContext, List<IArucasExtension> extensions) {
+	private boolean suppressDeprecated;
+
+	private Context(String displayName, Context parentContext, List<IArucasExtension> extensions, Map<String, Class<?>> valueMap, IArucasOutput arucasOutput) {
 		this.builtInFunctions = new HashSet<>();
+		this.extensions = extensions;
+		this.valueMap = valueMap;
+		this.arucasOutput = arucasOutput;
 		
 		this.displayName = displayName;
-		this.symbolTable = new SymbolTable();
+		this.stackTable = new StackTable();
 		this.parentContext = parentContext;
-		this.extensions = extensions;
 		
 		for (IArucasExtension extension : extensions) {
-			for (BuiltInFunction function : extension.getDefinedFunctions()) {
+			for (AbstractBuiltInFunction<?> function : extension.getDefinedFunctions()) {
 				this.builtInFunctions.add(function.value);
-				this.symbolTable.set(function.value, function);
+				this.stackTable.set(function.value, function);
 			}
 		}
 	}
 	
-	public Context(String displayName, List<IArucasExtension> extensions) {
-		this(displayName, null, extensions);
+	public Context(String displayName, List<IArucasExtension> extensions, Map<String, Class<?>> valueMap, IArucasOutput arucasOutput) {
+		this(displayName, null, extensions, valueMap, arucasOutput);
 	}
 	
-	private Context(Context branch, SymbolTable symbolTable) {
+	private Context(Context branch, StackTable stackTable) {
 		this.displayName = branch.displayName;
-		this.symbolTable = symbolTable;
+		this.stackTable = stackTable;
+		this.arucasOutput = branch.arucasOutput;
 		this.extensions = branch.extensions;
 		this.builtInFunctions = branch.builtInFunctions;
+		this.valueMap = branch.valueMap;
 		this.parentContext = branch.parentContext;
 	}
 
 	@SuppressWarnings("unused")
 	public Context createBranch() {
-		return new Context(this, this.symbolTable);
+		return new Context(this, this.stackTable);
 	}
 
 	@SuppressWarnings("unused")
 	public Context createRootBranch() {
-		return new Context(this, this.symbolTable.getRoot());
+		return new Context(this, this.stackTable.getRoot());
 	}
 
 	@SuppressWarnings("unused")
-	public Context createBranchFromPosition(SymbolTable symbolTable) {
-		if (this.symbolTable.getRoot() == symbolTable.getRoot())
-			return new Context(this, symbolTable);
+	public Context createBranchFromPosition(StackTable stackTable) {
+		if (this.stackTable.getRoot() == stackTable.getRoot()) {
+			return new Context(this, stackTable);
+		}
 		return null;
 	}
 	
 	public Context createChildContext(String displayName) {
-		return new Context(displayName, this, this.extensions);
+		return new Context(displayName, this, this.extensions, this.valueMap, this.arucasOutput);
+	}
+	
+	/**
+	 * Returns this contexts output object.
+	 */
+	public IArucasOutput getOutput() {
+		return this.arucasOutput;
 	}
 	
 	public String getDisplayName() {
 		return this.displayName;
 	}
 	
-	public SymbolTable getSymbolTable() {
-		return this.symbolTable;
+	public StackTable getStackTable() {
+		return this.stackTable;
 	}
 	
-	public void pushScope(Position position) {
-		this.symbolTable = new SymbolTable(this.symbolTable, position, false, false, false);
+	public StackTable getBreakScope() {
+		return this.stackTable.getBreakScope();
 	}
 	
-	public void pushLoopScope(Position position) {
-		this.symbolTable = new SymbolTable(this.symbolTable, position, true, true, false);
+	public StackTable getContinueScope() {
+		return this.stackTable.getContinueScope();
 	}
 	
-	public void pushFunctionScope(Position position) {
-		this.symbolTable = new FunctionSymbolTable(this.symbolTable, position);
+	public StackTable getReturnScope() {
+		return this.stackTable.getReturnScope();
+	}
+	
+	public void pushScope(ISyntax syntaxPosition) {
+		this.stackTable = new StackTable(this.stackTable, syntaxPosition, false, false, false);
+	}
+	
+	public void pushLoopScope(ISyntax syntaxPosition) {
+		this.stackTable = new StackTable(this.stackTable, syntaxPosition, true, true, false);
+	}
+	
+	public void pushFunctionScope(ISyntax syntaxPosition) {
+		this.stackTable = new FunctionStackTable(this.stackTable, syntaxPosition);
 	}
 	
 	public void popScope() {
-		this.symbolTable = this.symbolTable.getParentTable();
+		this.stackTable = this.stackTable.getParentTable();
 	}
 	
-	public void moveScope(SymbolTable symbolTable) {
-		// We do not want to jump to an arbitrary symbolTable
+	public void moveScope(StackTable stackTable) {
+		// We do not want to jump to an arbitrary stackTable
 		
-		Iterator<SymbolTable> iter = this.symbolTable.iterator();
+		Iterator<StackTable> iter = this.stackTable.iterator();
 		while (iter.hasNext()) {
-			SymbolTable table = iter.next();
-			if (table == symbolTable) {
-				this.symbolTable = table;
+			StackTable table = iter.next();
+			if (table == stackTable) {
+				this.stackTable = table;
 				return;
 			}
 		}
@@ -116,33 +142,51 @@ public class Context {
 	public boolean isDebug() {
 		return this.isDebug;
 	}
-	
+
+	public void setSuppressDeprecated(boolean suppressed) {
+		this.suppressDeprecated = suppressed;
+	}
+
+	public boolean isSuppressDeprecated() {
+		return this.suppressDeprecated;
+	}
+
 	public boolean isBuiltInFunction(String name) {
 		return this.builtInFunctions.contains(name);
 	}
 	
 	public void setVariable(String name, Value<?> value) {
-		this.symbolTable.set(name, value);
+		this.stackTable.set(name, value);
 	}
 	
 	public void setLocal(String name, Value<?> value) {
-		this.symbolTable.setLocal(name, value);
+		this.stackTable.setLocal(name, value);
 	}
 	
 	public Value<?> getVariable(String name) {
-		return this.symbolTable.get(name);
+		return this.stackTable.get(name);
+	}
+
+	public Class<?> getValueClassFromString(String string) {
+		return this.valueMap.get(string);
+	}
+
+	public void printDeprecated(String message) {
+		if (!this.suppressDeprecated) {
+			this.getOutput().print(message);
+		}
 	}
 	
-	@Deprecated
+	@Deprecated(forRemoval = true)
 	public void dumpScopes() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("----------------------------\n");
 		
-		Iterator<SymbolTable> iter = this.symbolTable.iterator();
+		Iterator<StackTable> iter = this.stackTable.iterator();
 		while (iter.hasNext()) {
 			sb.append(iter.next()).append("\n");
 		}
 		
-		System.out.println(sb.toString());
+		System.out.println(sb);
 	}
 }

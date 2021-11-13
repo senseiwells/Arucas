@@ -1,36 +1,45 @@
 package me.senseiwells.arucas.values;
 
-import java.util.List;
+import me.senseiwells.arucas.utils.ArucasValueList;
+import me.senseiwells.arucas.utils.StringUtils;
 
-public class ListValue extends Value<List<Value<?>>> {
+public class ListValue extends Value<ArucasValueList> {
 
-	public ListValue(List<Value<?>> value) {
+	public ListValue(ArucasValueList value) {
 		super(value);
 	}
 
 	@Override
-	public Value<List<Value<?>>> copy() {
-		return new ListValue(this.value).setPos(this.startPos, this.endPos);
+	public ListValue copy() {
+		return new ListValue(this.value);
 	}
-	
+
+	@Override
+	public ListValue newCopy() {
+		return new ListValue(new ArucasValueList(this.value));
+	}
+
 	@Override
 	public String toString() {
-		final Value<?>[] array = this.value.toArray(Value<?>[]::new);
-		if (array.length == 0) return "[]";
+		ArucasValueList list = this.value;
+		if (list.isEmpty()) return "[]";
 		
 		StringBuilder sb = new StringBuilder();
-		for (Value<?> element : array) {
-			if (element instanceof ListValue) {
-				sb.append(", <list>");
-			}
-			else if (element instanceof StringValue) {
-				sb.append(", \"%s\"".formatted(element.toString()));
-			}
-			else {
-				sb.append(", ").append(element);
-			}
+		for (Value<?> element : list) {
+			sb.append(", ").append(StringUtils.toPlainString(element));
 		}
-		sb.deleteCharAt(0);
+		
+		/*
+		 * Because of thread safety the list might have been reset before this point
+		 * and is empty meaning that 'sb' will be empty. If this was the case an
+		 * StringIndexOutOfBoundsException would have been thrown.
+		 *
+		 * To prevent this exception we check if the StringBuilder has any characters
+		 * inside of it.
+		 */
+		if (sb.length() > 0) {
+			sb.deleteCharAt(0);
+		}
 		
 		return "[%s]".formatted(sb.toString().trim());
 	}

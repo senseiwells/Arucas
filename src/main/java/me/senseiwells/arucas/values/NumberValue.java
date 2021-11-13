@@ -1,5 +1,6 @@
 package me.senseiwells.arucas.values;
 
+import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.tokens.Token;
@@ -16,9 +17,9 @@ public class NumberValue extends Value<Double> {
 	}
 
 	@Override
-	public NumberValue addTo(Value<?> other) throws CodeError {
+	public NumberValue addTo(Value<?> other, ISyntax syntaxPosition) throws CodeError {
 		if (!(other instanceof NumberValue otherValue)) {
-			throw new RuntimeError("The 'add' operator cannot be applied to %s and %s".formatted(this, other), this.startPos, this.endPos);
+			throw new RuntimeError("The 'add' operator cannot be applied to %s and %s".formatted(this, other), syntaxPosition);
 		}
 		
 		return new NumberValue(this.value + otherValue.value);
@@ -32,17 +33,17 @@ public class NumberValue extends Value<Double> {
 		return new NumberValue(this.value * other.value);
 	}
 
-	public NumberValue divideBy(NumberValue other) throws RuntimeError {
+	public NumberValue divideBy(NumberValue other, ISyntax syntaxPosition) throws RuntimeError {
 		if (other.value == 0) {
-			throw new RuntimeError("You cannot divide by 0", other.startPos, other.endPos);
+			throw new RuntimeError("You cannot divide by 0", syntaxPosition);
 		}
 		
 		return new NumberValue(this.value / other.value);
 	}
 
-	public NumberValue powerBy(NumberValue other) throws RuntimeError {
+	public NumberValue powerBy(NumberValue other, ISyntax syntaxPosition) throws RuntimeError {
 		if (this.value < 0 || (other.value % 1) != 0) {
-			throw new RuntimeError("You cannot calculate imaginary numbers", other.startPos, other.endPos);
+			throw new RuntimeError("You cannot calculate imaginary numbers", syntaxPosition);
 		}
 		
 		return new NumberValue(Math.pow(this.value, other.value));
@@ -60,12 +61,17 @@ public class NumberValue extends Value<Double> {
 	}
 
 	@Override
-	public Value<Double> copy() {
-		return new NumberValue(this.value).setPos(this.startPos, this.endPos);
+	public NumberValue copy() {
+		return this;
+	}
+	
+	@Override
+	public int hashCode() {
+		return this.value.hashCode();
 	}
 	
 	@Override
 	public String toString() {
-		return DECIMAL_FORMAT.format(value);
+		return DECIMAL_FORMAT.format(this.value);
 	}
 }

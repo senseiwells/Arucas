@@ -1,6 +1,8 @@
 package me.senseiwells.arucas.utils;
 
 public class Position {
+	private static final Position emptyPosition = new Position(0, 0, 0, "Arucas");
+	
 	public final String fileName;
 	public final int index;
 	public final int line;
@@ -11,5 +13,9 @@ public class Position {
 		this.line = line;
 		this.column = column;
 		this.fileName = fileName;
+	}
+	
+	public static Position empty() {
+		return emptyPosition;
 	}
 }

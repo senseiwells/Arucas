@@ -7,18 +7,16 @@ import me.senseiwells.arucas.values.Value;
 
 public class VariableAccessNode extends Node {
 	public VariableAccessNode(Token token) {
-		super(token, token.startPos, token.endPos);
+		super(token);
 	}
 
 	@Override
 	public Value<?> visit(Context context) throws CodeError {
 		Value<?> value = context.getVariable(this.token.content);
 		if (value == null) {
-			throw new CodeError(CodeError.ErrorType.UNKNOWN_IDENTIFIER, "%s is not defined".formatted(this.token.content), this.startPos, this.endPos);
+			throw new CodeError(CodeError.ErrorType.UNKNOWN_IDENTIFIER, "%s is not defined".formatted(this.token.content), this.syntaxPosition);
 		}
 		
-		value = value.copy();
-		value.setPos(this.startPos, this.endPos);
-		return value;
+		return value.copy();
 	}
 }

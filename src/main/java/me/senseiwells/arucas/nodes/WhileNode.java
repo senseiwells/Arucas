@@ -8,23 +8,23 @@ import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
 
 public class WhileNode extends Node {
-	public final Node condition;
-	public final Node body;
+	private final Node condition;
+	private final Node body;
 
 	public WhileNode(Node condition, Node body) {
-		super(condition.token, condition.startPos, body.endPos);
+		super(condition.token, condition.syntaxPosition, body.syntaxPosition);
 		this.condition = condition;
 		this.body = body;
 	}
 
 	@Override
 	public Value<?> visit(Context context) throws CodeError, ThrowValue {
-		context.pushLoopScope(this.startPos);
+		context.pushLoopScope(this.syntaxPosition);
 		
 		while (!Thread.currentThread().isInterrupted()) {
 			Value<?> conditionValue = this.condition.visit(context);
 			if (!(conditionValue instanceof BooleanValue booleanValue)) {
-				throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "Condition must result in either 'true' or 'false'", this.startPos, this.endPos);
+				throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "Condition must result in either 'true' or 'false'", this.syntaxPosition);
 			}
 			
 			if (!booleanValue.value) {
@@ -35,11 +35,11 @@ public class WhileNode extends Node {
 				this.body.visit(context);
 			}
 			catch (ThrowValue.Break tv) {
-				context.moveScope(context.getSymbolTable().getBreakScope());
+				context.moveScope(context.getBreakScope());
 				break;
 			}
 			catch (ThrowValue.Continue tv) {
-				context.moveScope(context.getSymbolTable().getContinueScope());
+				context.moveScope(context.getContinueScope());
 			}
 		}
 		

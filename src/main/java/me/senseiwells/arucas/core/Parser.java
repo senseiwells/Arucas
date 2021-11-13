@@ -1,5 +1,6 @@
 package me.senseiwells.arucas.core;
 
+import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.utils.*;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.nodes.*;
@@ -7,10 +8,12 @@ import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.functions.FunctionValue;
-import me.senseiwells.arucas.values.functions.FunctionValueDelegate;
+import me.senseiwells.arucas.values.functions.MemberFunction;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Parser {
 
@@ -35,10 +38,15 @@ public class Parser {
 		this.operatorTokenIndex--;
 		this.currentToken = this.operatorTokenIndex < this.tokens.size() ? this.tokens.get(this.operatorTokenIndex) : null;
 	}
+	
+	private Token getLastToken() {
+		int index = this.operatorTokenIndex - 1;
+		return this.tokens.get(index < 0 ? 0 : (index >= this.tokens.size() ? this.tokens.size() - 1 : index));
+	}
 
 	public Node parse() throws CodeError {
 		List<Node> statements = new ArrayList<>();
-		Position startPos = this.currentToken.startPos;
+		ISyntax startPos = this.currentToken.syntaxPosition;
 		
 		// The initial program contains only special statements
 		while (this.currentToken.type != Token.Type.FINISH) {
@@ -50,14 +58,14 @@ public class Parser {
 			statements.add(this.statement());
 		}
 		
-		return new ListNode(statements, startPos, this.currentToken.endPos);
+		return new ListNode(statements, startPos, this.currentToken.syntaxPosition);
 	}
 
 	private Node statements() throws CodeError {
 		List<Node> statements = new ArrayList<>();
-		Position startPos = this.currentToken.startPos;
+		ISyntax startPos = this.currentToken.syntaxPosition;
 		
-		this.context.pushScope(startPos);
+		this.context.pushScope(this.currentToken.syntaxPosition);
 		
 		switch (this.currentToken.type) {
 			case FINISH, SEMICOLON -> {
@@ -95,7 +103,7 @@ public class Parser {
 		}
 		
 		this.context.popScope();
-		return new ScopeNode(statements, startPos, this.currentToken.endPos);
+		return new ScopeNode(statements, startPos, this.currentToken.syntaxPosition);
 	}
 
 	private Node statement() throws CodeError {
@@ -111,7 +119,6 @@ public class Parser {
 				return this.whileExpression();
 			}
 			case FUN -> {
-				// FunctionDeclaration
 				return this.functionDefinition(false);
 			}
 			case TRY -> {
@@ -130,49 +137,49 @@ public class Parser {
 	}
 
 	private Node expression() throws CodeError {
-		Position startPos = this.currentToken.startPos;
+		ISyntax startPos = this.currentToken.syntaxPosition;
 		switch (this.currentToken.type) {
 			case RETURN -> {
 				this.advance();
 				if (this.currentToken.type == Token.Type.SEMICOLON) {
-					return new ReturnNode(new NullNode(this.currentToken), startPos, this.currentToken.endPos);
+					return new ReturnNode(new NullNode(this.currentToken), startPos, startPos);
 				}
 				
 				Node expression = this.sizeComparisonExpression();
-				return new ReturnNode(expression, startPos, this.currentToken.endPos);
+				return new ReturnNode(expression, startPos, this.currentToken.syntaxPosition);
 			}
 			case CONTINUE -> {
 				this.advance();
-				return new ContinueNode(startPos, this.currentToken.endPos);
+				return new ContinueNode(startPos);
 			}
 			case BREAK -> {
 				this.advance();
-				return new BreakNode(startPos, this.currentToken.endPos);
+				return new BreakNode(startPos);
 			}
 		}
 		
-		//Initialise variable with keyword 'var' -> stores value in map
+		// Initialise variable with keyword 'var' -> stores value in map
 		if (this.currentToken.type == Token.Type.VAR) {
 			this.advance();
 			return this.setVariable();
 		}
-		//If identifier is already a variable -> can assign value without 'var' keyword
+		// If identifier is already a variable -> can assign value without 'var' keyword
 		else if (this.currentToken.type == Token.Type.IDENTIFIER) {
 			this.advance();
 			switch (this.currentToken.type) {
 				case ASSIGN_OPERATOR -> {
 					this.recede();
-					return setVariable();
+					return this.setVariable();
 				}
 				case INCREMENT, DECREMENT -> {
 					this.recede();
-					return modifyVariable();
+					return this.modifyVariable();
 				}
 			}
 			this.recede();
 		}
 		
-		return sizeComparisonExpression();
+		return this.sizeComparisonExpression();
 	}
 	
 	private VariableAssignNode setVariable() throws CodeError {
@@ -181,9 +188,8 @@ public class Parser {
 		if (this.context.isBuiltInFunction(variableName.content)) {
 			throw new CodeError(
 				CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
-				"Cannot override builtIn function %s()".formatted(variableName),
-				variableName.startPos,
-				variableName.endPos
+				"Cannot override built in function %s()".formatted(variableName.content),
+				variableName.syntaxPosition
 			);
 		}
 		
@@ -203,24 +209,24 @@ public class Parser {
 			throw new CodeError(
 				CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
 				"Cannot modify builtIn function %s()".formatted(variableName),
-				variableName.startPos,
-				variableName.endPos
+				variableName.syntaxPosition
 			);
 		}
-		Node atom = this.atom();
+		
+		Node member = this.member(false);
 		Token operatorToken = this.currentToken;
 		Token.Type operatorType = switch (this.currentToken.type) {
 			case INCREMENT -> Token.Type.PLUS;
 			case DECREMENT -> Token.Type.MINUS;
-			default -> throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Unknown unary memory operator", operatorToken.startPos, operatorToken.endPos);
+			default -> throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Unknown unary memory operator", operatorToken.syntaxPosition);
 		};
 		
 		this.advance();
-		Node numberNode = new NumberNode(new Token(Token.Type.FLOAT, "1", operatorToken.startPos, operatorToken.endPos));
+		Node numberNode = new NumberNode(new Token(Token.Type.NUMBER, "1", operatorToken.syntaxPosition));
 		
 		this.context.setVariable(variableName.content, new NullValue());
 		return new VariableAssignNode(variableName,
-			new BinaryOperatorNode(atom, new Token(operatorType, operatorToken.startPos, operatorToken.endPos), numberNode)
+			new BinaryOperatorNode(member, new Token(operatorType, operatorToken.syntaxPosition), numberNode)
 		);
 	}
 
@@ -251,15 +257,15 @@ public class Parser {
 	
 	private static int functionLambdaIndex = 1;
 	private Node functionDefinition(boolean isLambda) throws CodeError {
+		Token functionStartToken = this.currentToken;
+		this.advance();
 		List<String> argumentNameTokens = new ArrayList<>();
 		Token variableNameToken;
-		this.advance();
 		
 		if (isLambda) {
 			variableNameToken = new Token(
 				Token.Type.IDENTIFIER, "%d$lambda".formatted(functionLambdaIndex++),
-				this.currentToken.startPos,
-				this.currentToken.endPos
+				this.currentToken.syntaxPosition
 			);
 		}
 		else {
@@ -269,19 +275,16 @@ public class Parser {
 			if (this.context.isBuiltInFunction(variableNameToken.content)) {
 				throw new CodeError(
 					CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "Cannot override builtIn function %s()".formatted(variableNameToken),
-					variableNameToken.startPos,
-					variableNameToken.endPos
+					variableNameToken.syntaxPosition
 				);
 			}
 
 			this.advance();
 		}
-		this.throwIfNotType(Token.Type.LEFT_BRACKET, "Expected '(...)'");
+		this.throwIfNotType(Token.Type.LEFT_BRACKET, "Expected 'fun (...)'");
 		this.advance();
 		
-		this.context.pushScope(this.currentToken.startPos);
-		FunctionValueDelegate valueDelegate = new FunctionValueDelegate();
-		this.context.setLocal(variableNameToken.content, valueDelegate);
+		this.context.pushScope(this.currentToken.syntaxPosition);
 		
 		if (this.currentToken.type == Token.Type.IDENTIFIER) {
 			this.recede();
@@ -299,12 +302,13 @@ public class Parser {
 
 		this.advance();
 		
-		// add Function variable to set
+		FunctionNode functionNode = new FunctionNode(functionStartToken, variableNameToken, argumentNameTokens);
+		this.context.setLocal(variableNameToken.content, functionNode.functionValue);
+		
 		Node statements = this.statements();
 		this.context.popScope();
 		
-		FunctionNode functionNode = new FunctionNode(variableNameToken, argumentNameTokens, statements);
-		valueDelegate.setDelegate(functionNode.functionValue);
+		functionNode.complete(statements);
 		this.context.setVariable(variableNameToken.content, functionNode.functionValue);
 		return functionNode;
 	}
@@ -345,18 +349,18 @@ public class Parser {
 		this.throwIfNotType(Token.Type.COLON, "Expected ':'");
 		this.advance();
 
-		Node atom = this.atom();
+		Node member = this.member(false);
 
 		this.throwIfNotType(Token.Type.RIGHT_BRACKET, "Expected ')'");
 		this.advance();
 
 		Node statements = this.statements();
-		return new ForNode(atom, statements, forParameterName);
+		return new ForNode(member, statements, forParameterName);
 	}
 
 	private Node listExpression() throws CodeError {
 		List<Node> elementList = new ArrayList<>();
-		Position startPos = this.currentToken.startPos;
+		ISyntax startPos = this.currentToken.syntaxPosition;
 		this.advance();
 		if (this.currentToken.type != Token.Type.RIGHT_SQUARE_BRACKET) {
 			elementList.add(this.expression());
@@ -366,8 +370,32 @@ public class Parser {
 			}
 			this.throwIfNotType(Token.Type.RIGHT_SQUARE_BRACKET, "Expected a ']'");
 		}
+		ISyntax endPos = this.currentToken.syntaxPosition;
 		this.advance();
-		return new ListNode(elementList, startPos, this.currentToken.endPos);
+		return new ListNode(elementList, startPos, endPos);
+	}
+
+	private Node mapExpression() throws CodeError {
+		Map<Node, Node> elementMap = new HashMap<>();
+		ISyntax startPos = this.currentToken.syntaxPosition;
+		
+		this.advance();
+		if (this.currentToken.type != Token.Type.RIGHT_CURLY_BRACKET) {
+			this.recede();
+			do {
+				this.advance();
+				Node keyNode = this.expression();
+				this.throwIfNotType(Token.Type.COLON, "Expected a ':' between key and value");
+				this.advance();
+				Node valueNode = this.expression();
+				elementMap.put(keyNode, valueNode);
+			}
+			while (this.currentToken.type == Token.Type.COMMA);
+			this.throwIfNotType(Token.Type.RIGHT_CURLY_BRACKET, "Expected a '}'");
+		}
+		ISyntax endPos = this.currentToken.syntaxPosition;
+		this.advance();
+		return new MapNode(elementMap, startPos, endPos);
 	}
 	
 	private Node sizeComparisonExpression() throws CodeError {
@@ -444,10 +472,11 @@ public class Parser {
 	
 	private Node call() throws CodeError {
 		List<Node> argumentNodes = new ArrayList<>();
-		Node atom = this.atom();
+		Node member = this.member(false);
 		if (this.currentToken.type != Token.Type.LEFT_BRACKET) {
-			return atom;
+			return member;
 		}
+		
 		this.advance();
 		if (this.currentToken.type != Token.Type.RIGHT_BRACKET) {
 			argumentNodes.add(this.expression());
@@ -458,17 +487,47 @@ public class Parser {
 			this.throwIfNotType(Token.Type.RIGHT_BRACKET, "Expected a ')'");
 		}
 		this.advance();
-		return new CallNode(atom, argumentNodes);
+		return new CallNode(member, argumentNodes);
 	}
-	
-	private Node atom() throws CodeError {
+
+	private Node member(boolean isMember) throws CodeError {
+		Node left = this.atom(isMember);
+
+		while (this.currentToken.type == Token.Type.DOT) {
+			this.advance();
+			List<Node> argumentNodes = new ArrayList<>();
+			Node right = this.member(true);
+			if (this.currentToken.type == Token.Type.LEFT_BRACKET) {
+				this.advance();
+				if (this.currentToken.type != Token.Type.RIGHT_BRACKET) {
+					argumentNodes.add(this.expression());
+					while (this.currentToken.type == Token.Type.COMMA) {
+						this.advance();
+						argumentNodes.add(this.expression());
+					}
+					this.throwIfNotType(Token.Type.RIGHT_BRACKET, "Expected a ')'");
+				}
+				this.advance();
+			}
+			left = new MemberCallNode(left, right, argumentNodes);
+		}
+
+		return left;
+	}
+
+	private Node atom(boolean isMember) throws CodeError {
 		Token token = this.currentToken;
 		switch (token.type) {
 			case IDENTIFIER -> {
+				// this needs to properly support member functions
 				this.advance();
 				Value<?> value = this.context.getVariable(token.content);
 				if (value == null) {
-					throw new CodeError(CodeError.ErrorType.UNKNOWN_IDENTIFIER, "Could not find '" + token.content + "'", token.startPos, token.endPos);
+					throw new CodeError(CodeError.ErrorType.UNKNOWN_IDENTIFIER, "Could not find '%s'".formatted(token.content), token.syntaxPosition);
+				}
+				
+				if (value instanceof MemberFunction && !isMember) {
+					throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "Members must be called from Values", token.syntaxPosition);
 				}
 				
 				if (value instanceof FunctionValue) {
@@ -477,7 +536,7 @@ public class Parser {
 				
 				return new VariableAccessNode(token);
 			}
-			case FLOAT -> {
+			case NUMBER -> {
 				this.advance();
 				return new NumberNode(token);
 			}
@@ -504,16 +563,28 @@ public class Parser {
 				return this.listExpression();
 			}
 			case FUN -> {
-				// FunctionLambda
 				return this.functionDefinition(true);
 			}
+			case LEFT_CURLY_BRACKET -> {
+				return this.mapExpression();
+			}
 		}
-		throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Unexpected Token: " + token, this.currentToken.startPos, this.currentToken.endPos);
+		throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Unexpected Token: %s".formatted(token), this.currentToken.syntaxPosition);
 	}
 
 	private void throwIfNotType(Token.Type type, String errorMessage) throws CodeError {
 		if (this.currentToken.type != type) {
-			throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, errorMessage, this.currentToken.startPos, this.currentToken.endPos);
+			/*
+			 * Because we want to tell the user that we expected a token after the previous one
+			 * we should instead of telling them that the next token position was wrong tell them
+			 * at the exact location it did not exist.
+			 *
+			 * This means that we need to read the previous token and then get the position of the
+			 * last index of that token.
+			 */
+			Token lastToken = getLastToken();
+			ISyntax lastTokenPosition = ISyntax.lastOf(lastToken.syntaxPosition);
+			throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, errorMessage, lastTokenPosition);
 		}
 	}
 

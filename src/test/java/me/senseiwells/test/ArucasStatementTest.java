@@ -234,13 +234,57 @@ public class ArucasStatementTest {
 			try {
 				if (true) {
 					X = '1';
-					throwRuntimeError("error");
+					throwRuntimeError('error');
 				}
 			}
 			catch (error) {
 				print(X);
 			}
 			"""
+		));
+	}
+
+	@Test
+	public void testMapValue() {
+		assertEquals("1", ArucasHelper.runSafeFull("map = {'one' : 1}; X = map.get('one');", "X"));
+		assertThrows(RuntimeError.class, () -> ArucasHelper.runUnsafe("map = {}; map.get(null);"));
+		assertThrows(RuntimeError.class, () -> ArucasHelper.runUnsafe("Y = null; map = { Y : 20 };"));
+		assertEquals("one", ArucasHelper.runSafeFull(
+			"""
+			X = null;
+			map = {
+				1 : 'one',
+				2 : 'two'
+			};
+			mapCopy = map.copy();
+			map.remove(1);
+			if (map.get(1) == null) {
+				X = mapCopy.get(1);
+			}
+			""", "X"
+		));
+		assertEquals("[\"one\", \"one\"]", ArucasHelper.runSafeFull(
+			"""
+			map = {
+				1 : 'one',
+				2 : 'one'
+			};
+			X = map.getValues();
+			""", "X"
+		));
+		assertEquals("1", ArucasHelper.runSafeFull(
+			"""
+			X = null;
+			map = {
+				'function' : fun() {
+					return 10;
+				},
+				'otherFunction' : fun() {
+					return 9;
+				}
+			};
+			X = map.get('function')() - map.get('otherFunction')();
+			""", "X"
 		));
 	}
 }

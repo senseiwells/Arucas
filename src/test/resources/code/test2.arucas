@@ -1,9 +1,59 @@
-// run("D:/Java/Arucas/src/test/resources/code/test2.arucas");
-// run("E:/Java/Projects/Arucas/src/test/resources/code/test2.arucas");
-// run("C:/Users/Admin/git/Arucas/src/test/resources/code/test2.arucas");
+// run(getDirectory() + "/src/test/resources/code/test2.arucas");
+/*
+fun schedule(milliseconds, function) {
+    runThreaded(fun(ms, func) { 
+        sleep(ms); 
+        func(); 
+    }, [milliseconds, function]);
+}
 
-bonk = "this/is/great";
+schedule(1000, fun() {
+    print("This will print second!");
+});
 
-bonk = replaceAll(bonk, "/", " ");
+print("This will print first!");
 
-print(bonk);
+sleep(2000);
+
+schedule(1000, fun() {
+    string = input("input 2");
+    print(string);
+});
+
+string = input("input 1");
+print(string);
+*/
+/*
+personMap = { };
+
+while (true) {
+    name = input("What is your name?");
+    age = null;
+    while (true) {
+        age = input("How old are you?");
+        try {
+            age = age.toNumber();
+            if (age > 100 or age < 5) 
+                throwRuntimeError("");
+        }
+        catch (e) print("That is an invalid age!");
+        break;
+    }
+    personMap.put(name, age);
+    exit = input("Would you like to exit? (y/n)");
+    if (exit == "y")
+        break;
+}
+
+personMapString = personMap.toString().replaceAll("\\{", "").replaceAll("\\}", "").replaceAll(", ", "\n");
+writeFile(getDirectory() + "/src/test/resources/code/personMap.txt", personMapString);
+
+print("Saved map to file");
+*/
+
+string = "Hi my name is %s%s%s%s";
+
+string = string.formatted(["bonk and I am ", 18, " years old ", []]);
+
+print(string);
+

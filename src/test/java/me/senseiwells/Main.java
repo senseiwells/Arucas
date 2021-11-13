@@ -2,12 +2,10 @@ package me.senseiwells;
 
 import me.senseiwells.arucas.api.ContextBuilder;
 import me.senseiwells.arucas.core.Run;
-import me.senseiwells.arucas.extensions.ArucasBuiltInExtension;
-import me.senseiwells.arucas.extensions.ArucasListExtension;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowStop;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.values.Value;
+import me.senseiwells.arucas.utils.StringUtils;
 
 import java.util.Scanner;
 
@@ -15,20 +13,19 @@ public class Main {
 	public static void main(String[] args) {
 		Context context = new ContextBuilder()
 			.setDisplayName("System.in")
-			.setExtensions(ArucasBuiltInExtension.class, ArucasListExtension.class)
-			.create();
+			.addDefaultExtensions()
+			.addDefaultValues()
+			.build();
 		
 		while (true) {
 			Scanner scanner = new Scanner(System.in);
 			String line = scanner.nextLine();
-			if (line.trim().equals(""))
+			if (line.trim().equals("")) {
 				continue;
-			
-			Value<?> values;
+			}
+
 			try {
-				values = Run.run(context, "System.in", line);
-				if (context.isDebug())
-					System.out.println(values);
+				Run.run(context, "System.in", line);
 			}
 			catch (ThrowStop e) {
 				System.out.println(e.toString(context));

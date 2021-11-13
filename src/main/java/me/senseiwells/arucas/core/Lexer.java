@@ -3,6 +3,7 @@ package me.senseiwells.arucas.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.utils.Position;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.tokens.Token;
@@ -20,17 +21,6 @@ public class Lexer {
 				.addRegex("[ \t\r\n]")
 			)
 			
-			// Comparisons
-			.addRule(Type.EQUALS, i -> i.addString("=="))
-			.addRule(Type.NOT_EQUALS, i -> i.addString("!="))
-			.addRule(Type.LESS_THAN_EQUAL, i -> i.addString("<="))
-			.addRule(Type.MORE_THAN_EQUAL, i -> i.addString(">="))
-			.addRule(Type.LESS_THAN, i -> i.addString("<"))
-			.addRule(Type.MORE_THAN, i -> i.addString(">"))
-			.addRule(Type.NOT, i -> i.addStrings("!", "not"))
-			.addRule(Type.AND, i -> i.addStrings("&&", "and"))
-			.addRule(Type.OR, i -> i.addStrings("||", "or"))
-			
 			// Arithmetics
 			.addRule(Type.PLUS, i -> i.addString("+"))
 			.addRule(Type.MINUS, i -> i.addString("-"))
@@ -45,11 +35,22 @@ public class Lexer {
 				.addMultiline("\"", "\\", "\"")
 				.addMultiline("'", "\\", "'")
 			)
-			.addRule(Type.FLOAT, i -> i.addRegexes(
+			.addRule(Type.NUMBER, i -> i.addRegexes(
 				"[0-9]+[.][0-9]+",
 				"[0-9]+"
 			))
 			.addRule(Type.NULL, i -> i.addStrings("null"))
+
+			// Comparisons - This must be defined AFTER identifiers
+			.addRule(Type.EQUALS, i -> i.addString("=="))
+			.addRule(Type.NOT_EQUALS, i -> i.addString("!="))
+			.addRule(Type.LESS_THAN_EQUAL, i -> i.addString("<="))
+			.addRule(Type.MORE_THAN_EQUAL, i -> i.addString(">="))
+			.addRule(Type.LESS_THAN, i -> i.addString("<"))
+			.addRule(Type.MORE_THAN, i -> i.addString(">"))
+			.addRule(Type.NOT, i -> i.addStrings("!", "not"))
+			.addRule(Type.AND, i -> i.addStrings("&&", "and"))
+			.addRule(Type.OR, i -> i.addStrings("||", "or"))
 			
 			// Memory operations
 			.addRule(Type.ASSIGN_OPERATOR, i -> i.addString("="))
@@ -81,6 +82,9 @@ public class Lexer {
 			.addRule(Type.TRY, i -> i.addString("try"))
 			.addRule(Type.CATCH, i -> i.addString("catch"))
 			.addRule(Type.FOREACH, i -> i.addString("foreach"))
+
+			// Dot operator
+			.addRule(Type.DOT, i -> i.addString("."))
 		;
 	}
 	
@@ -104,12 +108,12 @@ public class Lexer {
 			LexerContext.LexerToken lexerToken = LEXER.nextToken(input);
 			
 			if (lexerToken == null) {
-				Position errorPos = new Position(offset, line, column, this.fileName);
-				throw new CodeError(CodeError.ErrorType.ILLEGAL_CHAR_ERROR, "Invalid character", errorPos, errorPos);
+				throw new CodeError(CodeError.ErrorType.ILLEGAL_CHAR_ERROR, "Invalid character", ISyntax.of(new Position(offset, line, column, this.fileName)));
 			}
 			
-			if (lexerToken.length + offset > length)
+			if (lexerToken.length + offset > length) {
 				break;
+			}
 			
 			int old_offset = offset;
 			int old_line = line;
@@ -140,7 +144,7 @@ public class Lexer {
 			offset += lexerToken.length;
 		}
 	
-		tokenList.add(new Token(Type.FINISH, new Position(offset, line, column, this.fileName)));
+		tokenList.add(new Token(Type.FINISH, ISyntax.of(new Position(offset, line, column, this.fileName))));
 		return tokenList;
 	}
 }
