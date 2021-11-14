@@ -287,4 +287,33 @@ public class ArucasStatementTest {
 			""", "X"
 		));
 	}
+
+	@Test
+	public void testMemberFunctions() {
+		assertEquals("1", ArucasHelper.runSafeFull(
+			"""
+			fun getNumber() {
+				return 1;
+			}
+
+			X = getNumber().toString();
+			""", "X"
+		));
+		assertEquals("1", ArucasHelper.runSafeFull(
+			"""
+			X = 1;
+			X = X.toString();
+			""", "X"
+		));
+		assertEquals("1", ArucasHelper.runSafeFull(
+			"""
+			fun getNumber() {
+				return 1;
+			}
+
+			X = getNumber();
+			X = X.toString();
+			""", "X"
+		));
+	}
 }

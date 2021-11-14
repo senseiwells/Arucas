@@ -487,12 +487,15 @@ public class Parser {
 			this.throwIfNotType(Token.Type.RIGHT_BRACKET, "Expected a ')'");
 		}
 		this.advance();
-		return new CallNode(member, argumentNodes);
+		return member(new CallNode(member, argumentNodes));
 	}
 
 	private Node member(boolean isMember) throws CodeError {
 		Node left = this.atom(isMember);
+		return member(left);
+	}
 
+	private Node member(Node left) throws CodeError {
 		while (this.currentToken.type == Token.Type.DOT) {
 			this.advance();
 			List<Node> argumentNodes = new ArrayList<>();
@@ -511,7 +514,6 @@ public class Parser {
 			}
 			left = new MemberCallNode(left, right, argumentNodes);
 		}
-
 		return left;
 	}
 
