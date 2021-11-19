@@ -521,7 +521,6 @@ public class Parser {
 		Token token = this.currentToken;
 		switch (token.type) {
 			case IDENTIFIER -> {
-				// this needs to properly support member functions
 				this.advance();
 				Value<?> value = this.context.getVariable(token.content);
 				if (value == null) {
