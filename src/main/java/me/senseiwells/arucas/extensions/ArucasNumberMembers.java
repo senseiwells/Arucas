@@ -26,6 +26,9 @@ public class ArucasNumberMembers implements IArucasExtension {
 		new MemberFunction("ceil", this::numberCeil),
 		new MemberFunction("floor", this::numberFloor),
 		new MemberFunction("modulus", "otherNumber", this::numberModulus),
+		new MemberFunction("toRadians", this::toRadians),
+		new MemberFunction("toDegrees", this::toDegrees),
+		new MemberFunction("modulus", "otherNumber", this::numberModulus),
 		new MemberFunction("absolute", this::numberAbsolute),
 		new MemberFunction("isInfinite", this::numberIsInfinite),
 		new MemberFunction("isNaN", this::numberIsNan)
@@ -56,6 +59,15 @@ public class ArucasNumberMembers implements IArucasExtension {
 		NumberValue value = function.getParameterValueOfType(context, NumberValue.class, 0);
 		return new NumberValue(Math.abs(value.value));
 	}
+	private NumberValue toRadians(Context context, MemberFunction function) throws CodeError {
+		NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 0);
+		return new NumberValue(Math.toRadians(numberValue.value));
+	}
+
+	private NumberValue toDegrees(Context context, MemberFunction function) throws CodeError {
+		NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 0);
+		return new NumberValue(Math.toDegrees(numberValue.value));
+	}
 
 	private BooleanValue numberIsInfinite(Context context, MemberFunction function) throws CodeError {
 		NumberValue value = function.getParameterValueOfType(context, NumberValue.class, 0);
@@ -66,4 +78,5 @@ public class ArucasNumberMembers implements IArucasExtension {
 		NumberValue value = function.getParameterValueOfType(context, NumberValue.class, 0);
 		return new BooleanValue(value.value.isNaN());
 	}
+
 }

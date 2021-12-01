@@ -55,6 +55,17 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		new BuiltInFunction("writeFile", List.of("path", "string"), this::writeFile),
 		new BuiltInFunction("throwRuntimeError", "message", this::throwRuntimeError),
 
+		// Math functions
+		new BuiltInFunction("sin", "value", this::sin),
+		new BuiltInFunction("cos", "value", this::cos),
+		new BuiltInFunction("tan", "value", this::tan),
+		new BuiltInFunction("arcsin", "value", this::arcsin),
+		new BuiltInFunction("arccos", "value", this::arccos),
+		new BuiltInFunction("arctan", "value", this::arctan),
+		new BuiltInFunction("cosec", "value", this::cosec),
+		new BuiltInFunction("sec", "value", this::sec),
+		new BuiltInFunction("cot", "value", this::cot),
+
 		// Deprecated Functions:
 		new BuiltInFunction("isString", "value", (context, function) -> function.isType(context, StringValue.class), true),
 		new BuiltInFunction("isNumber", "value", (context, function) -> function.isType(context, NumberValue.class), true),
@@ -194,6 +205,53 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
 		throw new RuntimeError(stringValue.value, function.syntaxPosition, context);
 	}
+
+	private Value<?> sin(Context context, BuiltInFunction function) throws CodeError {
+		NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 0);
+		return new NumberValue(Math.sin(numberValue.value));
+	}
+
+	private Value<?> cos(Context context, BuiltInFunction function) throws CodeError {
+		NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 0);
+		return new NumberValue(Math.cos(numberValue.value));
+	}
+
+	private Value<?> tan(Context context, BuiltInFunction function) throws CodeError {
+		NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 0);
+		return new NumberValue(Math.tan(numberValue.value));
+	}
+
+	private Value<?> arcsin(Context context, BuiltInFunction function) throws CodeError {
+		NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 0);
+		return new NumberValue(Math.asin(numberValue.value));
+	}
+
+	private Value<?> arccos(Context context, BuiltInFunction function) throws CodeError {
+		NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 0);
+		return new NumberValue(Math.acos(numberValue.value));
+	}
+
+	private Value<?> arctan(Context context, BuiltInFunction function) throws CodeError {
+		NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 0);
+		return new NumberValue(Math.atan(numberValue.value));
+	}
+
+	private Value<?> cosec(Context context, BuiltInFunction function) throws CodeError {
+		NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 0);
+		return new NumberValue(1/Math.sin(numberValue.value));
+	}
+
+	private Value<?> sec(Context context, BuiltInFunction function) throws CodeError {
+		NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 0);
+		return new NumberValue(1/Math.cos(numberValue.value));
+	}
+
+	private Value<?> cot(Context context, BuiltInFunction function) throws CodeError {
+		NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 0);
+		return new NumberValue(1/Math.tan(numberValue.value));
+	}
+
+
 
 	private Value<?> instanceOf(Context context, MemberFunction function) throws CodeError {
 		StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 1);

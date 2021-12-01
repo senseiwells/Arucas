@@ -5,7 +5,6 @@ import me.senseiwells.arucas.values.MapValue;
 import me.senseiwells.arucas.values.StringValue;
 import me.senseiwells.arucas.values.Value;
 
-@SuppressWarnings("all")
 public class StringUtils {
 	/**
 	 * Convertes all instances of <code>[\'] [\"] [\\] [\r] [\n] [\b] [\t] [\x..] [&bsol;u....]</code> to the correct character.
@@ -65,9 +64,7 @@ public class StringUtils {
 						i += 4;
 					}
 
-					default -> {
-						throw new RuntimeException("(index:%d) Invalid character escape '\\%s'".formatted(i, c));
-					}
+					default -> throw new RuntimeException("(index:%d) Invalid character escape '\\%s'".formatted(i, c));
 				}
 			}
 			else if (c == '\\') {
@@ -84,6 +81,7 @@ public class StringUtils {
 	/**
 	 * Escapes a string to convert all control characters into their escaped form.
 	 */
+	@SuppressWarnings("unused")
 	public static String escapeString(String string) {
 		if (string == null) {
 			return null;
@@ -99,7 +97,7 @@ public class StringUtils {
 				case '\n' -> { sb.append("\\n"); continue; }
 				case '\b' -> { sb.append("\\b"); continue; }
 				case '\t' -> { sb.append("\\t"); continue; }
-				case '\'' -> { sb.append("\\\'"); continue; }
+				case '\'' -> { sb.append("\\'"); continue; }
 				case '\"' -> { sb.append("\\\""); continue; }
 				case '\\' -> { sb.append("\\\\"); continue; }
 			}
@@ -193,6 +191,7 @@ public class StringUtils {
 	 *     [0-9]+(\.[0-9]+)?
 	 * </pre>
 	 */
+	@SuppressWarnings("unused")
 	public static double parseNumber(String string) {
 		if (string == null || string.isBlank()) {
 			throw new IllegalArgumentException("The input string must not be null or empty");
