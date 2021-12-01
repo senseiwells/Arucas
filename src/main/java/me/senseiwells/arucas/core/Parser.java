@@ -500,18 +500,17 @@ public class Parser {
 			this.advance();
 			List<Node> argumentNodes = new ArrayList<>();
 			Node right = this.member(true);
-			if (this.currentToken.type == Token.Type.LEFT_BRACKET) {
-				this.advance();
-				if (this.currentToken.type != Token.Type.RIGHT_BRACKET) {
+			this.throwIfNotType(Token.Type.LEFT_BRACKET, "Expected a '('");
+			this.advance();
+			if (this.currentToken.type != Token.Type.RIGHT_BRACKET) {
+				argumentNodes.add(this.expression());
+				while (this.currentToken.type == Token.Type.COMMA) {
+					this.advance();
 					argumentNodes.add(this.expression());
-					while (this.currentToken.type == Token.Type.COMMA) {
-						this.advance();
-						argumentNodes.add(this.expression());
-					}
-					this.throwIfNotType(Token.Type.RIGHT_BRACKET, "Expected a ')'");
 				}
-				this.advance();
+				this.throwIfNotType(Token.Type.RIGHT_BRACKET, "Expected a ')'");
 			}
+			this.advance();
 			left = new MemberCallNode(left, right, argumentNodes);
 		}
 		return left;

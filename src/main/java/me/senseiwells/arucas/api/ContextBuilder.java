@@ -8,6 +8,7 @@ import me.senseiwells.arucas.values.functions.FunctionValue;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -15,7 +16,7 @@ import java.util.stream.Collectors;
  */
 @SuppressWarnings("unused")
 public class ContextBuilder {
-	private final List<Class<? extends IArucasExtension>> extensions = new ArrayList<>();
+	private final List<Supplier<? extends IArucasExtension>> extensions = new ArrayList<>();
 	private final List<Class<?>> valueList = new ArrayList<>();
 	private Consumer<String> outputHandler = System.out::print;
 	private boolean suppressDeprecated;
@@ -40,21 +41,21 @@ public class ContextBuilder {
 
 	public ContextBuilder addDefaultExtensions() {
 		return this.addExtensions(List.of(
-			ArucasBuiltInExtension.class,
-			ArucasListMembers.class,
-			ArucasNumberMembers.class,
-			ArucasStringMembers.class,
-			ArucasMapMembers.class
+			ArucasBuiltInExtension::new,
+			ArucasListMembers::new,
+			ArucasNumberMembers::new,
+			ArucasStringMembers::new,
+			ArucasMapMembers::new
 		));
 	}
 	
-	public ContextBuilder addExtensions(List<Class<? extends IArucasExtension>> extensions) {
+	public ContextBuilder addExtensions(List<Supplier<? extends IArucasExtension>> extensions) {
 		this.extensions.addAll(extensions);
 		return this;
 	}
 
 	@SafeVarargs
-	public final ContextBuilder addExtensions(Class<? extends IArucasExtension>... extensions) {
+	public final ContextBuilder addExtensions(Supplier<? extends IArucasExtension>... extensions) {
 		this.extensions.addAll(List.of(extensions));
 		return this;
 	}
@@ -81,16 +82,7 @@ public class ContextBuilder {
 	}
 	
 	public Context build() {
-		List<IArucasExtension> list = new ArrayList<>();
-  
-		for (Class<? extends IArucasExtension> clazz : this.extensions) {
-			try {
-				list.add(clazz.getDeclaredConstructor().newInstance());
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
+		List<IArucasExtension> list = this.extensions.stream().map(Supplier::get).collect(Collectors.toList());
 		
 		Map<String, Class<?>> valueMap = this.valueList.stream()
 			.collect(Collectors.toMap(clazz -> clazz.getSimpleName().replaceFirst("Value$", ""), i -> i));

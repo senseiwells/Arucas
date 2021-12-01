@@ -29,7 +29,9 @@ public class ArucasListMembers implements IArucasExtension {
 		new MemberFunction("removeIndex", "index", this::removeListIndex),
 		new MemberFunction("append", "value", this::appendList),
 		new MemberFunction("concat", "otherList", this::concatList),
-		new MemberFunction("contains", "value", this::listContains)
+		new MemberFunction("contains", "value", this::listContains),
+		new MemberFunction("containsAll", "otherList", this::containsAll),
+		new MemberFunction("isEmpty", this::isEmpty)
 	);
 
 	private Value<?> getListIndex(Context context, MemberFunction function) throws CodeError {
@@ -79,6 +81,21 @@ public class ArucasListMembers implements IArucasExtension {
 			ListValue listValue = function.getParameterValueOfType(context, ListValue.class, 0);
 			Value<?> value = function.getParameterValue(context, 1);
 			return new BooleanValue(listValue.value.contains(value));
+		}
+	}
+
+	private BooleanValue containsAll(Context context, MemberFunction function) throws CodeError {
+		synchronized (LIST_LOCK) {
+			ListValue listValue = function.getParameterValueOfType(context, ListValue.class, 0);
+			ListValue otherList = function.getParameterValueOfType(context, ListValue.class, 1);
+			return new BooleanValue(listValue.value.containsAll(otherList.value));
+		}
+	}
+
+	private BooleanValue isEmpty(Context context, MemberFunction function) throws CodeError {
+		synchronized (LIST_LOCK) {
+			ListValue listValue = function.getParameterValueOfType(context, ListValue.class, 0);
+			return new BooleanValue(listValue.value.isEmpty());
 		}
 	}
 }

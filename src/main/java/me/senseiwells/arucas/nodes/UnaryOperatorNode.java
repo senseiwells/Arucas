@@ -1,11 +1,10 @@
 package me.senseiwells.arucas.nodes;
 
-import me.senseiwells.arucas.throwables.RuntimeError;
-import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.throwables.CodeError;
+import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.tokens.Token;
-import me.senseiwells.arucas.values.BooleanValue;
+import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.NumberValue;
 import me.senseiwells.arucas.values.Value;
 
@@ -22,13 +21,13 @@ public class UnaryOperatorNode extends Node {
 		Value<?> value = this.node.visit(context);
 		try {
 			switch (this.token.type) {
-				case MINUS -> value = ((NumberValue) value).multiplyBy(new NumberValue(-1));
-				case NOT -> value = ((BooleanValue) value).not();
+				case MINUS -> value = value.multiplyBy(new NumberValue(-1), this.syntaxPosition);
+				case NOT -> value = value.not(this.syntaxPosition);
 			}
 			return value;
 		}
-		catch (ClassCastException classCastException) {
-			throw new RuntimeError("The operation '%s' cannot be applied to '%s'".formatted(this.token.type, value.value), this.syntaxPosition, context);
+		catch (RuntimeError e) {
+			throw e.setContext(context);
 		}
 	}
 

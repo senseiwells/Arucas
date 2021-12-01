@@ -2,7 +2,6 @@ package me.senseiwells.arucas.values;
 
 import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.throwables.CodeError;
-import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.tokens.Token;
 
 import java.text.DecimalFormat;
@@ -17,47 +16,57 @@ public class NumberValue extends Value<Double> {
 	}
 
 	@Override
-	public NumberValue addTo(Value<?> other, ISyntax syntaxPosition) throws CodeError {
-		if (!(other instanceof NumberValue otherValue)) {
-			throw new RuntimeError("The 'add' operator cannot be applied to %s and %s".formatted(this, other), syntaxPosition);
+	public Value<?> addTo(Value<?> other, ISyntax syntaxPosition) throws CodeError {
+		if (other instanceof NumberValue otherValue) {
+			return new NumberValue(this.value + otherValue.value);
 		}
-		
-		return new NumberValue(this.value + otherValue.value);
+		return super.addTo(other, syntaxPosition);
 	}
 
-	public NumberValue subtractBy(NumberValue other) {
-		return new NumberValue(this.value - other.value);
-	}
-
-	public NumberValue multiplyBy(NumberValue other) {
-		return new NumberValue(this.value * other.value);
-	}
-
-	public NumberValue divideBy(NumberValue other, ISyntax syntaxPosition) throws RuntimeError {
-		if (other.value == 0) {
-			throw new RuntimeError("You cannot divide by 0", syntaxPosition);
+	@Override
+	public Value<?> subtractBy(Value<?> other, ISyntax syntaxPosition) throws CodeError {
+		if (other instanceof NumberValue otherValue) {
+			return new NumberValue(this.value - otherValue.value);
 		}
-		
-		return new NumberValue(this.value / other.value);
+		return super.subtractBy(other, syntaxPosition);
 	}
 
-	public NumberValue powerBy(NumberValue other, ISyntax syntaxPosition) throws RuntimeError {
-		if (this.value < 0 || (other.value % 1) != 0) {
-			throw new RuntimeError("You cannot calculate imaginary numbers", syntaxPosition);
+	@Override
+	public Value<?> multiplyBy(Value<?> other, ISyntax syntaxPosition) throws CodeError {
+		if (other instanceof NumberValue otherValue) {
+			return new NumberValue(this.value * otherValue.value);
 		}
-		
-		return new NumberValue(Math.pow(this.value, other.value));
+		return super.multiplyBy(other, syntaxPosition);
 	}
 
-	public BooleanValue compareNumber(NumberValue other, Token.Type type) {
-		boolean bool = switch (type) {
-			case LESS_THAN -> this.value < other.value;
-			case MORE_THAN -> this.value > other.value;
-			case MORE_THAN_EQUAL -> this.value >= other.value;
-			case LESS_THAN_EQUAL -> this.value <= other.value;
-			default -> false;
-		};
-		return new BooleanValue(bool);
+	@Override
+	public Value<?> divideBy(Value<?> other, ISyntax syntaxPosition) throws CodeError {
+		if (other instanceof NumberValue otherValue) {
+			return new NumberValue(this.value / otherValue.value);
+		}
+		return super.divideBy(other, syntaxPosition);
+	}
+
+	@Override
+	public Value<?> powerBy(Value<?> other, ISyntax syntaxPosition) throws CodeError {
+		if (other instanceof NumberValue otherValue) {
+			return new NumberValue(Math.pow(this.value, otherValue.value));
+		}
+		return super.powerBy(other, syntaxPosition);
+	}
+
+	public BooleanValue compareNumber(Value<?> other, Token.Type type, ISyntax syntaxPosition) throws CodeError {
+		if (other instanceof NumberValue otherValue) {
+			boolean bool = switch (type) {
+				case LESS_THAN -> this.value < otherValue.value;
+				case MORE_THAN -> this.value > otherValue.value;
+				case MORE_THAN_EQUAL -> this.value >= otherValue.value;
+				case LESS_THAN_EQUAL -> this.value <= otherValue.value;
+				default -> false;
+			};
+			return new BooleanValue(bool);
+		}
+		return super.compareNumber(other, type, syntaxPosition);
 	}
 
 	@Override

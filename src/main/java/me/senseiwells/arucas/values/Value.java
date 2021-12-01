@@ -1,31 +1,14 @@
 package me.senseiwells.arucas.values;
 
-import me.senseiwells.arucas.api.ISyntax;
-import me.senseiwells.arucas.throwables.CodeError;
-import me.senseiwells.arucas.throwables.RuntimeError;
-
 import java.util.Objects;
 
-public abstract class Value<T> {
+public abstract class Value<T> implements ValueOperations {
 	public final T value;
+	
 	public Value(T value) {
 		this.value = value;
 	}
 	
-	public Value<?> addTo(Value<?> other, ISyntax syntaxPosition) throws CodeError {
-		throw new RuntimeError("The 'add' operator cannot be applied to %s and %s".formatted(this, other), syntaxPosition);
-	}
-
-	public BooleanValue isEqual(Value<?> other) {
-		return new BooleanValue(Objects.equals(this.value, other.value));
-	}
-
-	public BooleanValue isNotEqual(Value<?> other) {
-		return new BooleanValue(!Objects.equals(this.value, other.value));
-	}
-	
-	// public abstract Value<?> getMember(Value<?> other);
-
 	public abstract Value<T> copy();
 
 	public Value<T> newCopy() {

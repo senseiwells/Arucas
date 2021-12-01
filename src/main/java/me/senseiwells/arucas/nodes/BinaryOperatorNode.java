@@ -1,12 +1,11 @@
 package me.senseiwells.arucas.nodes;
 
-import me.senseiwells.arucas.throwables.RuntimeError;
-import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.throwables.CodeError;
+import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.tokens.Token;
+import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.BooleanValue;
-import me.senseiwells.arucas.values.NumberValue;
 import me.senseiwells.arucas.values.Value;
 
 public class BinaryOperatorNode extends Node {
@@ -27,12 +26,16 @@ public class BinaryOperatorNode extends Node {
 			Value<?> result = null;
 			switch (this.token.type) {
 				case AND -> {
-					BooleanValue leftBoolean = (BooleanValue) left;
-					result = (!leftBoolean.value) ? new BooleanValue(false) : leftBoolean.isAnd((BooleanValue) (right = this.rightNode.visit(context)));
+					if (!(left instanceof BooleanValue leftBoolean)) {
+						throw new RuntimeError("The operation 'AND' cannot be applied to %s".formatted(left), this.syntaxPosition);
+					}
+					result = (!leftBoolean.value) ? new BooleanValue(false) : leftBoolean.isAnd((right = this.rightNode.visit(context)), this.syntaxPosition);
 				}
 				case OR -> {
-					BooleanValue leftBoolean = (BooleanValue) left;
-					result = leftBoolean.value ? new BooleanValue(true) : leftBoolean.isOr((BooleanValue) (right = this.rightNode.visit(context)));
+					if (!(left instanceof BooleanValue leftBoolean)) {
+						throw new RuntimeError("The operation 'OR' cannot be applied to %s".formatted(left), this.syntaxPosition);
+					}
+					result = leftBoolean.value ? new BooleanValue(true) : leftBoolean.isOr((right = this.rightNode.visit(context)), this.syntaxPosition);
 				}
 				default -> {
 					// AND, OR has a special property that the right hand side is not evaluated
@@ -44,13 +47,13 @@ public class BinaryOperatorNode extends Node {
 			
 			switch (this.token.type) {
 				case PLUS -> result = left.addTo(right, this.syntaxPosition);
-				case MINUS -> result = ((NumberValue) left).subtractBy((NumberValue) right);
-				case MULTIPLY -> result = ((NumberValue) left).multiplyBy((NumberValue) right);
-				case DIVIDE -> result = ((NumberValue) left).divideBy((NumberValue) right, this.syntaxPosition);
-				case POWER -> result = ((NumberValue) left).powerBy((NumberValue) right, this.syntaxPosition);
+				case MINUS -> result = left.subtractBy(right, this.syntaxPosition);
+				case MULTIPLY -> result = left.multiplyBy(right, this.syntaxPosition);
+				case DIVIDE -> result = left.divideBy(right, this.syntaxPosition);
+				case POWER -> result = left.powerBy(right, this.syntaxPosition);
 				case EQUALS -> result = left.isEqual(right);
 				case NOT_EQUALS -> result = left.isNotEqual(right);
-				case LESS_THAN, LESS_THAN_EQUAL, MORE_THAN, MORE_THAN_EQUAL -> result = ((NumberValue) left).compareNumber((NumberValue) right, this.token.type);
+				case LESS_THAN, LESS_THAN_EQUAL, MORE_THAN, MORE_THAN_EQUAL -> result = left.compareNumber(right, this.token.type, this.syntaxPosition);
 			}
 			
 			if (result == null) {
@@ -58,17 +61,6 @@ public class BinaryOperatorNode extends Node {
 			}
 			
 			return result;
-		}
-		catch (ClassCastException classCastException) {
-			String message;
-			if (right == null) {
-				message = "'%s'".formatted(left.value);
-			}
-			else {
-				message = "'%s' and '%s'".formatted(left.value, right.value);
-			}
-			
-			throw new RuntimeError("The operation '%s' cannot be applied to %s".formatted(this.token.type, message), this.syntaxPosition, context);
 		}
 		catch (RuntimeError e) {
 			throw e.setContext(context);
