@@ -28,7 +28,6 @@ public class ArucasNumberMembers implements IArucasExtension {
 		new MemberFunction("modulus", "otherNumber", this::numberModulus),
 		new MemberFunction("toRadians", this::toRadians),
 		new MemberFunction("toDegrees", this::toDegrees),
-		new MemberFunction("modulus", "otherNumber", this::numberModulus),
 		new MemberFunction("absolute", this::numberAbsolute),
 		new MemberFunction("isInfinite", this::numberIsInfinite),
 		new MemberFunction("isNaN", this::numberIsNan)

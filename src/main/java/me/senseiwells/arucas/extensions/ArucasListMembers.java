@@ -2,6 +2,7 @@ package me.senseiwells.arucas.extensions;
 
 import me.senseiwells.arucas.api.IArucasExtension;
 import me.senseiwells.arucas.throwables.CodeError;
+import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.BooleanValue;
 import me.senseiwells.arucas.values.ListValue;
@@ -9,6 +10,7 @@ import me.senseiwells.arucas.values.NumberValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
+import java.util.List;
 import java.util.Set;
 
 public class ArucasListMembers implements IArucasExtension {
@@ -28,6 +30,7 @@ public class ArucasListMembers implements IArucasExtension {
 		new MemberFunction("getIndex", "index", this::getListIndex),
 		new MemberFunction("removeIndex", "index", this::removeListIndex),
 		new MemberFunction("append", "value", this::appendList),
+		new MemberFunction("insert", List.of("value", "index"), this::insertList),
 		new MemberFunction("concat", "otherList", this::concatList),
 		new MemberFunction("contains", "value", this::listContains),
 		new MemberFunction("containsAll", "otherList", this::containsAll),
@@ -63,6 +66,20 @@ public class ArucasListMembers implements IArucasExtension {
 			ListValue listValue = function.getParameterValueOfType(context, ListValue.class, 0);
 			Value<?> value = function.getParameterValue(context, 1);
 			listValue.value.add(value);
+			return listValue;
+		}
+	}
+
+	private Value<?> insertList(Context context, MemberFunction function) throws CodeError {
+		synchronized (LIST_LOCK) {
+			ListValue listValue = function.getParameterValueOfType(context, ListValue.class, 0);
+			Value<?> value = function.getParameterValue(context, 1);
+			int index = function.getParameterValueOfType(context, NumberValue.class, 2).value.intValue();
+			int len = listValue.value.size();
+			if (index > len || index < 0) {
+				throw new RuntimeError("Index is out of bounds", function.syntaxPosition, context);
+			}
+			listValue.value.add(index, value);
 			return listValue;
 		}
 	}

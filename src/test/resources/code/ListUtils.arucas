@@ -1,0 +1,80 @@
+/**
+ * Here are some utils for lists
+ */
+
+fun throwIfNot(value, type) {
+    if (!value.instanceOf(type)) {
+        throwRuntimeError("required %s found %s".formatted(type, value.getValueType()));
+    }
+}
+
+return {
+    "remapList" : fun(list, function) {
+        throwIfNot(list, "List");
+        throwIfNot(function, "Function");
+        newList = [];
+        foreach (value : list) {
+            newList.append(function(value));
+        }
+        return newList;
+    },
+    "filterList" : fun(list, function) {
+        throwIfNot(list, "List");
+        throwIfNot(function, "Function");
+        newList = [];
+        foreach (value : list) {
+            boolean = function(value);
+            if (!boolean.instanceOf("Boolean")) {
+                throwRuntimeError("Function should return boolean");
+            }
+            if (boolean) {
+                newList.append(value);
+            }
+        }
+        return newList;
+    },
+    "uniqueList" : fun(list) {
+        throwIfNot(list, "List");
+        newList = [];
+        foreach (value : list) {
+            if (!newList.contains(value)) {
+                newList.append(value);
+            }
+        }
+        return newList;
+    },
+    "listSimilarities" : fun(list, otherList) {
+        throwIfNot(list, "List");
+        throwIfNot(otherList, "List");
+        newList = [];
+        foreach (value : list) {
+            if (otherList.contains(value) && !newList.contains(value)) {
+                newList.append(value);
+            }
+        }
+        return newList;
+    },
+    "indexOf" : fun(list, value) {
+        throwIfNot(list, "List");
+        i = 0;
+        while (i < len(list)) {
+            if (list.getIndex(i) == value) {
+                return i;
+            }
+            i++;
+        }
+        return -1;
+    },
+    "indexesOf" : fun(list, value) {
+        throwIfNot(list, "List");
+        i = 0;
+        indexes = [];
+        while (i < len(list)) {
+            if (list.getIndex(i) == value) {
+                indexes.append(i);
+            }
+            i++;
+        }
+        return indexes;
+    }
+};

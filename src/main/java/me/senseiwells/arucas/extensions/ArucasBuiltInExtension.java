@@ -75,6 +75,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		new BuiltInFunction("isMap", "value", (context, function) -> function.isType(context, MapValue.class), true),
 
 		new MemberFunction("instanceOf", "class", this::instanceOf),
+		new MemberFunction("getValueType", this::getValueType),
 		new MemberFunction("copy", (context, function) -> function.getParameterValue(context, 0).newCopy()),
 		new MemberFunction("toString", (context, function) -> new StringValue(function.getParameterValue(context, 0).toString()))
 	);
@@ -251,8 +252,6 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		return new NumberValue(1/Math.tan(numberValue.value));
 	}
 
-
-
 	private Value<?> instanceOf(Context context, MemberFunction function) throws CodeError {
 		StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 1);
 		Class<?> clazz = context.getValueClassFromString(stringValue.value);
@@ -261,5 +260,11 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		}
 		Value<?> value = function.getParameterValue(context, 0);
 		return new BooleanValue(clazz.isInstance(value));
+	}
+
+	private Value<?> getValueType(Context context, MemberFunction function) {
+		Value<?> value = function.getParameterValue(context, 0);
+		String valueType = value.getClass().getSimpleName().replaceFirst("Value$", "");
+		return new StringValue(valueType);
 	}
 }
