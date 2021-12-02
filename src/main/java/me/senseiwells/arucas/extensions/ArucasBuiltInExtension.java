@@ -53,6 +53,8 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		new BuiltInFunction("runThreaded", List.of("function", "parameters"), this::runThreaded),
 		new BuiltInFunction("readFile", "path", this::readFile),
 		new BuiltInFunction("writeFile", List.of("path", "string"), this::writeFile),
+		new BuiltInFunction("createDirectory", "path", this::createDirectory),
+		new BuiltInFunction("doesFileExist", "path", this::doesFileExist),
 		new BuiltInFunction("throwRuntimeError", "message", this::throwRuntimeError),
 
 		// Math functions
@@ -66,15 +68,8 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		new BuiltInFunction("sec", "value", this::sec),
 		new BuiltInFunction("cot", "value", this::cot),
 
-		// Deprecated Functions:
-		new BuiltInFunction("isString", "value", (context, function) -> function.isType(context, StringValue.class), true),
-		new BuiltInFunction("isNumber", "value", (context, function) -> function.isType(context, NumberValue.class), true),
-		new BuiltInFunction("isBoolean", "value", (context, function) -> function.isType(context, BooleanValue.class), true),
-		new BuiltInFunction("isFunction", "value", (context, function) -> function.isType(context, FunctionValue.class), true),
-		new BuiltInFunction("isList", "value", (context, function) -> function.isType(context, ListValue.class), true),
-		new BuiltInFunction("isMap", "value", (context, function) -> function.isType(context, MapValue.class), true),
-
 		new MemberFunction("instanceOf", "class", this::instanceOf),
+		new MemberFunction("getValueType", this::getValueType),
 		new MemberFunction("copy", (context, function) -> function.getParameterValue(context, 0).newCopy()),
 		new MemberFunction("toString", (context, function) -> new StringValue(function.getParameterValue(context, 0).toString()))
 	);
@@ -201,6 +196,16 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		}
 	}
 
+	private Value<?> createDirectory(Context context, BuiltInFunction function) throws CodeError {
+		StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
+		return new BooleanValue(Path.of(stringValue.value).toFile().mkdirs());
+	}
+
+	private Value<?> doesFileExist(Context context, BuiltInFunction function) throws CodeError {
+		StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
+		return new BooleanValue(Path.of(stringValue.value).toFile().exists());
+	}
+
 	private Value<?> throwRuntimeError(Context context, BuiltInFunction function) throws CodeError {
 		StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
 		throw new RuntimeError(stringValue.value, function.syntaxPosition, context);
@@ -251,8 +256,6 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		return new NumberValue(1/Math.tan(numberValue.value));
 	}
 
-
-
 	private Value<?> instanceOf(Context context, MemberFunction function) throws CodeError {
 		StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 1);
 		Class<?> clazz = context.getValueClassFromString(stringValue.value);
@@ -261,5 +264,11 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		}
 		Value<?> value = function.getParameterValue(context, 0);
 		return new BooleanValue(clazz.isInstance(value));
+	}
+
+	private Value<?> getValueType(Context context, MemberFunction function) {
+		Value<?> value = function.getParameterValue(context, 0);
+		String valueType = value.getClass().getSimpleName().replaceFirst("Value$", "");
+		return new StringValue(valueType);
 	}
 }

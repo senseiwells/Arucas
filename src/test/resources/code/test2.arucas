@@ -1,59 +1,29 @@
 // run(getDirectory() + "/src/test/resources/code/test2.arucas");
-/*
-fun schedule(milliseconds, function) {
-    runThreaded(fun(ms, func) { 
-        sleep(ms); 
-        func(); 
-    }, [milliseconds, function]);
-}
 
-schedule(1000, fun() {
-    print("This will print second!");
-});
+listUtils = run(getDirectory() + "/src/test/resources/code/ListUtils.arucas");
+numberUtils = run(getDirectory() + "/src/test/resources/code/NumberUtils.arucas");
+stringUtils = run(getDirectory() + "/src/test/resources/code/StringUtils.arucas");
 
-print("This will print first!");
+shuffle = listUtils.get("shuffle");
+randomI = listUtils.get("random");
+remap = listUtils.get("remap");
+filter = listUtils.get("filter");
+trim = stringUtils.get("trim");
 
-sleep(2000);
+list = [2, 3, 1, 3, 4];
 
-schedule(1000, fun() {
-    string = input("input 2");
-    print(string);
-});
-
-string = input("input 1");
-print(string);
-*/
-/*
-personMap = { };
-
-while (true) {
-    name = input("What is your name?");
-    age = null;
-    while (true) {
-        age = input("How old are you?");
-        try {
-            age = age.toNumber();
-            if (age > 100 or age < 5) 
-                throwRuntimeError("");
-        }
-        catch (e) print("That is an invalid age!");
-        break;
+list = filter(remap(list, fun(value) {
+    if (value == 1) {
+        return "one";
     }
-    personMap.put(name, age);
-    exit = input("Would you like to exit? (y/n)");
-    if (exit == "y")
-        break;
-}
+    if (value == 2) {
+        return "two";
+    }
+}), fun(value) {
+    return value != null;
+});
 
-personMapString = personMap.toString().replaceAll("\\{", "").replaceAll("\\}", "").replaceAll(", ", "\n");
-writeFile(getDirectory() + "/src/test/resources/code/personMap.txt", personMapString);
+print(list);
 
-print("Saved map to file");
-*/
-
-string = "Hi my name is %s%s%s%s";
-
-string = string.formatted(["bonk and I am ", 18, " years old ", []]);
-
-print(string);
-
+print(numberUtils.get("e"));
+print(trim("  hi  my      name is  Sensei"));
