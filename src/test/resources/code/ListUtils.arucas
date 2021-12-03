@@ -9,7 +9,26 @@ fun throwIfNot(value, type) {
 }
 
 return {
-    "remapList" : fun(list, function) {
+    // This returns a value at a random index in the list
+    "random" : fun(list) {
+        throwIfNot(list, "List");
+        if (list.isEmpty()) {
+            return null;
+        }
+        index = random(len(list));
+        return list.getIndex(index);
+    },
+    // This returns a shuffled list
+    "shuffle" : fun(list) {
+        throwIfNot(list, "List");
+        newList = [];
+        foreach (value : list) {
+            newList.insert(value, random(len(newList) + 1));
+        }
+        return newList;
+    },
+    // This returns a remapped list
+    "remap" : fun(list, function) {
         throwIfNot(list, "List");
         throwIfNot(function, "Function");
         newList = [];
@@ -18,7 +37,8 @@ return {
         }
         return newList;
     },
-    "filterList" : fun(list, function) {
+    // This returns a filtered list
+    "filter" : fun(list, function) {
         throwIfNot(list, "List");
         throwIfNot(function, "Function");
         newList = [];
@@ -33,7 +53,8 @@ return {
         }
         return newList;
     },
-    "uniqueList" : fun(list) {
+    // This returns a list with only unique values
+    "unique" : fun(list) {
         throwIfNot(list, "List");
         newList = [];
         foreach (value : list) {
@@ -43,7 +64,8 @@ return {
         }
         return newList;
     },
-    "listSimilarities" : fun(list, otherList) {
+    // This returns a list with values that are in both lists
+    "similarities" : fun(list, otherList) {
         throwIfNot(list, "List");
         throwIfNot(otherList, "List");
         newList = [];
@@ -54,7 +76,8 @@ return {
         }
         return newList;
     },
-    "indexOf" : fun(list, value) {
+    // This return the first index of a value
+    "index" : fun(list, value) {
         throwIfNot(list, "List");
         i = 0;
         while (i < len(list)) {
@@ -65,7 +88,8 @@ return {
         }
         return -1;
     },
-    "indexesOf" : fun(list, value) {
+    // This returns all of the indexes for a value
+    "indexes" : fun(list, value) {
         throwIfNot(list, "List");
         i = 0;
         indexes = [];
