@@ -28,7 +28,8 @@ public class ArucasStringMembers implements IArucasExtension {
 		new MemberFunction("uppercase", this::stringUppercase),
 		new MemberFunction("lowercase", this::stringLowercase),
 		new MemberFunction("toNumber", this::stringToNumber),
-		new MemberFunction("formatted", "values", this::stringFormatted)
+		new MemberFunction("formatted", "values", this::stringFormatted),
+		new MemberFunction("containsString", "otherString", this::stringContainsString)
 	);
 
 	private Value<?> stringToList(Context context, MemberFunction function) throws CodeError {
@@ -81,5 +82,11 @@ public class ArucasStringMembers implements IArucasExtension {
 			i++;
 		}
 		return new StringValue(string);
+	}
+
+	private Value<?> stringContainsString(Context context, MemberFunction function) throws CodeError {
+		String string = function.getParameterValueOfType(context, StringValue.class, 0).value;
+		String otherString = function.getParameterValueOfType(context, StringValue.class, 1).value;
+		return new BooleanValue(string.contains(otherString));
 	}
 }
