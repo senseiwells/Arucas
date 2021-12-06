@@ -56,6 +56,8 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		new BuiltInFunction("createDirectory", "path", this::createDirectory),
 		new BuiltInFunction("doesFileExist", "path", this::doesFileExist),
 		new BuiltInFunction("throwRuntimeError", "message", this::throwRuntimeError),
+		new BuiltInFunction("callFunctionWithList", List.of("function", "argList"), this::callFunctionWithList),
+		new BuiltInFunction("runFromString", "string", this::runFromString),
 
 		// Math functions
 		new BuiltInFunction("sin", "value", this::sin),
@@ -209,6 +211,22 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 	private Value<?> throwRuntimeError(Context context, BuiltInFunction function) throws CodeError {
 		StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
 		throw new RuntimeError(stringValue.value, function.syntaxPosition, context);
+	}
+
+	private Value<?> callFunctionWithList(Context context, BuiltInFunction function) throws CodeError {
+		FunctionValue functionValue = function.getParameterValueOfType(context, FunctionValue.class, 0);
+		List<Value<?>> listValue = function.getParameterValueOfType(context, ListValue.class, 1).value;
+		try {
+			return functionValue.call(context, listValue);
+		}
+		catch (ThrowValue throwValue) {
+			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "Cannot break or continue in a function", function.syntaxPosition);
+		}
+	}
+
+	private Value<?> runFromString(Context context, BuiltInFunction function) throws CodeError {
+		StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
+		return Run.run(context, "string-run", stringValue.value);
 	}
 
 	private Value<?> sin(Context context, BuiltInFunction function) throws CodeError {
