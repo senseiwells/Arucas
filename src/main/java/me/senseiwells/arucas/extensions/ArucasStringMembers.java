@@ -34,7 +34,8 @@ public class ArucasStringMembers implements IArucasValueExtension {
 		new MemberFunction("lowercase", this::stringLowercase),
 		new MemberFunction("toNumber", this::stringToNumber),
 		new MemberFunction("formatted", "values", this::stringFormatted),
-		new MemberFunction("containsString", "otherString", this::stringContainsString)
+		new MemberFunction("containsString", "otherString", this::stringContainsString),
+		new MemberFunction("contains", "otherString", this::stringContainsString)
 	);
 
 	private Value<?> stringToList(Context context, MemberFunction function) throws CodeError {

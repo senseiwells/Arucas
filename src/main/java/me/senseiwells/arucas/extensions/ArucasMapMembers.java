@@ -36,7 +36,8 @@ public class ArucasMapMembers implements IArucasValueExtension {
 		new MemberFunction("putIfAbsent", List.of("key", "value"), this::mapPutIfAbsent),
 		new MemberFunction("putAll", "anotherMap", this::mapPutAll),
 		new MemberFunction("remove", "key", this::mapRemove),
-		new MemberFunction("clear", this::mapClear)
+		new MemberFunction("clear", this::mapClear),
+		new MemberFunction("isEmpty", this::isEmpty)
 	);
 
 	private Value<?> mapGet(Context context, MemberFunction function) throws CodeError {
@@ -121,6 +122,13 @@ public class ArucasMapMembers implements IArucasValueExtension {
 			MapValue mapValue = function.getParameterValueOfType(context, MapValue.class, 0);
 			mapValue.value.clear();
 			return new NullValue();
+		}
+	}
+
+	private BooleanValue isEmpty(Context context, MemberFunction function) throws CodeError {
+		synchronized (MAP_LOCK) {
+			MapValue mapValue = function.getParameterValueOfType(context, MapValue.class, 0);
+			return new BooleanValue(mapValue.value.isEmpty());
 		}
 	}
 }

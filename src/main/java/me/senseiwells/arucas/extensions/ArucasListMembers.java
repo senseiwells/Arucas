@@ -33,7 +33,9 @@ public class ArucasListMembers implements IArucasValueExtension {
 
 	private final Set<MemberFunction> listFunctions = Set.of(
 		new MemberFunction("getIndex", "index", this::getListIndex),
+		new MemberFunction("get", "index", this::getListIndex),
 		new MemberFunction("removeIndex", "index", this::removeListIndex),
+		new MemberFunction("remove", "index", this::removeListIndex),
 		new MemberFunction("append", "value", this::appendList),
 		new MemberFunction("insert", List.of("value", "index"), this::insertList),
 		new MemberFunction("concat", "otherList", this::concatList),
