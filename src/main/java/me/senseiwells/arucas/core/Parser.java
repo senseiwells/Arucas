@@ -15,7 +15,6 @@ import me.senseiwells.arucas.values.functions.MemberFunction;
 import java.util.*;
 
 public class Parser {
-
 	private final List<Token> tokens;
 	private final Context context;
 	private int operatorTokenIndex;
@@ -372,10 +371,27 @@ public class Parser {
 		this.throwIfNotType(Token.Type.LEFT_CURLY_BRACKET, "Expected '{'");
 		this.advance();
 		
+		Node defaultCase = null;
 		Set<Value<?>> allValues = new HashSet<>();
 		Token.Type valueType = null;
 		Map<Node, Set<Value<?>>> cases = new LinkedHashMap<>();
 		while (this.currentToken.type != Token.Type.RIGHT_CURLY_BRACKET) {
+			if (this.currentToken.type == Token.Type.DEFAULT) {
+				if (defaultCase != null) {
+					throw new CodeError(
+						CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Switch statements can only contain one default statement",
+						this.currentToken.syntaxPosition
+					);
+				}
+				
+				this.advance();
+				this.throwIfNotType(Token.Type.POINTER, "Expected '->' but got '%s'".formatted(this.currentToken.content));
+				this.advance();
+				
+				defaultCase = this.statements();
+				continue;
+			}
+			
 			this.throwIfNotType(Token.Type.CASE, "Expected 'case'");
 			this.advance();
 			
@@ -439,7 +455,7 @@ public class Parser {
 		this.throwIfNotType(Token.Type.RIGHT_CURLY_BRACKET, "Expected '}'");
 		ISyntax endPos = this.currentToken.syntaxPosition;
 		this.advance();
-		return new SwitchNode(valueNode, cases, startPos, endPos);
+		return new SwitchNode(valueNode, defaultCase, cases, startPos, endPos);
 	}
 
 	private Node listExpression() throws CodeError {

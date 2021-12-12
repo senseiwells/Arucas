@@ -12,12 +12,14 @@ import java.util.Map;
 import java.util.Set;
 
 public class SwitchNode extends Node {
-	private final Node valueNode;
 	private final Map<Node, Set<Value<?>>> cases;
+	private final Node valueNode;
+	private final Node defaultCase;
 	
-	public SwitchNode(Node valueNode, Map<Node, Set<Value<?>>> cases, ISyntax startPos, ISyntax endPos) {
+	public SwitchNode(Node valueNode, Node defaultCase, Map<Node, Set<Value<?>>> cases, ISyntax startPos, ISyntax endPos) {
 		super(new Token(Token.Type.SWITCH, startPos, endPos));
 		this.valueNode = valueNode;
+		this.defaultCase = defaultCase;
 		this.cases = cases;
 	}
 
@@ -27,14 +29,20 @@ public class SwitchNode extends Node {
 		Value<?> value = this.valueNode.visit(context);
 		
 		try {
+			boolean matched = false;
 			for (Map.Entry<Node, Set<Value<?>>> entry : this.cases.entrySet()) {
 				Set<Value<?>> set = entry.getValue();
 				Node node = entry.getKey();
 				
 				if (set.contains(value)) {
 					node.visit(context);
+					matched = true;
 					break;
 				}
+			}
+			
+			if (!matched && defaultCase != null) {
+				defaultCase.visit(context);
 			}
 		}
 		catch (ThrowValue.Break tv) {

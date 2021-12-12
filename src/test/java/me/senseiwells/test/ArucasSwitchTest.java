@@ -51,4 +51,21 @@ public class ArucasSwitchTest {
 		assertThrows(CodeError.class, () -> ArucasHelper.compile("switch (value) { case 1 -> { } { } }"));
 		assertThrows(CodeError.class, () -> ArucasHelper.compile("switch (value) { }"));
 	}
+	
+	@Test
+	public void testSwitchStatementDefault() {
+		assertEquals("three", ArucasHelper.runSafeFull(
+			"""
+			fun test(value) {
+				switch (value) {
+					case 1 -> return 'one';
+					case 2 -> return 'two';
+					default -> return 'three';
+				}
+				return null;
+			}
+			X = test(4);
+			""", "X"
+		));
+	}
 }

@@ -20,5 +20,6 @@ public interface IArucasValueExtension {
 	/**
 	 * Returns the value type of this extension.
 	 */
-	Class<? extends Value<?>> getValueType();
+	@SuppressWarnings("rawtypes")
+	Class<? extends Value> getValueType();
 }
