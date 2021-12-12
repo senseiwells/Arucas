@@ -14,6 +14,8 @@ public class ContinueNode extends Node {
 
 	@Override
 	public Value<?> visit(Context context) throws CodeError, ThrowValue {
+		// We push a scope to make StackTraces easier to read.
+		context.pushScope(this.syntaxPosition);
 		throw new ThrowValue.Continue();
 	}
 }

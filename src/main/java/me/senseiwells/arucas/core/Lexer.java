@@ -69,6 +69,7 @@ public class Lexer {
 			.addRule(Type.SEMICOLON, i -> i.addString(";"))
 			.addRule(Type.COLON, i -> i.addString(":"))
 			.addRule(Type.COMMA, i -> i.addString(","))
+			.addRule(Type.POINTER, i -> i.addString("->"))
 			
 			// Keywords
 			.addRule(Type.IF, i -> i.addString("if"))
@@ -82,6 +83,8 @@ public class Lexer {
 			.addRule(Type.TRY, i -> i.addString("try"))
 			.addRule(Type.CATCH, i -> i.addString("catch"))
 			.addRule(Type.FOREACH, i -> i.addString("foreach"))
+			.addRule(Type.SWITCH, i -> i.addString("switch"))
+			.addRule(Type.CASE, i -> i.addString("case"))
 
 			// Dot operator
 			.addRule(Type.DOT, i -> i.addString("."))

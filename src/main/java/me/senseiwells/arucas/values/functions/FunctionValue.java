@@ -21,6 +21,14 @@ public abstract class FunctionValue extends Value<String> {
 		this.isDeprecated = isDeprecated;
 	}
 	
+	public String getName() {
+		return this.value;
+	}
+	
+	public int getParameterCount() {
+		return this.argumentNames.size();
+	}
+	
 	private void checkArguments(Context context, List<Value<?>> arguments, List<String> argumentNames) throws CodeError {
 		int argumentSize = arguments == null ? 0 : arguments.size();
 		if (argumentSize > argumentNames.size()) {

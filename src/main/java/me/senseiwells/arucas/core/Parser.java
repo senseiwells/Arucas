@@ -6,14 +6,13 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.nodes.*;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.values.NullValue;
+import me.senseiwells.arucas.values.NumberValue;
+import me.senseiwells.arucas.values.StringValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Parser {
 
@@ -96,7 +95,6 @@ public class Parser {
 				while (this.currentToken.type != Token.Type.RIGHT_CURLY_BRACKET && this.currentToken.type != Token.Type.FINISH);
 
 				this.throwIfNotType(Token.Type.RIGHT_CURLY_BRACKET, "Expected '}'");
-	
 				this.advance();
 			}
 			default -> statements.add(this.statement());
@@ -113,25 +111,27 @@ public class Parser {
 				return this.statements();
 			}
 			case IF -> {
-				return this.ifExpression();
+				return this.ifStatement();
 			}
 			case WHILE -> {
-				return this.whileExpression();
+				return this.whileStatement();
 			}
 			case FUN -> {
 				return this.functionDefinition(false);
 			}
 			case TRY -> {
-				return this.tryExpression();
+				return this.tryStatement();
 			}
 			case FOREACH -> {
-				return this.forEachExpression();
+				return this.forEachStatement();
+			}
+			case SWITCH -> {
+				return this.switchStatement();
 			}
 		}
 		
 		Node node = this.expression();
 		this.throwIfNotType(Token.Type.SEMICOLON, "Expected ; at end of line");
-
 		this.advance();
 		return node;
 	}
@@ -230,7 +230,7 @@ public class Parser {
 		);
 	}
 
-	private Node ifExpression() throws CodeError {
+	private Node ifStatement() throws CodeError {
 		this.advance();
 		this.throwIfNotType(Token.Type.LEFT_BRACKET, "Expected 'if (...)'");
 		Node condition = this.expression();
@@ -247,7 +247,7 @@ public class Parser {
 		return new IfNode(condition, statement, nullNode);
 	}
 
-	private Node whileExpression() throws CodeError {
+	private Node whileStatement() throws CodeError {
 		this.advance();
 		this.throwIfNotType(Token.Type.LEFT_BRACKET, "Expected 'while (...)'");
 		Node condition = this.expression();
@@ -299,7 +299,6 @@ public class Parser {
 			while (this.currentToken.type == Token.Type.COMMA);
 		}
 		this.throwIfNotType(Token.Type.RIGHT_BRACKET, "Expected ',' or ')'");
-
 		this.advance();
 		
 		FunctionNode functionNode = new FunctionNode(functionStartToken, variableNameToken, argumentNameTokens);
@@ -313,7 +312,7 @@ public class Parser {
 		return functionNode;
 	}
 
-	private Node tryExpression() throws CodeError {
+	private Node tryStatement() throws CodeError {
 		this.advance();
 		Node tryStatements = this.statements();
 
@@ -335,7 +334,7 @@ public class Parser {
 		return new TryNode(tryStatements, catchStatements, errorParameterName);
 	}
 
-	private Node forEachExpression() throws CodeError {
+	private Node forEachStatement() throws CodeError {
 		this.advance();
 
 		this.throwIfNotType(Token.Type.LEFT_BRACKET, "Expected '(...)'");
@@ -356,6 +355,91 @@ public class Parser {
 
 		Node statements = this.statements();
 		return new ForNode(member, statements, forParameterName);
+	}
+
+	private Node switchStatement() throws CodeError {
+		ISyntax startPos = this.currentToken.syntaxPosition;
+		this.advance();
+		
+		this.throwIfNotType(Token.Type.LEFT_BRACKET, "Expected '(...)'");
+		this.advance();
+		
+		Node valueNode = expression();
+		
+		this.throwIfNotType(Token.Type.RIGHT_BRACKET, "Expected ')'");
+		this.advance();
+		
+		this.throwIfNotType(Token.Type.LEFT_CURLY_BRACKET, "Expected '{'");
+		this.advance();
+		
+		Set<Value<?>> allValues = new HashSet<>();
+		Token.Type valueType = null;
+		Map<Node, Set<Value<?>>> cases = new LinkedHashMap<>();
+		while (this.currentToken.type != Token.Type.RIGHT_CURLY_BRACKET) {
+			this.throwIfNotType(Token.Type.CASE, "Expected 'case'");
+			this.advance();
+			
+			if (valueType == null) {
+				if (this.currentToken.type == Token.Type.STRING
+				|| this.currentToken.type == Token.Type.NUMBER) {
+					valueType = this.currentToken.type;
+				}
+				else {
+					throw new CodeError(
+						CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Switch statements can only contain numbers and strings",
+						this.currentToken.syntaxPosition
+					);
+				}
+			}
+			
+			Set<Value<?>> values = new HashSet<>();
+			
+			while (true) {
+				Token token = this.currentToken;
+				this.throwIfNotType(valueType, "Expected a value of type '%s' but got '%s'".formatted(valueType, token.type));
+				this.advance();
+				
+				Value<?> value = null;
+				switch (valueType) {
+					case NUMBER -> value = new NumberValue(Double.parseDouble(token.content));
+					case STRING -> {
+						try {
+							value = new StringValue(StringUtils.unescapeString(token.content.substring(1, token.content.length() - 1)));
+						}
+						catch (RuntimeException e) {
+							throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, e.getMessage(), token.syntaxPosition);
+						}
+					}
+				}
+				
+				if (!allValues.add(value)) {
+					// We do not allow multiple cases to have the same condition.
+					throw new CodeError(
+						CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Switch statements can not contain duplicate conditions. '%s'".formatted(token.content),
+						token.syntaxPosition
+					);
+				}
+				
+				values.add(value);
+				
+				if (this.currentToken.type == Token.Type.COMMA) {
+					this.advance();
+					continue;
+				}
+				
+				this.throwIfNotType(Token.Type.POINTER, "Expected '->' but got '%s'".formatted(this.currentToken.content));
+				this.advance();
+				break;
+			}
+			
+			Node caseBody = this.statements();
+			cases.put(caseBody, values);
+		}
+		
+		this.throwIfNotType(Token.Type.RIGHT_CURLY_BRACKET, "Expected '}'");
+		ISyntax endPos = this.currentToken.syntaxPosition;
+		this.advance();
+		return new SwitchNode(valueNode, cases, startPos, endPos);
 	}
 
 	private Node listExpression() throws CodeError {
@@ -511,6 +595,9 @@ public class Parser {
 				this.throwIfNotType(Token.Type.RIGHT_BRACKET, "Expected a ')'");
 			}
 			this.advance();
+			if (!(right instanceof MemberAccessNode)) {
+				throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "%s is not a valid member function name".formatted(right.token.content), right.syntaxPosition);
+			}
 			left = new MemberCallNode(left, right, argumentNodes);
 		}
 		return left;
@@ -521,12 +608,19 @@ public class Parser {
 		switch (token.type) {
 			case IDENTIFIER -> {
 				this.advance();
+				if (isMember) {
+					// Because we are calling a member function there is no way to know the
+					// type of the value we are calling from.
+					// We just have to trust that
+					return new MemberAccessNode(token);
+				}
+				
 				Value<?> value = this.context.getVariable(token.content);
 				if (value == null) {
 					throw new CodeError(CodeError.ErrorType.UNKNOWN_IDENTIFIER, "Could not find '%s'".formatted(token.content), token.syntaxPosition);
 				}
 				
-				if (value instanceof MemberFunction && !isMember) {
+				if (value instanceof MemberFunction) {
 					throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "Members must be called from Values", token.syntaxPosition);
 				}
 				

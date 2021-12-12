@@ -1,6 +1,6 @@
 package me.senseiwells.arucas.extensions;
 
-import me.senseiwells.arucas.api.IArucasExtension;
+import me.senseiwells.arucas.api.IArucasValueExtension;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.Context;
@@ -13,14 +13,19 @@ import me.senseiwells.arucas.values.functions.MemberFunction;
 import java.util.List;
 import java.util.Set;
 
-public class ArucasListMembers implements IArucasExtension {
+public class ArucasListMembers implements IArucasValueExtension {
 	private final Object LIST_LOCK = new Object();
 
 	@Override
 	public Set<MemberFunction> getDefinedFunctions() {
 		return this.listFunctions;
 	}
-
+	
+	@Override
+	public Class<ListValue> getValueType() {
+		return ListValue.class;
+	}
+	
 	@Override
 	public String getName() {
 		return "ListMemberFunctions";
