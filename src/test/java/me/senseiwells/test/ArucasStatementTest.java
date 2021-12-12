@@ -201,7 +201,7 @@ public class ArucasStatementTest {
 				try {
 					X = X + 1;
 				}
-				catch(error) {
+				catch (error) {
 					X = -8;
 				}
 				I = I + 1;
@@ -222,7 +222,7 @@ public class ArucasStatementTest {
 					}
 					X();
 				}
-				catch(error) {
+				catch (error) {
 					X = '1';
 				}
 				I = I + 1;

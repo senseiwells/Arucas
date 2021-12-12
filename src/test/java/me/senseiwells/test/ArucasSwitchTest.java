@@ -38,18 +38,18 @@ public class ArucasSwitchTest {
 	
 	@Test
 	public void testSwitchStatementWrongType() {
-		assertThrows(CodeError.class, () -> ArucasHelper.compile("switch (value) { case 1, '2' -> break; }"));
-		assertThrows(CodeError.class, () -> ArucasHelper.compile("switch (value) { case 1 -> break; case '2' -> break; }"));
-		assertThrows(CodeError.class, () -> ArucasHelper.compile("switch (value) { case 1 -> break; case 1 -> break; }"));
-		assertThrows(CodeError.class, () -> ArucasHelper.compile("switch (value) { case [] -> break; }"));
-		assertThrows(CodeError.class, () -> ArucasHelper.compile("switch (value) { case {} -> break; }"));
+		assertThrows(CodeError.class, () -> ArucasHelper.compile("switch (1) { case 1, '2' -> break; }"));
+		assertThrows(CodeError.class, () -> ArucasHelper.compile("switch (1) { case 1 -> break; case '2' -> break; }"));
+		assertThrows(CodeError.class, () -> ArucasHelper.compile("switch (1) { case 1 -> break; case 1 -> break; }"));
+		assertThrows(CodeError.class, () -> ArucasHelper.compile("switch (1) { case [] -> break; }"));
+		assertThrows(CodeError.class, () -> ArucasHelper.compile("switch (1) { case {} -> break; }"));
 	}
 	
 	@Test
 	public void testSwitchStatementSyntax() {
-		assertThrows(CodeError.class, () -> ArucasHelper.compile("switch (value) { case -> break; }"));
-		assertThrows(CodeError.class, () -> ArucasHelper.compile("switch (value) { case 1 -> { } { } }"));
-		assertThrows(CodeError.class, () -> ArucasHelper.compile("switch (value) { }"));
+		assertThrows(CodeError.class, () -> ArucasHelper.compile("switch (1) { case -> break; }"));
+		assertThrows(CodeError.class, () -> ArucasHelper.compile("switch (1) { case 1 -> { } { } }"));
+		assertEquals("null", ArucasHelper.runSafe("switch (1) { }"));
 	}
 	
 	@Test
@@ -67,5 +67,6 @@ public class ArucasSwitchTest {
 			X = test(4);
 			""", "X"
 		));
+		assertEquals("two", ArucasHelper.runSafeFull("X = 'one'; switch (1) { default -> X = 'two'; }", "X"));
 	}
 }
