@@ -6,7 +6,6 @@ import me.senseiwells.arucas.utils.Position;
 import java.util.Set;
 
 public class Token {
-	
 	public final Type type;
 	public final String content;
 	public final ISyntax syntaxPosition;
@@ -97,9 +96,12 @@ public class Token {
 		TRY,
 		CATCH,
 		FOREACH,
+		SWITCH,
+		CASE,
 
 		// Dot
 		DOT,
+		POINTER
 		;
 
 		public static Set<Type> comparisonTokens = Set.of(

@@ -1,6 +1,6 @@
 package me.senseiwells.arucas.extensions;
 
-import me.senseiwells.arucas.api.IArucasExtension;
+import me.senseiwells.arucas.api.IArucasValueExtension;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.ArucasValueList;
@@ -10,14 +10,19 @@ import me.senseiwells.arucas.values.functions.MemberFunction;
 
 import java.util.*;
 
-public class ArucasMapMembers implements IArucasExtension {
+public class ArucasMapMembers implements IArucasValueExtension {
 	private final Object MAP_LOCK = new Object();
 
 	@Override
 	public Set<MemberFunction> getDefinedFunctions() {
 		return this.mapFunctions;
 	}
-
+	
+	@Override
+	public Class<MapValue> getValueType() {
+		return MapValue.class;
+	}
+	
 	@Override
 	public String getName() {
 		return "MapMemberFunctions";

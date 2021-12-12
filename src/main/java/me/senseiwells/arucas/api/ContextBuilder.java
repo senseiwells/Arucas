@@ -3,21 +3,18 @@ package me.senseiwells.arucas.api;
 import me.senseiwells.arucas.api.impl.ArucasOutput;
 import me.senseiwells.arucas.extensions.*;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.values.*;
-import me.senseiwells.arucas.values.functions.FunctionValue;
 
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 /**
  * Runtime context class of the programming language
  */
 @SuppressWarnings("unused")
 public class ContextBuilder {
-	private final List<Supplier<? extends IArucasExtension>> extensions = new ArrayList<>();
-	private final List<Class<?>> valueList = new ArrayList<>();
+	private final List<Supplier<IArucasExtension>> extensions = new ArrayList<>();
+	private final List<Supplier<IArucasValueExtension>> valueExtensions = new ArrayList<>();
 	private Consumer<String> outputHandler = System.out::print;
 	private boolean suppressDeprecated;
 	private String displayName = "";
@@ -41,56 +38,68 @@ public class ContextBuilder {
 
 	public ContextBuilder addDefaultExtensions() {
 		return this.addExtensions(List.of(
-			ArucasBuiltInExtension::new,
-			ArucasListMembers::new,
-			ArucasNumberMembers::new,
-			ArucasStringMembers::new,
-			ArucasMapMembers::new
+			ArucasBuiltInExtension::new
 		));
 	}
 	
-	public ContextBuilder addExtensions(List<Supplier<? extends IArucasExtension>> extensions) {
+	public ContextBuilder addExtensions(List<Supplier<IArucasExtension>> extensions) {
 		this.extensions.addAll(extensions);
 		return this;
 	}
 
 	@SafeVarargs
-	public final ContextBuilder addExtensions(Supplier<? extends IArucasExtension>... extensions) {
+	public final ContextBuilder addExtensions(Supplier<IArucasExtension>... extensions) {
 		this.extensions.addAll(List.of(extensions));
 		return this;
 	}
 	
-	public ContextBuilder addDefaultValues() {
-		return this.addValues(List.of(
-			StringValue.class,
-			NumberValue.class,
-			MapValue.class,
-			ListValue.class,
-			BooleanValue.class,
-			FunctionValue.class
+	public ContextBuilder addDefaultValueExtensions() {
+		return this.addValueExtensions(List.of(
+			ArucasMapMembers::new,
+			ArucasNumberMembers::new,
+			ArucasListMembers::new,
+			ArucasStringMembers::new,
+			ArucasBuiltInMembers::new
 		));
 	}
 	
-	public ContextBuilder addValues(List<Class<?>> values) {
-		this.valueList.addAll(values);
-		return this;
-	}
-
-	public final ContextBuilder addValues(Class<?>... values) {
-		this.valueList.addAll(List.of(values));
+	public ContextBuilder addValueExtensions(List<Supplier<IArucasValueExtension>> extensions) {
+		this.valueExtensions.addAll(extensions);
 		return this;
 	}
 	
+	@SafeVarargs
+	public final ContextBuilder addValueExtensions(Supplier<IArucasValueExtension>... extensions) {
+		this.valueExtensions.addAll(List.of(extensions));
+		return this;
+	}
+	
+	/**
+	 * Make sure to define extensions before calling this method.
+	 * This method will override all functions defined after this
+	 * call.
+	 */
+	public ContextBuilder addDefault() {
+		return this.addDefaultExtensions()
+			.addDefaultValueExtensions();
+	}
+	
 	public Context build() {
-		List<IArucasExtension> list = this.extensions.stream().map(Supplier::get).collect(Collectors.toList());
+		List<IArucasExtension> extensionList = new ArrayList<>();
+		List<IArucasValueExtension> valueExtensions = new ArrayList<>();
+  
+		for (Supplier<IArucasExtension> supplier : this.extensions) {
+			extensionList.add(supplier.get());
+		}
 		
-		Map<String, Class<?>> valueMap = this.valueList.stream()
-			.collect(Collectors.toMap(clazz -> clazz.getSimpleName().replaceFirst("Value$", ""), i -> i));
+		for (Supplier<IArucasValueExtension> supplier : this.valueExtensions) {
+			valueExtensions.add(supplier.get());
+		}
 		
 		ArucasOutput arucasOutput = new ArucasOutput();
 		arucasOutput.setOutputHandler(this.outputHandler);
 		
-		Context context = new Context(this.displayName, list, valueMap, arucasOutput);
+		Context context = new Context(this.displayName, extensionList, valueExtensions, arucasOutput);
 		context.setSuppressDeprecated(this.suppressDeprecated);
 		return context;
 	}

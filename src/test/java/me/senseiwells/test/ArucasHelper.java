@@ -27,8 +27,7 @@ public class ArucasHelper {
 		Context context = new ContextBuilder()
 			.setDisplayName("root")
 			.setOutputHandler(System.out::print)
-			.addDefaultExtensions()
-			.addDefaultValues()
+			.addDefault()
 			.build();
 		
 		List<Token> tokens = new Lexer(syntax, "").createTokens();

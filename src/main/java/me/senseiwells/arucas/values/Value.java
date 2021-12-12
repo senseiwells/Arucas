@@ -31,7 +31,6 @@ public abstract class Value<T> implements ValueOperations {
 
 	@Override
 	public int hashCode() {
-		// TODO: This could be dangerous for maps inside maps.
 		return this.value.hashCode();
 	}
 

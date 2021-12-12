@@ -2,9 +2,11 @@ package me.senseiwells.arucas.utils;
 
 import me.senseiwells.arucas.api.IArucasExtension;
 import me.senseiwells.arucas.api.IArucasOutput;
+import me.senseiwells.arucas.api.IArucasValueExtension;
 import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.functions.AbstractBuiltInFunction;
+import me.senseiwells.arucas.values.functions.MemberFunction;
 
 import java.util.*;
 
@@ -14,7 +16,7 @@ import java.util.*;
 public class Context {
 	private final Set<String> builtInFunctions;
 	private final List<IArucasExtension> extensions;
-	private final Map<String, Class<?>> valueMap;
+	private final List<IArucasValueExtension> valueExtensions;
 	private final IArucasOutput arucasOutput;
 	
 	private final String displayName;
@@ -23,10 +25,10 @@ public class Context {
 	private boolean isDebug;
 	private boolean suppressDeprecated;
 
-	private Context(String displayName, Context parentContext, List<IArucasExtension> extensions, Map<String, Class<?>> valueMap, IArucasOutput arucasOutput) {
+	private Context(String displayName, Context parentContext, List<IArucasExtension> extensions, List<IArucasValueExtension> valueExtensions, IArucasOutput arucasOutput) {
 		this.builtInFunctions = new HashSet<>();
 		this.extensions = extensions;
-		this.valueMap = valueMap;
+		this.valueExtensions = valueExtensions;
 		this.arucasOutput = arucasOutput;
 		
 		this.displayName = displayName;
@@ -41,8 +43,8 @@ public class Context {
 		}
 	}
 	
-	public Context(String displayName, List<IArucasExtension> extensions, Map<String, Class<?>> valueMap, IArucasOutput arucasOutput) {
-		this(displayName, null, extensions, valueMap, arucasOutput);
+	public Context(String displayName, List<IArucasExtension> extensions, List<IArucasValueExtension> valueExtensions, IArucasOutput arucasOutput) {
+		this(displayName, null, extensions, valueExtensions, arucasOutput);
 	}
 	
 	private Context(Context branch, StackTable stackTable) {
@@ -50,8 +52,8 @@ public class Context {
 		this.stackTable = stackTable;
 		this.arucasOutput = branch.arucasOutput;
 		this.extensions = branch.extensions;
+		this.valueExtensions = branch.valueExtensions;
 		this.builtInFunctions = branch.builtInFunctions;
-		this.valueMap = branch.valueMap;
 		this.parentContext = branch.parentContext;
 	}
 
@@ -74,7 +76,7 @@ public class Context {
 	}
 	
 	public Context createChildContext(String displayName) {
-		return new Context(displayName, this, this.extensions, this.valueMap, this.arucasOutput);
+		return new Context(displayName, this, this.extensions, this.valueExtensions, this.arucasOutput);
 	}
 	
 	/**
@@ -110,6 +112,10 @@ public class Context {
 	
 	public void pushLoopScope(ISyntax syntaxPosition) {
 		this.stackTable = new StackTable(this.stackTable, syntaxPosition, true, true, false);
+	}
+	
+	public void pushSwitchScope(ISyntax syntaxPosition) {
+		this.stackTable = new StackTable(this.stackTable, syntaxPosition, true, false, false);
 	}
 	
 	public void pushFunctionScope(ISyntax syntaxPosition) {
@@ -167,14 +173,25 @@ public class Context {
 		return this.stackTable.get(name);
 	}
 
-	public Class<?> getValueClassFromString(String string) {
-		return this.valueMap.get(string);
-	}
-
 	public void printDeprecated(String message) {
 		if (!this.suppressDeprecated) {
 			this.getOutput().print(message);
 		}
+	}
+	
+	public MemberFunction getMemberFunction(Value<?> value, String methodName, int parameters) {
+		for (IArucasValueExtension extension : this.valueExtensions) {
+			if (extension.getValueType().isInstance(value)) {
+				for (MemberFunction func : extension.getDefinedFunctions()) {
+					if (func.getName().equals(methodName)) {
+						// func.getParameterCount() == parameters
+						return func;
+					}
+				}
+			}
+		}
+		
+		return null;
 	}
 	
 	@Deprecated(forRemoval = true)

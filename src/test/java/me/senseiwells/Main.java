@@ -13,8 +13,7 @@ public class Main {
 	public static void main(String[] args) {
 		Context context = new ContextBuilder()
 			.setDisplayName("System.in")
-			.addDefaultExtensions()
-			.addDefaultValues()
+			.addDefault()
 			.build();
 		
 		while (true) {

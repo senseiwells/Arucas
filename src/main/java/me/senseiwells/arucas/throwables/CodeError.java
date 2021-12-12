@@ -7,7 +7,6 @@ import me.senseiwells.arucas.utils.Position;
 import java.util.Objects;
 
 public class CodeError extends Exception {
-
 	public final ErrorType errorType;
 	public final ISyntax syntaxPosition;
 	
@@ -23,7 +22,7 @@ public class CodeError extends Exception {
 	}
 	
 	public String toString(Context context) {
-		Position startPos = syntaxPosition.getStartPos();
+		Position startPos = this.syntaxPosition.getStartPos();
 		
 		return "%s - '%s'\nFile: %s, Line: %d, Column: %d".formatted(
 			this.errorType.stringName, this.getMessage(),

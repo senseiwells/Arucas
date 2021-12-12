@@ -7,7 +7,7 @@ import me.senseiwells.arucas.values.Value;
 
 public class StringUtils {
 	/**
-	 * Convertes all instances of <code>[\'] [\"] [\\] [\r] [\n] [\b] [\t] [\x..] [&bsol;u....]</code> to the correct character.
+	 * Converts all instances of <code>[\'] [\"] [\\] [\r] [\n] [\b] [\t] [\x..] [&bsol;u....]</code> to the correct character.
 	 */
 	public static String unescapeString(String string) {
 		if (string == null) {
