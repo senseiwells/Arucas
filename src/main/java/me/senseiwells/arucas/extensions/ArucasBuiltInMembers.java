@@ -15,8 +15,9 @@ public class ArucasBuiltInMembers implements IArucasValueExtension {
 	}
 	
 	@Override
-	public Class<Value<?>> getValueType() {
-		return (Class<Value<?>>)(Object)Value.class;
+	@SuppressWarnings("rawtypes")
+	public Class<Value> getValueType() {
+		return Value.class;
 	}
 	
 	@Override

@@ -6,6 +6,7 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowStop;
 import me.senseiwells.arucas.throwables.ThrowValue;
+import me.senseiwells.arucas.utils.ArucasValueList;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.ExceptionUtils;
 import me.senseiwells.arucas.values.*;
@@ -14,6 +15,7 @@ import me.senseiwells.arucas.values.functions.BuiltInFunction;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
@@ -78,7 +80,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 			String fileContent = Files.readString(Path.of(filePath));
 			return Run.run(childContext, filePath, fileContent);
 		}
-		catch (IOException | InvalidPathException e) {
+		catch (IOException | OutOfMemoryError | InvalidPathException e) {
 			throw new RuntimeError("Failed to execute script '%s' \n%s".formatted(filePath, e), function.syntaxPosition, context);
 		}
 	}
@@ -141,7 +143,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 	// This should be overwritten if you are implementing the language
 	private Value<?> runThreaded(Context context, BuiltInFunction function) throws CodeError {
 		FunctionValue functionValue = function.getParameterValueOfType(context, FunctionValue.class, 0);
-		List<Value<?>> list = function.getParameterValueOfType(context, ListValue.class, 1).value;
+		ArucasValueList list = function.getParameterValueOfType(context, ListValue.class, 1).value;
 		Context functionContext = context.createBranch();
 
 		Thread thread = new Thread(() -> {
@@ -160,10 +162,16 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 
 	private Value<?> readFile(Context context, BuiltInFunction function) throws CodeError {
 		StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
-		Path filePath = Path.of(stringValue.value);
+		
 		try {
-			String fileContent = Files.readString(filePath);
+			String fileContent = Files.readString(Path.of(stringValue.value));
 			return new StringValue(fileContent);
+		}
+		catch (OutOfMemoryError e) {
+			throw new RuntimeError("Out of Memory - The file you are trying to read is too large", function.syntaxPosition);
+		}
+		catch (InvalidPathException e) {
+			throw new RuntimeError(e.getMessage(), function.syntaxPosition);
 		}
 		catch (IOException e) {
 			throw new RuntimeError(
@@ -183,7 +191,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 			printWriter.println(writeValue.value);
 			return new NullValue();
 		}
-		catch (IOException e) {
+		catch (FileNotFoundException e) {
 			throw new RuntimeError(
 				"There was an error writing the file: \"%s\"\n%s".formatted(stringValue.value, ExceptionUtils.getStackTrace(e)),
 				function.syntaxPosition,
@@ -194,12 +202,22 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 
 	private Value<?> createDirectory(Context context, BuiltInFunction function) throws CodeError {
 		StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
-		return new BooleanValue(Path.of(stringValue.value).toFile().mkdirs());
+		try {
+			return new BooleanValue(Path.of(stringValue.value).toFile().mkdirs());
+		}
+		catch (InvalidPathException e) {
+			throw new RuntimeError(e.getMessage(), function.syntaxPosition);
+		}
 	}
 
 	private Value<?> doesFileExist(Context context, BuiltInFunction function) throws CodeError {
 		StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
-		return new BooleanValue(Path.of(stringValue.value).toFile().exists());
+		try {
+			return new BooleanValue(Path.of(stringValue.value).toFile().exists());
+		}
+		catch (InvalidPathException e) {
+			throw new RuntimeError(e.getMessage(), function.syntaxPosition);
+		}
 	}
 
 	private Value<?> throwRuntimeError(Context context, BuiltInFunction function) throws CodeError {
@@ -209,7 +227,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 
 	private Value<?> callFunctionWithList(Context context, BuiltInFunction function) throws CodeError {
 		FunctionValue functionValue = function.getParameterValueOfType(context, FunctionValue.class, 0);
-		List<Value<?>> listValue = function.getParameterValueOfType(context, ListValue.class, 1).value;
+		ArucasValueList listValue = function.getParameterValueOfType(context, ListValue.class, 1).value;
 		try {
 			return functionValue.call(context, listValue);
 		}

@@ -98,6 +98,7 @@ public class Token {
 		FOREACH,
 		SWITCH,
 		CASE,
+		DEFAULT,
 
 		// Dot
 		DOT,

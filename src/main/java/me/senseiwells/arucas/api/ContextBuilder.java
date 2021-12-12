@@ -87,7 +87,7 @@ public class ContextBuilder {
 	public Context build() {
 		List<IArucasExtension> extensionList = new ArrayList<>();
 		List<IArucasValueExtension> valueExtensions = new ArrayList<>();
-  
+		
 		for (Supplier<IArucasExtension> supplier : this.extensions) {
 			extensionList.add(supplier.get());
 		}

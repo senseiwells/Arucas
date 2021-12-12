@@ -85,9 +85,11 @@ public class Lexer {
 			.addRule(Type.FOREACH, i -> i.addString("foreach"))
 			.addRule(Type.SWITCH, i -> i.addString("switch"))
 			.addRule(Type.CASE, i -> i.addString("case"))
+			.addRule(Type.DEFAULT, i -> i.addString("default"))
 
 			// Dot operator
 			.addRule(Type.DOT, i -> i.addString("."))
+			.addRule(Type.POINTER, i -> i.addString("->"))
 		;
 	}
 	
