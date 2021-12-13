@@ -6,18 +6,18 @@ import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.StringValue;
 import me.senseiwells.arucas.values.Value;
 
-public class MemberAccessNode extends Node {
-	private final StringValue memberName;
+public class FunctionAccessNode extends Node {
+	private final StringValue functionName;
 	
-	public MemberAccessNode(Token token) {
+	public FunctionAccessNode(Token token) {
 		super(token);
-		this.memberName = new StringValue(token.content);
+		this.functionName = new StringValue(token.content);
 	}
 
 	@Override
 	public Value<?> visit(Context context) throws CodeError {
 		// Because we cannot verify the member name in here we will
 		// return the member name.
-		return this.memberName;
+		return this.functionName;
 	}
 }

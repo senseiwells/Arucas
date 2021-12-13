@@ -10,7 +10,6 @@ import me.senseiwells.arucas.utils.ArucasValueList;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.ExceptionUtils;
 import me.senseiwells.arucas.values.*;
-import me.senseiwells.arucas.values.functions.AbstractBuiltInFunction;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 
@@ -23,7 +22,10 @@ import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.List;
+import java.util.Random;
+import java.util.Scanner;
+import java.util.Set;
 
 public class ArucasBuiltInExtension implements IArucasExtension {
 	private final Scanner scanner = new Scanner(System.in);
@@ -35,11 +37,11 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 	}
 	
 	@Override
-	public Set<? extends AbstractBuiltInFunction<?>> getDefinedFunctions() {
+	public Set<BuiltInFunction> getDefinedFunctions() {
 		return this.builtInFunctions;
 	}
 
-	private final Set<? extends AbstractBuiltInFunction<?>> builtInFunctions = Set.of(
+	private final Set<BuiltInFunction> builtInFunctions = Set.of(
 		new BuiltInFunction("run", "path", this::run),
 		new BuiltInFunction("stop", this::stop),
 		new BuiltInFunction("sleep", "milliseconds", this::sleep),

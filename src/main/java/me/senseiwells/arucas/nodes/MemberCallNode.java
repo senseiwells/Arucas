@@ -25,7 +25,7 @@ public class MemberCallNode extends CallNode {
 		Value<?> memberValue = this.valueNode.visit(context);
 		
 		// The call node is the MemberAccessNode that just contains a string.
-		StringValue memberFunctionName = (StringValue)this.callNode.visit(context);
+		StringValue memberFunctionName = (StringValue) this.callNode.visit(context);
 		
 		// Get the member function with the context calls.
 		MemberFunction memberFunction = context.getMemberFunction(memberValue, memberFunctionName.value, argumentNodes.size() + 1);

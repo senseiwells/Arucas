@@ -8,7 +8,10 @@ import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.functions.AbstractBuiltInFunction;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Runtime context class of the programming language
@@ -38,7 +41,6 @@ public class Context {
 		for (IArucasExtension extension : extensions) {
 			for (AbstractBuiltInFunction<?> function : extension.getDefinedFunctions()) {
 				this.builtInFunctions.add(function.value);
-				this.stackTable.set(function.value, function);
 			}
 		}
 	}
@@ -178,14 +180,25 @@ public class Context {
 			this.getOutput().print(message);
 		}
 	}
+
+	public AbstractBuiltInFunction<?> getBuiltInFunction(String methodName, int parameters) {
+		for (IArucasExtension extension : this.extensions) {
+			for (AbstractBuiltInFunction<?> function : extension.getDefinedFunctions()) {
+				if (function.getName().equals(methodName) && parameters == function.getParameterCount()) {
+					return function;
+				}
+			}
+		}
+
+		return null;
+	}
 	
 	public MemberFunction getMemberFunction(Value<?> value, String methodName, int parameters) {
 		for (IArucasValueExtension extension : this.valueExtensions) {
 			if (extension.getValueType().isInstance(value)) {
-				for (MemberFunction func : extension.getDefinedFunctions()) {
-					if (func.getName().equals(methodName)) {
-						// func.getParameterCount() == parameters
-						return func;
+				for (MemberFunction function : extension.getDefinedFunctions()) {
+					if (function.getName().equals(methodName) && parameters == function.getParameterCount()) {
+						return function;
 					}
 				}
 			}

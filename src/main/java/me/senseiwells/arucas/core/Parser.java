@@ -576,7 +576,13 @@ public class Parser {
 		if (this.currentToken.type != Token.Type.LEFT_BRACKET) {
 			return member;
 		}
-		
+		if (member instanceof StringNode) {
+			throw new CodeError(
+				CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
+				"Cannot call the non function value, String",
+				this.currentToken.syntaxPosition
+			);
+		}
 		this.advance();
 		if (this.currentToken.type != Token.Type.RIGHT_BRACKET) {
 			argumentNodes.add(this.expression());
@@ -611,7 +617,7 @@ public class Parser {
 				this.throwIfNotType(Token.Type.RIGHT_BRACKET, "Expected a ')'");
 			}
 			this.advance();
-			if (!(right instanceof MemberAccessNode)) {
+			if (!(right instanceof FunctionAccessNode)) {
 				throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "%s is not a valid member function name".formatted(right.token.content), right.syntaxPosition);
 			}
 			left = new MemberCallNode(left, right, argumentNodes);
@@ -624,11 +630,14 @@ public class Parser {
 		switch (token.type) {
 			case IDENTIFIER -> {
 				this.advance();
-				if (isMember) {
+				if (isMember || this.context.isBuiltInFunction(token.content)) {
 					// Because we are calling a member function there is no way to know the
 					// type of the value we are calling from.
 					// We just have to trust that
-					return new MemberAccessNode(token);
+
+					// For the case of the built-in function we do not know the number of parameters
+					// We would have to calculate the number of arguments first...
+					return new FunctionAccessNode(token);
 				}
 				
 				Value<?> value = this.context.getVariable(token.content);

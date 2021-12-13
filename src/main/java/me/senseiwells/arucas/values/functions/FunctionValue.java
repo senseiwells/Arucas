@@ -86,7 +86,15 @@ public abstract class FunctionValue extends Value<String> {
 			);
 		}
 	}
-	
+
+	@Override
+	public boolean equals(Object other) {
+		if (other instanceof FunctionValue functionValue) {
+			return this.getParameterCount() == functionValue.getParameterCount() && super.equals(other);
+		}
+		return false;
+	}
+
 	@Override
 	public final FunctionValue copy() {
 		return this;
