@@ -449,7 +449,7 @@ public class Parser {
 		this.advance();
 		Node expression = this.expression();
 		
-		this.context.setVariable(variableName.content, new NullValue());
+		this.context.setVariable(variableName.content, NullValue.NULL);
 		return new VariableAssignNode(variableName, expression);
 	}
 
@@ -469,7 +469,7 @@ public class Parser {
 		this.advance();
 		Node numberNode = new NumberNode(new Token(Token.Type.NUMBER, "1", operatorToken.syntaxPosition));
 		
-		this.context.setVariable(variableName.content, new NullValue());
+		this.context.setVariable(variableName.content, NullValue.NULL);
 		return new VariableAssignNode(variableName,
 			new BinaryOperatorNode(member, new Token(operatorType, operatorToken.syntaxPosition), numberNode)
 		);
@@ -565,7 +565,7 @@ public class Parser {
 				this.throwIfNotType(Token.Type.IDENTIFIER, "Expected Identifier");
 				
 				argumentNameTokens.add(this.currentToken.content);
-				this.context.setLocal(this.currentToken.content, new NullValue());
+				this.context.setLocal(this.currentToken.content, NullValue.NULL);
 				this.advance();
 			}
 			while (this.currentToken.type == Token.Type.COMMA);
@@ -623,7 +623,7 @@ public class Parser {
 
 		this.throwIfNotType(Token.Type.IDENTIFIER, "Expected Identifier");
 		String errorParameterName = this.currentToken.content;
-		this.context.setLocal(errorParameterName, new NullValue());
+		this.context.setLocal(errorParameterName, NullValue.NULL);
 		this.advance();
 
 		this.throwIfNotType(Token.Type.RIGHT_BRACKET, "Expected ')'");
@@ -641,7 +641,7 @@ public class Parser {
 
 		this.throwIfNotType(Token.Type.IDENTIFIER, "Expected Identifier");
 		String forParameterName = this.currentToken.content;
-		this.context.setLocal(forParameterName, new NullValue());
+		this.context.setLocal(forParameterName, NullValue.NULL);
 		this.advance();
 
 		this.throwIfNotType(Token.Type.COLON, "Expected ':'");

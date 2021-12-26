@@ -7,15 +7,22 @@ import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.Context;
 
 public class BooleanValue extends Value<Boolean> {
+	public static BooleanValue
+		TRUE = new BooleanValue(true),
+		FALSE = new BooleanValue(false);
 
-	public BooleanValue(Boolean value) {
+	private BooleanValue(Boolean value) {
 		super(value);
+	}
+
+	public static BooleanValue of(boolean bool) {
+		return bool ? TRUE : FALSE;
 	}
 
 	@Override
 	public BooleanValue isAnd(Context context,  Value<?> other, ISyntax syntaxPosition) throws CodeError {
 		if (other instanceof BooleanValue booleanValue) {
-			return new BooleanValue(this.value && booleanValue.value);
+			return BooleanValue.of(this.value && booleanValue.value);
 		}
 		return super.isAnd(context, other, syntaxPosition);
 	}
@@ -23,7 +30,7 @@ public class BooleanValue extends Value<Boolean> {
 	@Override
 	public BooleanValue isOr(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
 		if (other instanceof BooleanValue booleanValue) {
-			return new BooleanValue(this.value || booleanValue.value);
+			return BooleanValue.of(this.value || booleanValue.value);
 		}
 		return super.isOr(context, other, syntaxPosition);
 	}

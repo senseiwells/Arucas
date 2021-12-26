@@ -8,6 +8,7 @@ import me.senseiwells.arucas.throwables.ThrowStop;
 import me.senseiwells.arucas.utils.ArucasValueList;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.ExceptionUtils;
+import me.senseiwells.arucas.utils.ArucasThreadUtils;
 import me.senseiwells.arucas.values.*;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
 import me.senseiwells.arucas.values.functions.FunctionValue;
@@ -53,10 +54,12 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		new BuiltInFunction("getDirectory", (context, function) -> new StringValue(System.getProperty("user.dir"))),
 		new BuiltInFunction("len", "value", this::len),
 		new BuiltInFunction("runThreaded", List.of("function", "parameters"), this::runThreaded),
+		new BuiltInFunction("stopThread", "threadId", this::stopThread),
 		new BuiltInFunction("readFile", "path", this::readFile),
 		new BuiltInFunction("writeFile", List.of("path", "string"), this::writeFile),
 		new BuiltInFunction("createDirectory", "path", this::createDirectory),
 		new BuiltInFunction("doesFileExist", "path", this::doesFileExist),
+		new BuiltInFunction("getFileList", "path", this::getFileList),
 		new BuiltInFunction("throwRuntimeError", "message", this::throwRuntimeError),
 		new BuiltInFunction("callFunctionWithList", List.of("function", "argList"), this::callFunctionWithList),
 		new BuiltInFunction("runFromString", "string", this::runFromString),
@@ -98,12 +101,12 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		catch (InterruptedException e) {
 			throw new CodeError(CodeError.ErrorType.INTERRUPTED_ERROR, "", function.syntaxPosition);
 		}
-		return new NullValue();
+		return NullValue.NULL;
 	}
 
+		return NullValue.NULL;
 	private Value<?> print(Context context, BuiltInFunction function) throws CodeError {
 		context.getOutput().println(function.getParameterValue(context, 0).getStringValue(context));
-		return new NullValue();
 	}
 
 	private synchronized Value<?> input(Context context, BuiltInFunction function) throws CodeError {
@@ -114,12 +117,12 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 
 	private Value<?> debug(Context context, BuiltInFunction function) throws CodeError {
 		context.setDebug(function.getParameterValueOfType(context, BooleanValue.class, 0).value);
-		return new NullValue();
+		return NullValue.NULL;
 	}
 
 	private Value<?> suppressDeprecated(Context context, BuiltInFunction function) throws CodeError {
 		context.setSuppressDeprecated(function.getParameterValueOfType(context, BooleanValue.class, 0).value);
-		return new NullValue();
+		return NullValue.NULL;
 	}
 
 	private Value<?> random(Context context, BuiltInFunction function) throws CodeError {
@@ -157,21 +160,35 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		});
 		thread.setDaemon(true);
 		thread.start();
-		return new NullValue();
+		ArucasThreadUtils.addThreadToMap(thread.getId(), thread);
+		return new NumberValue(thread.getId());
+	}
+
+	private Value<?> stopThread(Context context, BuiltInFunction function) throws CodeError {
+		long threadId = function.getParameterValueOfType(context, NumberValue.class, 0).value.longValue();
+		Thread thread = ArucasThreadUtils.getThreadById(threadId);
+		if (thread == null) {
+			throw new RuntimeError("No thread with id %d".formatted(threadId), function.syntaxPosition, context);
+		}
+		if (!thread.isAlive()) {
+			throw new RuntimeError("Thread is not alive", function.syntaxPosition, context);
+		}
+		thread.interrupt();
+		return NullValue.NULL;
 	}
 
 	private Value<?> readFile(Context context, BuiltInFunction function) throws CodeError {
 		StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
-		
+
 		try {
 			String fileContent = Files.readString(Path.of(stringValue.value));
 			return new StringValue(fileContent);
 		}
 		catch (OutOfMemoryError e) {
-			throw new RuntimeError("Out of Memory - The file you are trying to read is too large", function.syntaxPosition);
+			throw new RuntimeError("Out of Memory - The file you are trying to read is too large", function.syntaxPosition, context);
 		}
 		catch (InvalidPathException e) {
-			throw new RuntimeError(e.getMessage(), function.syntaxPosition);
+			throw new RuntimeError(e.getMessage(), function.syntaxPosition, context);
 		}
 		catch (IOException e) {
 			throw new RuntimeError(
@@ -189,7 +206,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 
 		try (PrintWriter printWriter = new PrintWriter(filePath)) {
 			printWriter.println(writeValue.value);
-			return new NullValue();
+			return NullValue.NULL;
 		}
 		catch (FileNotFoundException e) {
 			throw new RuntimeError(
@@ -203,20 +220,38 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 	private Value<?> createDirectory(Context context, BuiltInFunction function) throws CodeError {
 		StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
 		try {
-			return new BooleanValue(Path.of(stringValue.value).toFile().mkdirs());
+			return BooleanValue.of(Path.of(stringValue.value).toFile().mkdirs());
 		}
 		catch (InvalidPathException e) {
-			throw new RuntimeError(e.getMessage(), function.syntaxPosition);
+			throw new RuntimeError(e.getMessage(), function.syntaxPosition, context);
 		}
 	}
 
 	private Value<?> doesFileExist(Context context, BuiltInFunction function) throws CodeError {
 		StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
 		try {
-			return new BooleanValue(Path.of(stringValue.value).toFile().exists());
+			return BooleanValue.of(Path.of(stringValue.value).toFile().exists());
 		}
 		catch (InvalidPathException e) {
-			throw new RuntimeError(e.getMessage(), function.syntaxPosition);
+			throw new RuntimeError(e.getMessage(), function.syntaxPosition, context);
+		}
+	}
+
+	private Value<?> getFileList(Context context, BuiltInFunction function) throws CodeError {
+		StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
+		try {
+			File[] files = Path.of(stringValue.value).toFile().listFiles();
+			if (files == null) {
+				throw new RuntimeError("Could not find any files", function.syntaxPosition, context);
+			}
+			ArucasValueList fileList = new ArucasValueList();
+			for (File file : files) {
+				fileList.add(new StringValue(file.getName()));
+			}
+			return new ListValue(fileList);
+		}
+		catch (InvalidPathException e) {
+			throw new RuntimeError(e.getMessage(), function.syntaxPosition, context);
 		}
 	}
 

@@ -18,7 +18,7 @@ public abstract class AbstractBuiltInFunction<S extends AbstractBuiltInFunction<
 
 	public Value<?> getParameterValue(Context context, int index) {
 		Value<?> param = context.getVariable(this.argumentNames.get(index));
-		return param == null ? new NullValue() : param;
+		return param == null ? NullValue.NULL : param;
 	}
 
 	public void checkDeprecated(Context context) {

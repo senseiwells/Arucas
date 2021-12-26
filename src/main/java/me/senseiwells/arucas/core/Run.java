@@ -19,7 +19,7 @@ public class Run {
 			if (context.isDebug()) {
 				context.getOutput().println(value);
 			}
-			return new NullValue();
+			return NullValue.NULL;
 		}
 		catch (ThrowValue.Return tv) {
 			return tv.returnValue;

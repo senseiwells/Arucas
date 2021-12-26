@@ -45,13 +45,13 @@ public interface ValueOperations {
 		throw new RuntimeError("The operation 'NOT' cannot be applied to %s".formatted(this.getStringValue(context)), syntaxPosition, context);
 	}
 
-	default BooleanValue isEqual(Value<?> other) {
-		return new BooleanValue(this.equals(other));
-	}
+    default BooleanValue isEqual(Value<?> other) {
+        return BooleanValue.of(this.equals(other));
+    }
 
-	default BooleanValue isNotEqual(Value<?> other) {
-		return new BooleanValue(!this.equals(other));
-	}
+    default BooleanValue isNotEqual(Value<?> other) {
+        return BooleanValue.of(!this.equals(other));
+    }
 
 	String getStringValue(Context context) throws CodeError;
 

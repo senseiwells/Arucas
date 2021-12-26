@@ -9,7 +9,9 @@ import me.senseiwells.arucas.values.functions.MemberFunction;
 import java.util.Set;
 
 public class NullValue extends Value<Object> {
-	public NullValue() {
+	public static NullValue NULL = new NullValue();
+
+	private NullValue() {
 		super(null);
 	}
 

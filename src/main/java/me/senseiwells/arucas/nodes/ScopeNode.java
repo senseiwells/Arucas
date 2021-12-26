@@ -27,6 +27,6 @@ public class ScopeNode extends Node {
 		}
 		
 		context.popScope();
-		return new NullValue();
+		return NullValue.NULL;
 	}
 }

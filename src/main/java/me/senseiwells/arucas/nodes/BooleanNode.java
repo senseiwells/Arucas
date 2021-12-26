@@ -10,7 +10,7 @@ public class BooleanNode extends Node {
 
 	public BooleanNode(Token token) {
 		super(token);
-		this.value = new BooleanValue(Boolean.parseBoolean(token.content));
+		this.value = BooleanValue.of(Boolean.parseBoolean(token.content));
 	}
 
 	@Override
