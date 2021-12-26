@@ -48,7 +48,7 @@ public class ArucasMapMembers implements IArucasValueExtension {
 				throw new RuntimeError("Cannot get null from a map", function.syntaxPosition, context);
 			}
 			Value<?> value = mapValue.value.get(key);
-			return value == null ? new NullValue() : value.newCopy();
+			return value == null ? NullValue.NULL : value.newCopy();
 		}
 	}
 
@@ -79,7 +79,7 @@ public class ArucasMapMembers implements IArucasValueExtension {
 				throw new RuntimeError("Cannot put null into a map", function.syntaxPosition, context);
 			}
 			Value<?> returnValue = mapValue.value.put(key, value);
-			return returnValue == null ? new NullValue() : returnValue.newCopy();
+			return returnValue == null ? NullValue.NULL : returnValue.newCopy();
 		}
 	}
 
@@ -92,7 +92,7 @@ public class ArucasMapMembers implements IArucasValueExtension {
 				throw new RuntimeError("Cannot put null into a map", function.syntaxPosition, context);
 			}
 			Value<?> returnValue = mapValue.value.putIfAbsent(key, value);
-			return returnValue == null ? new NullValue() : returnValue.newCopy();
+			return returnValue == null ? NullValue.NULL : returnValue.newCopy();
 		}
 	}
 
@@ -101,7 +101,7 @@ public class ArucasMapMembers implements IArucasValueExtension {
 			MapValue mapValue = function.getParameterValueOfType(context, MapValue.class, 0);
 			MapValue anotherMapValue = function.getParameterValueOfType(context, MapValue.class, 1);
 			mapValue.value.putAll(anotherMapValue.value);
-			return new NullValue();
+			return NullValue.NULL;
 		}
 	}
 
@@ -113,7 +113,7 @@ public class ArucasMapMembers implements IArucasValueExtension {
 				throw new RuntimeError("Cannot remove null from a map", function.syntaxPosition, context);
 			}
 			Value<?> removedValue = mapValue.value.remove(key);
-			return removedValue == null ? new NullValue() : removedValue.newCopy();
+			return removedValue == null ? NullValue.NULL : removedValue.newCopy();
 		}
 	}
 
@@ -121,14 +121,14 @@ public class ArucasMapMembers implements IArucasValueExtension {
 		synchronized (MAP_LOCK) {
 			MapValue mapValue = function.getParameterValueOfType(context, MapValue.class, 0);
 			mapValue.value.clear();
-			return new NullValue();
+			return NullValue.NULL;
 		}
 	}
 
 	private BooleanValue isEmpty(Context context, MemberFunction function) throws CodeError {
 		synchronized (MAP_LOCK) {
 			MapValue mapValue = function.getParameterValueOfType(context, MapValue.class, 0);
-			return new BooleanValue(mapValue.value.isEmpty());
+			return BooleanValue.of(mapValue.value.isEmpty());
 		}
 	}
 }

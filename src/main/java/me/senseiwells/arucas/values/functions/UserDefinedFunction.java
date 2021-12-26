@@ -24,6 +24,6 @@ public class UserDefinedFunction extends FunctionValue {
 	public Value<?> execute(Context context, List<Value<?>> arguments) throws CodeError, ThrowValue {
 		this.checkAndPopulateArguments(context, arguments, this.argumentNames);
 		this.bodyNode.visit(context);
-		return new NullValue();
+		return NullValue.NULL;
 	}
 }

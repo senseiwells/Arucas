@@ -35,6 +35,6 @@ public class TryNode extends Node {
 			this.catchNode.visit(context);
 		}
 		context.popScope();
-		return new NullValue();
+		return NullValue.NULL;
 	}
 }

@@ -37,19 +37,19 @@ public class ArucasBuiltInMembers implements IArucasValueExtension {
 		Value<?> value = function.getParameterValue(context, 0);
 		
 		if (stringValue.value.isEmpty()) {
-			return new BooleanValue(false);
+			return BooleanValue.FALSE;
 		}
 		
 		Class<?> clazz = value.getClass();
 		while (clazz != null && clazz != Object.class) {
 			if (clazz.getSimpleName().replaceFirst("Value$", "").equals(stringValue.value)) {
-				return new BooleanValue(true);
+				return BooleanValue.TRUE;
 			}
 			
 			clazz = clazz.getSuperclass();
 		}
 		
-		return new BooleanValue(false);
+		return BooleanValue.FALSE;
 	}
 	
 	private Value<?> getValueType(Context context, MemberFunction function) {

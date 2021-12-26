@@ -31,7 +31,6 @@ return {
     },
     "trim" : fun(string) {
         throwIfNot(string, "String");
-        print(list);
         return string.replaceAll("\\p{javaSpaceChar}[\\p{javaSpaceChar}s\\p{javaSpaceChar}]*\\p{javaSpaceChar}", " ");
     }
 };

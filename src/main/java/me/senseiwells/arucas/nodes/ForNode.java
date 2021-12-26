@@ -53,6 +53,6 @@ public class ForNode extends Node {
 			}
 		}
 		context.popScope();
-		return new NullValue();
+		return NullValue.NULL;
 	}
 }

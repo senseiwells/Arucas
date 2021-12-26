@@ -10,7 +10,7 @@ public class NullNode extends Node {
 
 	public NullNode(Token token) {
 		super(token);
-		this.value = new NullValue();
+		this.value = NullValue.NULL;
 	}
 
 	@Override

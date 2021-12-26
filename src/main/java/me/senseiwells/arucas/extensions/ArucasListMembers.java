@@ -104,7 +104,7 @@ public class ArucasListMembers implements IArucasValueExtension {
 		synchronized (LIST_LOCK) {
 			ListValue listValue = function.getParameterValueOfType(context, ListValue.class, 0);
 			Value<?> value = function.getParameterValue(context, 1);
-			return new BooleanValue(listValue.value.contains(value));
+			return BooleanValue.of(listValue.value.contains(value));
 		}
 	}
 
@@ -112,14 +112,14 @@ public class ArucasListMembers implements IArucasValueExtension {
 		synchronized (LIST_LOCK) {
 			ListValue listValue = function.getParameterValueOfType(context, ListValue.class, 0);
 			ListValue otherList = function.getParameterValueOfType(context, ListValue.class, 1);
-			return new BooleanValue(listValue.value.containsAll(otherList.value));
+			return BooleanValue.of(listValue.value.containsAll(otherList.value));
 		}
 	}
 
 	private BooleanValue isEmpty(Context context, MemberFunction function) throws CodeError {
 		synchronized (LIST_LOCK) {
 			ListValue listValue = function.getParameterValueOfType(context, ListValue.class, 0);
-			return new BooleanValue(listValue.value.isEmpty());
+			return BooleanValue.of(listValue.value.isEmpty());
 		}
 	}
 }

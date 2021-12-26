@@ -43,11 +43,11 @@ public interface ValueOperations {
     }
 
     default BooleanValue isEqual(Value<?> other) {
-        return new BooleanValue(this.equals(other));
+        return BooleanValue.of(this.equals(other));
     }
 
     default BooleanValue isNotEqual(Value<?> other) {
-        return new BooleanValue(!this.equals(other));
+        return BooleanValue.of(!this.equals(other));
     }
 
     private RuntimeError cannotApplyError(String operation, Value<?> other, ISyntax syntaxPosition) {

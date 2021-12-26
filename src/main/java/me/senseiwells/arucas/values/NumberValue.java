@@ -64,7 +64,7 @@ public class NumberValue extends Value<Double> {
 				case LESS_THAN_EQUAL -> this.value <= otherValue.value;
 				default -> false;
 			};
-			return new BooleanValue(bool);
+			return BooleanValue.of(bool);
 		}
 		return super.compareNumber(other, type, syntaxPosition);
 	}

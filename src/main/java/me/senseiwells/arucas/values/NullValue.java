@@ -1,8 +1,9 @@
 package me.senseiwells.arucas.values;
 
 public class NullValue extends Value<Object> {
+	public static NullValue NULL = new NullValue();
 
-	public NullValue() {
+	private NullValue() {
 		super(null);
 	}
 

@@ -183,8 +183,7 @@ public class Context {
 		for (IArucasValueExtension extension : this.valueExtensions) {
 			if (extension.getValueType().isInstance(value)) {
 				for (MemberFunction func : extension.getDefinedFunctions()) {
-					if (func.getName().equals(methodName)) {
-						// func.getParameterCount() == parameters
+					if (func.getName().equals(methodName) && func.getParameterCount() == parameters) {
 						return func;
 					}
 				}

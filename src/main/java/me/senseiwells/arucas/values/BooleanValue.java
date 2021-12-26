@@ -5,15 +5,22 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 
 public class BooleanValue extends Value<Boolean> {
+	public static BooleanValue
+		TRUE = new BooleanValue(true),
+		FALSE = new BooleanValue(false);
 
-	public BooleanValue(Boolean value) {
+	private BooleanValue(Boolean value) {
 		super(value);
+	}
+
+	public static BooleanValue of(boolean bool) {
+		return bool ? TRUE : FALSE;
 	}
 
 	@Override
 	public BooleanValue isAnd(Value<?> other, ISyntax syntaxPosition) throws CodeError {
 		if (other instanceof BooleanValue booleanValue) {
-			return new BooleanValue(this.value && booleanValue.value);
+			return BooleanValue.of(this.value && booleanValue.value);
 		}
 		return super.isAnd(other, syntaxPosition);
 	}
@@ -21,14 +28,14 @@ public class BooleanValue extends Value<Boolean> {
 	@Override
 	public BooleanValue isOr(Value<?> other, ISyntax syntaxPosition) throws CodeError {
 		if (other instanceof BooleanValue booleanValue) {
-			return new BooleanValue(this.value || booleanValue.value);
+			return BooleanValue.of(this.value || booleanValue.value);
 		}
 		return super.isOr(other, syntaxPosition);
 	}
 
 	@Override
 	public BooleanValue not(ISyntax syntaxPosition) throws RuntimeError {
-		return new BooleanValue(!this.value);
+		return BooleanValue.of(!this.value);
 	}
 	
 	@Override

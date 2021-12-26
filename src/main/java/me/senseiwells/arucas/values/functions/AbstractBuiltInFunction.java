@@ -3,7 +3,6 @@ package me.senseiwells.arucas.values.functions;
 import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.values.BooleanValue;
 import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
 
@@ -17,13 +16,9 @@ public abstract class AbstractBuiltInFunction<S extends AbstractBuiltInFunction<
 		this.function = function;
 	}
 
-	public BooleanValue isType(Context context, Class<?> classInstance) {
-		return new BooleanValue(classInstance.isInstance(this.getParameterValue(context, 0)));
-	}
-
 	public Value<?> getParameterValue(Context context, int index) {
 		Value<?> param = context.getVariable(this.argumentNames.get(index));
-		return param == null ? new NullValue() : param;
+		return param == null ? NullValue.NULL : param;
 	}
 
 	public void checkDeprecated(Context context) {

@@ -20,7 +20,7 @@ public class FunctionNode extends Node {
 	}
 	
 	public void complete(Node bodyNode) {
-		// Because recursive calls need access to the this node before
+		// Because recursive calls need access to this node before
 		// it's complete we need to initialize some values later.
 		((MutableSyntaxImpl) this.syntaxPosition).end = bodyNode.syntaxPosition.getEndPos();
 		this.functionValue.complete(bodyNode);

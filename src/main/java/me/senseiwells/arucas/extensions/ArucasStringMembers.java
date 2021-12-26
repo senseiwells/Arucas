@@ -93,6 +93,6 @@ public class ArucasStringMembers implements IArucasValueExtension {
 	private Value<?> stringContainsString(Context context, MemberFunction function) throws CodeError {
 		String string = function.getParameterValueOfType(context, StringValue.class, 0).value;
 		String otherString = function.getParameterValueOfType(context, StringValue.class, 1).value;
-		return new BooleanValue(string.contains(otherString));
+		return BooleanValue.of(string.contains(otherString));
 	}
 }

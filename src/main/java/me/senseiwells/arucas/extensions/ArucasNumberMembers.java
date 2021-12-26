@@ -75,12 +75,12 @@ public class ArucasNumberMembers implements IArucasValueExtension {
 
 	private BooleanValue numberIsInfinite(Context context, MemberFunction function) throws CodeError {
 		NumberValue value = function.getParameterValueOfType(context, NumberValue.class, 0);
-		return new BooleanValue(value.value.isInfinite());
+		return BooleanValue.of(value.value.isInfinite());
 	}
 
 	private BooleanValue numberIsNan(Context context, MemberFunction function) throws CodeError {
 		NumberValue value = function.getParameterValueOfType(context, NumberValue.class, 0);
-		return new BooleanValue(value.value.isNaN());
+		return BooleanValue.of(value.value.isNaN());
 	}
 
 }
