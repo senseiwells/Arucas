@@ -8,9 +8,9 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.values.Value;
 
 import java.util.List;
-import java.util.Objects;
 
 public class ArucasHelper {
 	private static class NodeContext {
@@ -37,7 +37,8 @@ public class ArucasHelper {
 	public static String runUnsafe(String syntax) throws CodeError, ThrowValue {
 		NodeContext nodeContext = compile("_run_value=(fun(){%s})();".formatted(syntax));
 		nodeContext.node.visit(nodeContext.context);
-		return Objects.toString(nodeContext.context.getStackTable().get("_run_value"));
+		Value<?> value = nodeContext.context.getStackTable().get("_run_value");
+		return value == null ? null : value.getStringValue(nodeContext.context);
 	}
 	
 	public static String runSafe(String syntax) {
@@ -53,7 +54,8 @@ public class ArucasHelper {
 	public static String runUnsafeFull(String syntax, String resultVariable) throws CodeError, ThrowValue {
 		NodeContext nodeContext = compile(syntax);
 		nodeContext.node.visit(nodeContext.context);
-		return Objects.toString(nodeContext.context.getStackTable().get(resultVariable));
+		Value<?> value = nodeContext.context.getStackTable().get(resultVariable);
+		return value == null ? null : value.getStringValue(nodeContext.context);
 	}
 	
 	public static String runSafeFull(String syntax, String resultVariable) {

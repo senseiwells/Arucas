@@ -1,5 +1,6 @@
 package me.senseiwells.arucas.utils;
 
+import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.values.Value;
 
@@ -7,6 +8,7 @@ import java.util.*;
 
 public class StackTable {
 	protected final Map<String, Value<?>> symbolMap;
+	protected final Map<String, AbstractClassDefinition> classDefinitions;
 	private final StackTable parentTable;
 	private final ISyntax syntaxPosition;
 	
@@ -16,6 +18,7 @@ public class StackTable {
 	
 	public StackTable(StackTable parent, ISyntax syntaxPosition, boolean canBreak, boolean canContinue, boolean canReturn) {
 		this.symbolMap = new HashMap<>();
+		this.classDefinitions = new HashMap<>();
 		this.parentTable = parent;
 		this.syntaxPosition = syntaxPosition;
 		this.canContinue = canContinue;
@@ -86,11 +89,28 @@ public class StackTable {
 		return null;
 	}
 	
+	public AbstractClassDefinition getClassDefinition(String name) {
+		AbstractClassDefinition definition = this.classDefinitions.get(name);
+		if (definition != null) {
+			return definition;
+		}
+		
+		return this.parentTable != null ? this.parentTable.getClassDefinition(name) : null;
+	}
+
+	public boolean hasClassDefinition(String name) {
+		return this.classDefinitions.containsKey(name);
+	}
+	
+	public void addClassDefinition(AbstractClassDefinition definition) {
+		this.classDefinitions.put(definition.getName(), definition);
+	}
+
 	/**
 	 * Returns the root table.
 	 */
 	public StackTable getRoot() {
-		return this.parentTable != null ? this.parentTable.getRoot():this;
+		return this.parentTable != null ? this.parentTable.getRoot() : this;
 	}
 	
 	public StackTable getParentTable() {
@@ -126,7 +146,31 @@ public class StackTable {
 			}
 		};
 	}
-	
+
+	@Override
+	public int hashCode() {
+		return this.symbolMap.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (this == object) {
+			return true;
+		}
+		if (object instanceof StackTable otherTable) {
+			if (this.symbolMap.size() != otherTable.symbolMap.size()) {
+				return false;
+			}
+			for (Map.Entry<String, Value<?>> entry : this.symbolMap.entrySet()) {
+				if (!otherTable.get(entry.getKey()).equals(entry.getValue())) {
+					return false;
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+
 	@Override
 	public String toString() {
 		return "%s%s".formatted(this.parentTable == null ? "RootTable":"StackTable", this.symbolMap);

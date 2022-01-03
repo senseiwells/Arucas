@@ -8,17 +8,18 @@ import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.values.Value;
 
 import java.util.List;
+import java.util.Set;
 
 public abstract class FunctionValue extends Value<String> {
 	public final List<String> argumentNames;
 	public final ISyntax syntaxPosition;
-	public final boolean isDeprecated;
+	public final String deprecatedMessage;
 	
-	public FunctionValue(String name, ISyntax syntaxPosition, List<String> argumentNames, boolean isDeprecated) {
+	public FunctionValue(String name, ISyntax syntaxPosition, List<String> argumentNames, String deprecatedMessage) {
 		super(name);
 		this.syntaxPosition = syntaxPosition;
 		this.argumentNames = argumentNames;
-		this.isDeprecated = isDeprecated;
+		this.deprecatedMessage = deprecatedMessage;
 	}
 	
 	public String getName() {
@@ -65,8 +66,12 @@ public abstract class FunctionValue extends Value<String> {
 	}
 
 	protected abstract Value<?> execute(Context context, List<Value<?>> arguments) throws CodeError, ThrowValue;
-	
-	public final Value<?> call(Context context, List<Value<?>> arguments) throws CodeError, ThrowValue {
+
+	public final Value<?> call(Context context, List<Value<?>> arguments) throws CodeError {
+		return this.call(context, arguments, true);
+	}
+
+	public final Value<?> call(Context context, List<Value<?>> arguments, boolean returnable) throws CodeError {
 		context.pushFunctionScope(this.syntaxPosition);
 		try {
 			Value<?> value = this.execute(context, arguments);
@@ -74,9 +79,23 @@ public abstract class FunctionValue extends Value<String> {
 			return value;
 		}
 		catch (ThrowValue.Return tv) {
+			if (!returnable) {
+				throw new CodeError(
+					CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
+					"Cannot return here",
+					this.syntaxPosition
+				);
+			}
 			context.moveScope(context.getReturnScope());
 			context.popScope();
 			return tv.returnValue;
+		}
+		catch (ThrowValue tv) {
+			throw new CodeError(
+				CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
+				"Cannot break or continue in a function",
+				this.syntaxPosition
+			);
 		}
 		catch (StackOverflowError e) {
 			throw new CodeError(
@@ -85,6 +104,14 @@ public abstract class FunctionValue extends Value<String> {
 				this.syntaxPosition
 			);
 		}
+	}
+
+	/**
+	 * Functions cannot have functions
+	 */
+	@Override
+	protected final Set<MemberFunction> getDefinedFunctions() {
+		return Set.of();
 	}
 
 	@Override
@@ -101,7 +128,7 @@ public abstract class FunctionValue extends Value<String> {
 	}
 
 	@Override
-	public String toString() {
+	public String getStringValue(Context context) throws CodeError {
 		return "<function %s>".formatted(this.value);
 	}
 }

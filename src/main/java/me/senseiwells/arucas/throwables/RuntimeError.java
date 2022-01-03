@@ -8,7 +8,7 @@ import me.senseiwells.arucas.utils.StackTable;
 import java.util.Iterator;
 
 public class RuntimeError extends CodeError {
-	private Context context;
+	private final Context context;
 	
 	public RuntimeError(String details, ISyntax syntaxHolder, Context context) {
 		super(ErrorType.RUNTIME_ERROR, details, syntaxHolder);
@@ -17,11 +17,6 @@ public class RuntimeError extends CodeError {
 
 	public RuntimeError(String details, ISyntax syntaxHolder) {
 		this(details, syntaxHolder, null);
-	}
-	
-	public RuntimeError setContext(Context context) {
-		this.context = context;
-		return this;
 	}
 
 	private String generateTraceback(Context context) {

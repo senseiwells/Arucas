@@ -16,6 +16,6 @@ public class Position {
 	}
 	
 	public static Position empty() {
-		return emptyPosition;
+		return Position.emptyPosition;
 	}
 }

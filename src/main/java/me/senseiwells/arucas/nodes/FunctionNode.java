@@ -11,31 +11,36 @@ import java.util.List;
 
 public class FunctionNode extends Node {
 	private final Token variableNameToken;
-	public UserDefinedFunction functionValue;
+	private final UserDefinedFunction functionValue;
 
 	public FunctionNode(Token functionToken, Token varNameToken, List<String> argumentNames) {
 		super(varNameToken, new MutableSyntaxImpl(varNameToken.syntaxPosition.getStartPos(), null));
 		this.variableNameToken = varNameToken;
-		this.functionValue = new UserDefinedFunction(varNameToken.content, functionToken.syntaxPosition, argumentNames);
+		this.functionValue = new UserDefinedFunction(varNameToken.content, argumentNames, functionToken.syntaxPosition);
+	}
+
+	public FunctionNode(Token varNameToken, UserDefinedFunction functionValue) {
+		super(varNameToken, new MutableSyntaxImpl(varNameToken.syntaxPosition.getStartPos(), functionValue.syntaxPosition.getEndPos()));
+		this.variableNameToken = varNameToken;
+		this.functionValue = functionValue;
+
 	}
 	
 	public void complete(Node bodyNode) {
-		// Because recursive calls need access to the this node before
-		// it's complete we need to initialize some values later.
+		// Because recursive calls need access to the node before
+		// it's complete we need to initialize some values later
 		((MutableSyntaxImpl) this.syntaxPosition).end = bodyNode.syntaxPosition.getEndPos();
 		this.functionValue.complete(bodyNode);
+	}
+	
+	public UserDefinedFunction getFunctionValue() {
+		return this.functionValue;
 	}
 
 	@Override
 	public Value<?> visit(Context context) throws CodeError {
 		String functionName = this.variableNameToken.content;
-		if (context.isBuiltInFunction(functionName)) {
-			throw new CodeError(
-				CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
-				"Cannot define %s() function as it is a predefined function".formatted(functionName),
-				this.syntaxPosition
-			);
-		}
+		context.throwIfStackNameTaken(null, this.syntaxPosition);
 		
 		context.setVariable(functionName, this.functionValue);
 		return this.functionValue;

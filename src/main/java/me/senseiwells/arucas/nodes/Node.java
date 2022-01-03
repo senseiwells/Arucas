@@ -11,7 +11,7 @@ import me.senseiwells.arucas.values.Value;
 public abstract class Node {
 	public final Token token;
 	public final ISyntax syntaxPosition;
-
+	
 	Node(Token token, Position startPos, Position endPos) {
 		this.token = token;
 		this.syntaxPosition = ISyntax.of(startPos, endPos);
@@ -25,13 +25,25 @@ public abstract class Node {
 		this.token = token;
 		this.syntaxPosition = syntaxPosition;
 	}
-
+	
 	Node(Token token) {
 		this(token, token.syntaxPosition);
 	}
-
+	
 	public abstract Value<?> visit(Context context) throws CodeError, ThrowValue;
-
+	
+	/**
+	 * Returns true if we should keep running.
+	 * @throws CodeError if the application has been interrupted
+	 */
+	protected final boolean keepRunning() throws CodeError {
+		if (Thread.currentThread().isInterrupted()) {
+			throw new CodeError(CodeError.ErrorType.INTERRUPTED_ERROR, "", this.syntaxPosition);
+		}
+		
+		return true;
+	}
+	
 	@Override
 	public String toString() {
 		return this.token.toString();

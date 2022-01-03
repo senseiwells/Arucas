@@ -4,53 +4,78 @@ import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.tokens.Token;
+import me.senseiwells.arucas.utils.Context;
+
+import java.util.Map;
 
 public interface ValueOperations {
-    default BooleanValue isAnd(Value<?> other, ISyntax syntaxPosition) throws CodeError {
-        throw cannotApplyError("AND", other, syntaxPosition);
-    }
+	default BooleanValue isAnd(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
+		throw cannotApplyError(context, "AND", other, syntaxPosition);
+	}
 
-    default BooleanValue isOr(Value<?> other, ISyntax syntaxPosition) throws CodeError {
-        throw cannotApplyError("OR", other, syntaxPosition);
-    }
+	default BooleanValue isOr(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
+		throw cannotApplyError(context, "OR", other, syntaxPosition);
+	}
 
-    default Value<?> addTo(Value<?> other, ISyntax syntaxPosition) throws CodeError {
-        throw cannotApplyError("ADD", other, syntaxPosition);
-    }
+	default Value<?> addTo(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
+		throw cannotApplyError(context, "ADD", other, syntaxPosition);
+	}
 
-    default Value<?> subtractBy(Value<?> other, ISyntax syntaxPosition) throws CodeError {
-        throw cannotApplyError("SUBTRACT", other, syntaxPosition);
-    }
+	default Value<?> subtractBy(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
+		throw cannotApplyError(context, "SUBTRACT", other, syntaxPosition);
+	}
 
-    default Value<?> multiplyBy(Value<?> other, ISyntax syntaxPosition) throws CodeError {
-        throw cannotApplyError("MULTIPLY", other, syntaxPosition);
-    }
+	default Value<?> multiplyBy(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
+		throw cannotApplyError(context, "MULTIPLY", other, syntaxPosition);
+	}
 
-    default Value<?> divideBy(Value<?> other, ISyntax syntaxPosition) throws CodeError {
-        throw cannotApplyError("DIVIDE", other, syntaxPosition);
-    }
+	default Value<?> divideBy(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
+		throw cannotApplyError(context, "DIVIDE", other, syntaxPosition);
+	}
 
-    default Value<?> powerBy(Value<?> other, ISyntax syntaxPosition) throws CodeError {
-        throw cannotApplyError("POWER", other, syntaxPosition);
-    }
+	default Value<?> powerBy(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
+		throw cannotApplyError(context, "POWER", other, syntaxPosition);
+	}
 
-    default BooleanValue compareNumber(Value<?> other, Token.Type type, ISyntax syntaxPosition) throws CodeError {
-        throw cannotApplyError(type.toString(), other, syntaxPosition);
-    }
+	default BooleanValue compareNumber(Context context, Value<?> other, Token.Type type, ISyntax syntaxPosition) throws CodeError {
+		throw cannotApplyError(context, type.toString(), other, syntaxPosition);
+	}
 
-    default BooleanValue not(ISyntax syntaxPosition) throws CodeError {
-        throw new RuntimeError("The operation 'NOT' cannot be applied to %s".formatted(this), syntaxPosition);
-    }
+	default BooleanValue not(Context context, ISyntax syntaxPosition) throws CodeError {
+		throw new RuntimeError("The operation 'NOT' cannot be applied to %s".formatted(this.getStringValue(context)), syntaxPosition, context);
+	}
 
-    default BooleanValue isEqual(Value<?> other) {
-        return new BooleanValue(this.equals(other));
-    }
+	default BooleanValue isEqual(Value<?> other) {
+		return new BooleanValue(this.equals(other));
+	}
 
-    default BooleanValue isNotEqual(Value<?> other) {
-        return new BooleanValue(!this.equals(other));
-    }
+	default BooleanValue isNotEqual(Value<?> other) {
+		return new BooleanValue(!this.equals(other));
+	}
 
-    private RuntimeError cannotApplyError(String operation, Value<?> other, ISyntax syntaxPosition) {
-        return new RuntimeError("The operation '%s' cannot be applied to %s and %s".formatted(operation, this, other), syntaxPosition);
-    }
+	String getStringValue(Context context) throws CodeError;
+
+	private RuntimeError cannotApplyError(Context context, String operation, Value<?> other, ISyntax syntaxPosition) throws CodeError {
+		return new RuntimeError("The operation '%s' cannot be applied to %s and %s".formatted(
+			operation,
+			this.getStringValue(context),
+			other.getStringValue(context)),
+			syntaxPosition,
+			context
+		);
+	}
+
+	Map<Token.Type, Integer> overridableOperatorTokens = Map.ofEntries(
+		Map.entry(Token.Type.PLUS, 2),
+		Map.entry(Token.Type.MINUS, 2),
+		Map.entry(Token.Type.MULTIPLY, 2),
+		Map.entry(Token.Type.DIVIDE, 2),
+		Map.entry(Token.Type.POWER, 2),
+		Map.entry(Token.Type.LESS_THAN, 2),
+		Map.entry(Token.Type.LESS_THAN_EQUAL, 2),
+		Map.entry(Token.Type.MORE_THAN, 2),
+		Map.entry(Token.Type.MORE_THAN_EQUAL, 2),
+		Map.entry(Token.Type.EQUALS, 2),
+		Map.entry(Token.Type.NOT, 1)
+	);
 }

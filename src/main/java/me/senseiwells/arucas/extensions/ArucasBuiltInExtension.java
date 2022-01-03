@@ -5,7 +5,6 @@ import me.senseiwells.arucas.core.Run;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowStop;
-import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.ArucasValueList;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.ExceptionUtils;
@@ -63,15 +62,15 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		new BuiltInFunction("runFromString", "string", this::runFromString),
 
 		// Math functions
-		new BuiltInFunction("sin", "value", this::sin),
-		new BuiltInFunction("cos", "value", this::cos),
-		new BuiltInFunction("tan", "value", this::tan),
-		new BuiltInFunction("arcsin", "value", this::arcsin),
-		new BuiltInFunction("arccos", "value", this::arccos),
-		new BuiltInFunction("arctan", "value", this::arctan),
-		new BuiltInFunction("cosec", "value", this::cosec),
-		new BuiltInFunction("sec", "value", this::sec),
-		new BuiltInFunction("cot", "value", this::cot)
+		new BuiltInFunction("sin", "value", this::sin, "Use 'Math.sin(num)'"),
+		new BuiltInFunction("cos", "value", this::cos, "Use 'Math.cos(num)'"),
+		new BuiltInFunction("tan", "value", this::tan, "Use 'Math.tan(num)'"),
+		new BuiltInFunction("arcsin", "value", this::arcsin, "Use 'Math.arcsin(num)'"),
+		new BuiltInFunction("arccos", "value", this::arccos, "Use 'Math.arccos(num)'"),
+		new BuiltInFunction("arctan", "value", this::arctan, "Use 'Math.arctan(num)'"),
+		new BuiltInFunction("cosec", "value", this::cosec, "Use 'Math.cosec(num)'"),
+		new BuiltInFunction("sec", "value", this::sec, "Use 'Math.sec(num)'"),
+		new BuiltInFunction("cot", "value", this::cot, "Use 'Math.cot(num)'")
 	);
 
 	private Value<?> run(Context context, BuiltInFunction function) throws CodeError {
@@ -102,8 +101,8 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		return new NullValue();
 	}
 
-	private Value<?> print(Context context, BuiltInFunction function) {
-		context.getOutput().println(function.getParameterValue(context, 0));
+	private Value<?> print(Context context, BuiltInFunction function) throws CodeError {
+		context.getOutput().println(function.getParameterValue(context, 0).getStringValue(context));
 		return new NullValue();
 	}
 
@@ -155,7 +154,6 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 			catch (CodeError e) {
 				context.getOutput().printf("An error occurred in a separate thread: %s\n", e.toString(functionContext));
 			}
-			catch (ThrowValue ignored) { }
 		});
 		thread.setDaemon(true);
 		thread.start();
@@ -230,12 +228,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 	private Value<?> callFunctionWithList(Context context, BuiltInFunction function) throws CodeError {
 		FunctionValue functionValue = function.getParameterValueOfType(context, FunctionValue.class, 0);
 		ArucasValueList listValue = function.getParameterValueOfType(context, ListValue.class, 1).value;
-		try {
-			return functionValue.call(context, listValue);
-		}
-		catch (ThrowValue throwValue) {
-			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "Cannot break or continue in a function", function.syntaxPosition);
-		}
+		return functionValue.call(context, listValue);
 	}
 
 	private Value<?> runFromString(Context context, BuiltInFunction function) throws CodeError {
@@ -275,16 +268,16 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 
 	private Value<?> cosec(Context context, BuiltInFunction function) throws CodeError {
 		NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 0);
-		return new NumberValue(1/Math.sin(numberValue.value));
+		return new NumberValue(1 / Math.sin(numberValue.value));
 	}
 
 	private Value<?> sec(Context context, BuiltInFunction function) throws CodeError {
 		NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 0);
-		return new NumberValue(1/Math.cos(numberValue.value));
+		return new NumberValue(1 / Math.cos(numberValue.value));
 	}
 
 	private Value<?> cot(Context context, BuiltInFunction function) throws CodeError {
 		NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 0);
-		return new NumberValue(1/Math.tan(numberValue.value));
+		return new NumberValue(1 / Math.tan(numberValue.value));
 	}
 }

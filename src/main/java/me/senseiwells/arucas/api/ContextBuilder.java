@@ -3,6 +3,8 @@ package me.senseiwells.arucas.api;
 import me.senseiwells.arucas.api.impl.ArucasOutput;
 import me.senseiwells.arucas.extensions.*;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.values.*;
+import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -14,7 +16,7 @@ import java.util.function.Supplier;
 @SuppressWarnings("unused")
 public class ContextBuilder {
 	private final List<Supplier<IArucasExtension>> extensions = new ArrayList<>();
-	private final List<Supplier<IArucasValueExtension>> valueExtensions = new ArrayList<>();
+	private final List<Supplier<ArucasClassExtension>> classes = new ArrayList<>();
 	private Consumer<String> outputHandler = System.out::print;
 	private boolean suppressDeprecated;
 	private String displayName = "";
@@ -53,24 +55,26 @@ public class ContextBuilder {
 		return this;
 	}
 	
-	public ContextBuilder addDefaultValueExtensions() {
-		return this.addValueExtensions(List.of(
-			ArucasMapMembers::new,
-			ArucasNumberMembers::new,
-			ArucasListMembers::new,
-			ArucasStringMembers::new,
-			ArucasBuiltInMembers::new
-		));
+	public ContextBuilder addDefaultClasses() {
+		return this.addClases(
+			StringValue.ArucasStringClass::new,
+			BooleanValue.ArucasBooleanClass::new,
+			ListValue.ArucasListClass::new,
+			MapValue.ArucasMapClass::new,
+			NullValue.ArucasNullClass::new,
+			NumberValue.ArucasNumberClass::new,
+			ArucasMathClass::new
+		);
 	}
 	
-	public ContextBuilder addValueExtensions(List<Supplier<IArucasValueExtension>> extensions) {
-		this.valueExtensions.addAll(extensions);
+	public ContextBuilder addClasses(List<Supplier<ArucasClassExtension>> extensions) {
+		this.classes.addAll(extensions);
 		return this;
 	}
 	
 	@SafeVarargs
-	public final ContextBuilder addValueExtensions(Supplier<IArucasValueExtension>... extensions) {
-		this.valueExtensions.addAll(List.of(extensions));
+	public final ContextBuilder addClases(Supplier<ArucasClassExtension>... extensions) {
+		this.classes.addAll(List.of(extensions));
 		return this;
 	}
 	
@@ -81,25 +85,25 @@ public class ContextBuilder {
 	 */
 	public ContextBuilder addDefault() {
 		return this.addDefaultExtensions()
-			.addDefaultValueExtensions();
+			.addDefaultClasses();
 	}
 	
 	public Context build() {
 		List<IArucasExtension> extensionList = new ArrayList<>();
-		List<IArucasValueExtension> valueExtensions = new ArrayList<>();
-		
+		List<AbstractClassDefinition> classDefinitions = new ArrayList<>();
+
 		for (Supplier<IArucasExtension> supplier : this.extensions) {
 			extensionList.add(supplier.get());
 		}
-		
-		for (Supplier<IArucasValueExtension> supplier : this.valueExtensions) {
-			valueExtensions.add(supplier.get());
+
+		for (Supplier<ArucasClassExtension> supplier : this.classes) {
+			classDefinitions.add(supplier.get());
 		}
 		
 		ArucasOutput arucasOutput = new ArucasOutput();
 		arucasOutput.setOutputHandler(this.outputHandler);
 		
-		Context context = new Context(this.displayName, extensionList, valueExtensions, arucasOutput);
+		Context context = new Context(this.displayName, extensionList, classDefinitions, arucasOutput);
 		context.setSuppressDeprecated(this.suppressDeprecated);
 		return context;
 	}

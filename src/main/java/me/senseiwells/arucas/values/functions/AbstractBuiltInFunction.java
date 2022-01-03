@@ -3,7 +3,6 @@ package me.senseiwells.arucas.values.functions;
 import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.values.BooleanValue;
 import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
 
@@ -12,13 +11,9 @@ import java.util.List;
 public abstract class AbstractBuiltInFunction<S extends AbstractBuiltInFunction<?>> extends FunctionValue {
 	public final FunctionDefinition<S> function;
 
-	public AbstractBuiltInFunction(String name, List<String> argumentNames, FunctionDefinition<S> function, boolean isDeprecated) {
+	public AbstractBuiltInFunction(String name, List<String> argumentNames, FunctionDefinition<S> function, String isDeprecated) {
 		super(name, ISyntax.emptyOf("Arucas/%s".formatted(name)), argumentNames, isDeprecated);
 		this.function = function;
-	}
-
-	public BooleanValue isType(Context context, Class<?> classInstance) {
-		return new BooleanValue(classInstance.isInstance(this.getParameterValue(context, 0)));
 	}
 
 	public Value<?> getParameterValue(Context context, int index) {
@@ -27,8 +22,8 @@ public abstract class AbstractBuiltInFunction<S extends AbstractBuiltInFunction<
 	}
 
 	public void checkDeprecated(Context context) {
-		if (this.isDeprecated && !context.isSuppressDeprecated()) {
-			context.printDeprecated("The function %s() is deprecated and will be removed in the future!".formatted(this.value));
+		if (this.deprecatedMessage != null && !context.isSuppressDeprecated()) {
+			context.printDeprecated("The function %s() is deprecated and will be removed in the future! %s".formatted(this.value, this.deprecatedMessage));
 		}
 	}
 

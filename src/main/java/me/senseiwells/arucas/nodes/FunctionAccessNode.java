@@ -16,8 +16,7 @@ public class FunctionAccessNode extends Node {
 
 	@Override
 	public Value<?> visit(Context context) throws CodeError {
-		// Because we cannot verify the member name in here we will
-		// return the member name.
+		// Because we cannot verify the member name in here we will return the function name
 		return this.functionName;
 	}
 }

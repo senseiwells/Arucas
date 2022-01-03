@@ -41,8 +41,8 @@ public class SwitchNode extends Node {
 				}
 			}
 			
-			if (!matched && defaultCase != null) {
-				defaultCase.visit(context);
+			if (!matched && this.defaultCase != null) {
+				this.defaultCase.visit(context);
 			}
 		}
 		catch (ThrowValue.Break tv) {

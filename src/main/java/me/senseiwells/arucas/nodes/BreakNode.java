@@ -13,7 +13,7 @@ public class BreakNode extends Node {
 
 	@Override
 	public Value<?> visit(Context context) throws ThrowValue {
-		// We push a new scope to make StackTraces easier to read.
+		// We push a new scope to make StackTraces easier to read
 		context.pushScope(this.syntaxPosition);
 		throw new ThrowValue.Break();
 	}

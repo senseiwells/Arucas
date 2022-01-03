@@ -6,6 +6,6 @@ import me.senseiwells.arucas.values.Value;
 
 public interface FunctionDefinition<T extends AbstractBuiltInFunction<?>> {
 
-	Value<?> execute(Context context, T builtInFunctionValue) throws CodeError;
+	Value<?> execute(Context context, T function) throws CodeError;
 	
 }

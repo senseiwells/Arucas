@@ -99,13 +99,18 @@ public class Token {
 		SWITCH,
 		CASE,
 		DEFAULT,
+		CLASS,
+		THIS,
+		NEW,
+		STATIC,
+		OPERATOR,
 
 		// Dot
 		DOT,
 		POINTER
 		;
 
-		public static Set<Type> comparisonTokens = Set.of(
+		public static final Set<Type> comparisonTokens = Set.of(
 			EQUALS,
 			NOT_EQUALS,
 			LESS_THAN,

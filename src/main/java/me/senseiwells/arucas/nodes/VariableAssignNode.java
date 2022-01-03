@@ -17,9 +17,7 @@ public class VariableAssignNode extends Node {
 	@Override
 	public Value<?> visit(Context context) throws CodeError, ThrowValue {
 		String name = this.token.content;
-		if (context.isBuiltInFunction(name)) {
-			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "Cannot declare variable '%s' as it is a predefined function".formatted(name), this.syntaxPosition);
-		}
+		context.throwIfStackNameTaken(name, this.syntaxPosition);
 		
 		Value<?> value = this.node.visit(context);
 		context.setVariable(name, value);

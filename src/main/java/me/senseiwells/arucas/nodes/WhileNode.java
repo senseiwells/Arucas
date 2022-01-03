@@ -21,7 +21,7 @@ public class WhileNode extends Node {
 	public Value<?> visit(Context context) throws CodeError, ThrowValue {
 		context.pushLoopScope(this.syntaxPosition);
 		
-		while (!Thread.currentThread().isInterrupted()) {
+		while (this.keepRunning()) {
 			Value<?> conditionValue = this.condition.visit(context);
 			if (!(conditionValue instanceof BooleanValue booleanValue)) {
 				throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "Condition must result in either 'true' or 'false'", this.syntaxPosition);

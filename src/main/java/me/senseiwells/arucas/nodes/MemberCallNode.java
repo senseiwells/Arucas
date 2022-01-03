@@ -6,7 +6,8 @@ import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.StringValue;
 import me.senseiwells.arucas.values.Value;
-import me.senseiwells.arucas.values.functions.MemberFunction;
+import me.senseiwells.arucas.values.classes.ArucasClassValue;
+import me.senseiwells.arucas.values.functions.FunctionValue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,31 +22,46 @@ public class MemberCallNode extends CallNode {
 
 	@Override
 	public Value<?> visit(Context context) throws CodeError, ThrowValue {
-		// The value node holds the Value<?> we which to call this member function on.
+		// Throws an error if the thread has been interrupted
+		this.keepRunning();
+		
+		// The value node holds the Value<?> we which to call this member function on
 		Value<?> memberValue = this.valueNode.visit(context);
 		
-		// The call node is the MemberAccessNode that just contains a string.
+		// The call node is the MemberAccessNode that just contains a string
 		StringValue memberFunctionName = (StringValue) this.callNode.visit(context);
 		
-		// Get the member function with the context calls.
-		MemberFunction memberFunction = context.getMemberFunction(memberValue, memberFunctionName.value, argumentNodes.size() + 1);
+		List<Value<?>> argumentValues = new ArrayList<>();
+		FunctionValue function = null;
+		String customClassName = null;
+		if (memberValue instanceof ArucasClassValue classValue) {
+			customClassName = classValue.getName();
+			// Get the class method from the value
+			function = classValue.getMember(memberFunctionName.value, this.argumentNodes.size() + 1);
+		}
 		
-		if (memberFunction == null) {
-			throw new RuntimeError("Member function '%s' was not defined for the value type '%s'".formatted(
+		if (function == null) {
+			// If we had a class value, but we didn't find the member we should search the generic type members
+			function = memberValue.getMember(memberFunctionName.value, this.argumentNodes.size());
+		}
+		
+		if (function == null) {
+			int arguments = this.argumentNodes.size();
+			String parameters = (arguments == 0) ? "":" with %d parameter%s".formatted(arguments, arguments == 1 ? "":"s");
+			throw new RuntimeError("Member function '%s'%s was not defined for the type '%s'".formatted(
 				memberFunctionName,
-				memberValue.getClass().getSimpleName()
+				parameters,
+				customClassName != null ? customClassName : memberValue.getClass().getSimpleName()
 			), this.syntaxPosition, context);
 		}
 
-		List<Value<?>> argumentValues = new ArrayList<>();
-		argumentValues.add(this.valueNode.visit(context));
 		for (Node node : this.argumentNodes) {
 			argumentValues.add(node.visit(context));
 		}
 		
-		// We push a new scope to make StackTraces easier to read.
+		// We push a new scope to make StackTraces easier to read
 		context.pushScope(this.syntaxPosition);
-		Value<?> result = memberFunction.call(context, argumentValues);
+		Value<?> result = function.call(context, argumentValues);
 		context.popScope();
 		return result;
 	}

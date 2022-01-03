@@ -31,13 +31,12 @@ public class ForNode extends Node {
 		final ArucasValueList list = listValue.value;
 		
 		// This for loop must not iterate over the elements in the list with 'for (element : list)'
-		// because this would cause an ConcurrentModificationException.
+		// because this would cause an ConcurrentModificationException
 		for (int i = 0; i < list.size(); i++) {
-			if (Thread.currentThread().isInterrupted()) {
-				break;
-			}
+			// Throws an error if the thread has been interrupted
+			this.keepRunning();
 			
-			// If the list is not synchronized this could cause an IndexOutOfBoundsException.
+			// If the list is not synchronized this could cause an IndexOutOfBoundsException
 			Value<?> value = list.get(i);
 			
 			context.setLocal(this.forParameterName, value);

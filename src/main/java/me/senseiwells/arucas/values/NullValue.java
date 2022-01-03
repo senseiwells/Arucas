@@ -1,7 +1,14 @@
 package me.senseiwells.arucas.values;
 
-public class NullValue extends Value<Object> {
+import me.senseiwells.arucas.api.ArucasClassExtension;
+import me.senseiwells.arucas.throwables.CodeError;
+import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.values.functions.ConstructorFunction;
+import me.senseiwells.arucas.values.functions.MemberFunction;
 
+import java.util.Set;
+
+public class NullValue extends Value<Object> {
 	public NullValue() {
 		super(null);
 	}
@@ -18,7 +25,13 @@ public class NullValue extends Value<Object> {
 	}
 
 	@Override
-	public String toString() {
+	public String getStringValue(Context context) throws CodeError {
 		return "null";
+	}
+
+	public static class ArucasNullClass extends ArucasClassExtension {
+		public ArucasNullClass() {
+			super("Null");
+		}
 	}
 }
