@@ -14,8 +14,12 @@ public interface IArucasOutput {
 	
 	// Declare methods used for printing.
 	void print(Object object);
+
 	void printf(String format, Object... args);
+
 	void printf(Locale locale, String format, Object... args);
+
 	void println();
+
 	void println(Object object);
 }

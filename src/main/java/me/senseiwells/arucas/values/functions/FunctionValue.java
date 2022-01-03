@@ -82,7 +82,7 @@ public abstract class FunctionValue extends Value<String> {
 			if (!returnable) {
 				throw new CodeError(
 					CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
-					"Cannot return here",
+					tv.getMessage(),
 					this.syntaxPosition
 				);
 			}
@@ -93,7 +93,7 @@ public abstract class FunctionValue extends Value<String> {
 		catch (ThrowValue tv) {
 			throw new CodeError(
 				CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
-				"Cannot break or continue in a function",
+				tv.getMessage(),
 				this.syntaxPosition
 			);
 		}

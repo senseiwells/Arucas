@@ -96,6 +96,7 @@ public class Token {
 		TRY,
 		CATCH,
 		FOREACH,
+		FOR,
 		SWITCH,
 		CASE,
 		DEFAULT,

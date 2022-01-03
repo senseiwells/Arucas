@@ -1,5 +1,6 @@
 package me.senseiwells;
 
+import me.senseiwells.arucas.api.ArucasThreadHandler;
 import me.senseiwells.arucas.api.ContextBuilder;
 import me.senseiwells.arucas.core.Run;
 import me.senseiwells.arucas.throwables.CodeError;
@@ -14,24 +15,19 @@ public class Main {
 			.setDisplayName("System.in")
 			.addDefault()
 			.build();
-		
+
+		ArucasThreadHandler.instance
+			.setStopErrorHandler(System.out::println)
+			.setErrorHandler(System.out::println)
+			.setFatalErrorHandler((c, t, s) -> t.printStackTrace());
+
 		while (true) {
 			Scanner scanner = new Scanner(System.in);
 			String line = scanner.nextLine();
 			if (line.trim().equals("")) {
 				continue;
 			}
-
-			try {
-				Run.run(context, "System.in", line);
-			}
-			catch (ThrowStop e) {
-				System.out.println(e.toString(context));
-				break;
-			}
-			catch (CodeError e) {
-				System.out.println(e.toString(context));
-			}
+			ArucasThreadHandler.instance.runOnThread(context, "System.in", line);
 		}
 	}
 }

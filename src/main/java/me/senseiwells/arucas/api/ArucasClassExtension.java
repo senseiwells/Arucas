@@ -26,6 +26,14 @@ public abstract class ArucasClassExtension extends AbstractClassDefinition {
 	public final void initialiseStatics(Context context) { }
 
 	/**
+	 * No members are assignable by default
+	 */
+	@Override
+	public boolean isAssignable(String name) {
+		return false;
+	}
+
+	/**
 	 * This lets you define constructors for a Class
 	 */
 	public Set<ConstructorFunction> getDefinedConstructors() {

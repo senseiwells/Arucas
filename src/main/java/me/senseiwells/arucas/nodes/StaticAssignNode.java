@@ -24,7 +24,7 @@ public class StaticAssignNode extends Node {
 
 		if (!this.classDefinition.hasMember(this.token.content) || !this.classDefinition.setMember(this.token.content, newValue)) {
 			throw new RuntimeError(
-				"The class '%s' does not contain the member variable '%s'".formatted(this.classDefinition.getName(), this.token.content),
+				"The member '%s' cannot be set for '%s'".formatted(this.token.content, this.classDefinition.getName()),
 				this.syntaxPosition,
 				context
 			);

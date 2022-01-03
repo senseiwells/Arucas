@@ -55,7 +55,7 @@ public abstract class AbstractClassDefinition implements MemberOperations {
 	 */
 
 	@Override
-	public final boolean isAssignable(String name) {
+	public boolean isAssignable(String name) {
 		// Only static member variables are modifiable
 		return this.staticMemberVariables.get(name) != null;
 	}

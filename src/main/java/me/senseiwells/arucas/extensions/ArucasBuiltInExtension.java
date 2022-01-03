@@ -1,5 +1,6 @@
 package me.senseiwells.arucas.extensions;
 
+import me.senseiwells.arucas.api.ArucasThreadHandler;
 import me.senseiwells.arucas.api.IArucasExtension;
 import me.senseiwells.arucas.core.Run;
 import me.senseiwells.arucas.throwables.CodeError;
@@ -144,24 +145,13 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		throw new RuntimeError("Cannot pass %s into len()".formatted(value), function.syntaxPosition, context);
 	}
 
-	// This should be overwritten if you are implementing the language
 	private Value<?> runThreaded(Context context, BuiltInFunction function) throws CodeError {
 		FunctionValue functionValue = function.getParameterValueOfType(context, FunctionValue.class, 0);
-		ArucasValueList list = function.getParameterValueOfType(context, ListValue.class, 1).value;
-		Context functionContext = context.createBranch();
-
-		Thread thread = new Thread(() -> {
-			try {
-				functionValue.call(functionContext, list);
-			}
-			catch (CodeError e) {
-				context.getOutput().printf("An error occurred in a separate thread: %s\n", e.toString(functionContext));
-			}
-		});
-		thread.setDaemon(true);
-		thread.start();
-		ArucasThreadUtils.addThreadToMap(thread.getId(), thread);
-		return new NumberValue(thread.getId());
+		List<Value<?>> list = function.getParameterValueOfType(context, ListValue.class, 1).value;
+		Thread thread = ArucasThreadHandler.instance.runBranchAsyncFunction((branchContext) -> functionValue.call(branchContext, list));
+		long threadId = thread.getId();
+		ArucasThreadUtils.addThreadToMap(threadId, thread);
+		return new NumberValue(threadId);
 	}
 
 	private Value<?> stopThread(Context context, BuiltInFunction function) throws CodeError {

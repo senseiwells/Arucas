@@ -129,6 +129,9 @@ public class Parser {
 			case FOREACH -> {
 				return this.forEachStatement();
 			}
+			case FOR -> {
+				return this.forStatement();
+			}
 			case SWITCH -> {
 				return this.switchStatement();
 			}
@@ -653,7 +656,39 @@ public class Parser {
 		this.advance();
 
 		Node statements = this.statements();
-		return new ForNode(member, statements, forParameterName);
+		return new ForeachNode(member, statements, forParameterName);
+	}
+
+	private Node forStatement() throws CodeError {
+		this.advance();
+
+		this.throwIfNotType(Token.Type.LEFT_BRACKET, "Expected '(...)'");
+		this.advance();
+
+		Node initExpression = new NullNode(this.currentToken);
+		if (this.currentToken.type != Token.Type.SEMICOLON) {
+			initExpression = this.expression();
+			this.throwIfNotType(Token.Type.SEMICOLON, "Expected ';'");
+		}
+		this.advance();
+
+		Node condition = new BooleanNode(new Token(Token.Type.BOOLEAN, "true", this.currentToken.syntaxPosition));
+		if (this.currentToken.type != Token.Type.SEMICOLON) {
+			condition = this.expression();
+			this.throwIfNotType(Token.Type.SEMICOLON, "Expected ';'");
+		}
+		this.advance();
+
+		Node endExpression = new NullNode(this.currentToken);
+		if (this.currentToken.type != Token.Type.RIGHT_BRACKET) {
+			endExpression = this.expression();
+			this.throwIfNotType(Token.Type.RIGHT_BRACKET, "Expected ')'");
+		}
+		this.advance();
+
+		Node statements = this.statements();
+
+		return new ForNode(initExpression, condition, endExpression, statements);
 	}
 
 	private Node switchStatement() throws CodeError {

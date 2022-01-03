@@ -2,46 +2,43 @@ package me.senseiwells.arucas.nodes;
 
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
-import me.senseiwells.arucas.utils.ArucasValueList;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.values.ListValue;
+import me.senseiwells.arucas.values.BooleanValue;
 import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
 
 public class ForNode extends Node {
-	private final Node list;
+	private final Node initialExpression;
+	private final Node condition;
+	private final Node endExpression;
 	private final Node body;
-	private final String forParameterName;
 
-	public ForNode(Node list, Node body, String forParameterName) {
-		super(list.token, list.syntaxPosition, body.syntaxPosition);
-		this.list = list;
+	public ForNode(Node initialExpression, Node condition, Node endExpression, Node body) {
+		super(condition.token, initialExpression.syntaxPosition, body.syntaxPosition);
+		this.initialExpression = initialExpression;
+		this.condition = condition;
+		this.endExpression = endExpression;
 		this.body = body;
-		this.forParameterName = forParameterName;
 	}
 
 	@Override
 	public Value<?> visit(Context context) throws CodeError, ThrowValue {
 		context.pushLoopScope(this.syntaxPosition);
-		Value<?> forValue = this.list.visit(context);
-		if (!(forValue instanceof ListValue listValue)) {
-			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "For loop must contain a list", this.syntaxPosition);
-		}
-		
-		final ArucasValueList list = listValue.value;
-		
-		// This for loop must not iterate over the elements in the list with 'for (element : list)'
-		// because this would cause an ConcurrentModificationException
-		for (int i = 0; i < list.size(); i++) {
-			// Throws an error if the thread has been interrupted
-			this.keepRunning();
-			
-			// If the list is not synchronized this could cause an IndexOutOfBoundsException
-			Value<?> value = list.get(i);
-			
-			context.setLocal(this.forParameterName, value);
+
+		this.initialExpression.visit(context);
+		while (this.keepRunning()) {
+			Value<?> conditionValue = this.condition.visit(context);
+			if (!(conditionValue instanceof BooleanValue booleanValue)) {
+				throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "Condition must result in either 'true' or 'false'", this.syntaxPosition);
+			}
+
+			if (!booleanValue.value) {
+				break;
+			}
+
 			try {
 				this.body.visit(context);
+				this.endExpression.visit(context);
 			}
 			catch (ThrowValue.Break tv) {
 				context.moveScope(context.getBreakScope());
@@ -51,6 +48,7 @@ public class ForNode extends Node {
 				context.moveScope(context.getContinueScope());
 			}
 		}
+
 		context.popScope();
 		return NullValue.NULL;
 	}

@@ -18,7 +18,7 @@ public class ArucasClassTest {
 		assertThrows(CodeError.class, () -> ArucasHelper.compile("class Test() { }"));
 		assertThrows(CodeError.class, () -> ArucasHelper.compile("classValue = class Test { }"));
 		assertThrows(CodeError.class, () -> ArucasHelper.compile("class String { }"));
-		assertNull(ArucasHelper.runSafe(
+		assertEquals("null", ArucasHelper.runSafe(
 			"""
 			class Test {
 				static var staticMember;
@@ -34,7 +34,7 @@ public class ArucasClassTest {
 				
 				Test(param1, param2) { }
 				
-				operator + () { }
+				operator + (other) { }
 				
 				operator ! () { }
 			

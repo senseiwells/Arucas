@@ -25,7 +25,7 @@ public class Run {
 			return tv.returnValue;
 		}
 		catch (ThrowValue tv) {
-			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "Cannot use keywords 'break' or 'continue' outside loop", nodeResult.syntaxPosition);
+			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, tv.getMessage(), nodeResult.syntaxPosition);
 		}
 	}
 }

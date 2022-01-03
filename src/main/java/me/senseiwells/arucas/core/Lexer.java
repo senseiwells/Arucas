@@ -82,6 +82,7 @@ public class Lexer {
 			.addRule(Type.TRY, i -> i.addString("try"))
 			.addRule(Type.CATCH, i -> i.addString("catch"))
 			.addRule(Type.FOREACH, i -> i.addString("foreach"))
+			.addRule(Type.FOR, i -> i.addString("for"))
 			.addRule(Type.SWITCH, i -> i.addString("switch"))
 			.addRule(Type.CASE, i -> i.addString("case"))
 			.addRule(Type.DEFAULT, i -> i.addString("default"))

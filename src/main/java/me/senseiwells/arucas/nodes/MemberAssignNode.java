@@ -36,7 +36,7 @@ public class MemberAssignNode extends Node {
 		
 		if (!classValue.hasMember(memberName.value) || !classValue.setMember(memberName.value, newValue)) {
 			throw new RuntimeError(
-				"The class '%s' does not contain the member variable '%s'".formatted(classValue.getClass().getSimpleName(), memberName.value),
+				"The member '%s' cannot be set for '%s'".formatted(memberName.value,classValue.getClass().getSimpleName()),
 				this.syntaxPosition,
 				context
 			);
