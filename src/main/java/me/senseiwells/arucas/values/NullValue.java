@@ -5,7 +5,7 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.utils.Context;
 
 public class NullValue extends Value<Object> {
-	public static NullValue NULL = new NullValue();
+	public static final NullValue NULL = new NullValue();
 
 	private NullValue() {
 		super(null);

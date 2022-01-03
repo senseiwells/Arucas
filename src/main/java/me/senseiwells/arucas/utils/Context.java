@@ -1,5 +1,6 @@
 package me.senseiwells.arucas.utils;
 
+import me.senseiwells.arucas.api.ArucasThreadHandler;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.api.IArucasExtension;
 import me.senseiwells.arucas.api.IArucasOutput;
@@ -14,6 +15,7 @@ import java.util.*;
  * Runtime context class of the programming language
  */
 public class Context {
+	private final ArucasThreadHandler threadHandler;
 	private final Set<String> builtInFunctions;
 	private final List<IArucasExtension> extensions;
 	private final IArucasOutput arucasOutput;
@@ -24,10 +26,11 @@ public class Context {
 	private boolean isDebug;
 	private boolean suppressDeprecated;
 
-	private Context(String displayName, Context parentContext, List<IArucasExtension> extensions, Collection<AbstractClassDefinition> classDefinitions, IArucasOutput arucasOutput) {
+	private Context(String displayName, Context parentContext, List<IArucasExtension> extensions, Collection<AbstractClassDefinition> classDefinitions, ArucasThreadHandler threadHandler, IArucasOutput arucasOutput) {
 		this.builtInFunctions = new HashSet<>();
 		this.extensions = extensions;
 		this.arucasOutput = arucasOutput;
+		this.threadHandler = threadHandler;
 		
 		this.displayName = displayName;
 		this.stackTable = new StackTable();
@@ -44,13 +47,14 @@ public class Context {
 		}
 	}
 	
-	public Context(String displayName, List<IArucasExtension> extensions, Collection<AbstractClassDefinition> classDefinitions, IArucasOutput arucasOutput) {
-		this(displayName, null, extensions, classDefinitions, arucasOutput);
+	public Context(String displayName, List<IArucasExtension> extensions, Collection<AbstractClassDefinition> classDefinitions, ArucasThreadHandler threadHandler, IArucasOutput arucasOutput) {
+		this(displayName, null, extensions, classDefinitions, threadHandler, arucasOutput);
 	}
 	
 	private Context(Context branch, StackTable stackTable) {
 		this.displayName = branch.displayName;
 		this.stackTable = stackTable;
+		this.threadHandler = branch.threadHandler;
 		this.arucasOutput = branch.arucasOutput;
 		this.extensions = branch.extensions;
 		this.builtInFunctions = branch.builtInFunctions;
@@ -76,7 +80,14 @@ public class Context {
 	}
 	
 	public Context createChildContext(String displayName) {
-		return new Context(displayName, this, this.extensions, this.stackTable.getRoot().classDefinitions.values(), this.arucasOutput);
+		return new Context(displayName, this, this.extensions, this.stackTable.getRoot().classDefinitions.values(), this.threadHandler, this.arucasOutput);
+	}
+	
+	/**
+	 * Returns this thread handler
+	 */
+	public ArucasThreadHandler getThreadHandler() {
+		return this.threadHandler;
 	}
 	
 	/**

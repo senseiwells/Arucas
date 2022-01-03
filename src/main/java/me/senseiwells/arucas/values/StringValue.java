@@ -13,10 +13,14 @@ import java.util.Locale;
 import java.util.Set;
 
 public class StringValue extends Value<String> {
-	public StringValue(String value) {
+	private StringValue(String value) {
 		super(value);
 	}
-
+	
+	public static StringValue of(String value) {
+		return new StringValue(value);
+	}
+	
 	@Override
 	public StringValue addTo(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
 		return new StringValue(this.value + other.getStringValue(context));
@@ -75,7 +79,7 @@ public class StringValue extends Value<String> {
 
 	private Value<?> stringToNumber(Context context, MemberFunction function) throws CodeError {
 		try {
-			return new NumberValue(Double.parseDouble(this.value));
+			return NumberValue.of(Double.parseDouble(this.value));
 		}
 		catch (NumberFormatException e) {
 			throw new RuntimeError(

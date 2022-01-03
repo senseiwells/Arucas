@@ -15,10 +15,14 @@ import java.util.Set;
 public class NumberValue extends Value<Double> {
 	private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.############", DecimalFormatSymbols.getInstance(Locale.US));
 	
-	public NumberValue(double value) {
+	private NumberValue(double value) {
 		super(value);
 	}
-
+	
+	public static NumberValue of(double value) {
+		return new NumberValue(value);
+	}
+	
 	@Override
 	public Value<?> addTo(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
 		if (other instanceof NumberValue otherValue) {

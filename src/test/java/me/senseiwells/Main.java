@@ -15,8 +15,8 @@ public class Main {
 			.setDisplayName("System.in")
 			.addDefault()
 			.build();
-
-		ArucasThreadHandler.instance
+		
+		context.getThreadHandler()
 			.setStopErrorHandler(System.out::println)
 			.setErrorHandler(System.out::println)
 			.setFatalErrorHandler((c, t, s) -> t.printStackTrace());
@@ -27,7 +27,7 @@ public class Main {
 			if (line.trim().equals("")) {
 				continue;
 			}
-			ArucasThreadHandler.instance.runOnThread(context, "System.in", line);
+			context.getThreadHandler().runOnThread(context, "System.in", line);
 		}
 	}
 }

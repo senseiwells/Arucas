@@ -10,7 +10,7 @@ public class NumberNode extends Node {
 
 	public NumberNode(Token token) {
 		super(token);
-		this.value = new NumberValue(Double.parseDouble(token.content));
+		this.value = NumberValue.of(Double.parseDouble(token.content));
 	}
 
 	@Override

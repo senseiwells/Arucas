@@ -84,7 +84,7 @@ public abstract class Value<T> implements ValueOperations, MemberOperations {
 			new MemberFunction("getValueType", this::getValueType),
 			new MemberFunction("copy", (context, function) -> this.newCopy()),
 			new MemberFunction("equals", "other", this::equals),
-			new MemberFunction("toString", (context, function) -> new StringValue(this.getStringValue(context)))
+			new MemberFunction("toString", (context, function) -> StringValue.of(this.getStringValue(context)))
 		));
 		return memberFunctions;
 	}
@@ -113,11 +113,11 @@ public abstract class Value<T> implements ValueOperations, MemberOperations {
 
 	private Value<?> getValueType(Context context, MemberFunction function) {
 		if (this instanceof ArucasClassValue classValue) {
-			return new StringValue(classValue.getName());
+			return StringValue.of(classValue.getName());
 		}
 
 		String valueType = this.getClass().getSimpleName().replaceFirst("Value$", "");
-		return new StringValue(valueType);
+		return StringValue.of(valueType);
 	}
 
 	private BooleanValue equals(Context context, MemberFunction function) {

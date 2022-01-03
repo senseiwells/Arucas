@@ -103,7 +103,9 @@ public class ContextBuilder {
 		ArucasOutput arucasOutput = new ArucasOutput();
 		arucasOutput.setOutputHandler(this.outputHandler);
 		
-		Context context = new Context(this.displayName, extensionList, classDefinitions, arucasOutput);
+		ArucasThreadHandler threadHandler = new ArucasThreadHandler();
+		
+		Context context = new Context(this.displayName, extensionList, classDefinitions, threadHandler, arucasOutput);
 		context.setSuppressDeprecated(this.suppressDeprecated);
 		return context;
 	}

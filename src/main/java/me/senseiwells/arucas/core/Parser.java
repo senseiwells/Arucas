@@ -751,10 +751,10 @@ public class Parser {
 				
 				Value<?> value = null;
 				switch (valueType) {
-					case NUMBER -> value = new NumberValue(Double.parseDouble(token.content));
+					case NUMBER -> value = NumberValue.of(Double.parseDouble(token.content));
 					case STRING -> {
 						try {
-							value = new StringValue(StringUtils.unescapeString(token.content.substring(1, token.content.length() - 1)));
+							value = StringValue.of(StringUtils.unescapeString(token.content.substring(1, token.content.length() - 1)));
 						}
 						catch (RuntimeException e) {
 							throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, e.getMessage(), token.syntaxPosition);
@@ -1082,7 +1082,7 @@ public class Parser {
 			case STRING -> {
 				this.advance();
 				try {
-					return new StringNode(token, new StringValue(StringUtils.unescapeString(token.content.substring(1, token.content.length() - 1))));
+					return new StringNode(token, StringValue.of(StringUtils.unescapeString(token.content.substring(1, token.content.length() - 1))));
 				}
 				catch (RuntimeException e) {
 					throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, e.getMessage(), token.syntaxPosition);

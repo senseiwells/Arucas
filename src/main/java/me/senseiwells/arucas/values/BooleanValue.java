@@ -7,11 +7,10 @@ import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.Context;
 
 public class BooleanValue extends Value<Boolean> {
-	public static BooleanValue
-		TRUE = new BooleanValue(true),
-		FALSE = new BooleanValue(false);
+	public static final BooleanValue TRUE = new BooleanValue(true);
+	public static final BooleanValue FALSE = new BooleanValue(false);
 
-	private BooleanValue(Boolean value) {
+	private BooleanValue(boolean value) {
 		super(value);
 	}
 

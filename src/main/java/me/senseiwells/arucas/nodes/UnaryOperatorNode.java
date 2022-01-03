@@ -28,7 +28,7 @@ public class UnaryOperatorNode extends Node {
 				}
 				value = value.not(context, this.syntaxPosition);
 			}
-			case MINUS -> value = value.multiplyBy(context, new NumberValue(-1), this.syntaxPosition);
+			case MINUS -> value = value.multiplyBy(context, NumberValue.of(-1), this.syntaxPosition);
 		}
 		return value;
 	}

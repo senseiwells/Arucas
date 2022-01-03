@@ -31,7 +31,7 @@ public class TryNode extends Node {
 		catch (RuntimeError e) {
 			context.moveScope(originalScope);
 			context.pushScope(this.syntaxPosition);
-			context.setLocal(this.catchParameterName, new StringValue(e.getMessage()));
+			context.setLocal(this.catchParameterName, StringValue.of(e.getMessage()));
 			this.catchNode.visit(context);
 		}
 		context.popScope();
