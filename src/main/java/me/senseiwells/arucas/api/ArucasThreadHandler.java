@@ -4,18 +4,14 @@ import me.senseiwells.arucas.core.Run;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowStop;
 import me.senseiwells.arucas.throwables.ThrowValue;
+import me.senseiwells.arucas.utils.ArucasValueThread;
 import me.senseiwells.arucas.utils.Context;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 @SuppressWarnings({"UnusedReturnValue", "unused"})
 public class ArucasThreadHandler {
 	private final ThreadGroup arucasThreadGroup = new ThreadGroup("Arucas Thread Group");
-	private final Map<Integer, Thread> threadMap;
-	private final AtomicInteger threadCounter;
 
 	private Consumer<String> stopErrorHandler;
 	private Consumer<String> errorHandler;
@@ -30,8 +26,6 @@ public class ArucasThreadHandler {
 		this.errorHandler = System.out::println;
 		this.fatalErrorHandler = (c, t, s) -> t.printStackTrace();
 		this.finalHandler = () -> { };
-		this.threadMap = new HashMap<>();
-		this.threadCounter = new AtomicInteger();
 		this.hasError = false;
 	}
 
@@ -55,7 +49,6 @@ public class ArucasThreadHandler {
 		return this;
 	}
 
-	@Deprecated
 	public synchronized void stop() {
 		if (this.isRunning()) {
 			this.arucasThreadGroup.interrupt();
@@ -73,18 +66,13 @@ public class ArucasThreadHandler {
 		return Thread.currentThread().getThreadGroup() == this.arucasThreadGroup;
 	}
 	
-	public synchronized int runOnThread(Context context, String fileName, String fileContent) {
+	public synchronized ArucasValueThread runOnThread(Context context, String fileName, String fileContent) {
 		// Make sure that this handler belongs to the provided context
-		if (context.getThreadHandler() != this) {
-			return -1;
+		if (context.getThreadHandler() != this || this.isRunning()) {
+			return null;
 		}
-//		if (!this.isRunning()) {
-//			return -1;
-//		}
-		
 		this.hasError = false;
-		final int threadId = this.threadCounter.getAndIncrement();
-		Thread thread = new Thread(this.arucasThreadGroup, () -> {
+		ArucasValueThread thread = new ArucasValueThread(this.arucasThreadGroup, () -> {
 			try {
 				Run.run(context, fileName, fileContent);
 			}
@@ -98,41 +86,32 @@ public class ArucasThreadHandler {
 				this.fatalErrorHandler.accept(context, t, fileContent);
 			}
 			finally {
-				// Make sure we remove this thread from the thread map
-				this.threadMap.remove(threadId);
+				this.stop();
 			}
-		});
+		}, "Arucas Main Thread");
 		thread.setDaemon(true);
 		thread.start();
-		this.threadMap.put(threadId, thread);
-		return threadId;
+		return thread;
 	}
 
-	public synchronized int runAsyncFunctionInContext(Context context, ThrowableConsumer<Context> consumer) {
-		return this.runAsyncFunction(context, consumer);
+	public synchronized ArucasValueThread runAsyncFunctionInContext(Context context, ThrowableConsumer<Context> consumer) {
+		return this.runAsyncFunction(context, consumer, "Arucas Runnable Thread");
 	}
 
-	public synchronized int runBranchAsyncFunction(Context context, ThrowableConsumer<Context> consumer) {
-		return this.runAsyncFunctionInContext(context.createBranch(), consumer);
-	}
-	
-	public synchronized Thread getThreadById(int threadId) {
-		return this.threadMap.get(threadId);
+	public synchronized ArucasValueThread runAsyncFunctionInContext(Context context, ThrowableConsumer<Context> consumer, String threadName) {
+		return this.runAsyncFunction(context, consumer, threadName);
 	}
 
-	private synchronized int runAsyncFunction(final Context context, ThrowableConsumer<Context> consumer) {
+	private synchronized ArucasValueThread runAsyncFunction(final Context context, ThrowableConsumer<Context> consumer, String name) {
 		// Make sure that this handler belongs to the provided context
-		if (context.getThreadHandler() != this) {
-			return -1;
+		if (context.getThreadHandler() != this || !this.isRunning()) {
+			return null;
 		}
-//		if (!this.isRunning()) {
-//			return -1;
-//		}
-		
-		final int threadId = this.threadCounter.getAndIncrement();
-		Thread thread = new Thread(this.arucasThreadGroup, () -> {
+
+		ArucasValueThread thread = new ArucasValueThread(this.arucasThreadGroup, () -> {
 			try {
 				consumer.accept(context);
+				return;
 			}
 			catch (CodeError codeError) {
 				this.tryError(context, codeError);
@@ -143,15 +122,12 @@ public class ArucasThreadHandler {
 			catch (Throwable t) {
 				this.fatalErrorHandler.accept(context, t, "");
 			}
-			finally {
-				// Make sure we remove this thread from the thread map
-				this.threadMap.remove(threadId);
-			}
-		}, "Arucas Runnable Thread");
+			// If an exception happens in a thread it stops the program
+			this.stop();
+		}, name);
 		thread.setDaemon(true);
 		thread.start();
-		this.threadMap.put(threadId, thread);
-		return threadId;
+		return thread;
 	}
 
 	private synchronized void tryError(Context context, CodeError error) {

@@ -43,11 +43,6 @@ public class BooleanValue extends Value<Boolean> {
 	public BooleanValue copy() {
 		return this;
 	}
-	
-	@Override
-	public int hashCode() {
-		return this.value.hashCode();
-	}
 
 	public static class ArucasBooleanClass extends ArucasClassExtension {
 		public ArucasBooleanClass() {

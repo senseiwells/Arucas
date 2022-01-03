@@ -1,1 +1,14 @@
 // run(getDirectory() + "/src/test/resources/code/test2.arucas");
+currentThread = Thread.getCurrentThread();
+
+print(currentThread.getAge());
+
+Thread.runThreaded("My New Thread", fun () {
+    print(Thread.getCurrentThread().getAge());
+    sleep(1000);
+    print(Thread.getCurrentThread().getAge());
+});
+
+sleep(1000);
+
+print(currentThread.getAge());

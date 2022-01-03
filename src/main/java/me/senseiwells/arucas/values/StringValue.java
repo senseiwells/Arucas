@@ -30,11 +30,6 @@ public class StringValue extends Value<String> {
 	public StringValue copy() {
 		return this;
 	}
-	
-	@Override
-	public int hashCode() {
-		return this.value.hashCode();
-	}
 
 	@Override
 	protected Set<MemberFunction> getDefinedFunctions() {

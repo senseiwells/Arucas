@@ -1,10 +1,6 @@
 package me.senseiwells;
 
-import me.senseiwells.arucas.api.ArucasThreadHandler;
 import me.senseiwells.arucas.api.ContextBuilder;
-import me.senseiwells.arucas.core.Run;
-import me.senseiwells.arucas.throwables.CodeError;
-import me.senseiwells.arucas.throwables.ThrowStop;
 import me.senseiwells.arucas.utils.Context;
 
 import java.util.Scanner;

@@ -84,11 +84,6 @@ public class NumberValue extends Value<Double> {
 	}
 	
 	@Override
-	public int hashCode() {
-		return this.value.hashCode();
-	}
-	
-	@Override
 	public String getStringValue(Context context) throws CodeError {
 		return NumberValue.DECIMAL_FORMAT.format(this.value);
 	}

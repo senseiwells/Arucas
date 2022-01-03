@@ -63,6 +63,7 @@ public class ContextBuilder {
 			MapValue.ArucasMapClass::new,
 			NullValue.ArucasNullClass::new,
 			NumberValue.ArucasNumberClass::new,
+			ThreadValue.ArucasThreadClass::new,
 			ArucasMathClass::new
 		);
 	}

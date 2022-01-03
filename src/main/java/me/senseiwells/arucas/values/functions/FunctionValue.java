@@ -8,6 +8,7 @@ import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.values.Value;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public abstract class FunctionValue extends Value<String> {
@@ -112,6 +113,11 @@ public abstract class FunctionValue extends Value<String> {
 	@Override
 	protected final Set<MemberFunction> getDefinedFunctions() {
 		return Set.of();
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.value, this.getParameterCount());
 	}
 
 	@Override

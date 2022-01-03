@@ -93,11 +93,6 @@ public class ArucasClassValue extends Value<ArucasClassDefinition> {
 	}
 
 	@Override
-	public int hashCode() {
-		return this.value.hashCode();
-	}
-
-	@Override
 	public boolean equals(Object other) {
 		if (other instanceof ArucasClassValue otherClass && this.getName().equals(otherClass.getName())) {
 			return this.members.equals(otherClass.members);

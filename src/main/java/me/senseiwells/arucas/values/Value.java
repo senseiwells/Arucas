@@ -52,10 +52,6 @@ public abstract class Value<T> implements ValueOperations, MemberOperations {
 		return this.memberFunctions;
 	}
 
-	/**
-	 * We only care about comparing the value not the position
-	 * So overriding the equals and hashCode methods for maps
-	 */
 	@Override
 	public boolean equals(Object other) {
 		if (!(other instanceof Value<?> otherValue)) {
