@@ -92,23 +92,23 @@ public abstract class Value<T> implements ValueOperations, MemberOperations {
 	private Value<?> instanceOf(Context context, MemberFunction function) throws CodeError {
 		StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
 		if (stringValue.value.isEmpty()) {
-			return new BooleanValue(false);
+			return BooleanValue.FALSE;
 		}
 
 		if (this instanceof ArucasClassValue classValue) {
-			return new BooleanValue(classValue.getName().equals(stringValue.value));
+			return BooleanValue.of(classValue.getName().equals(stringValue.value));
 		}
 
 		Class<?> clazz = this.getClass();
 		while (clazz != null && clazz != Object.class) {
 			if (clazz.getSimpleName().replaceFirst("Value$", "").equals(stringValue.value)) {
-				return new BooleanValue(true);
+				return BooleanValue.TRUE;
 			}
 
 			clazz = clazz.getSuperclass();
 		}
 
-		return new BooleanValue(false);
+		return BooleanValue.FALSE;
 	}
 
 	private Value<?> getValueType(Context context, MemberFunction function) {

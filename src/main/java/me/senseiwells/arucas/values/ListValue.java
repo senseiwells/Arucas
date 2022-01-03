@@ -113,16 +113,16 @@ public class ListValue extends Value<ArucasValueList> {
 
 	private synchronized BooleanValue listContains(Context context, MemberFunction function) {
 		Value<?> value = function.getParameterValue(context, 0);
-		return new BooleanValue(this.value.contains(value));
+		return BooleanValue.of(this.value.contains(value));
 	}
 
 	private synchronized BooleanValue containsAll(Context context, MemberFunction function) throws CodeError {
 		ListValue otherList = function.getParameterValueOfType(context, ListValue.class, 0);
-		return new BooleanValue(this.value.containsAll(otherList.value));
+		return BooleanValue.of(this.value.containsAll(otherList.value));
 	}
 
 	private synchronized BooleanValue isEmpty(Context context, MemberFunction function) {
-		return new BooleanValue(this.value.isEmpty());
+		return BooleanValue.of(this.value.isEmpty());
 	}
 
 	public static class ArucasListClass extends ArucasClassExtension {

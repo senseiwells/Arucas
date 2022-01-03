@@ -33,13 +33,13 @@ public class BinaryOperatorNode extends Node {
 				if (!(left instanceof BooleanValue leftBoolean)) {
 					throw new RuntimeError("The operation 'AND' cannot be applied to %s".formatted(left), this.syntaxPosition);
 				}
-				result = (!leftBoolean.value) ? new BooleanValue(false) : leftBoolean.isAnd(context, (right = this.rightNode.visit(context)), this.syntaxPosition);
+				result = (!leftBoolean.value) ? BooleanValue.FALSE : leftBoolean.isAnd(context, (right = this.rightNode.visit(context)), this.syntaxPosition);
 			}
 			case OR -> {
 				if (!(left instanceof BooleanValue leftBoolean)) {
 					throw new RuntimeError("The operation 'OR' cannot be applied to %s".formatted(left), this.syntaxPosition);
 				}
-				result = leftBoolean.value ? new BooleanValue(true) : leftBoolean.isOr(context, (right = this.rightNode.visit(context)), this.syntaxPosition);
+				result = leftBoolean.value ? BooleanValue.TRUE : leftBoolean.isOr(context, (right = this.rightNode.visit(context)), this.syntaxPosition);
 			}
 			// AND, OR has a special property that the right hand side is not evaluated
 			// unless the value we read is either true or false. This means that we need

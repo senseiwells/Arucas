@@ -104,7 +104,7 @@ public class StringValue extends Value<String> {
 
 	private Value<?> stringContainsString(Context context, MemberFunction function) throws CodeError {
 		String otherString = function.getParameterValueOfType(context, StringValue.class, 0).value;
-		return new BooleanValue(this.value.contains(otherString));
+		return BooleanValue.of(this.value.contains(otherString));
 	}
 
 	private Value<?> strip(Context context, MemberFunction function) {

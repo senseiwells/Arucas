@@ -333,7 +333,7 @@ public class Parser {
 	private List<String> getClassMemberArguments() throws CodeError {
 		List<String> argumentNames = new ArrayList<>();
 		argumentNames.add("this");
-		this.context.setLocal("this", new NullValue());
+		this.context.setLocal("this", NullValue.NULL);
 
 		if (this.currentToken.type == Token.Type.IDENTIFIER) {
 			this.recede();
@@ -342,7 +342,7 @@ public class Parser {
 				this.throwIfNotType(Token.Type.IDENTIFIER, "Expected Identifier");
 
 				argumentNames.add(this.currentToken.content);
-				this.context.setLocal(this.currentToken.content, new NullValue());
+				this.context.setLocal(this.currentToken.content, NullValue.NULL);
 				this.advance();
 			}
 			while (this.currentToken.type == Token.Type.COMMA);
@@ -373,7 +373,7 @@ public class Parser {
 				this.throwIfNotType(Token.Type.IDENTIFIER, "Expected Identifier");
 
 				argumentNames.add(this.currentToken.content);
-				this.context.setLocal(this.currentToken.content, new NullValue());
+				this.context.setLocal(this.currentToken.content, NullValue.NULL);
 				this.advance();
 			}
 			while (this.currentToken.type == Token.Type.COMMA);

@@ -104,9 +104,9 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		return NullValue.NULL;
 	}
 
-		return NullValue.NULL;
 	private Value<?> print(Context context, BuiltInFunction function) throws CodeError {
 		context.getOutput().println(function.getParameterValue(context, 0).getStringValue(context));
+		return NullValue.NULL;
 	}
 
 	private synchronized Value<?> input(Context context, BuiltInFunction function) throws CodeError {

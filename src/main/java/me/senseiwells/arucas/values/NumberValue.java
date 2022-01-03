@@ -9,7 +9,6 @@ import me.senseiwells.arucas.values.functions.MemberFunction;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -136,11 +135,11 @@ public class NumberValue extends Value<Double> {
 	}
 
 	private BooleanValue numberIsInfinite(Context context, MemberFunction function) {
-		return new BooleanValue(this.value.isInfinite());
+		return BooleanValue.of(this.value.isInfinite());
 	}
 
 	private BooleanValue numberIsNan(Context context, MemberFunction function) {
-		return new BooleanValue(this.value.isNaN());
+		return BooleanValue.of(this.value.isNaN());
 	}
 
 	public static class ArucasNumberClass extends ArucasClassExtension {

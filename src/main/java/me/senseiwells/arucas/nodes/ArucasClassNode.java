@@ -22,6 +22,6 @@ public class ArucasClassNode extends Node {
 		// Class definition must come before statics
 		context.addClassDefinition(this.definition);
 		this.definition.initialiseStatics(context);
-		return new NullValue();
+		return NullValue.NULL;
 	}
 }
