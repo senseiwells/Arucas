@@ -12,9 +12,9 @@ class Benchmark {
 
     static fun valueFunctionCallAvg(value) {
         times = [];
-        for (i = 0; i < 20; i++) {
+        for (i = 0; i < 5; i++) {
             start = Benchmark.thread.getAge();
-            for (i = 0; i < 10000000; i++) "".toList();
+            for (i = 0; i < 10000000; i++) value.toString();
             end = Benchmark.thread.getAge();
             times.append(end - start);
         }
@@ -22,13 +22,26 @@ class Benchmark {
     }
 }
 
+class UserClass {
+    UserClass() {
+
+    }
+
+    fun toString() {
+        return '';
+    }
+}
+
 delegate = Benchmark.valueFunctionCallAvg;
 
-s = "ms per 1 million iterations";
+s = " ms per 10 million iterations";
 
-print("String: %s%s".formatted([delegate(""), s]));
-print("List:: %s%s".formatted([delegate([]), s]));
-print("Number:: %s%s".formatted([delegate(0), s]));
-print("Null:: %s%s".formatted([delegate(null), s]));
-print("Map:: %s%s".formatted([delegate({}), s]));
-print("Boolean:: %s%s".formatted([delegate(true), s]));
+print("----------:----------------------------------------------");
+print("Test      > %s%s".formatted([delegate(new Test()), s]));
+print("String    > %s%s".formatted([delegate(""), s]));
+print("List      > %s%s".formatted([delegate([]), s]));
+print("Number    > %s%s".formatted([delegate(0), s]));
+print("Null      > %s%s".formatted([delegate(null), s]));
+print("Map       > %s%s".formatted([delegate({}), s]));
+print("Boolean   > %s%s".formatted([delegate(true), s]));
+print("UserClass > %s%s".formatted([delegate(new UserClass()), s]));

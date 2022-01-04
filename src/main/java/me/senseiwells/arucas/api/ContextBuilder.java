@@ -1,10 +1,12 @@
 package me.senseiwells.arucas.api;
 
 import me.senseiwells.arucas.api.impl.ArucasOutput;
+import me.senseiwells.arucas.api.wrappers.IArucasWrappedClass;
 import me.senseiwells.arucas.extensions.*;
+import me.senseiwells.arucas.utils.ArucasClassDefinitionMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.*;
-import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
+import me.senseiwells.arucas.values.wrapper.ArucasWrapper;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -17,6 +19,7 @@ import java.util.function.Supplier;
 public class ContextBuilder {
 	private final List<Supplier<IArucasExtension>> extensions = new ArrayList<>();
 	private final List<Supplier<ArucasClassExtension>> classes = new ArrayList<>();
+	private final List<Supplier<IArucasWrappedClass>> wrappers = new ArrayList<>();
 	private Consumer<String> outputHandler = System.out::print;
 	private boolean suppressDeprecated;
 	private String displayName = "";
@@ -56,7 +59,7 @@ public class ContextBuilder {
 	}
 	
 	public ContextBuilder addDefaultClasses() {
-		return this.addClases(
+		return this.addClasses(
 			StringValue.ArucasStringClass::new,
 			BooleanValue.ArucasBooleanClass::new,
 			ListValue.ArucasListClass::new,
@@ -75,8 +78,13 @@ public class ContextBuilder {
 	}
 	
 	@SafeVarargs
-	public final ContextBuilder addClases(Supplier<ArucasClassExtension>... extensions) {
+	public final ContextBuilder addClasses(Supplier<ArucasClassExtension>... extensions) {
 		this.classes.addAll(List.of(extensions));
+		return this;
+	}
+	
+	public ContextBuilder addWrapper(Supplier<IArucasWrappedClass> supplier) {
+		this.wrappers.add(supplier);
 		return this;
 	}
 	
@@ -92,7 +100,7 @@ public class ContextBuilder {
 	
 	public Context build() {
 		List<IArucasExtension> extensionList = new ArrayList<>();
-		List<AbstractClassDefinition> classDefinitions = new ArrayList<>();
+		ArucasClassDefinitionMap classDefinitions = new ArucasClassDefinitionMap();
 
 		for (Supplier<IArucasExtension> supplier : this.extensions) {
 			extensionList.add(supplier.get());
@@ -100,6 +108,10 @@ public class ContextBuilder {
 
 		for (Supplier<ArucasClassExtension> supplier : this.classes) {
 			classDefinitions.add(supplier.get());
+		}
+		
+		for (Supplier<IArucasWrappedClass> supplier : this.wrappers) {
+			classDefinitions.add(ArucasWrapper.createWrapper(supplier.get()));
 		}
 		
 		ArucasOutput arucasOutput = new ArucasOutput();

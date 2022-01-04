@@ -71,6 +71,7 @@ public class ArucasThreadHandler {
 		if (context.getThreadHandler() != this || this.isRunning()) {
 			return null;
 		}
+		
 		this.hasError = false;
 		ArucasValueThread thread = new ArucasValueThread(this.arucasThreadGroup, () -> {
 			try {

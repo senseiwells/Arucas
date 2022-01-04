@@ -260,7 +260,7 @@ public class Parser {
 					ClassMemberFunction operatorMethod = this.operatorMethod(isStatic, token);
 					definition.addOperatorMethod(token.type, operatorMethod);
 				}
-				case LEFT_CURLY_BRACKET -> definition.addStaticInitialiser(this.statements());
+				case LEFT_CURLY_BRACKET -> definition.addStaticInitializer(this.statements());
 				default -> throw new CodeError(
 					CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR,
 					"Expected Identifier or function",

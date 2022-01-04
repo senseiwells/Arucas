@@ -2,6 +2,7 @@ package me.senseiwells.arucas.values.classes;
 
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.tokens.Token;
+import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.StackTable;
 import me.senseiwells.arucas.values.Value;
@@ -12,13 +13,13 @@ import me.senseiwells.arucas.values.functions.MemberOperations;
 import java.util.*;
 
 public class ArucasClassValue extends Value<ArucasClassDefinition> implements MemberOperations {
-	private final List<ClassMemberFunction> methods;
+	private final ArucasFunctionMap<ClassMemberFunction> methods;
 	private final Map<Token.Type, ClassMemberFunction> operatorMethods;
 	private final StackTable members;
 	
 	public ArucasClassValue(ArucasClassDefinition arucasClass) {
 		super(arucasClass);
-		this.methods = new ArrayList<>();
+		this.methods = new ArucasFunctionMap<>();
 		this.operatorMethods = new HashMap<>();
 		this.members = new StackTable();
 	}
@@ -74,7 +75,7 @@ public class ArucasClassValue extends Value<ArucasClassDefinition> implements Me
 	}
 
 	@Override
-	public Iterable<? extends FunctionValue> getAllMembers() {
+	public ArucasFunctionMap<?> getAllMembers() {
 		return this.methods;
 	}
 

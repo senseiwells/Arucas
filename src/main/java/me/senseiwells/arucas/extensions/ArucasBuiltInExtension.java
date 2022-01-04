@@ -5,10 +5,7 @@ import me.senseiwells.arucas.core.Run;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowStop;
-import me.senseiwells.arucas.utils.ArucasValueList;
-import me.senseiwells.arucas.utils.ArucasValueThread;
-import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.utils.ExceptionUtils;
+import me.senseiwells.arucas.utils.*;
 import me.senseiwells.arucas.values.*;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
 import me.senseiwells.arucas.values.functions.FunctionValue;
@@ -37,11 +34,11 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 	}
 	
 	@Override
-	public Set<BuiltInFunction> getDefinedFunctions() {
+	public ArucasFunctionMap<BuiltInFunction> getDefinedFunctions() {
 		return this.builtInFunctions;
 	}
 
-	private final Set<BuiltInFunction> builtInFunctions = Set.of(
+	private final ArucasFunctionMap<BuiltInFunction> builtInFunctions = ArucasFunctionMap.of(
 		new BuiltInFunction("run", "path", this::run),
 		new BuiltInFunction("stop", this::stop),
 		new BuiltInFunction("sleep", "milliseconds", this::sleep),
@@ -51,6 +48,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		new BuiltInFunction("suppressDeprecated", "boolean", this::suppressDeprecated),
 		new BuiltInFunction("random", "bound", this::random),
 		new BuiltInFunction("getTime", (context, function) -> StringValue.of(DateTimeFormatter.ofPattern("HH:mm:ss").format(LocalTime.now()))),
+		new BuiltInFunction("millis", (context, function) -> NumberValue.of(System.currentTimeMillis())),
 		new BuiltInFunction("getDirectory", (context, function) -> StringValue.of(System.getProperty("user.dir"))),
 		new BuiltInFunction("len", "value", this::len),
 		new BuiltInFunction("runThreaded", List.of("function", "parameters"), this::runThreaded$2, "Used 'Thread.runThreaded(name, function)'"),

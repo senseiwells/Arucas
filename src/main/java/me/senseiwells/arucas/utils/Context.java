@@ -27,7 +27,7 @@ public class Context {
 	private boolean isDebug;
 	private boolean suppressDeprecated;
 
-	private Context(String displayName, Context parentContext, List<IArucasExtension> extensions, Collection<AbstractClassDefinition> classDefinitions, ArucasThreadHandler threadHandler, IArucasOutput arucasOutput) {
+	private Context(String displayName, Context parentContext, List<IArucasExtension> extensions, ArucasClassDefinitionMap classDefinitions, ArucasThreadHandler threadHandler, IArucasOutput arucasOutput) {
 		this.builtInFunctions = new HashSet<>();
 		this.extensions = extensions;
 		this.arucasOutput = arucasOutput;
@@ -42,13 +42,14 @@ public class Context {
 				this.builtInFunctions.add(function.value);
 			}
 		}
-
+		
+		// TODO: This will make the code exponentially slower
 		for (AbstractClassDefinition classDefinition : classDefinitions) {
 			this.addClassDefinition(classDefinition);
 		}
 	}
 	
-	public Context(String displayName, List<IArucasExtension> extensions, Collection<AbstractClassDefinition> classDefinitions, ArucasThreadHandler threadHandler, IArucasOutput arucasOutput) {
+	public Context(String displayName, List<IArucasExtension> extensions, ArucasClassDefinitionMap classDefinitions, ArucasThreadHandler threadHandler, IArucasOutput arucasOutput) {
 		this(displayName, null, extensions, classDefinitions, threadHandler, arucasOutput);
 	}
 	
@@ -81,7 +82,7 @@ public class Context {
 	}
 	
 	public Context createChildContext(String displayName) {
-		return new Context(displayName, this, this.extensions, this.stackTable.getRoot().classDefinitions.values(), this.threadHandler, this.arucasOutput);
+		return new Context(displayName, this, this.extensions, this.stackTable.getRoot().classDefinitions, this.threadHandler, this.arucasOutput);
 	}
 	
 	/**
@@ -225,26 +226,51 @@ public class Context {
 
 	public AbstractBuiltInFunction<?> getBuiltInFunction(String methodName, int parameters) {
 		for (IArucasExtension extension : this.extensions) {
-			for (AbstractBuiltInFunction<?> function : extension.getDefinedFunctions()) {
-				if (parameters == function.getParameterCount() && function.getName().equals(methodName)) {
-					return function;
-				}
+			AbstractBuiltInFunction<?> function = extension.getDefinedFunctions().get(methodName, parameters);
+			if (function != null) {
+				return function;
 			}
+//			for (AbstractBuiltInFunction<?> function : extension.getDefinedFunctions()) {
+//				if (parameters == function.getParameterCount() && function.getName().equals(methodName)) {
+//					return function;
+//				}
+//			}
 		}
 
 		return null;
 	}
 
-	public FunctionValue getMemberFunction(Value<?> value, String methodName, int paramters) {
-		for (AbstractClassDefinition definition : this.stackTable.getRoot().classDefinitions.values()) {
+	public FunctionValue getMemberFunction(Value<?> value, String methodName, int parameters) {
+//		Set<AbstractClassDefinition> definitions = this.stackTable.getRoot().classDefinitions.get(value.getClass());
+//
+//		System.out.println("-".repeat(100));
+//		System.out.printf("Value: %s\n", value);
+//		System.out.printf("    c: %s\n", value.getClass());
+//		System.out.printf("    m: %s\n", methodName);
+//		System.out.printf("    p: %d\n", parameters);
+//		System.out.printf("    d: %s\n", definitions);
+//
+//		for (AbstractClassDefinition definition : definitions) {
+//			System.out.printf("     + %s (%s)\n", definition.getName(), definition.getValueClass());
+//		}
+//
+//		for (AbstractClassDefinition definition : definitions) {
+//			FunctionValue targetMethod = definition.getMethods().get(methodName, parameters);
+//			if (targetMethod != null) {
+//				return targetMethod;
+//			}
+//		}
+		
+		// TODO: Make this O(1)
+		for (AbstractClassDefinition definition : this.stackTable.getRoot().classDefinitions) {
 			Class<?> valueClass = definition.getValueClass();
 			if (valueClass == null || !valueClass.isInstance(value)) {
 				continue;
 			}
-			for (FunctionValue method : definition.getMethods()) {
-				if (paramters == method.getParameterCount() && methodName.equals(method.getName())) {
-					return method;
-				}
+
+			FunctionValue targetMethod = definition.getMethods().get(methodName, parameters);
+			if (targetMethod != null) {
+				return targetMethod;
 			}
 		}
 

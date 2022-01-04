@@ -8,7 +8,7 @@ import java.util.*;
 
 public class StackTable {
 	protected final Map<String, Value<?>> symbolMap;
-	protected final Map<String, AbstractClassDefinition> classDefinitions;
+	protected final ArucasClassDefinitionMap classDefinitions;
 	private final StackTable parentTable;
 	private final ISyntax syntaxPosition;
 	
@@ -19,7 +19,7 @@ public class StackTable {
 	public StackTable(StackTable parent, ISyntax syntaxPosition, boolean canBreak, boolean canContinue, boolean canReturn) {
 		this.symbolMap = new HashMap<>();
 		// This is a linked map because order needs to be preserved
-		this.classDefinitions = new LinkedHashMap<>();
+		this.classDefinitions = new ArucasClassDefinitionMap();
 		this.parentTable = parent;
 		this.syntaxPosition = syntaxPosition;
 		this.canContinue = canContinue;
@@ -100,11 +100,11 @@ public class StackTable {
 	}
 
 	public boolean hasClassDefinition(String name) {
-		return this.classDefinitions.containsKey(name);
+		return this.classDefinitions.has(name);
 	}
 	
 	public void addClassDefinition(AbstractClassDefinition definition) {
-		this.classDefinitions.put(definition.getName(), definition);
+		this.classDefinitions.add(definition);
 	}
 
 	/**

@@ -4,14 +4,13 @@ import me.senseiwells.arucas.api.ArucasClassExtension;
 import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
+import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.ArucasValueList;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 public class StringValue extends Value<String> {
 	private StringValue(String value) {
@@ -31,7 +30,7 @@ public class StringValue extends Value<String> {
 	public StringValue copy() {
 		return this;
 	}
-
+	
 	public static class ArucasStringClass extends ArucasClassExtension {
 		public ArucasStringClass() {
 			super("String");
@@ -43,8 +42,8 @@ public class StringValue extends Value<String> {
 		}
 
 		@Override
-		public Set<MemberFunction> getDefinedMethods() {
-			return Set.of(
+		public ArucasFunctionMap<MemberFunction> getDefinedMethods() {
+			return ArucasFunctionMap.of(
 				new MemberFunction("toList", this::stringToList),
 				new MemberFunction("replaceAll", List.of("regex", "replace"), this::stringReplaceAll),
 				new MemberFunction("uppercase", this::stringUppercase),

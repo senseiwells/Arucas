@@ -3,6 +3,7 @@ package me.senseiwells.arucas.values;
 import me.senseiwells.arucas.api.ArucasClassExtension;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
+import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.ArucasValueList;
 import me.senseiwells.arucas.utils.ArucasValueThread;
 import me.senseiwells.arucas.utils.Context;
@@ -11,7 +12,6 @@ import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
 import java.util.List;
-import java.util.Set;
 
 public class ThreadValue extends Value<ArucasValueThread> {
 	private final StringValue name;
@@ -82,8 +82,8 @@ public class ThreadValue extends Value<ArucasValueThread> {
 		}
 
 		@Override
-		public Set<MemberFunction> getDefinedMethods() {
-			return Set.of(
+		public ArucasFunctionMap<MemberFunction> getDefinedMethods() {
+			return ArucasFunctionMap.of(
 				new MemberFunction("isAlive", this::isAlive),
 				new MemberFunction("getAge", this::getAge),
 				new MemberFunction("getName", this::getName),

@@ -3,15 +3,11 @@ package me.senseiwells.arucas.values;
 import me.senseiwells.arucas.api.ArucasClassExtension;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
-import me.senseiwells.arucas.utils.ArucasValueList;
-import me.senseiwells.arucas.utils.ArucasValueMap;
-import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.utils.StringUtils;
+import me.senseiwells.arucas.utils.*;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class MapValue extends Value<ArucasValueMap> {
 	public MapValue(ArucasValueMap value) {
@@ -63,8 +59,8 @@ public class MapValue extends Value<ArucasValueMap> {
 		}
 
 		@Override
-		public Set<MemberFunction> getDefinedMethods() {
-			return Set.of(
+		public ArucasFunctionMap<MemberFunction> getDefinedMethods() {
+			return ArucasFunctionMap.of(
 				new MemberFunction("get", "key", this::mapGet),
 				new MemberFunction("getKeys", this::mapGetKeys),
 				new MemberFunction("getValues", this::mapGetValues),

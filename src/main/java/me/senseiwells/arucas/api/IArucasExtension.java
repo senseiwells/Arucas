@@ -1,5 +1,6 @@
 package me.senseiwells.arucas.api;
 
+import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
 
 import java.util.Set;
@@ -9,7 +10,7 @@ public interface IArucasExtension {
 	/**
 	 * Returns a set of unique function objects.
 	 */
-	Set<? extends BuiltInFunction> getDefinedFunctions();
+	ArucasFunctionMap<? extends BuiltInFunction> getDefinedFunctions();
 	
 	/**
 	 * Returns the name of this extension.

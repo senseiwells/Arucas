@@ -2,6 +2,7 @@ package me.senseiwells.arucas.values;
 
 import me.senseiwells.arucas.api.ArucasClassExtension;
 import me.senseiwells.arucas.throwables.CodeError;
+import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.classes.ArucasClassValue;
 import me.senseiwells.arucas.values.functions.MemberFunction;
@@ -60,8 +61,8 @@ public abstract class Value<T> implements ValueOperations {
 		}
 
 		@Override
-		public Set<MemberFunction> getDefinedMethods() {
-			return Set.of(
+		public ArucasFunctionMap<MemberFunction> getDefinedMethods() {
+			return ArucasFunctionMap.of(
 				new MemberFunction("instanceOf", "class", this::instanceOf),
 				new MemberFunction("getValueType", this::getValueType),
 				new MemberFunction("copy", this::newCopy),

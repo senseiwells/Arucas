@@ -2,6 +2,7 @@ package me.senseiwells.arucas.api;
 
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
+import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
@@ -16,21 +17,23 @@ import java.util.Set;
 
 public abstract class ArucasClassExtension extends AbstractClassDefinition {
 	private final Set<ConstructorFunction> constructors;
-	private final Set<MemberFunction> methods;
+	private final ArucasFunctionMap<MemberFunction> methods;
 
 	public ArucasClassExtension(String name) {
 		super(name);
 		this.constructors = this.getDefinedConstructors();
 		this.methods = this.getDefinedMethods();
 		this.getStaticMemberVariables().putAll(this.getDefinedStaticVariables());
-		this.getStaticMethods().addAll(this.getDefinedStaticMethods());
+		for (FunctionValue value : this.getDefinedStaticMethods()) {
+			this.getStaticMethods().add(value);
+		}
 	}
 
 	@Override
 	public final void initialiseStatics(Context context) { }
 
 	@Override
-	public final Set<MemberFunction> getMethods() {
+	public final ArucasFunctionMap<MemberFunction> getMethods() {
 		return this.methods;
 	}
 
@@ -52,8 +55,8 @@ public abstract class ArucasClassExtension extends AbstractClassDefinition {
 	/**
 	 * This lets you define methods for a Class
 	 */
-	public Set<MemberFunction> getDefinedMethods() {
-		return Set.of();
+	public ArucasFunctionMap<MemberFunction> getDefinedMethods() {
+		return new ArucasFunctionMap<>();
 	}
 
 	/**

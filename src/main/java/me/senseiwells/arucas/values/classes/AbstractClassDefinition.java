@@ -3,6 +3,7 @@ package me.senseiwells.arucas.values.classes;
 import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
+import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.functions.FunctionValue;
@@ -12,12 +13,12 @@ import java.util.*;
 
 public abstract class AbstractClassDefinition implements MemberOperations {
 	private final String name;
-	private final List<FunctionValue> staticMethods;
+	private final ArucasFunctionMap<FunctionValue> staticMethods;
 	private final Map<String, Value<?>> staticMemberVariables;
 
 	public AbstractClassDefinition(String name) {
 		this.name = name;
-		this.staticMethods = new ArrayList<>();
+		this.staticMethods = new ArucasFunctionMap<>();
 		this.staticMemberVariables = new HashMap<>();
 	}
 
@@ -25,13 +26,13 @@ public abstract class AbstractClassDefinition implements MemberOperations {
 		return this.name;
 	}
 
-	public abstract Collection<? extends FunctionValue> getMethods();
+	public abstract ArucasFunctionMap<? extends FunctionValue> getMethods();
 
 	public final Map<String, Value<?>> getStaticMemberVariables() {
 		return this.staticMemberVariables;
 	}
 
-	public final List<FunctionValue> getStaticMethods() {
+	public final ArucasFunctionMap<FunctionValue> getStaticMethods() {
 		return this.staticMethods;
 	}
 
@@ -102,7 +103,7 @@ public abstract class AbstractClassDefinition implements MemberOperations {
 	}
 
 	@Override
-	public final Iterable<FunctionValue> getAllMembers() {
+	public final ArucasFunctionMap<?> getAllMembers() {
 		return this.staticMethods;
 	}
 }
