@@ -5,7 +5,9 @@ import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
+import me.senseiwells.arucas.values.functions.BuiltInFunction;
 import me.senseiwells.arucas.values.functions.ConstructorFunction;
+import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
 import java.util.List;
@@ -14,16 +16,23 @@ import java.util.Set;
 
 public abstract class ArucasClassExtension extends AbstractClassDefinition {
 	private final Set<ConstructorFunction> constructors;
+	private final Set<MemberFunction> methods;
 
 	public ArucasClassExtension(String name) {
 		super(name);
 		this.constructors = this.getDefinedConstructors();
+		this.methods = this.getDefinedMethods();
 		this.getStaticMemberVariables().putAll(this.getDefinedStaticVariables());
 		this.getStaticMethods().addAll(this.getDefinedStaticMethods());
 	}
 
 	@Override
 	public final void initialiseStatics(Context context) { }
+
+	@Override
+	public final Set<MemberFunction> getMethods() {
+		return this.methods;
+	}
 
 	/**
 	 * No members are assignable by default
@@ -41,6 +50,13 @@ public abstract class ArucasClassExtension extends AbstractClassDefinition {
 	}
 
 	/**
+	 * This lets you define methods for a Class
+	 */
+	public Set<MemberFunction> getDefinedMethods() {
+		return Set.of();
+	}
+
+	/**
 	 * This lets you define static variables for a Class
 	 */
 	public Map<String, Value<?>> getDefinedStaticVariables() {
@@ -50,7 +66,7 @@ public abstract class ArucasClassExtension extends AbstractClassDefinition {
 	/**
 	 * This lets you define static methods for a Class
 	 */
-	public List<MemberFunction> getDefinedStaticMethods() {
+	public List<BuiltInFunction> getDefinedStaticMethods() {
 		return List.of();
 	}
 

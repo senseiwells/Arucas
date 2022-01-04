@@ -1,14 +1,34 @@
 // run(getDirectory() + "/src/test/resources/code/test2.arucas");
-currentThread = Thread.getCurrentThread();
 
-print(currentThread.getAge());
+class Benchmark {
+    static var thread = Thread.getCurrentThread();
 
-Thread.runThreaded("My New Thread", fun () {
-    print(Thread.getCurrentThread().getAge());
-    sleep(1000);
-    print(Thread.getCurrentThread().getAge());
-});
+    static fun average(list) {
+        totalCount = len(list);
+        totalValue = 0;
+        foreach (value : list) totalValue = totalValue + value;
+        return totalValue / totalCount;
+    }
 
-sleep(1000);
+    static fun valueFunctionCallAvg(value) {
+        times = [];
+        for (i = 0; i < 20; i++) {
+            start = Benchmark.thread.getAge();
+            for (i = 0; i < 10000000; i++) "".toList();
+            end = Benchmark.thread.getAge();
+            times.append(end - start);
+        }
+        return Benchmark.average(times);
+    }
+}
 
-print(currentThread.getAge());
+delegate = Benchmark.valueFunctionCallAvg;
+
+s = "ms per 1 million iterations";
+
+print("String: %s%s".formatted([delegate(""), s]));
+print("List:: %s%s".formatted([delegate([]), s]));
+print("Number:: %s%s".formatted([delegate(0), s]));
+print("Null:: %s%s".formatted([delegate(null), s]));
+print("Map:: %s%s".formatted([delegate({}), s]));
+print("Boolean:: %s%s".formatted([delegate(true), s]));

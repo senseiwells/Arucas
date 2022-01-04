@@ -31,5 +31,10 @@ public class NullValue extends Value<Object> {
 		public ArucasNullClass() {
 			super("Null");
 		}
+
+		@Override
+		public Class<?> getValueClass() {
+			return NullValue.class;
+		}
 	}
 }

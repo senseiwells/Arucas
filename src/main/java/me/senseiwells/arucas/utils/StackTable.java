@@ -18,7 +18,8 @@ public class StackTable {
 	
 	public StackTable(StackTable parent, ISyntax syntaxPosition, boolean canBreak, boolean canContinue, boolean canReturn) {
 		this.symbolMap = new HashMap<>();
-		this.classDefinitions = new HashMap<>();
+		// This is a linked map because order needs to be preserved
+		this.classDefinitions = new LinkedHashMap<>();
 		this.parentTable = parent;
 		this.syntaxPosition = syntaxPosition;
 		this.canContinue = canContinue;
@@ -112,7 +113,7 @@ public class StackTable {
 	public StackTable getRoot() {
 		return this.parentTable != null ? this.parentTable.getRoot() : this;
 	}
-	
+
 	public StackTable getParentTable() {
 		return this.parentTable;
 	}

@@ -6,6 +6,7 @@ import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.ArucasValueList;
 import me.senseiwells.arucas.utils.ArucasValueThread;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.values.functions.BuiltInFunction;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
@@ -34,53 +35,26 @@ public class ThreadValue extends Value<ArucasValueThread> {
 		return "<Thread - %s>".formatted(this.name.value);
 	}
 
-	@Override
-	protected Set<MemberFunction> getDefinedFunctions() {
-		Set<MemberFunction> memberFunctions = super.getDefinedFunctions();
-		memberFunctions.addAll(Set.of(
-			new MemberFunction("isAlive", this::isAlive),
-			new MemberFunction("getAge", this::getAge),
-			new MemberFunction("getName", this::getName),
-			new MemberFunction("stop", this::stop)
-		));
-		return memberFunctions;
-	}
-
-	private Value<?> isAlive(Context context, MemberFunction function) {
-		return BooleanValue.of(this.value.isAlive());
-	}
-
-	private Value<?> getAge(Context context, MemberFunction function) {
-		return NumberValue.of(System.currentTimeMillis() - this.value.getStartTime());
-	}
-
-	private Value<?> getName(Context context, MemberFunction function) {
-		return this.name;
-	}
-
-	private Value<?> stop(Context context, MemberFunction function) throws RuntimeError {
-		if (!this.value.isAlive()) {
-			throw new RuntimeError("Thread is not alive", function.syntaxPosition, context);
-		}
-		this.value.interrupt();
-		return NullValue.NULL;
-	}
-
 	public static class ArucasThreadClass extends ArucasClassExtension {
 		public ArucasThreadClass() {
 			super("Thread");
 		}
 
 		@Override
-		public List<MemberFunction> getDefinedStaticMethods() {
+		public Class<?> getValueClass() {
+			return ThreadValue.class;
+		}
+
+		@Override
+		public List<BuiltInFunction> getDefinedStaticMethods() {
 			return List.of(
-				new MemberFunction("getCurrentThread", this::getCurrentThread),
-				new MemberFunction("runThreaded", List.of("function"), this::runThreaded$1),
-				new MemberFunction("runThreaded", List.of("name", "function"), this::runThreaded$2)
+				new BuiltInFunction("getCurrentThread", this::getCurrentThread),
+				new BuiltInFunction("runThreaded", List.of("function"), this::runThreaded$1),
+				new BuiltInFunction("runThreaded", List.of("name", "function"), this::runThreaded$2)
 			);
 		}
 
-		private Value<?> getCurrentThread(Context context, MemberFunction function) throws RuntimeError {
+		private Value<?> getCurrentThread(Context context, BuiltInFunction function) throws RuntimeError {
 			Thread currentThread = Thread.currentThread();
 			if (currentThread instanceof ArucasValueThread arucasValueThread) {
 				return ThreadValue.of(arucasValueThread);
@@ -88,7 +62,7 @@ public class ThreadValue extends Value<ArucasValueThread> {
 			throw new RuntimeError("Thread is not safe to get", function.syntaxPosition, context);
 		}
 
-		private Value<?> runThreaded$1(Context context, MemberFunction function) throws CodeError {
+		private Value<?> runThreaded$1(Context context, BuiltInFunction function) throws CodeError {
 			FunctionValue functionValue = function.getParameterValueOfType(context, FunctionValue.class, 0);
 			ArucasValueThread thread = context.getThreadHandler().runAsyncFunctionInContext(
 				context.createBranch(), (branchContext) -> functionValue.call(branchContext, new ArucasValueList()),
@@ -97,7 +71,7 @@ public class ThreadValue extends Value<ArucasValueThread> {
 			return ThreadValue.of(thread);
 		}
 
-		private Value<?> runThreaded$2(Context context, MemberFunction function) throws CodeError {
+		private Value<?> runThreaded$2(Context context, BuiltInFunction function) throws CodeError {
 			StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
 			FunctionValue functionValue = function.getParameterValueOfType(context, FunctionValue.class, 1);
 			ArucasValueThread thread = context.getThreadHandler().runAsyncFunctionInContext(
@@ -105,6 +79,40 @@ public class ThreadValue extends Value<ArucasValueThread> {
 				stringValue.value
 			);
 			return ThreadValue.of(thread);
+		}
+
+		@Override
+		public Set<MemberFunction> getDefinedMethods() {
+			return Set.of(
+				new MemberFunction("isAlive", this::isAlive),
+				new MemberFunction("getAge", this::getAge),
+				new MemberFunction("getName", this::getName),
+				new MemberFunction("stop", this::stop)
+			);
+		}
+
+		private Value<?> isAlive(Context context, MemberFunction function) throws CodeError {
+			ThreadValue thisValue = function.getParameterValueOfType(context, ThreadValue.class, 0);
+			return BooleanValue.of(thisValue.value.isAlive());
+		}
+
+		private Value<?> getAge(Context context, MemberFunction function) throws CodeError {
+			ThreadValue thisValue = function.getParameterValueOfType(context, ThreadValue.class, 0);
+			return NumberValue.of(System.currentTimeMillis() - thisValue.value.getStartTime());
+		}
+
+		private Value<?> getName(Context context, MemberFunction function) throws CodeError {
+			ThreadValue thisValue = function.getParameterValueOfType(context, ThreadValue.class, 0);
+			return thisValue.name;
+		}
+
+		private Value<?> stop(Context context, MemberFunction function) throws CodeError {
+			ThreadValue thisValue = function.getParameterValueOfType(context, ThreadValue.class, 0);
+			if (!thisValue.value.isAlive()) {
+				throw new RuntimeError("Thread is not alive", function.syntaxPosition, context);
+			}
+			thisValue.value.interrupt();
+			return NullValue.NULL;
 		}
 	}
 }

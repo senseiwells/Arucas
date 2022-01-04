@@ -1,13 +1,14 @@
 package me.senseiwells.arucas.utils;
 
 import me.senseiwells.arucas.api.ArucasThreadHandler;
-import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.api.IArucasExtension;
 import me.senseiwells.arucas.api.IArucasOutput;
 import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.values.Value;
+import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.values.functions.AbstractBuiltInFunction;
+import me.senseiwells.arucas.values.functions.FunctionValue;
 
 import java.util.*;
 
@@ -225,8 +226,24 @@ public class Context {
 	public AbstractBuiltInFunction<?> getBuiltInFunction(String methodName, int parameters) {
 		for (IArucasExtension extension : this.extensions) {
 			for (AbstractBuiltInFunction<?> function : extension.getDefinedFunctions()) {
-				if (function.getName().equals(methodName) && parameters == function.getParameterCount()) {
+				if (parameters == function.getParameterCount() && function.getName().equals(methodName)) {
 					return function;
+				}
+			}
+		}
+
+		return null;
+	}
+
+	public FunctionValue getMemberFunction(Value<?> value, String methodName, int paramters) {
+		for (AbstractClassDefinition definition : this.stackTable.getRoot().classDefinitions.values()) {
+			Class<?> valueClass = definition.getValueClass();
+			if (valueClass == null || !valueClass.isInstance(value)) {
+				continue;
+			}
+			for (FunctionValue method : definition.getMethods()) {
+				if (paramters == method.getParameterCount() && methodName.equals(method.getName())) {
+					return method;
 				}
 			}
 		}

@@ -1,15 +1,14 @@
 package me.senseiwells.arucas.values.functions;
 
 import me.senseiwells.arucas.api.ISyntax;
-import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
+import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.Value;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 public abstract class FunctionValue extends Value<String> {
 	public final List<String> argumentNames;
@@ -105,14 +104,6 @@ public abstract class FunctionValue extends Value<String> {
 				this.syntaxPosition
 			);
 		}
-	}
-
-	/**
-	 * Functions cannot have functions
-	 */
-	@Override
-	protected final Set<MemberFunction> getDefinedFunctions() {
-		return Set.of();
 	}
 
 	@Override

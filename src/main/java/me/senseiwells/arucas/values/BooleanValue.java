@@ -48,5 +48,10 @@ public class BooleanValue extends Value<Boolean> {
 		public ArucasBooleanClass() {
 			super("Boolean");
 		}
+
+		@Override
+		public Class<?> getValueClass() {
+			return BooleanValue.class;
+		}
 	}
 }

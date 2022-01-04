@@ -7,10 +7,11 @@ import me.senseiwells.arucas.utils.StackTable;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.functions.ClassMemberFunction;
 import me.senseiwells.arucas.values.functions.FunctionValue;
+import me.senseiwells.arucas.values.functions.MemberOperations;
 
 import java.util.*;
 
-public class ArucasClassValue extends Value<ArucasClassDefinition> {
+public class ArucasClassValue extends Value<ArucasClassDefinition> implements MemberOperations {
 	private final List<ClassMemberFunction> methods;
 	private final Map<Token.Type, ClassMemberFunction> operatorMethods;
 	private final StackTable members;
@@ -69,21 +70,12 @@ public class ArucasClassValue extends Value<ArucasClassDefinition> {
 			return member;
 		}
 
-		member = super.getMember(name);
-		if (member != null) {
-			return member;
-		}
 		return this.getDelegate(name, this.methods);
 	}
-	
+
 	@Override
-	public FunctionValue getMember(String name, int parameters) {
-		for (ClassMemberFunction method : this.methods) {
-			if (method.getParameterCount() == parameters && method.getName().equals(name)) {
-				return method;
-			}
-		}
-		return super.getMember(name, parameters);
+	public Iterable<? extends FunctionValue> getAllMembers() {
+		return this.methods;
 	}
 
 	@Override

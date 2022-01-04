@@ -30,7 +30,9 @@ public class ListValue extends Value<ArucasValueList> {
 	@Override
 	public String getStringValue(Context context) throws CodeError {
 		ArucasValueList list = this.value;
-		if (list.isEmpty()) return "[]";
+		if (list.isEmpty()) {
+			return "[]";
+		}
 		
 		StringBuilder sb = new StringBuilder();
 		for (Value<?> element : list) {
@@ -52,82 +54,93 @@ public class ListValue extends Value<ArucasValueList> {
 		return "[%s]".formatted(sb.toString().trim());
 	}
 
-	@Override
-	protected Set<MemberFunction> getDefinedFunctions() {
-		Set<MemberFunction> memberFunctions = super.getDefinedFunctions();
-		memberFunctions.addAll(Set.of(
-			new MemberFunction("getIndex", "index", this::getListIndex, "Use '<List>.get(index)'"),
-			new MemberFunction("get", "index", this::getListIndex),
-			new MemberFunction("removeIndex", "index", this::removeListIndex, "Use '<List>.remove(index)'"),
-			new MemberFunction("remove", "index", this::removeListIndex),
-			new MemberFunction("append", "value", this::appendList),
-			new MemberFunction("insert", List.of("value", "index"), this::insertList),
-			new MemberFunction("concat", "otherList", this::concatList),
-			new MemberFunction("contains", "value", this::listContains),
-			new MemberFunction("containsAll", "otherList", this::containsAll),
-			new MemberFunction("isEmpty", this::isEmpty)
-		));
-		return memberFunctions;
-	}
-
-	private synchronized Value<?> getListIndex(Context context, MemberFunction function) throws CodeError {
-		NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 0);
-		int index = numberValue.value.intValue();
-		if (index >= this.value.size() || index < 0) {
-			throw function.throwInvalidParameterError("Index is out of bounds", context);
-		}
-		return this.value.get(index);
-	}
-
-	private synchronized Value<?> removeListIndex(Context context, MemberFunction function) throws CodeError {
-		NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 0);
-		int index = numberValue.value.intValue();
-		if (index >= this.value.size() || index < 0) {
-			throw function.throwInvalidParameterError("Index is out of bounds", context);
-		}
-		return this.value.remove(index);
-	}
-
-	private synchronized Value<?> appendList(Context context, MemberFunction function) {
-		Value<?> value = function.getParameterValue(context, 0);
-		this.value.add(value);
-		return this;
-	}
-
-	private synchronized Value<?> insertList(Context context, MemberFunction function) throws CodeError {
-		Value<?> value = function.getParameterValue(context, 0);
-		int index = function.getParameterValueOfType(context, NumberValue.class, 1).value.intValue();
-		int len = this.value.size();
-		if (index > len || index < 0) {
-			throw new RuntimeError("Index is out of bounds", function.syntaxPosition, context);
-		}
-		this.value.add(index, value);
-		return this;
-	}
-
-	private synchronized Value<?> concatList(Context context, MemberFunction function) throws CodeError {
-		ListValue list2 = function.getParameterValueOfType(context, ListValue.class, 0);
-		this.value.addAll(list2.value);
-		return this;
-	}
-
-	private synchronized BooleanValue listContains(Context context, MemberFunction function) {
-		Value<?> value = function.getParameterValue(context, 0);
-		return BooleanValue.of(this.value.contains(value));
-	}
-
-	private synchronized BooleanValue containsAll(Context context, MemberFunction function) throws CodeError {
-		ListValue otherList = function.getParameterValueOfType(context, ListValue.class, 0);
-		return BooleanValue.of(this.value.containsAll(otherList.value));
-	}
-
-	private synchronized BooleanValue isEmpty(Context context, MemberFunction function) {
-		return BooleanValue.of(this.value.isEmpty());
-	}
-
 	public static class ArucasListClass extends ArucasClassExtension {
 		public ArucasListClass() {
 			super("List");
+		}
+
+		@Override
+		public Class<ListValue> getValueClass() {
+			return ListValue.class;
+		}
+
+		@Override
+		public Set<MemberFunction> getDefinedMethods() {
+			return Set.of(
+				new MemberFunction("getIndex", "index", this::getListIndex, "Use '<List>.get(index)'"),
+				new MemberFunction("get", "index", this::getListIndex),
+				new MemberFunction("removeIndex", "index", this::removeListIndex, "Use '<List>.remove(index)'"),
+				new MemberFunction("remove", "index", this::removeListIndex),
+				new MemberFunction("append", "value", this::appendList),
+				new MemberFunction("insert", List.of("value", "index"), this::insertList),
+				new MemberFunction("concat", "otherList", this::concatList),
+				new MemberFunction("contains", "value", this::listContains),
+				new MemberFunction("containsAll", "otherList", this::containsAll),
+				new MemberFunction("isEmpty", this::isEmpty)
+			);
+		}
+
+		private synchronized Value<?> getListIndex(Context context, MemberFunction function) throws CodeError {
+			ListValue thisValue = function.getParameterValueOfType(context, ListValue.class, 0);
+			NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 1);
+			int index = numberValue.value.intValue();
+			if (index >= thisValue.value.size() || index < 0) {
+				throw function.throwInvalidParameterError("Index is out of bounds", context);
+			}
+			return thisValue.value.get(index);
+		}
+
+		private synchronized Value<?> removeListIndex(Context context, MemberFunction function) throws CodeError {
+			ListValue thisValue = function.getParameterValueOfType(context, ListValue.class, 0);
+			NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 1);
+			int index = numberValue.value.intValue();
+			if (index >= thisValue.value.size() || index < 0) {
+				throw function.throwInvalidParameterError("Index is out of bounds", context);
+			}
+			return thisValue.value.remove(index);
+		}
+
+		private synchronized Value<?> appendList(Context context, MemberFunction function) throws CodeError {
+			ListValue thisValue = function.getParameterValueOfType(context, ListValue.class, 0);
+			Value<?> value = function.getParameterValue(context, 1);
+			thisValue.value.add(value);
+			return thisValue;
+		}
+
+		private synchronized Value<?> insertList(Context context, MemberFunction function) throws CodeError {
+			ListValue thisValue = function.getParameterValueOfType(context, ListValue.class, 0);
+			Value<?> value = function.getParameterValue(context, 1);
+			int index = function.getParameterValueOfType(context, NumberValue.class, 2).value.intValue();
+			int len = thisValue.value.size();
+			if (index > len || index < 0) {
+				throw new RuntimeError("Index is out of bounds", function.syntaxPosition, context);
+			}
+			thisValue.value.add(index, value);
+			return thisValue;
+		}
+
+		private synchronized Value<?> concatList(Context context, MemberFunction function) throws CodeError {
+			ListValue thisValue = function.getParameterValueOfType(context, ListValue.class, 0);
+			ListValue list2 = function.getParameterValueOfType(context, ListValue.class, 1);
+			thisValue.value.addAll(list2.value);
+			return thisValue;
+		}
+
+		private synchronized BooleanValue listContains(Context context, MemberFunction function) throws CodeError {
+			ListValue thisValue = function.getParameterValueOfType(context, ListValue.class, 0);
+			Value<?> value = function.getParameterValue(context, 1);
+			return BooleanValue.of(thisValue.value.contains(value));
+		}
+
+		private synchronized BooleanValue containsAll(Context context, MemberFunction function) throws CodeError {
+			ListValue thisValue = function.getParameterValueOfType(context, ListValue.class, 0);
+			ListValue otherList = function.getParameterValueOfType(context, ListValue.class, 1);
+			return BooleanValue.of(thisValue.value.containsAll(otherList.value));
+		}
+
+		private synchronized BooleanValue isEmpty(Context context, MemberFunction function) throws CodeError {
+			ListValue thisValue = function.getParameterValueOfType(context, ListValue.class, 0);
+			return BooleanValue.of(thisValue.value.isEmpty());
 		}
 	}
 }

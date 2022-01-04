@@ -42,7 +42,8 @@ public class MemberCallNode extends CallNode {
 		
 		if (function == null) {
 			// If we had a class value, but we didn't find the member we should search the generic type members
-			function = memberValue.getMember(memberFunctionName.value, this.argumentNodes.size());
+			function = context.getMemberFunction(memberValue, memberFunctionName.value, this.argumentNodes.size() + 1);
+			argumentValues.add(memberValue);
 		}
 		
 		if (function == null) {

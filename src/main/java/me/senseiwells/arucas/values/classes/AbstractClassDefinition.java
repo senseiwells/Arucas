@@ -8,10 +8,7 @@ import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.functions.MemberOperations;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public abstract class AbstractClassDefinition implements MemberOperations {
 	private final String name;
@@ -28,6 +25,8 @@ public abstract class AbstractClassDefinition implements MemberOperations {
 		return this.name;
 	}
 
+	public abstract Collection<? extends FunctionValue> getMethods();
+
 	public final Map<String, Value<?>> getStaticMemberVariables() {
 		return this.staticMemberVariables;
 	}
@@ -39,6 +38,8 @@ public abstract class AbstractClassDefinition implements MemberOperations {
 	public final void addStaticMethod(FunctionValue method) {
 		this.staticMethods.add(method);
 	}
+
+	public abstract Class<?> getValueClass();
 
 	/**
 	 * This gets called when the class is initialised

@@ -64,6 +64,7 @@ public class ContextBuilder {
 			NullValue.ArucasNullClass::new,
 			NumberValue.ArucasNumberClass::new,
 			ThreadValue.ArucasThreadClass::new,
+			Value.ArucasBaseClass::new,
 			ArucasMathClass::new
 		);
 	}

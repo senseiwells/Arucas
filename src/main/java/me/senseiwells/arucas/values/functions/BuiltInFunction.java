@@ -11,7 +11,6 @@ public class BuiltInFunction extends AbstractBuiltInFunction<BuiltInFunction> {
 		super(name, argumentNames, function, deprecatedMessage);
 	}
 
-	@SuppressWarnings("unused")
 	public BuiltInFunction(String name, String argument, FunctionDefinition<BuiltInFunction> function, String deprecatedMessage) {
 		this(name, List.of(argument), function, deprecatedMessage);
 	}

@@ -88,62 +88,78 @@ public class NumberValue extends Value<Double> {
 		return NumberValue.DECIMAL_FORMAT.format(this.value);
 	}
 
-	@Override
-	protected Set<MemberFunction> getDefinedFunctions() {
-		Set<MemberFunction> memberFunctions = super.getDefinedFunctions();
-		memberFunctions.addAll(Set.of(
-			new MemberFunction("round", this::numberRound),
-			new MemberFunction("ceil", this::numberCeil),
-			new MemberFunction("floor", this::numberFloor),
-			new MemberFunction("modulus", "otherNumber", this::numberModulus, "Use 'Math.mod(num1, num2)'"),
-			new MemberFunction("toRadians", this::toRadians, "Use 'Math.toRadians(num)'"),
-			new MemberFunction("toDegrees", this::toDegrees, "Use 'Math.toDegrees(num)'"),
-			new MemberFunction("absolute", this::numberAbsolute, "Use 'Math.abs(num)'"),
-			new MemberFunction("isInfinite", this::numberIsInfinite),
-			new MemberFunction("isNaN", this::numberIsNan)
-		));
-		return memberFunctions;
-	}
-
-	private NumberValue numberRound(Context context, MemberFunction function) {
-		return new NumberValue(Math.round(this.value));
-	}
-
-	private NumberValue numberCeil(Context context, MemberFunction function) {
-		return new NumberValue(Math.ceil(this.value));
-	}
-
-	private NumberValue numberFloor(Context context, MemberFunction function) {
-		return new NumberValue(Math.floor(this.value));
-	}
-
-	private NumberValue numberModulus(Context context, MemberFunction function) throws CodeError {
-		NumberValue otherNumber = function.getParameterValueOfType(context, NumberValue.class, 0);
-		return new NumberValue(this.value % otherNumber.value);
-	}
-
-	private NumberValue numberAbsolute(Context context, MemberFunction function) {
-		return new NumberValue(Math.abs(this.value));
-	}
-	private NumberValue toRadians(Context context, MemberFunction function) {
-		return new NumberValue(Math.toRadians(this.value));
-	}
-
-	private NumberValue toDegrees(Context context, MemberFunction function) {
-		return new NumberValue(Math.toDegrees(this.value));
-	}
-
-	private BooleanValue numberIsInfinite(Context context, MemberFunction function) {
-		return BooleanValue.of(this.value.isInfinite());
-	}
-
-	private BooleanValue numberIsNan(Context context, MemberFunction function) {
-		return BooleanValue.of(this.value.isNaN());
-	}
-
 	public static class ArucasNumberClass extends ArucasClassExtension {
 		public ArucasNumberClass() {
 			super("Number");
+		}
+
+		@Override
+		public Class<?> getValueClass() {
+			return NumberValue.class;
+		}
+
+		@Override
+		public Set<MemberFunction> getDefinedMethods() {
+			return Set.of(
+				new MemberFunction("round", this::round),
+				new MemberFunction("ceil", this::ceil),
+				new MemberFunction("floor", this::floor),
+				new MemberFunction("modulus", "otherNumber", this::modulus, "Use 'Math.mod(num1, num2)'"),
+				new MemberFunction("toRadians", this::toRadians, "Use 'Math.toRadians(num)'"),
+				new MemberFunction("toDegrees", this::toDegrees, "Use 'Math.toDegrees(num)'"),
+				new MemberFunction("absolute", this::absolute, "Use 'Math.abs(num)'"),
+				new MemberFunction("isInfinite", this::isInfinite),
+				new MemberFunction("isNaN", this::isNan)
+			);
+		}
+
+		private NumberValue round(Context context, MemberFunction function) throws CodeError {
+			NumberValue thisValue = function.getParameterValueOfType(context, NumberValue.class, 0);
+			return new NumberValue(Math.round(thisValue.value));
+		}
+
+		private NumberValue ceil(Context context, MemberFunction function) throws CodeError {
+			NumberValue thisValue = function.getParameterValueOfType(context, NumberValue.class, 0);
+			return new NumberValue(Math.ceil(thisValue.value));
+		}
+
+		private NumberValue floor(Context context, MemberFunction function) throws CodeError {
+			NumberValue thisValue = function.getParameterValueOfType(context, NumberValue.class, 0);
+			return new NumberValue(Math.floor(thisValue.value));
+		}
+
+		@Deprecated
+		private NumberValue modulus(Context context, MemberFunction function) throws CodeError {
+			NumberValue thisValue = function.getParameterValueOfType(context, NumberValue.class, 0);
+			NumberValue otherNumber = function.getParameterValueOfType(context, NumberValue.class, 1);
+			return new NumberValue(thisValue.value % otherNumber.value);
+		}
+
+		@Deprecated
+		private NumberValue absolute(Context context, MemberFunction function) throws CodeError {
+			NumberValue thisValue = function.getParameterValueOfType(context, NumberValue.class, 0);
+			return new NumberValue(Math.abs(thisValue.value));
+		}
+		@Deprecated
+		private NumberValue toRadians(Context context, MemberFunction function) throws CodeError {
+			NumberValue thisValue = function.getParameterValueOfType(context, NumberValue.class, 0);
+			return new NumberValue(Math.toRadians(thisValue.value));
+		}
+
+		@Deprecated
+		private NumberValue toDegrees(Context context, MemberFunction function) throws CodeError {
+			NumberValue thisValue = function.getParameterValueOfType(context, NumberValue.class, 0);
+			return new NumberValue(Math.toDegrees(thisValue.value));
+		}
+
+		private BooleanValue isInfinite(Context context, MemberFunction function) throws CodeError {
+			NumberValue thisValue = function.getParameterValueOfType(context, NumberValue.class, 0);
+			return BooleanValue.of(thisValue.value.isInfinite());
+		}
+
+		private BooleanValue isNan(Context context, MemberFunction function) throws CodeError {
+			NumberValue thisValue = function.getParameterValueOfType(context, NumberValue.class, 0);
+			return BooleanValue.of(thisValue.value.isNaN());
 		}
 	}
 }
