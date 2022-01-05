@@ -46,8 +46,8 @@ public class ThreadValue extends Value<ArucasValueThread> {
 		}
 
 		@Override
-		public List<BuiltInFunction> getDefinedStaticMethods() {
-			return List.of(
+		public ArucasFunctionMap<BuiltInFunction> getDefinedStaticMethods() {
+			return ArucasFunctionMap.of(
 				new BuiltInFunction("getCurrentThread", this::getCurrentThread),
 				new BuiltInFunction("runThreaded", List.of("function"), this::runThreaded$1),
 				new BuiltInFunction("runThreaded", List.of("name", "function"), this::runThreaded$2)

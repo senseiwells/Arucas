@@ -2,6 +2,7 @@
 
 test = new Test();
 
+/*
 start = millis();
 i = 0;
 while(i < 1000000) {
@@ -10,3 +11,6 @@ while(i < 1000000) {
 }
 
 print('%s ms'.formatted([millis() - start]));
+*/
+
+print(Test.staticMethod());

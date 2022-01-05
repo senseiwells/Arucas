@@ -5,9 +5,10 @@ import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import java.util.*;
 
 /**
- * A function map that provides a <code>O(1)</code> lookup time complexity for class definitions.
+ * A function map that provides a <code>O(n)</code> lookup time complexity for class definitions.
  */
 public class ArucasClassDefinitionMap implements Iterable<AbstractClassDefinition> {
+	// TODO: Find a way to combine class definitions to make this O(1)
 	private final Map<Class<?>, Set<AbstractClassDefinition>> classMap;
 	private final Map<String, AbstractClassDefinition> nameMap;
 	
@@ -24,6 +25,7 @@ public class ArucasClassDefinitionMap implements Iterable<AbstractClassDefinitio
 		Set<AbstractClassDefinition> baseSet = this.classMap.computeIfAbsent(clazz, (v) -> new HashSet<>());
 		baseSet.add(value);
 		
+		// Add all subclasses of this class to this set
 		while (clazz != null && clazz != Object.class) {
 			clazz = clazz.getSuperclass();
 			

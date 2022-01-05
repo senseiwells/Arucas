@@ -18,22 +18,20 @@ public class ArucasTestWrapper implements IArucasWrappedClass {
 	
 	@ArucasFunction
 	public Value<?> getName(Context context, ListValue list, MapValue map, StringValue string) {
-		
 		return null;
 	}
 	
 	@ArucasFunction
-	public Value<?> awesomeTestMethod(Context context, ArucasClassValue value, ListValue list) {
+	public Value<?> awesomeTestMethod(Context context, ListValue list) {
 		System.out.println("I got called OMG :D 1");
-		System.out.printf("0: %s\n", value);
+		System.out.printf("0: %s\n", this);
 		System.out.printf("1: %s\n", list);
 		return StringValue.of("11111111 is awesome");
 	}
 	
 	@ArucasFunction
-	public Value<?> awesomeTestMethod(Context context, ArucasClassValue value, ListValue list, MapValue map, StringValue string) {
-		System.out.println("I got called OMG :D 2");
-		System.out.printf("0: %s\n", value);
+	public Value<?> testing(Context context, ListValue list, MapValue map, StringValue string) {
+		System.out.printf("0: %s\n", this);
 		System.out.printf("1: %s\n", list);
 		System.out.printf("2: %s\n", map);
 		System.out.printf("3: %s\n", string);
@@ -41,12 +39,20 @@ public class ArucasTestWrapper implements IArucasWrappedClass {
 	}
 	
 	@ArucasFunction
-	public Value<?> benchmark(Context context, ArucasClassValue value, ListValue list, MapValue map, StringValue string) {
+	public static Value<?> benchmark(Context context, ListValue list, MapValue map, StringValue string) {
+		System.out.printf("0: %s\n", list);
+		System.out.printf("1: %s\n", map);
+		System.out.printf("2: %s\n", string);
 		return NullValue.NULL;
 	}
 	
 	@ArucasFunction
-	public Value<?> toList(Context context, ArucasClassValue value) {
+	public Value<?> toList(Context context) {
+		return NullValue.NULL;
+	}
+	
+	@ArucasFunction
+	public static Value<?> staticMethod(Context context) {
 		return NullValue.NULL;
 	}
 	
@@ -58,6 +64,6 @@ public class ArucasTestWrapper implements IArucasWrappedClass {
 	
 	@ArucasFunction
 	public Value<?> toString(Context context) {
-		return NullValue.NULL;
+		return StringValue.of("Testing string");
 	}
 }

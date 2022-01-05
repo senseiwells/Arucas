@@ -113,6 +113,7 @@ public abstract class FunctionValue extends Value<String> {
 
 	@Override
 	public boolean equals(Object other) {
+		// TODO: Check if `return this == other` is a better choice for equals
 		if (other instanceof FunctionValue functionValue) {
 			return this.getParameterCount() == functionValue.getParameterCount() && super.equals(other);
 		}

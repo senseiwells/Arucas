@@ -4,8 +4,10 @@ import me.senseiwells.arucas.api.impl.ArucasOutput;
 import me.senseiwells.arucas.api.wrappers.IArucasWrappedClass;
 import me.senseiwells.arucas.extensions.*;
 import me.senseiwells.arucas.utils.ArucasClassDefinitionMap;
+import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.*;
+import me.senseiwells.arucas.values.functions.AbstractBuiltInFunction;
 import me.senseiwells.arucas.values.wrapper.ArucasWrapper;
 
 import java.util.*;
@@ -99,11 +101,11 @@ public class ContextBuilder {
 	}
 	
 	public Context build() {
-		List<IArucasExtension> extensionList = new ArrayList<>();
+		ArucasFunctionMap<AbstractBuiltInFunction<?>> extensionList = new ArucasFunctionMap<>();
 		ArucasClassDefinitionMap classDefinitions = new ArucasClassDefinitionMap();
 
 		for (Supplier<IArucasExtension> supplier : this.extensions) {
-			extensionList.add(supplier.get());
+			extensionList.addAll(supplier.get().getDefinedFunctions());
 		}
 
 		for (Supplier<ArucasClassExtension> supplier : this.classes) {

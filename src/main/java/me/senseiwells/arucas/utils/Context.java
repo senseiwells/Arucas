@@ -1,7 +1,6 @@
 package me.senseiwells.arucas.utils;
 
 import me.senseiwells.arucas.api.ArucasThreadHandler;
-import me.senseiwells.arucas.api.IArucasExtension;
 import me.senseiwells.arucas.api.IArucasOutput;
 import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.throwables.CodeError;
@@ -13,12 +12,14 @@ import me.senseiwells.arucas.values.functions.FunctionValue;
 import java.util.*;
 
 /**
- * Runtime context class of the programming language
+ * Runtime context class of the programming language.
+ *
+ * A context is never shared across two threads and is
+ * threadsafe.
  */
 public class Context {
 	private final ArucasThreadHandler threadHandler;
-	private final Set<String> builtInFunctions;
-	private final List<IArucasExtension> extensions;
+	private final ArucasFunctionMap<AbstractBuiltInFunction<?>> extensions;
 	private final IArucasOutput arucasOutput;
 	
 	private final String displayName;
@@ -27,8 +28,7 @@ public class Context {
 	private boolean isDebug;
 	private boolean suppressDeprecated;
 
-	private Context(String displayName, Context parentContext, List<IArucasExtension> extensions, ArucasClassDefinitionMap classDefinitions, ArucasThreadHandler threadHandler, IArucasOutput arucasOutput) {
-		this.builtInFunctions = new HashSet<>();
+	private Context(String displayName, Context parentContext, ArucasFunctionMap<AbstractBuiltInFunction<?>> extensions, ArucasClassDefinitionMap classDefinitions, ArucasThreadHandler threadHandler, IArucasOutput arucasOutput) {
 		this.extensions = extensions;
 		this.arucasOutput = arucasOutput;
 		this.threadHandler = threadHandler;
@@ -37,11 +37,11 @@ public class Context {
 		this.stackTable = new StackTable();
 		this.parentContext = parentContext;
 		
-		for (IArucasExtension extension : extensions) {
-			for (AbstractBuiltInFunction<?> function : extension.getDefinedFunctions()) {
-				this.builtInFunctions.add(function.value);
-			}
-		}
+//		for (IArucasExtension extension : extensions) {
+//			for (AbstractBuiltInFunction<?> function : extension.getDefinedFunctions()) {
+//				this.builtInFunctions.add(function.value);
+//			}
+//		}
 		
 		// TODO: This will make the code exponentially slower
 		for (AbstractClassDefinition classDefinition : classDefinitions) {
@@ -49,7 +49,7 @@ public class Context {
 		}
 	}
 	
-	public Context(String displayName, List<IArucasExtension> extensions, ArucasClassDefinitionMap classDefinitions, ArucasThreadHandler threadHandler, IArucasOutput arucasOutput) {
+	public Context(String displayName, ArucasFunctionMap<AbstractBuiltInFunction<?>> extensions, ArucasClassDefinitionMap classDefinitions, ArucasThreadHandler threadHandler, IArucasOutput arucasOutput) {
 		this(displayName, null, extensions, classDefinitions, threadHandler, arucasOutput);
 	}
 	
@@ -59,7 +59,6 @@ public class Context {
 		this.threadHandler = branch.threadHandler;
 		this.arucasOutput = branch.arucasOutput;
 		this.extensions = branch.extensions;
-		this.builtInFunctions = branch.builtInFunctions;
 		this.parentContext = branch.parentContext;
 	}
 
@@ -171,7 +170,7 @@ public class Context {
 	}
 
 	public boolean isBuiltInFunction(String name) {
-		return this.builtInFunctions.contains(name);
+		return this.extensions.has(name);
 	}
 
 	public boolean isDefinedClass(String name) {
@@ -225,19 +224,7 @@ public class Context {
 	}
 
 	public AbstractBuiltInFunction<?> getBuiltInFunction(String methodName, int parameters) {
-		for (IArucasExtension extension : this.extensions) {
-			AbstractBuiltInFunction<?> function = extension.getDefinedFunctions().get(methodName, parameters);
-			if (function != null) {
-				return function;
-			}
-//			for (AbstractBuiltInFunction<?> function : extension.getDefinedFunctions()) {
-//				if (parameters == function.getParameterCount() && function.getName().equals(methodName)) {
-//					return function;
-//				}
-//			}
-		}
-
-		return null;
+		return this.extensions.get(methodName, parameters);
 	}
 
 	public FunctionValue getMemberFunction(Value<?> value, String methodName, int parameters) {

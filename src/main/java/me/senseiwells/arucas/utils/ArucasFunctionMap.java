@@ -1,7 +1,6 @@
 package me.senseiwells.arucas.utils;
 
 import me.senseiwells.arucas.values.functions.FunctionValue;
-import me.senseiwells.arucas.values.functions.MemberFunction;
 
 import java.util.*;
 
@@ -33,6 +32,20 @@ public class ArucasFunctionMap<T extends FunctionValue> implements Iterable<T> {
 		
 		map.put(parameters, value);
 		return true;
+	}
+	
+	/**
+	 * Adds all functions in the specified map to this map
+	 */
+	public void addAll(ArucasFunctionMap<? extends T> functions) {
+		functions.forEach(this::add);
+	}
+	
+	/**
+	 * Adds all functions in the specified map to this map
+	 */
+	public void addAll(Collection<? extends T> functions) {
+		functions.forEach(this::add);
 	}
 	
 	/**
@@ -73,6 +86,13 @@ public class ArucasFunctionMap<T extends FunctionValue> implements Iterable<T> {
 		return map != null ? map.get(parameters):null;
 	}
 	
+	/**
+	 * Returns all unique function names inside this map
+	 */
+	public Set<String> names() {
+		return this.map.keySet();
+	}
+	
 	@Override
 	public Iterator<T> iterator() {
 		// Create a non thread safe iterator of the current map
@@ -81,6 +101,15 @@ public class ArucasFunctionMap<T extends FunctionValue> implements Iterable<T> {
 	
 	@SafeVarargs
 	public static <T extends FunctionValue> ArucasFunctionMap<T> of(T... functions) {
+		ArucasFunctionMap<T> map = new ArucasFunctionMap<>();
+		for (T value : functions) {
+			map.add(value);
+		}
+		
+		return map;
+	}
+	
+	public static <T extends FunctionValue> ArucasFunctionMap<T> of(Collection<? extends T> functions) {
 		ArucasFunctionMap<T> map = new ArucasFunctionMap<>();
 		for (T value : functions) {
 			map.add(value);

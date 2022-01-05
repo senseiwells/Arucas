@@ -8,15 +8,13 @@ import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
 import me.senseiwells.arucas.values.functions.ConstructorFunction;
-import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public abstract class ArucasClassExtension extends AbstractClassDefinition {
-	private final Set<ConstructorFunction> constructors;
+	private final ArucasFunctionMap<ConstructorFunction> constructors;
 	private final ArucasFunctionMap<MemberFunction> methods;
 
 	public ArucasClassExtension(String name) {
@@ -24,9 +22,7 @@ public abstract class ArucasClassExtension extends AbstractClassDefinition {
 		this.constructors = this.getDefinedConstructors();
 		this.methods = this.getDefinedMethods();
 		this.getStaticMemberVariables().putAll(this.getDefinedStaticVariables());
-		for (FunctionValue value : this.getDefinedStaticMethods()) {
-			this.getStaticMethods().add(value);
-		}
+		this.getStaticMethods().addAll(this.getDefinedStaticMethods());
 	}
 
 	@Override
@@ -48,15 +44,15 @@ public abstract class ArucasClassExtension extends AbstractClassDefinition {
 	/**
 	 * This lets you define constructors for a Class
 	 */
-	public Set<ConstructorFunction> getDefinedConstructors() {
-		return Set.of();
+	public ArucasFunctionMap<ConstructorFunction> getDefinedConstructors() {
+		return ArucasFunctionMap.of();
 	}
 
 	/**
 	 * This lets you define methods for a Class
 	 */
 	public ArucasFunctionMap<MemberFunction> getDefinedMethods() {
-		return new ArucasFunctionMap<>();
+		return ArucasFunctionMap.of();
 	}
 
 	/**
@@ -69,8 +65,8 @@ public abstract class ArucasClassExtension extends AbstractClassDefinition {
 	/**
 	 * This lets you define static methods for a Class
 	 */
-	public List<BuiltInFunction> getDefinedStaticMethods() {
-		return List.of();
+	public ArucasFunctionMap<BuiltInFunction> getDefinedStaticMethods() {
+		return ArucasFunctionMap.of();
 	}
 
 	/**
@@ -83,12 +79,18 @@ public abstract class ArucasClassExtension extends AbstractClassDefinition {
 		}
 
 		int parameterCount = parameters.size();
-		for (ConstructorFunction constructor : this.constructors) {
-			if (parameterCount != constructor.getParameterCount()) {
-				continue;
-			}
-			return constructor.call(context, parameters, false);
+		ConstructorFunction constructor = this.constructors.get(this.getName(), parameterCount);
+		if (constructor == null) {
+			throw new RuntimeError("No such constructor for %s".formatted(this.getName()), syntaxPosition, context);
 		}
-		throw new RuntimeError("No such constructor for %s".formatted(this.getName()), syntaxPosition, context);
+		return constructor.call(context, parameters, false);
+		
+//		for (ConstructorFunction constructor : this.constructors) {
+//			if (parameterCount != constructor.getParameterCount()) {
+//				continue;
+//			}
+//			return constructor.call(context, parameters, false);
+//		}
+//		throw new RuntimeError("No such constructor for %s".formatted(this.getName()), syntaxPosition, context);
 	}
 }
