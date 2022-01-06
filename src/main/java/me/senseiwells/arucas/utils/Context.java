@@ -4,6 +4,8 @@ import me.senseiwells.arucas.api.ArucasThreadHandler;
 import me.senseiwells.arucas.api.IArucasOutput;
 import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.throwables.CodeError;
+import me.senseiwells.arucas.throwables.ThrowValue;
+import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.values.functions.AbstractBuiltInFunction;
@@ -27,7 +29,11 @@ public class Context {
 	private StackTable stackTable;
 	private boolean isDebug;
 	private boolean suppressDeprecated;
-
+	
+	private final ThrowValue.Continue continueThrowable = new ThrowValue.Continue();
+	private final ThrowValue.Break breakThrowable = new ThrowValue.Break();
+	private final ThrowValue.Return returnThrowable = new ThrowValue.Return(NullValue.NULL);
+	
 	private Context(String displayName, Context parentContext, ArucasFunctionMap<AbstractBuiltInFunction<?>> extensions, ArucasClassDefinitionMap classDefinitions, ArucasThreadHandler threadHandler, IArucasOutput arucasOutput) {
 		this.extensions = extensions;
 		this.arucasOutput = arucasOutput;
@@ -37,16 +43,7 @@ public class Context {
 		this.stackTable = new StackTable();
 		this.parentContext = parentContext;
 		
-//		for (IArucasExtension extension : extensions) {
-//			for (AbstractBuiltInFunction<?> function : extension.getDefinedFunctions()) {
-//				this.builtInFunctions.add(function.value);
-//			}
-//		}
-		
-		// TODO: This will make the code exponentially slower
-		for (AbstractClassDefinition classDefinition : classDefinitions) {
-			this.addClassDefinition(classDefinition);
-		}
+		this.stackTable.classDefinitions.insertAll(classDefinitions);
 	}
 	
 	public Context(String displayName, ArucasFunctionMap<AbstractBuiltInFunction<?>> extensions, ArucasClassDefinitionMap classDefinitions, ArucasThreadHandler threadHandler, IArucasOutput arucasOutput) {
@@ -82,6 +79,19 @@ public class Context {
 	
 	public Context createChildContext(String displayName) {
 		return new Context(displayName, this, this.extensions, this.stackTable.getRoot().classDefinitions, this.threadHandler, this.arucasOutput);
+	}
+	
+	public ThrowValue.Continue getContinueThrowable() {
+		return this.continueThrowable;
+	}
+	
+	public ThrowValue.Break getBreakThrowable() {
+		return this.breakThrowable;
+	}
+	
+	public ThrowValue.Return getReturnThrowable(Value<?> value) {
+		this.returnThrowable.setReturnValue(value);
+		return this.returnThrowable;
 	}
 	
 	/**
@@ -228,39 +238,33 @@ public class Context {
 	}
 
 	public FunctionValue getMemberFunction(Value<?> value, String methodName, int parameters) {
-//		Set<AbstractClassDefinition> definitions = this.stackTable.getRoot().classDefinitions.get(value.getClass());
-//
-//		System.out.println("-".repeat(100));
-//		System.out.printf("Value: %s\n", value);
-//		System.out.printf("    c: %s\n", value.getClass());
-//		System.out.printf("    m: %s\n", methodName);
-//		System.out.printf("    p: %d\n", parameters);
-//		System.out.printf("    d: %s\n", definitions);
-//
-//		for (AbstractClassDefinition definition : definitions) {
-//			System.out.printf("     + %s (%s)\n", definition.getName(), definition.getValueClass());
-//		}
-//
-//		for (AbstractClassDefinition definition : definitions) {
-//			FunctionValue targetMethod = definition.getMethods().get(methodName, parameters);
-//			if (targetMethod != null) {
-//				return targetMethod;
-//			}
-//		}
+		final boolean USE_FAST_LOOKUP = true;
 		
-		// TODO: Make this O(1)
-		for (AbstractClassDefinition definition : this.stackTable.getRoot().classDefinitions) {
-			Class<?> valueClass = definition.getValueClass();
-			if (valueClass == null || !valueClass.isInstance(value)) {
-				continue;
-			}
-
-			FunctionValue targetMethod = definition.getMethods().get(methodName, parameters);
-			if (targetMethod != null) {
-				return targetMethod;
+		if (USE_FAST_LOOKUP) {
+			List<AbstractClassDefinition> definitions = this.stackTable.getRoot().classDefinitions.get(value.getClass());
+			
+			// TODO: Make this O(1) for builtIn classes
+			for(AbstractClassDefinition definition : definitions) {
+				FunctionValue targetMethod = definition.getMethods().get(methodName, parameters);
+				if (targetMethod != null) {
+					return targetMethod;
+				}
 			}
 		}
-
+		else {
+			for (AbstractClassDefinition definition : this.stackTable.getRoot().classDefinitions) {
+				Class<?> valueClass = definition.getValueClass();
+				if (valueClass == null || !valueClass.isInstance(value)) {
+					continue;
+				}
+				
+				FunctionValue targetMethod = definition.getMethods().get(methodName, parameters);
+				if (targetMethod != null) {
+					return targetMethod;
+				}
+			}
+		}
+		
 		return null;
 	}
 	
@@ -274,6 +278,7 @@ public class Context {
 			sb.append(iter.next()).append("\n");
 		}
 		
+		this.stackTable.getRoot().classDefinitions.iterator().forEachRemaining(System.out::println);
 		System.out.println(sb);
 	}
 }

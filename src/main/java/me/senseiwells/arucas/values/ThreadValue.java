@@ -32,7 +32,7 @@ public class ThreadValue extends Value<ArucasValueThread> {
 
 	@Override
 	public String getStringValue(Context context) throws CodeError {
-		return "<Thread - %s>".formatted(this.name.value);
+		return "<Thread - " + this.name.value + ">";
 	}
 
 	public static class ArucasThreadClass extends ArucasClassExtension {

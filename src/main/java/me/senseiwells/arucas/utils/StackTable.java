@@ -174,6 +174,6 @@ public class StackTable {
 
 	@Override
 	public String toString() {
-		return "%s%s".formatted(this.parentTable == null ? "RootTable":"StackTable", this.symbolMap);
+		return (this.parentTable == null ? "RootTable" : "StackTable") + this.symbolMap;
 	}
 }

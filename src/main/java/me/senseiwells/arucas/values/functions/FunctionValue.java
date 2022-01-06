@@ -66,12 +66,11 @@ public abstract class FunctionValue extends Value<String> {
 	}
 
 	protected abstract Value<?> execute(Context context, List<Value<?>> arguments) throws CodeError, ThrowValue;
-
-	public final Value<?> call(Context context, List<Value<?>> arguments) throws CodeError {
-		return this.call(context, arguments, true);
-	}
-
-	public final Value<?> call(Context context, List<Value<?>> arguments, boolean returnable) throws CodeError {
+	
+	/**
+	 * API overridable method
+	 */
+	protected Value<?> callOverride(Context context, List<Value<?>> arguments, boolean returnable) throws CodeError {
 		context.pushFunctionScope(this.syntaxPosition);
 		try {
 			Value<?> value = this.execute(context, arguments);
@@ -88,7 +87,7 @@ public abstract class FunctionValue extends Value<String> {
 			}
 			context.moveScope(context.getReturnScope());
 			context.popScope();
-			return tv.returnValue;
+			return tv.getReturnValue();
 		}
 		catch (ThrowValue tv) {
 			throw new CodeError(
@@ -104,6 +103,14 @@ public abstract class FunctionValue extends Value<String> {
 				this.syntaxPosition
 			);
 		}
+	}
+	
+	public final Value<?> call(Context context, List<Value<?>> arguments) throws CodeError {
+		return this.callOverride(context, arguments, true);
+	}
+
+	public final Value<?> call(Context context, List<Value<?>> arguments, boolean returnable) throws CodeError {
+		return this.callOverride(context, arguments, returnable);
 	}
 
 	@Override
@@ -127,6 +134,6 @@ public abstract class FunctionValue extends Value<String> {
 
 	@Override
 	public String getStringValue(Context context) throws CodeError {
-		return "<function %s>".formatted(this.value);
+		return "<function " + this.value + ">";
 	}
 }

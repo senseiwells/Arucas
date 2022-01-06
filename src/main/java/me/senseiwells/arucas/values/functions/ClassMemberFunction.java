@@ -36,6 +36,6 @@ public class ClassMemberFunction extends UserDefinedFunction {
 	
 	@Override
 	public String getStringValue(Context context) throws CodeError {
-		return "<class %s::%s@%x>".formatted(this.thisValue.getName(), this.getName(), this.hashCode());
+		return "<class " + this.thisValue.getName() + "::" + this.getName() + "@" + Integer.toHexString(this.hashCode()) + ">";
 	}
 }

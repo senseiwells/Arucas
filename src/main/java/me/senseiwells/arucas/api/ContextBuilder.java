@@ -116,6 +116,8 @@ public class ContextBuilder {
 			classDefinitions.add(ArucasWrapper.createWrapper(supplier.get()));
 		}
 		
+		// TODO: Combine class extensions so that they are `O(1)` lookup
+		
 		ArucasOutput arucasOutput = new ArucasOutput();
 		arucasOutput.setOutputHandler(this.outputHandler);
 		

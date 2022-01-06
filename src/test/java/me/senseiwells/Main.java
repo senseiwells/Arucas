@@ -1,9 +1,9 @@
 package me.senseiwells;
 
 import me.senseiwells.arucas.api.ContextBuilder;
+import me.senseiwells.arucas.extensions.ArucasDebugClass;
 import me.senseiwells.arucas.extensions.wrappers.ArucasTestWrapper;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.values.functions.MemberFunction;
 
 import java.util.Scanner;
 
@@ -12,6 +12,7 @@ public class Main {
 		Context context = new ContextBuilder()
 			.setDisplayName("System.in")
 			.addDefault()
+			.addClasses(ArucasDebugClass::new)
 			.addWrapper(ArucasTestWrapper::new)
 			.build();
 		
@@ -19,10 +20,6 @@ public class Main {
 			.setStopErrorHandler(System.out::println)
 			.setErrorHandler(System.out::println)
 			.setFatalErrorHandler((c, t, s) -> t.printStackTrace());
-	
-		for(int i = 0; i < 1000; i++) {
-			System.out.print(", new MemberFunction(\"isNaN%d\", this::isNan)".formatted(i));
-		}
 		
 		while (true) {
 			Scanner scanner = new Scanner(System.in);

@@ -9,7 +9,7 @@ import java.util.*;
  */
 public class ArucasClassDefinitionMap implements Iterable<AbstractClassDefinition> {
 	// TODO: Find a way to combine class definitions to make this O(1)
-	private final Map<Class<?>, Set<AbstractClassDefinition>> classMap;
+	private final Map<Class<?>, List<AbstractClassDefinition>> classMap;
 	private final Map<String, AbstractClassDefinition> nameMap;
 	
 	public ArucasClassDefinitionMap() {
@@ -18,23 +18,80 @@ public class ArucasClassDefinitionMap implements Iterable<AbstractClassDefinitio
 	}
 	
 	/**
+	 * Returns the index of the class in the specified list
+	 */
+	private int getClassIndex(Class<?> clazz, List<AbstractClassDefinition> list) {
+		final int length = list.size();
+		
+		for (int i = 0; i < length; i++) {
+			if (list.get(i).getValueClass().isAssignableFrom(clazz)) {
+				return i;
+			}
+		}
+		
+		return length;
+	}
+	
+	/**
 	 * This method adds the class definition value to all of its subclasses
 	 */
 	private void addSubclasses(AbstractClassDefinition value) {
 		Class<?> clazz = value.getValueClass();
-		Set<AbstractClassDefinition> baseSet = this.classMap.computeIfAbsent(clazz, (v) -> new HashSet<>());
-		baseSet.add(value);
+		Class<?> baseClazz = clazz;
+		List<AbstractClassDefinition> baseSet = this.classMap.computeIfAbsent(clazz, (v) -> new ArrayList<>());
+		boolean isEmpty = baseSet.isEmpty();
+		baseSet.add(0, value);
 		
-		// Add all subclasses of this class to this set
-		while (clazz != null && clazz != Object.class) {
-			clazz = clazz.getSuperclass();
-			
-			// Get the subclass list
-			Set<AbstractClassDefinition> set = this.classMap.get(clazz);
-			if (set != null) {
-				// Add all the subclass entries to the base class
-				baseSet.addAll(set);
+		if (clazz != null) {
+			if (isEmpty) {
+				while (clazz != null && clazz != Object.class) {
+					clazz = clazz.getSuperclass();
+					
+					List<AbstractClassDefinition> childList = this.classMap.get(clazz);
+					if (childList != null) {
+						baseSet.addAll(childList);
+						break;
+					}
+				}
 			}
+			
+			for (Class<?> key : this.classMap.keySet()) {
+				if (key != null && baseClazz.isAssignableFrom(key) && baseClazz != key) {
+					List<AbstractClassDefinition> childList = this.classMap.get(key);
+					
+					if (childList != null) {
+						int classIndex = getClassIndex(baseClazz, childList);
+						childList.add(classIndex, value);
+					}
+				}
+			}
+		}
+		
+		// debug(baseClazz, value);
+	}
+	
+	/**
+	 * Add all the values from the specified map without doing any hierarchy checks
+	 */
+	public void insertAll(ArucasClassDefinitionMap map) {
+		for (Class<?> key : map.classMap.keySet()) {
+			this.classMap.put(key, new ArrayList<>(map.classMap.get(key)));
+		}
+		
+		for (String key : map.nameMap.keySet()) {
+			this.nameMap.put(key, map.nameMap.get(key));
+		}
+	}
+	
+	private void debug(Class<?> added, AbstractClassDefinition value) {
+		System.out.printf("Adding: %s, %s\n", added, value);
+		for (Class<?> key : this.classMap.keySet()) {
+			System.out.printf("  (%s.class)\n    ", key == null ? "null" : key.getSimpleName());
+			List<AbstractClassDefinition> list = this.classMap.get(key);
+			for (AbstractClassDefinition def : list) {
+				System.out.printf("%s::%s@%x, ", def.getName(), def.getValueClass() == null ? "null" : (def.getValueClass().getSimpleName()), def.hashCode());
+			}
+			System.out.print("\n\n");
 		}
 	}
 	
@@ -47,9 +104,6 @@ public class ArucasClassDefinitionMap implements Iterable<AbstractClassDefinitio
 		}
 		
 		this.nameMap.put(value.getName(), value);
-		
-		// Adding the class here is a bit different because we need to make sure all subclass
-		// values also belong to this class
 		this.addSubclasses(value);
 		return true;
 	}
@@ -64,7 +118,7 @@ public class ArucasClassDefinitionMap implements Iterable<AbstractClassDefinitio
 	/**
 	 * Returns the class definitions defined of the specified class
 	 */
-	public Set<AbstractClassDefinition> get(Class<?> clazz) {
+	public List<AbstractClassDefinition> get(Class<?> clazz) {
 		return this.classMap.get(clazz);
 	}
 	

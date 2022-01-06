@@ -4,17 +4,13 @@ import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.api.wrappers.IArucasWrappedClass;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
-import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.ArucasClassValue;
 
 import java.lang.invoke.MethodHandle;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.IntStream;
 
 public class WrapperClassMemberFunction extends ClassMemberFunction {
 	private final IArucasWrappedClass classValue;
@@ -36,7 +32,6 @@ public class WrapperClassMemberFunction extends ClassMemberFunction {
 	
 	private static List<String> createParameters(int count) {
 		return Collections.nCopies(count, "");
-//		return IntStream.range(1, count).mapToObj(Integer::toString).toList();
 	}
 	
 	public WrapperClassMemberFunction copy(ArucasClassValue value) {
@@ -54,9 +49,8 @@ public class WrapperClassMemberFunction extends ClassMemberFunction {
 		return new WrapperClassMemberFunction(this.classValue, this.getName(), this.parameters, this.isStatic, this.methodHandle);
 	}
 	
-	private static final ThrowValue.Return exception_test = new ThrowValue.Return(NullValue.NULL);
 	@Override
-	public Value<?> execute(Context context, List<Value<?>> arguments) throws CodeError, ThrowValue {
+	protected Value<?> callOverride(Context context, List<Value<?>> arguments, boolean returnable) throws CodeError {
 		Object[] args = new Object[1 + this.parameters];
 		if (this.isStatic) {
 			args[0] = context;
@@ -73,14 +67,13 @@ public class WrapperClassMemberFunction extends ClassMemberFunction {
 		}
 		
 		try {
-			throw new ThrowValue.Return(NullValue.NULL);
-//			throw exception_test;//new ThrowValue.Return((Value<?>)this.methodHandle.invokeWithArguments(args));
+			return (Value<?>)this.methodHandle.invokeWithArguments(args);
 		}
-		catch (ThrowValue t) {
-			throw t;
+		catch (ClassCastException e) {
+			// TODO: Generate a more descriptive error message for the invalid parameter value
+			throw new RuntimeError(e.getMessage(), this.syntaxPosition, context);
 		}
 		catch (Throwable t) {
-			t.printStackTrace();
 			throw new RuntimeError(t.getMessage(), this.syntaxPosition, context);
 		}
 	}

@@ -51,7 +51,7 @@ public class ListValue extends Value<ArucasValueList> {
 			sb.deleteCharAt(0);
 		}
 		
-		return "[%s]".formatted(sb.toString().trim());
+		return "[" + sb.toString().trim() + "]";
 	}
 
 	public static class ArucasListClass extends ArucasClassExtension {

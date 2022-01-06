@@ -100,6 +100,7 @@ public class ArucasClassValue extends Value<ArucasClassDefinition> implements Me
 		if (memberFunction != null) {
 			return memberFunction.call(context, new ArrayList<>()).getStringValue(context);
 		}
-		return "<class %s@%x>".formatted(this.getName(), this.hashCode());
+		
+		return "<class " + this.getName() + "@" + Integer.toHexString(this.hashCode()) + ">";
 	}
 }

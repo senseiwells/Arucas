@@ -36,18 +36,8 @@ delegate = Benchmark.valueFunctionCallAvg;
 
 s = " ms per 10 million iterations";
 
-/*
-print(new Test());
-print(new Test().toString());
-print(Test.benchmark([ 1 ], { 2: 3 }, '4'));
-print(new Test().testing([ 5 ], { 6: 7 }, '8'));
-*/
-
 print("----------:----------------------------------------------");
 print("Test      > %s%s".formatted([delegate(new Test()), s]));
-stop();
-
-/*
 print("String    > %s%s".formatted([delegate(""), s]));
 print("List      > %s%s".formatted([delegate([]), s]));
 print("Number    > %s%s".formatted([delegate(0), s]));
@@ -55,4 +45,3 @@ print("Null      > %s%s".formatted([delegate(null), s]));
 print("Map       > %s%s".formatted([delegate({}), s]));
 print("Boolean   > %s%s".formatted([delegate(true), s]));
 print("UserClass > %s%s".formatted([delegate(new UserClass()), s]));
-*/

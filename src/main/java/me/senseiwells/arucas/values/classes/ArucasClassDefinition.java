@@ -92,22 +92,8 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 		if (constructor == null) {
 			throw new RuntimeError("No such constructor for %s".formatted(this.getName()), syntaxPosition, context);
 		}
+		
 		constructor.copy(thisValue).call(context, parameters, false);
-		
-		// Finding the constructor with the correct amount of parameters
-//		boolean matched = false;
-//		for (ClassMemberFunction constructor : this.constructors) {
-//			if (parameterCount != constructor.getParameterCount()) {
-//				continue;
-//			}
-//			matched = true;
-//			constructor.copy(thisValue).call(context, parameters, false);
-//			break;
-//		}
-//		if (!matched) {
-//			throw new RuntimeError("No such constructor for %s".formatted(this.getName()), syntaxPosition, context);
-//		}
-		
 		return thisValue;
 	}
 

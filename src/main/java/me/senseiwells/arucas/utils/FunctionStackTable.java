@@ -56,6 +56,6 @@ public class FunctionStackTable extends StackTable {
 	
 	@Override
 	public String toString() {
-		return "FunctionStackTable%s".formatted(this.symbolMap);
+		return "FunctionStackTable" + this.symbolMap;
 	}
 }

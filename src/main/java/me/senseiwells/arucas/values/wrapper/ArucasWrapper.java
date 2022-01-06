@@ -1,16 +1,8 @@
 package me.senseiwells.arucas.values.wrapper;
 
-import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.api.wrappers.ArucasFunction;
 import me.senseiwells.arucas.api.wrappers.IArucasWrappedClass;
-import me.senseiwells.arucas.nodes.DirectAccessNode;
-import me.senseiwells.arucas.nodes.Node;
-import me.senseiwells.arucas.throwables.CodeError;
-import me.senseiwells.arucas.throwables.RuntimeError;
-import me.senseiwells.arucas.throwables.ThrowValue;
-import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.ArucasClassDefinition;
 import me.senseiwells.arucas.values.functions.WrapperClassMemberFunction;
@@ -102,64 +94,15 @@ public class ArucasWrapper {
 		final int parameterLength = parameters.length - (isStatic ? 1 : 0);
 		
 		System.out.printf("Method: %s%s::%s (%s)\n", isStatic ? "static " : "", clazz.getSimpleName(), method.getName(), handle);
-		System.out.printf("     p: %d\n", parameterLength);
 		WrapperClassMemberFunction function = new WrapperClassMemberFunction(this.value, method.getName(), parameterLength, isStatic, handle);
 		
 		if (isStatic) {
-//			UserDefinedFunction function = new UserDefinedFunction(method.getName(), stringParameters, ISyntax.empty());
-//			function.complete(createWrapperNode(method.getName(), handle, parameterLength, true));
 			this.classDefinition.addStaticMethod(function);
 		} else {
-//			ClassMemberFunction function = new ClassMemberFunction(method.getName(), stringParameters, ISyntax.empty());
-//			function.complete(createWrapperNode(method.getName(), handle, parameterLength, false));
 			this.classDefinition.addMethod(function);
 		}
 		
 		return true;
-	}
-	
-	private Node createWrapperNode(String methodName, MethodHandle handle, final int parameters, boolean isStatic) {
-		Token methodToken = new Token(Token.Type.IDENTIFIER, methodName, ISyntax.empty());
-		return new DirectAccessNode(methodToken, NullValue.NULL) {
-			@Override
-			public Value<?> visit(Context context) throws CodeError, ThrowValue {
-				// TODO: Figure out a better solution to get the parameters
-				//       If we can get direct access to the parameters buffer
-				//       we could skip some branches and context lookups. This
-				//       would make wrapper classes much faster than other types
-				//       of calls. The only problem is that we need to make
-				//       wrapper classes a subclass of `ArucasClassValue` for
-				//       them to be completely unique.
-				//
-				// TODO: To fix this we need to make a more robust system for
-				//       class creation.
-				//
-				
-				Object[] args = new Object[1 + parameters];
-				if (isStatic) {
-					args[0] = context;
-					for (int i = 1; i < parameters; i++) {
-						args[i] = context.getVariable(Integer.toString(i));
-					}
-				} else {
-					args[0] = ArucasWrapper.this.value;
-					args[1] = context;
-					for (int i = 1; i < parameters; i++) {
-						args[i + 1] = context.getVariable(Integer.toString(i));
-					}
-				}
-				
-				try {
-					throw new ThrowValue.Return((Value<?>)handle.invokeWithArguments(args));
-				}
-				catch (CodeError | ThrowValue t) {
-					throw t;
-				}
-				catch (Throwable t) {
-					throw new RuntimeError(t.getMessage(), this.syntaxPosition, context);
-				}
-			}
-		};
 	}
 	
 	public ArucasClassDefinition getClassDefinition() {

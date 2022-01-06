@@ -45,7 +45,7 @@ public class MapValue extends Value<ArucasValueMap> {
 			sb.deleteCharAt(0);
 		}
 		
-		return "{%s}".formatted(sb.toString().trim());
+		return "{" + sb.toString().trim() + "}";
 	}
 
 	public static class ArucasMapClass extends ArucasClassExtension {
