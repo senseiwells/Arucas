@@ -4,7 +4,6 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.utils.StackTable;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.functions.ClassMemberFunction;
 import me.senseiwells.arucas.values.functions.FunctionValue;
@@ -15,13 +14,13 @@ import java.util.*;
 public class ArucasClassValue extends Value<ArucasClassDefinition> implements MemberOperations {
 	private final ArucasFunctionMap<ClassMemberFunction> methods;
 	private final Map<Token.Type, ClassMemberFunction> operatorMethods;
-	private final StackTable members;
+	private final Map<String, Value<?>> members;
 	
 	public ArucasClassValue(ArucasClassDefinition arucasClass) {
 		super(arucasClass);
 		this.methods = new ArucasFunctionMap<>();
 		this.operatorMethods = new HashMap<>();
-		this.members = new StackTable();
+		this.members = new HashMap<>();
 	}
 	
 	public String getName() {
@@ -37,7 +36,7 @@ public class ArucasClassValue extends Value<ArucasClassDefinition> implements Me
 	}
 	
 	protected void addMemberVariable(String name, Value<?> value) {
-		this.members.setLocal(name, value);
+		this.members.put(name, value);
 	}
 
 	public boolean hasOperatorMethod(Token.Type type) {
@@ -60,7 +59,7 @@ public class ArucasClassValue extends Value<ArucasClassDefinition> implements Me
 			return false;
 		}
 
-		this.members.set(name, value);
+		this.members.put(name, value);
 		return true;
 	}
 	

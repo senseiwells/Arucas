@@ -30,6 +30,7 @@ public interface ISyntax {
 	}
 	
 	static ISyntax empty() {
+		// TODO: Remove empty allocations
 		return ISyntax.of(Position.empty(), Position.empty());
 	}
 	

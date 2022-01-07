@@ -49,6 +49,7 @@ public class WrapperArucasClassDefinition extends ArucasClassDefinition {
 			thisValue.addMethod(((WrapperClassMemberFunction)function).copy(wrappedClass));
 		}
 		
+		// TODO: There are no Nodes inside a wrapped arucas class
 		// Add operator methods
 		for (Map.Entry<Token.Type, ClassMemberFunction> entry : this.operatorMethods.entrySet()) {
 			thisValue.addOperatorMethods(entry.getKey(), ((WrapperClassMemberFunction)entry.getValue()).copy(wrappedClass));

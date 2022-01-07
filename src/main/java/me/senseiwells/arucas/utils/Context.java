@@ -43,6 +43,8 @@ public class Context {
 		this.parentContext = parentContext;
 		this.stackTable = new StackTable();
 		
+		// Initialize the class definitions map by inserting the previous table values
+		this.stackTable.classDefinitions = new ArucasClassDefinitionMap();
 		this.stackTable.classDefinitions.insertAll(classDefinitions);
 	}
 	
