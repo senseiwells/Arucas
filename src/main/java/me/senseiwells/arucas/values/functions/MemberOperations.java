@@ -38,22 +38,14 @@ public interface MemberOperations {
 	 * Returns a member of this object with the specified amount of parameters
 	 */
 	default FunctionValue getMember(String name, int parameters) {
-		return this.getMember(name, parameters, this.getAllMembers());
-	}
-
-	default FunctionValue getMember(String name, int parameters, ArucasFunctionMap<?> members) {
-		return members.get(name, parameters);
+		return this.getAllMembers().get(name, parameters);
 	}
 
 	/**
 	 * Returns a delegate value of a function
 	 */
 	default FunctionValue getDelegate(String name) {
-		return this.getDelegate(name, this.getAllMembers());
-	}
-
-	default FunctionValue getDelegate(String name, ArucasFunctionMap<?> members) {
-		return members.get(name);
+		return this.getAllMembers().get(name);
 	}
 
 	/**

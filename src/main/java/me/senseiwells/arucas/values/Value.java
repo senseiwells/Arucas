@@ -29,7 +29,7 @@ public abstract class Value<T> implements ValueOperations {
 	//       we have access to a context we should not rely on Java
 	//       methods
 	@Override
-	public boolean equals(Object other) {
+	public final boolean equals(Object other) {
 		if (!(other instanceof Value<?> otherValue)) {
 			return false;
 		}
@@ -55,9 +55,7 @@ public abstract class Value<T> implements ValueOperations {
 	public abstract String getStringValue(Context context) throws CodeError;
 	
 	@Override
-	public boolean isEquals(Context context, Value<?> other) throws CodeError {
-		return this == other;
-	}
+	public abstract boolean isEquals(Context context, Value<?> other) throws CodeError;
 	
 	public static class ArucasBaseClass extends ArucasClassExtension {
 		public ArucasBaseClass() {

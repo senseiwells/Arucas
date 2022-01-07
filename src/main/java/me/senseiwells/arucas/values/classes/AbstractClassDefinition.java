@@ -40,6 +40,9 @@ public abstract class AbstractClassDefinition implements MemberOperations {
 		this.staticMethods.add(method);
 	}
 	
+	/**
+	 * Returns the value type of this class
+	 */
 	public abstract Class<?> getValueClass();
 	
 	/**

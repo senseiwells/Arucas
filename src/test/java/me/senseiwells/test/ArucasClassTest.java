@@ -91,7 +91,7 @@ public class ArucasClassTest {
 			X = new Test().toString();
 			""", "X"
 		));
-		assertEquals("[\"test\"]", ArucasHelper.runSafeFull(
+		assertEquals("[test]", ArucasHelper.runSafeFull(
 			"""
 			class Test {
 				fun toString() {
@@ -99,6 +99,16 @@ public class ArucasClassTest {
 				}
 			}
 			X = [new Test()];
+			""", "X"
+		));
+		assertEquals("[\"test\"]", ArucasHelper.runSafeFull(
+			"""
+			class Test {
+				fun toString() {
+					return 'test';
+				}
+			}
+			X = [new Test().toString()];
 			""", "X"
 		));
 		assertEquals("1", ArucasHelper.runSafeFull(

@@ -89,7 +89,7 @@ public class NumberValue extends Value<Double> {
 	}
 	
 	@Override
-	public String getStringValue(Context context) throws CodeError {
+	public String getStringValue(Context context) {
 		return NumberValue.DECIMAL_FORMAT.format(this.value);
 	}
 	

@@ -6,6 +6,7 @@ import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.*;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +17,8 @@ public class MapValue extends Value<ArucasValueMap> {
 
 	@Override
 	public MapValue copy() {
-		return new MapValue(this.value);
+		return this;
+		// return new MapValue(this.value);
 	}
 
 	@Override
@@ -41,17 +43,21 @@ public class MapValue extends Value<ArucasValueMap> {
 		}
 		
 		StringBuilder sb = new StringBuilder();
-
-		for (Map.Entry<Value<?>, Value<?>> entry : map.entrySet()) {
-			sb.append(", ").append(StringUtils.toPlainString(context, entry.getValue()))
-				.append(" : ").append(StringUtils.toPlainString(context, entry.getKey()));
-		}
-
-		if (sb.length() > 0) {
-			sb.deleteCharAt(0);
+		sb.append('{');
+		
+		Iterator<Map.Entry<Value<?>, Value<?>>> iter = map.entrySet().iterator();
+		
+		while (iter.hasNext()) {
+			Map.Entry<Value<?>, Value<?>> entry = iter.next();
+			sb.append(StringUtils.toPlainString(context, entry.getKey())).append(": ")
+			  .append(StringUtils.toPlainString(context, entry.getValue()));
+			
+			if (iter.hasNext()) {
+				sb.append(", ");
+			}
 		}
 		
-		return "{" + sb.toString().trim() + "}";
+		return sb.append('}').toString();
 	}
 	
 	@Override
@@ -61,7 +67,6 @@ public class MapValue extends Value<ArucasValueMap> {
 		// Do a reference check
 		if (this == other) return true;
 		
-		// O(n^2)
 		// TODO: Implement the `Custom maps`
 		return this.value.equals(that.value);
 	}

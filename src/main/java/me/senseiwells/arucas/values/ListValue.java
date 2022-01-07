@@ -9,6 +9,7 @@ import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.StringUtils;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
+import java.util.Iterator;
 import java.util.List;
 
 public class ListValue extends Value<ArucasValueList> {
@@ -46,18 +47,21 @@ public class ListValue extends Value<ArucasValueList> {
 		}
 		
 		StringBuilder sb = new StringBuilder();
+		sb.append('[');
 		
-		// Non thread safe iteration could occur here so we need to allocate memory
-		Value<?>[] a = this.value.toArray(Value[]::new);
+		// Because value is an instance of CopyOnWriteArrayList this operation
+		// is thread safe but does allocate more memory
+		Iterator<Value<?>> iter = this.value.iterator();
 		
-		for (int i = 0, len = a.length; i < len; i++) {
-			sb.append(StringUtils.toPlainString(context, a[i]));
-			if (i < len - 1) {
+		while (iter.hasNext()) {
+			sb.append(StringUtils.toPlainString(context, iter.next()));
+			
+			if (iter.hasNext()) {
 				sb.append(", ");
 			}
 		}
 		
-		return "[" + sb.toString().trim() + "]";
+		return sb.append(']').toString();
 	}
 	
 	@Override

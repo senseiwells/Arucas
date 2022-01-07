@@ -42,8 +42,8 @@ public class StringValue extends Value<String> {
 	}
 	
 	@Override
-	public boolean isEquals(Context context, Value<?> other) throws CodeError {
-		return this.value.equals(other.getStringValue(context));
+	public boolean isEquals(Context context, Value<?> other) {
+		return (other instanceof StringValue that) && this.value.equals(that.value);
 	}
 	
 	public static class ArucasStringClass extends ArucasClassExtension {

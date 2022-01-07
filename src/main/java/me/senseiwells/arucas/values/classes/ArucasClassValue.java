@@ -70,8 +70,8 @@ public class ArucasClassValue extends Value<ArucasClassDefinition> implements Me
 		if (member != null) {
 			return member;
 		}
-
-		return this.getDelegate(name, this.methods);
+		
+		return this.methods.get(name);
 	}
 
 	@Override
@@ -82,14 +82,6 @@ public class ArucasClassValue extends Value<ArucasClassDefinition> implements Me
 	@Override
 	public ArucasClassValue copy() {
 		return this;
-	}
-
-	@Override
-	public boolean equals(Object other) {
-		if (other instanceof ArucasClassValue otherClass && this.getName().equals(otherClass.getName())) {
-			return this.members.equals(otherClass.members);
-		}
-		return false;
 	}
 	
 	@Override
@@ -107,5 +99,16 @@ public class ArucasClassValue extends Value<ArucasClassDefinition> implements Me
 		}
 		
 		return "<class " + this.getName() + "@" + Integer.toHexString(this.hashCode()) + ">";
+	}
+	
+	@Override
+	public boolean isEquals(Context context, Value<?> other) throws CodeError {
+//		if (other instanceof ArucasClassValue otherClass && this.getName().equals(otherClass.getName())) {
+//			return this.members.equals(otherClass.members);
+//		}
+//		return false;
+		
+		// TODO: Use the member function equals if present
+		return this == other;
 	}
 }

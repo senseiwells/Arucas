@@ -1,10 +1,8 @@
 package me.senseiwells.arucas.utils;
 
 import me.senseiwells.arucas.throwables.CodeError;
-import me.senseiwells.arucas.values.ListValue;
-import me.senseiwells.arucas.values.MapValue;
-import me.senseiwells.arucas.values.StringValue;
-import me.senseiwells.arucas.values.Value;
+import me.senseiwells.arucas.values.*;
+import me.senseiwells.arucas.values.classes.ArucasClassValue;
 
 public class StringUtils {
 	/**
@@ -248,7 +246,10 @@ public class StringUtils {
 	 */
 	public static String toPlainString(Context context, Value<?> value) throws CodeError {
 		if (value instanceof StringValue) {
-			return "\"%s\"".formatted(value.getStringValue(context));
+			return "\"" + value.getStringValue(context) + "\"";
+		}
+		else if (value instanceof NumberValue) {
+			return value.getStringValue(context);
 		}
 		else if (value instanceof ListValue) {
 			return "<list>";
@@ -257,7 +258,7 @@ public class StringUtils {
 			return "<map>";
 		}
 		else {
-			return "\"%s\"".formatted(value.getStringValue(context));
+			return value.getStringValue(context);
 		}
 	}
 }
