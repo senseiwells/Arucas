@@ -24,6 +24,7 @@ public class UnaryOperatorNode extends Node {
 		switch (this.token.type) {
 			case NOT -> {
 				if (value instanceof ArucasClassValue classValue && classValue.hasOperatorMethod(Token.Type.NOT)) {
+					// TODO: Remove empty allocations
 					return classValue.getOperatorMethod(Token.Type.NOT).call(context, new ArrayList<>());
 				}
 				value = value.not(context, this.syntaxPosition);

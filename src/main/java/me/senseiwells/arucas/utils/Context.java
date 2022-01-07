@@ -40,8 +40,8 @@ public class Context {
 		this.threadHandler = threadHandler;
 		
 		this.displayName = displayName;
-		this.stackTable = new StackTable();
 		this.parentContext = parentContext;
+		this.stackTable = new StackTable();
 		
 		this.stackTable.classDefinitions.insertAll(classDefinitions);
 	}
@@ -238,30 +238,13 @@ public class Context {
 	}
 
 	public FunctionValue getMemberFunction(Value<?> value, String methodName, int parameters) {
-		final boolean USE_FAST_LOOKUP = true;
+		List<AbstractClassDefinition> definitions = this.stackTable.getRoot().classDefinitions.get(value.getClass());
 		
-		if (USE_FAST_LOOKUP) {
-			List<AbstractClassDefinition> definitions = this.stackTable.getRoot().classDefinitions.get(value.getClass());
-			
-			// TODO: Make this O(1) for builtIn classes
-			for(AbstractClassDefinition definition : definitions) {
-				FunctionValue targetMethod = definition.getMethods().get(methodName, parameters);
-				if (targetMethod != null) {
-					return targetMethod;
-				}
-			}
-		}
-		else {
-			for (AbstractClassDefinition definition : this.stackTable.getRoot().classDefinitions) {
-				Class<?> valueClass = definition.getValueClass();
-				if (valueClass == null || !valueClass.isInstance(value)) {
-					continue;
-				}
-				
-				FunctionValue targetMethod = definition.getMethods().get(methodName, parameters);
-				if (targetMethod != null) {
-					return targetMethod;
-				}
+		// TODO: Make this O(1) for builtIn classes
+		for(AbstractClassDefinition definition : definitions) {
+			FunctionValue targetMethod = definition.getMethods().get(methodName, parameters);
+			if (targetMethod != null) {
+				return targetMethod;
 			}
 		}
 		

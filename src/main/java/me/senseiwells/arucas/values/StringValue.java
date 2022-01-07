@@ -31,6 +31,21 @@ public class StringValue extends Value<String> {
 		return this;
 	}
 	
+	@Override
+	public int getHashCode(Context context) {
+		return this.value.hashCode();
+	}
+	
+	@Override
+	public String getStringValue(Context context) {
+		return this.value;
+	}
+	
+	@Override
+	public boolean isEquals(Context context, Value<?> other) throws CodeError {
+		return this.value.equals(other.getStringValue(context));
+	}
+	
 	public static class ArucasStringClass extends ArucasClassExtension {
 		public ArucasStringClass() {
 			super("String");

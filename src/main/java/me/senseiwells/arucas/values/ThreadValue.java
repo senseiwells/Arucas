@@ -29,12 +29,22 @@ public class ThreadValue extends Value<ArucasValueThread> {
 	public Value<ArucasValueThread> copy() {
 		return this;
 	}
-
+	
+	@Override
+	public int getHashCode(Context context) {
+		return this.value.hashCode();
+	}
+	
 	@Override
 	public String getStringValue(Context context) throws CodeError {
 		return "<Thread - " + this.name.value + ">";
 	}
-
+	
+	@Override
+	public boolean isEquals(Context context, Value<?> other) {
+		return (other instanceof ThreadValue that) && this.value == that.value;
+	}
+	
 	public static class ArucasThreadClass extends ArucasClassExtension {
 		public ArucasThreadClass() {
 			super("Thread");

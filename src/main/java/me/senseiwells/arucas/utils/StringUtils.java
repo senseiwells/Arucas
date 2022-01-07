@@ -8,6 +8,21 @@ import me.senseiwells.arucas.values.Value;
 
 public class StringUtils {
 	/**
+	 * Joins all arguments using <code>StringBuilder</code>
+	 */
+	public static String join(Object... args) {
+		final int length = args.length;
+		if (length == 0) return "";
+		StringBuilder sb = new StringBuilder();
+		
+		for (int i = 0; i < length; i++) {
+			sb.append(args[i]);
+		}
+		
+		return sb.toString();
+	}
+	
+	/**
 	 * Converts all instances of <code>[\'] [\"] [\\] [\r] [\n] [\b] [\t] [\x..] [&bsol;u....]</code> to the correct character.
 	 */
 	public static String unescapeString(String string) {

@@ -113,27 +113,41 @@ public abstract class FunctionValue extends Value<String> {
 		return this.callOverride(context, arguments, returnable);
 	}
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(this.value, this.getParameterCount());
-	}
-
-	@Override
-	public boolean equals(Object other) {
-		// TODO: Check if `return this == other` is a better choice for equals
-		if (other instanceof FunctionValue functionValue) {
-			return this.getParameterCount() == functionValue.getParameterCount() && super.equals(other);
-		}
-		return false;
-	}
+//	@Override
+//	public int hashCode() {
+//		return Objects.hash(this.value, this.getParameterCount());
+//	}
+	
+//	// TODO: Remove this equality
+//	@Override
+//	public boolean equals(Object other) {
+//		// TODO: Check if `return this == other` is a better choice for equals
+//		if (other instanceof FunctionValue functionValue) {
+//			return this.getParameterCount() == functionValue.getParameterCount() && super.equals(other);
+//		}
+//		return false;
+//	}
 
 	@Override
 	public final FunctionValue copy() {
 		return this;
 	}
-
+	
 	@Override
-	public String getStringValue(Context context) throws CodeError {
+	public int getHashCode(Context context) {
+		return Objects.hash(this.value, this.getParameterCount());
+	}
+	
+	@Override
+	public String getStringValue(Context context) {
 		return "<function " + this.value + ">";
+	}
+	
+	@Override
+	public boolean isEquals(Context context, Value<?> other) {
+		// The problem here is that it is not enough to check the parameter count and name
+		// If this function was a delegate of a class and then we compared it to a delegate
+		// of the same class but another instance is should always return false.
+		return this == other;
 	}
 }

@@ -84,8 +84,18 @@ public class NumberValue extends Value<Double> {
 	}
 	
 	@Override
+	public int getHashCode(Context context) {
+		return Double.hashCode(this.value);
+	}
+	
+	@Override
 	public String getStringValue(Context context) throws CodeError {
 		return NumberValue.DECIMAL_FORMAT.format(this.value);
+	}
+	
+	@Override
+	public boolean isEquals(Context context, Value<?> other) {
+		return (other instanceof NumberValue that) && this.value.doubleValue() == that.value.doubleValue();
 	}
 
 	public static class ArucasNumberClass extends ArucasClassExtension {

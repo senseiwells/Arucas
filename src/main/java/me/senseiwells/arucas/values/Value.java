@@ -7,9 +7,7 @@ import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.classes.ArucasClassValue;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
 public abstract class Value<T> implements ValueOperations {
 	public final T value;
@@ -26,22 +24,21 @@ public abstract class Value<T> implements ValueOperations {
 		return this.copy();
 	}
 
-	public String getStringValue(Context context) throws CodeError {
-		return this.value.toString();
-	}
-
+	// TODO: Make this final and only do a value reference check
+	//       because Arucas should implement its own methods where
+	//       we have access to a context we should not rely on Java
+	//       methods
 	@Override
 	public boolean equals(Object other) {
 		if (!(other instanceof Value<?> otherValue)) {
 			return false;
 		}
 		
-		// Object.equals takes null values into perspective.
 		return Objects.equals(this.value, otherValue.value);
 	}
 
 	@Override
-	public int hashCode() {
+	public final int hashCode() {
 		return this.value.hashCode();
 	}
 
@@ -49,7 +46,19 @@ public abstract class Value<T> implements ValueOperations {
 	public final String toString() {
 		return this.value == null ? "null" : this.value.toString();
 	}
-
+	
+	// API
+	@Override
+	public abstract int getHashCode(Context context) throws CodeError;
+	
+	@Override
+	public abstract String getStringValue(Context context) throws CodeError;
+	
+	@Override
+	public boolean isEquals(Context context, Value<?> other) throws CodeError {
+		return this == other;
+	}
+	
 	public static class ArucasBaseClass extends ArucasClassExtension {
 		public ArucasBaseClass() {
 			super("Object");

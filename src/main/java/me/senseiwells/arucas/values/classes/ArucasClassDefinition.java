@@ -14,12 +14,12 @@ import me.senseiwells.arucas.values.functions.ClassMemberFunction;
 import java.util.*;
 
 public class ArucasClassDefinition extends AbstractClassDefinition {
-	private final ArucasFunctionMap<ClassMemberFunction> methods;
-	private final ArucasFunctionMap<ClassMemberFunction> constructors;
-	private final Map<String, Node> memberVariables;
-	private final Map<String, Node> staticMemberVariableNodes;
-	private final List<Node> staticInitializers;
-	private final Map<Token.Type, ClassMemberFunction> operatorMethods;
+	protected final ArucasFunctionMap<ClassMemberFunction> methods;
+	protected final ArucasFunctionMap<ClassMemberFunction> constructors;
+	protected final Map<String, Node> memberVariables;
+	protected final Map<String, Node> staticMemberVariableNodes;
+	protected final List<Node> staticInitializers;
+	protected final Map<Token.Type, ClassMemberFunction> operatorMethods;
 	
 	public ArucasClassDefinition(String name) {
 		super(name);
@@ -52,10 +52,11 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 		return this.methods;
 	}
 
-	public void initialiseStatics(Context context) throws ThrowValue, CodeError {
+	public void initialiseStatics(Context context) throws CodeError, ThrowValue {
 		for (Map.Entry<String, Node> entry : this.staticMemberVariableNodes.entrySet()) {
 			this.getStaticMemberVariables().put(entry.getKey(), entry.getValue().visit(context));
 		}
+		
 		for (Node staticNode : this.staticInitializers) {
 			staticNode.visit(context);
 		}

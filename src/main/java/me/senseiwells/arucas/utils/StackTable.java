@@ -11,6 +11,7 @@ public class StackTable {
 	protected final ArucasClassDefinitionMap classDefinitions;
 	private final StackTable parentTable;
 	private final ISyntax syntaxPosition;
+	private final StackTable rootTable;
 	
 	protected final boolean canContinue;
 	protected final boolean canBreak;
@@ -18,13 +19,13 @@ public class StackTable {
 	
 	public StackTable(StackTable parent, ISyntax syntaxPosition, boolean canBreak, boolean canContinue, boolean canReturn) {
 		this.symbolMap = new HashMap<>();
-		// This is a linked map because order needs to be preserved
 		this.classDefinitions = new ArucasClassDefinitionMap();
 		this.parentTable = parent;
 		this.syntaxPosition = syntaxPosition;
 		this.canContinue = canContinue;
 		this.canReturn = canReturn;
 		this.canBreak = canBreak;
+		this.rootTable = parent == null ? this : parent.rootTable;
 	}
 
 	public StackTable() {
@@ -111,7 +112,7 @@ public class StackTable {
 	 * Returns the root table.
 	 */
 	public StackTable getRoot() {
-		return this.parentTable != null ? this.parentTable.getRoot() : this;
+		return this.rootTable;
 	}
 
 	public StackTable getParentTable() {

@@ -66,8 +66,6 @@ public class ArucasClassDefinitionMap implements Iterable<AbstractClassDefinitio
 				}
 			}
 		}
-		
-		// debug(baseClazz, value);
 	}
 	
 	/**

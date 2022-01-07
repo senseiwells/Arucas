@@ -54,6 +54,8 @@ public interface ValueOperations {
     }
 
 	String getStringValue(Context context) throws CodeError;
+	int getHashCode(Context context) throws CodeError;
+	boolean isEquals(Context context, Value<?> other) throws CodeError;
 
 	private RuntimeError cannotApplyError(Context context, String operation, Value<?> other, ISyntax syntaxPosition) throws CodeError {
 		return new RuntimeError("The operation '%s' cannot be applied to %s and %s".formatted(
@@ -76,6 +78,7 @@ public interface ValueOperations {
 		Map.entry(Token.Type.MORE_THAN, 2),
 		Map.entry(Token.Type.MORE_THAN_EQUAL, 2),
 		Map.entry(Token.Type.EQUALS, 2),
+		Map.entry(Token.Type.NOT_EQUALS, 2),
 		Map.entry(Token.Type.NOT, 1)
 	);
 }

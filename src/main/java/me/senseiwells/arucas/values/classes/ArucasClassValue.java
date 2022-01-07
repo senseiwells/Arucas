@@ -81,7 +81,6 @@ public class ArucasClassValue extends Value<ArucasClassDefinition> implements Me
 
 	@Override
 	public ArucasClassValue copy() {
-		// You should not be able to
 		return this;
 	}
 
@@ -92,7 +91,13 @@ public class ArucasClassValue extends Value<ArucasClassDefinition> implements Me
 		}
 		return false;
 	}
-
+	
+	@Override
+	public int getHashCode(Context context) throws CodeError {
+		// TODO: Use the member function hashCode if present
+		return this.hashCode();
+	}
+	
 	@Override
 	public String getStringValue(Context context) throws CodeError {
 		// If 'toString' is overwritten we should return that value here

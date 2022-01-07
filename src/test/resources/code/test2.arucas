@@ -12,13 +12,13 @@ class Benchmark {
 
     static fun valueFunctionCallAvg(value) {
         times = [];
-        for (i = 0; i < 5; i++) {
+        for (i = 0; i < 10; i++) {
             start = Benchmark.thread.getAge();
-            for (i = 0; i < 10000000; i++) value.toString();
+            for (j = 0; j < 1000000; j++) value.toString();
             end = Benchmark.thread.getAge();
             times.append(end - start);
         }
-        return Benchmark.average(times);
+        return Benchmark.average(times) * 10;
     }
 }
 

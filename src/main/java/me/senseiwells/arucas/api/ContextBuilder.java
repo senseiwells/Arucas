@@ -113,7 +113,7 @@ public class ContextBuilder {
 		}
 		
 		for (Supplier<IArucasWrappedClass> supplier : this.wrappers) {
-			classDefinitions.add(ArucasWrapper.createWrapper(supplier.get()));
+			classDefinitions.add(ArucasWrapper.createWrapper(supplier));
 		}
 		
 		// TODO: Combine class extensions so that they are `O(1)` lookup

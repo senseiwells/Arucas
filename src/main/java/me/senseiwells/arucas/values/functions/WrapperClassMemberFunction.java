@@ -34,6 +34,7 @@ public class WrapperClassMemberFunction extends ClassMemberFunction {
 		return Collections.nCopies(count, "");
 	}
 	
+	@Deprecated
 	public WrapperClassMemberFunction copy(ArucasClassValue value) {
 		// TODO: Figure out a better solution to get the parameters
 		//       If we can get direct access to the parameters buffer
@@ -47,6 +48,10 @@ public class WrapperClassMemberFunction extends ClassMemberFunction {
 		//       class creation.
 		//
 		return new WrapperClassMemberFunction(this.classValue, this.getName(), this.parameters, this.isStatic, this.methodHandle);
+	}
+	
+	public WrapperClassMemberFunction copy(IArucasWrappedClass wrappedClass) {
+		return new WrapperClassMemberFunction(wrappedClass, this.getName(), this.parameters, this.isStatic, this.methodHandle);
 	}
 	
 	@Override

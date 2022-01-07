@@ -12,7 +12,7 @@ public abstract class AbstractBuiltInFunction<T extends AbstractBuiltInFunction<
 	public final FunctionDefinition<T> function;
 
 	public AbstractBuiltInFunction(String name, List<String> argumentNames, FunctionDefinition<T> function, String isDeprecated) {
-		super(name, ISyntax.emptyOf("Arucas/%s".formatted(name)), argumentNames, isDeprecated);
+		super(name, ISyntax.emptyOf("Arucas/" + name), argumentNames, isDeprecated);
 		this.function = function;
 	}
 

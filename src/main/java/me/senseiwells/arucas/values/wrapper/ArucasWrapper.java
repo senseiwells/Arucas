@@ -5,6 +5,7 @@ import me.senseiwells.arucas.api.wrappers.IArucasWrappedClass;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.ArucasClassDefinition;
+import me.senseiwells.arucas.values.classes.WrapperArucasClassDefinition;
 import me.senseiwells.arucas.values.functions.WrapperClassMemberFunction;
 
 import java.lang.invoke.MethodHandle;
@@ -12,16 +13,18 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.function.Supplier;
 
 public class ArucasWrapper {
 	private final IArucasWrappedClass value;
-	private final ArucasClassDefinition classDefinition;
+	private final WrapperArucasClassDefinition classDefinition;
 	private final Class<?> clazz;
 	
-	private ArucasWrapper(IArucasWrappedClass value) {
-		this.value = value;
+	private ArucasWrapper(Supplier<IArucasWrappedClass> supplier) {
+		// TODO: Figure out how to get the class type from the wrapper
+		this.value = supplier.get();
 		this.clazz = value.getClass();
-		this.classDefinition = new ArucasClassDefinition(value.getName());
+		this.classDefinition = new WrapperArucasClassDefinition(this.value.getName(), supplier);
 		
 		for (Method method : this.clazz.getMethods()) {
 			ArucasFunction annotation = method.getAnnotation(ArucasFunction.class);
@@ -94,7 +97,7 @@ public class ArucasWrapper {
 		final int parameterLength = parameters.length - (isStatic ? 1 : 0);
 		
 		System.out.printf("Method: %s%s::%s (%s)\n", isStatic ? "static " : "", clazz.getSimpleName(), method.getName(), handle);
-		WrapperClassMemberFunction function = new WrapperClassMemberFunction(this.value, method.getName(), parameterLength, isStatic, handle);
+		WrapperClassMemberFunction function = new WrapperClassMemberFunction(method.getName(), parameterLength, isStatic, handle);
 		
 		if (isStatic) {
 			this.classDefinition.addStaticMethod(function);
@@ -109,7 +112,7 @@ public class ArucasWrapper {
 		return this.classDefinition;
 	}
 	
-	public static ArucasClassDefinition createWrapper(IArucasWrappedClass value) {
+	public static ArucasClassDefinition createWrapper(Supplier<IArucasWrappedClass> value) {
 		ArucasWrapper wrapper = new ArucasWrapper(value);
 		return wrapper.getClassDefinition();
 	}

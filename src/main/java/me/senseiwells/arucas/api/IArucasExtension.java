@@ -3,8 +3,6 @@ package me.senseiwells.arucas.api;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
 
-import java.util.Set;
-
 public interface IArucasExtension {
 	
 	/**

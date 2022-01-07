@@ -43,7 +43,22 @@ public class BooleanValue extends Value<Boolean> {
 	public BooleanValue copy() {
 		return this;
 	}
-
+	
+	@Override
+	public int getHashCode(Context context) {
+		return Boolean.hashCode(this.value);
+	}
+	
+	@Override
+	public String getStringValue(Context context) {
+		return this.value ? "true" : "false";
+	}
+	
+	@Override
+	public boolean isEquals(Context context, Value<?> other) {
+		return (other instanceof BooleanValue that) && this.value == that.value;
+	}
+	
 	public static class ArucasBooleanClass extends ArucasClassExtension {
 		public ArucasBooleanClass() {
 			super("Boolean");

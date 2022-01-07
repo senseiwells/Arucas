@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.Set;
 
 public class SwitchNode extends Node {
+	// TODO: Instead of using a map we should use two arrays that contains keys and values
+	//       Using a map is lazy coding
 	private final Map<Node, Set<Value<?>>> cases;
 	private final Node valueNode;
 	private final Node defaultCase;

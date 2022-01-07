@@ -23,7 +23,13 @@ public class MapValue extends Value<ArucasValueMap> {
 	public MapValue newCopy() {
 		return new MapValue(new ArucasValueMap(this.value));
 	}
-
+	
+	@Override
+	public int getHashCode(Context context) throws CodeError {
+		// TODO: Implement a better hashCode value for this map!
+		return this.hashCode();
+	}
+	
 	@Override
 	public String getStringValue(Context context) throws CodeError {
 		ArucasValueMap map = this.value;
@@ -46,6 +52,18 @@ public class MapValue extends Value<ArucasValueMap> {
 		}
 		
 		return "{" + sb.toString().trim() + "}";
+	}
+	
+	@Override
+	public boolean isEquals(Context context, Value<?> other) throws CodeError {
+		if (!(other instanceof MapValue that)) return false;
+		
+		// Do a reference check
+		if (this == other) return true;
+		
+		// O(n^2)
+		// TODO: Implement the `Custom maps`
+		return this.value.equals(that.value);
 	}
 
 	public static class ArucasMapClass extends ArucasClassExtension {

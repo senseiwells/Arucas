@@ -45,7 +45,7 @@ public abstract class AbstractClassDefinition implements MemberOperations {
 	/**
 	 * This gets called when the class is initialised
 	 */
-	public abstract void initialiseStatics(Context context) throws ThrowValue, CodeError;
+	public abstract void initialiseStatics(Context context) throws CodeError, ThrowValue;
 	
 	/**
 	 * This gets called when a new instance of this object is created

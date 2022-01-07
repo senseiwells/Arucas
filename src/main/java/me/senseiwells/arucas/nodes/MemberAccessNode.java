@@ -10,21 +10,21 @@ import me.senseiwells.arucas.values.classes.ArucasClassValue;
 
 public class MemberAccessNode extends Node {
 	private final Node leftNode;
-	private final Node rightNode;
+	private final Node memberNameNode;
 
 	public MemberAccessNode(Node leftNode, Node rightNode) {
 		super(leftNode.token, leftNode.syntaxPosition, rightNode.syntaxPosition);
 		this.leftNode = leftNode;
-		this.rightNode = rightNode;
+		this.memberNameNode = rightNode;
 	}
 
 	@Override
 	public Value<?> visit(Context context) throws CodeError, ThrowValue {
-		// The leftNode holds the Value<?> we which to get this member function on
+		// The leftNode holds the Value that contains the member
 		Value<?> memberValue = this.leftNode.visit(context);
 		
-		// The rightNode is the MemberAccessNode that just contains a string
-		StringValue memberName = (StringValue) this.rightNode.visit(context);
+		// The memberNameNode is the MemberAccessNode that contains the name of the member
+		StringValue memberName = (StringValue) this.memberNameNode.visit(context);
 		
 		if (!(memberValue instanceof ArucasClassValue classValue)) {
 			throw new RuntimeError("Member variable '%s' was not defined for the value type '%s'".formatted(
