@@ -48,7 +48,6 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		new BuiltInFunction("suppressDeprecated", "boolean", this::suppressDeprecated),
 		new BuiltInFunction("random", "bound", this::random),
 		new BuiltInFunction("getTime", (context, function) -> StringValue.of(DateTimeFormatter.ofPattern("HH:mm:ss").format(LocalTime.now()))),
-		new BuiltInFunction("millis", (context, function) -> NumberValue.of(System.currentTimeMillis())),
 		new BuiltInFunction("getDirectory", (context, function) -> StringValue.of(System.getProperty("user.dir"))),
 		new BuiltInFunction("len", "value", this::len),
 		new BuiltInFunction("runThreaded", List.of("function", "parameters"), this::runThreaded$2, "Used 'Thread.runThreaded(name, function)'"),
