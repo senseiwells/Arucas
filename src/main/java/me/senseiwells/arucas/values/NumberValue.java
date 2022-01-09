@@ -4,13 +4,13 @@ import me.senseiwells.arucas.api.ArucasClassExtension;
 import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.tokens.Token;
+import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
-import java.util.Set;
 
 public class NumberValue extends Value<Double> {
 	private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.############", DecimalFormatSymbols.getInstance(Locale.US));
@@ -84,8 +84,18 @@ public class NumberValue extends Value<Double> {
 	}
 	
 	@Override
-	public String getStringValue(Context context) throws CodeError {
+	public int getHashCode(Context context) {
+		return Double.hashCode(this.value);
+	}
+	
+	@Override
+	public String getStringValue(Context context) {
 		return NumberValue.DECIMAL_FORMAT.format(this.value);
+	}
+	
+	@Override
+	public boolean isEquals(Context context, Value<?> other) {
+		return (other instanceof NumberValue that) && this.value.doubleValue() == that.value.doubleValue();
 	}
 
 	public static class ArucasNumberClass extends ArucasClassExtension {
@@ -99,8 +109,8 @@ public class NumberValue extends Value<Double> {
 		}
 
 		@Override
-		public Set<MemberFunction> getDefinedMethods() {
-			return Set.of(
+		public ArucasFunctionMap<MemberFunction> getDefinedMethods() {
+			return ArucasFunctionMap.of(
 				new MemberFunction("round", this::round),
 				new MemberFunction("ceil", this::ceil),
 				new MemberFunction("floor", this::floor),

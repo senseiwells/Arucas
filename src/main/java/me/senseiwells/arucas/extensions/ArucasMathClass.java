@@ -2,11 +2,11 @@ package me.senseiwells.arucas.extensions;
 
 import me.senseiwells.arucas.api.ArucasClassExtension;
 import me.senseiwells.arucas.throwables.CodeError;
+import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.NumberValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
-import me.senseiwells.arucas.values.functions.MemberFunction;
 
 import java.util.List;
 import java.util.Map;
@@ -26,8 +26,8 @@ public class ArucasMathClass extends ArucasClassExtension {
 	}
 
 	@Override
-	public List<BuiltInFunction> getDefinedStaticMethods() {
-		return List.of(
+	public ArucasFunctionMap<BuiltInFunction> getDefinedStaticMethods() {
+		return ArucasFunctionMap.of(
 			new BuiltInFunction("round", "num", this::round),
 			new BuiltInFunction("ceil", "num", this::ceil),
 			new BuiltInFunction("floor", "num", this::floor),
@@ -37,7 +37,7 @@ public class ArucasMathClass extends ArucasClassExtension {
 			new BuiltInFunction("max", List.of("num1", "num2"), this::max),
 			new BuiltInFunction("min", List.of("num1", "num2"), this::min),
 			new BuiltInFunction("clamp", List.of("num", "min", "max"), this::clamp),
-			new BuiltInFunction("toRandians", "num", this::toRadians),
+			new BuiltInFunction("toRadians", "num", this::toRadians),
 			new BuiltInFunction("toDegrees", "num", this::toDegrees),
 			new BuiltInFunction("log", "num", this::log),
 			new BuiltInFunction("log10", "num", this::log10),

@@ -1,10 +1,11 @@
 package me.senseiwells.arucas.utils;
 
 import me.senseiwells.arucas.api.ArucasThreadHandler;
-import me.senseiwells.arucas.api.IArucasExtension;
 import me.senseiwells.arucas.api.IArucasOutput;
 import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.throwables.CodeError;
+import me.senseiwells.arucas.throwables.ThrowValue;
+import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.values.functions.AbstractBuiltInFunction;
@@ -13,12 +14,14 @@ import me.senseiwells.arucas.values.functions.FunctionValue;
 import java.util.*;
 
 /**
- * Runtime context class of the programming language
+ * Runtime context class of the programming language.
+ *
+ * A context is never shared across two threads and is
+ * threadsafe.
  */
 public class Context {
 	private final ArucasThreadHandler threadHandler;
-	private final Set<String> builtInFunctions;
-	private final List<IArucasExtension> extensions;
+	private final ArucasFunctionMap<AbstractBuiltInFunction<?>> extensions;
 	private final IArucasOutput arucasOutput;
 	
 	private final String displayName;
@@ -26,29 +29,26 @@ public class Context {
 	private StackTable stackTable;
 	private boolean isDebug;
 	private boolean suppressDeprecated;
-
-	private Context(String displayName, Context parentContext, List<IArucasExtension> extensions, Collection<AbstractClassDefinition> classDefinitions, ArucasThreadHandler threadHandler, IArucasOutput arucasOutput) {
-		this.builtInFunctions = new HashSet<>();
+	
+	private final ThrowValue.Continue continueThrowable = new ThrowValue.Continue();
+	private final ThrowValue.Break breakThrowable = new ThrowValue.Break();
+	private final ThrowValue.Return returnThrowable = new ThrowValue.Return(NullValue.NULL);
+	
+	private Context(String displayName, Context parentContext, ArucasFunctionMap<AbstractBuiltInFunction<?>> extensions, ArucasClassDefinitionMap classDefinitions, ArucasThreadHandler threadHandler, IArucasOutput arucasOutput) {
 		this.extensions = extensions;
 		this.arucasOutput = arucasOutput;
 		this.threadHandler = threadHandler;
 		
 		this.displayName = displayName;
-		this.stackTable = new StackTable();
 		this.parentContext = parentContext;
+		this.stackTable = new StackTable();
 		
-		for (IArucasExtension extension : extensions) {
-			for (AbstractBuiltInFunction<?> function : extension.getDefinedFunctions()) {
-				this.builtInFunctions.add(function.value);
-			}
-		}
-
-		for (AbstractClassDefinition classDefinition : classDefinitions) {
-			this.addClassDefinition(classDefinition);
-		}
+		// Initialize the class definitions map by inserting the previous table values
+		this.stackTable.classDefinitions = new ArucasClassDefinitionMap();
+		this.stackTable.classDefinitions.insertAll(classDefinitions);
 	}
 	
-	public Context(String displayName, List<IArucasExtension> extensions, Collection<AbstractClassDefinition> classDefinitions, ArucasThreadHandler threadHandler, IArucasOutput arucasOutput) {
+	public Context(String displayName, ArucasFunctionMap<AbstractBuiltInFunction<?>> extensions, ArucasClassDefinitionMap classDefinitions, ArucasThreadHandler threadHandler, IArucasOutput arucasOutput) {
 		this(displayName, null, extensions, classDefinitions, threadHandler, arucasOutput);
 	}
 	
@@ -58,7 +58,6 @@ public class Context {
 		this.threadHandler = branch.threadHandler;
 		this.arucasOutput = branch.arucasOutput;
 		this.extensions = branch.extensions;
-		this.builtInFunctions = branch.builtInFunctions;
 		this.parentContext = branch.parentContext;
 	}
 
@@ -81,7 +80,20 @@ public class Context {
 	}
 	
 	public Context createChildContext(String displayName) {
-		return new Context(displayName, this, this.extensions, this.stackTable.getRoot().classDefinitions.values(), this.threadHandler, this.arucasOutput);
+		return new Context(displayName, this, this.extensions, this.stackTable.getRoot().classDefinitions, this.threadHandler, this.arucasOutput);
+	}
+	
+	public ThrowValue.Continue getContinueThrowable() {
+		return this.continueThrowable;
+	}
+	
+	public ThrowValue.Break getBreakThrowable() {
+		return this.breakThrowable;
+	}
+	
+	public ThrowValue.Return getReturnThrowable(Value<?> value) {
+		this.returnThrowable.setReturnValue(value);
+		return this.returnThrowable;
 	}
 	
 	/**
@@ -170,7 +182,7 @@ public class Context {
 	}
 
 	public boolean isBuiltInFunction(String name) {
-		return this.builtInFunctions.contains(name);
+		return this.extensions.has(name);
 	}
 
 	public boolean isDefinedClass(String name) {
@@ -224,30 +236,20 @@ public class Context {
 	}
 
 	public AbstractBuiltInFunction<?> getBuiltInFunction(String methodName, int parameters) {
-		for (IArucasExtension extension : this.extensions) {
-			for (AbstractBuiltInFunction<?> function : extension.getDefinedFunctions()) {
-				if (parameters == function.getParameterCount() && function.getName().equals(methodName)) {
-					return function;
-				}
-			}
-		}
-
-		return null;
+		return this.extensions.get(methodName, parameters);
 	}
 
-	public FunctionValue getMemberFunction(Value<?> value, String methodName, int paramters) {
-		for (AbstractClassDefinition definition : this.stackTable.getRoot().classDefinitions.values()) {
-			Class<?> valueClass = definition.getValueClass();
-			if (valueClass == null || !valueClass.isInstance(value)) {
-				continue;
-			}
-			for (FunctionValue method : definition.getMethods()) {
-				if (paramters == method.getParameterCount() && methodName.equals(method.getName())) {
-					return method;
-				}
+	public FunctionValue getMemberFunction(Value<?> value, String methodName, int parameters) {
+		List<AbstractClassDefinition> definitions = this.stackTable.getRoot().classDefinitions.get(value.getClass());
+		
+		// TODO: Make this O(1) for builtIn classes
+		for(AbstractClassDefinition definition : definitions) {
+			FunctionValue targetMethod = definition.getMethods().get(methodName, parameters);
+			if (targetMethod != null) {
+				return targetMethod;
 			}
 		}
-
+		
 		return null;
 	}
 	
@@ -261,6 +263,7 @@ public class Context {
 			sb.append(iter.next()).append("\n");
 		}
 		
+		this.stackTable.getRoot().classDefinitions.iterator().forEachRemaining(System.out::println);
 		System.out.println(sb);
 	}
 }

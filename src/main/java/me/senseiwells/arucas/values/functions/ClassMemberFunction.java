@@ -10,7 +10,7 @@ import me.senseiwells.arucas.values.classes.ArucasClassValue;
 import java.util.List;
 
 public class ClassMemberFunction extends UserDefinedFunction {
-	private final ArucasClassValue thisValue;
+	protected final ArucasClassValue thisValue;
 	
 	public ClassMemberFunction(ArucasClassValue thisValue, String name, List<String> argumentNames, ISyntax syntaxPosition) {
 		super(name, argumentNames, syntaxPosition);
@@ -29,13 +29,13 @@ public class ClassMemberFunction extends UserDefinedFunction {
 	
 	@Override
 	public Value<?> execute(Context context, List<Value<?>> arguments) throws CodeError, ThrowValue {
-		// This value is always added as the first parameter.
+		// This value is always added as the first parameter
 		arguments.add(0, this.thisValue);
 		return super.execute(context, arguments);
 	}
 	
 	@Override
 	public String getStringValue(Context context) throws CodeError {
-		return "<class %s::%s@%x>".formatted(this.thisValue.getName(), this.getName(), this.hashCode());
+		return "<class " + this.thisValue.getName() + "::" + this.getName() + "@" + Integer.toHexString(this.hashCode()) + ">";
 	}
 }

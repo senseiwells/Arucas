@@ -25,10 +25,10 @@ public class MemberCallNode extends CallNode {
 		// Throws an error if the thread has been interrupted
 		this.keepRunning();
 		
-		// The value node holds the Value<?> we which to call this member function on
+		// The valueNode holds the Value that contains the member
 		Value<?> memberValue = this.valueNode.visit(context);
 		
-		// The call node is the MemberAccessNode that just contains a string
+		// The callNode is the MemberAccessNode that contains the name of the member
 		StringValue memberFunctionName = (StringValue) this.callNode.visit(context);
 		
 		List<Value<?>> argumentValues = new ArrayList<>();

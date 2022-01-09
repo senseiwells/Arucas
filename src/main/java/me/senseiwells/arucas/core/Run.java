@@ -22,7 +22,7 @@ public class Run {
 			return NullValue.NULL;
 		}
 		catch (ThrowValue.Return tv) {
-			return tv.returnValue;
+			return tv.getReturnValue();
 		}
 		catch (ThrowValue tv) {
 			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, tv.getMessage(), nodeResult.syntaxPosition);

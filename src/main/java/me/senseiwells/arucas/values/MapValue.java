@@ -3,15 +3,12 @@ package me.senseiwells.arucas.values;
 import me.senseiwells.arucas.api.ArucasClassExtension;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
-import me.senseiwells.arucas.utils.ArucasValueList;
-import me.senseiwells.arucas.utils.ArucasValueMap;
-import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.utils.StringUtils;
+import me.senseiwells.arucas.utils.*;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class MapValue extends Value<ArucasValueMap> {
 	public MapValue(ArucasValueMap value) {
@@ -20,14 +17,21 @@ public class MapValue extends Value<ArucasValueMap> {
 
 	@Override
 	public MapValue copy() {
-		return new MapValue(this.value);
+		return this;
+		// return new MapValue(this.value);
 	}
 
 	@Override
 	public MapValue newCopy() {
 		return new MapValue(new ArucasValueMap(this.value));
 	}
-
+	
+	@Override
+	public int getHashCode(Context context) throws CodeError {
+		// TODO: Implement a better hashCode value for this map!
+		return this.hashCode();
+	}
+	
 	@Override
 	public String getStringValue(Context context) throws CodeError {
 		ArucasValueMap map = this.value;
@@ -39,17 +43,32 @@ public class MapValue extends Value<ArucasValueMap> {
 		}
 		
 		StringBuilder sb = new StringBuilder();
-
-		for (Map.Entry<Value<?>, Value<?>> entry : map.entrySet()) {
-			sb.append(", ").append(StringUtils.toPlainString(context, entry.getValue()))
-				.append(" : ").append(StringUtils.toPlainString(context, entry.getKey()));
-		}
-
-		if (sb.length() > 0) {
-			sb.deleteCharAt(0);
+		sb.append('{');
+		
+		Iterator<Map.Entry<Value<?>, Value<?>>> iter = map.entrySet().iterator();
+		
+		while (iter.hasNext()) {
+			Map.Entry<Value<?>, Value<?>> entry = iter.next();
+			sb.append(StringUtils.toPlainString(context, entry.getKey())).append(": ")
+			  .append(StringUtils.toPlainString(context, entry.getValue()));
+			
+			if (iter.hasNext()) {
+				sb.append(", ");
+			}
 		}
 		
-		return "{%s}".formatted(sb.toString().trim());
+		return sb.append('}').toString();
+	}
+	
+	@Override
+	public boolean isEquals(Context context, Value<?> other) throws CodeError {
+		if (!(other instanceof MapValue that)) return false;
+		
+		// Do a reference check
+		if (this == other) return true;
+		
+		// TODO: Implement the `Custom maps`
+		return this.value.equals(that.value);
 	}
 
 	public static class ArucasMapClass extends ArucasClassExtension {
@@ -63,8 +82,8 @@ public class MapValue extends Value<ArucasValueMap> {
 		}
 
 		@Override
-		public Set<MemberFunction> getDefinedMethods() {
-			return Set.of(
+		public ArucasFunctionMap<MemberFunction> getDefinedMethods() {
+			return ArucasFunctionMap.of(
 				new MemberFunction("get", "key", this::mapGet),
 				new MemberFunction("getKeys", this::mapGetKeys),
 				new MemberFunction("getValues", this::mapGetValues),

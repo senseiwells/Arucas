@@ -3,13 +3,14 @@ package me.senseiwells.arucas.values;
 import me.senseiwells.arucas.api.ArucasClassExtension;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
+import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.ArucasValueList;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.StringUtils;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
+import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 public class ListValue extends Value<ArucasValueList> {
 
@@ -26,34 +27,64 @@ public class ListValue extends Value<ArucasValueList> {
 	public ListValue newCopy() {
 		return new ListValue(new ArucasValueList(this.value));
 	}
-
+	
+	@Override
+	public int getHashCode(Context context) throws CodeError {
+		int hashCode = 0;
+		
+		for (Value<?> value : this.value) {
+			// Get each value in this list
+			hashCode = 32 * hashCode + value.getHashCode(context);
+		}
+		
+		return hashCode;
+	}
+	
 	@Override
 	public String getStringValue(Context context) throws CodeError {
-		ArucasValueList list = this.value;
-		if (list.isEmpty()) {
+		if (this.value.isEmpty()) {
 			return "[]";
 		}
 		
 		StringBuilder sb = new StringBuilder();
-		for (Value<?> element : list) {
-			sb.append(", ").append(StringUtils.toPlainString(context, element));
+		sb.append('[');
+		
+		// Because value is an instance of CopyOnWriteArrayList this operation
+		// is thread safe but does allocate more memory
+		Iterator<Value<?>> iter = this.value.iterator();
+		
+		while (iter.hasNext()) {
+			sb.append(StringUtils.toPlainString(context, iter.next()));
+			
+			if (iter.hasNext()) {
+				sb.append(", ");
+			}
 		}
 		
-		/*
-		 * Because of thread safety the list might have been reset before this point
-		 * and is empty meaning that 'sb' will be empty. If this was the case an
-		 * StringIndexOutOfBoundsException would have been thrown.
-		 *
-		 * To prevent this exception we check if the StringBuilder has any characters
-		 * inside it.
-		 */
-		if (sb.length() > 0) {
-			sb.deleteCharAt(0);
-		}
-		
-		return "[%s]".formatted(sb.toString().trim());
+		return sb.append(']').toString();
 	}
-
+	
+	@Override
+	public boolean isEquals(Context context, Value<?> other) throws CodeError {
+		if (!(other instanceof ListValue that)) return false;
+		
+		// Do a reference check
+		if (this == other) return true;
+		
+		// Non thread safe iteration could occur here so we need to allocate memory
+		Value<?>[] a = this.value.toArray(Value[]::new);
+		Value<?>[] b = that.value.toArray(Value[]::new);
+		if (a.length != b.length) return false;
+		
+		for (int i = 0, len = a.length; i < len; i++) {
+			if (!a[i].isEquals(context, b[i])) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
 	public static class ArucasListClass extends ArucasClassExtension {
 		public ArucasListClass() {
 			super("List");
@@ -65,8 +96,8 @@ public class ListValue extends Value<ArucasValueList> {
 		}
 
 		@Override
-		public Set<MemberFunction> getDefinedMethods() {
-			return Set.of(
+		public ArucasFunctionMap<MemberFunction> getDefinedMethods() {
+			return ArucasFunctionMap.of(
 				new MemberFunction("getIndex", "index", this::getListIndex, "Use '<List>.get(index)'"),
 				new MemberFunction("get", "index", this::getListIndex),
 				new MemberFunction("removeIndex", "index", this::removeListIndex, "Use '<List>.remove(index)'"),

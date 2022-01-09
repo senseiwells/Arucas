@@ -36,7 +36,7 @@ public class Lexer {
 				.addMultiline("'", "\\", "'")
 			)
 			.addRule(Type.NUMBER, i -> i.addRegexes(
-				"[0-9]+[.][0-9]+",
+				"[0-9]+\\.[0-9]+",
 				"[0-9]+"
 			))
 			.addRule(Type.NULL, i -> i.addStrings("null"))
@@ -48,9 +48,9 @@ public class Lexer {
 			.addRule(Type.MORE_THAN_EQUAL, i -> i.addString(">="))
 			.addRule(Type.LESS_THAN, i -> i.addString("<"))
 			.addRule(Type.MORE_THAN, i -> i.addString(">"))
-			.addRule(Type.NOT, i -> i.addStrings("!", "not"))
-			.addRule(Type.AND, i -> i.addStrings("&&", "and"))
-			.addRule(Type.OR, i -> i.addStrings("||", "or"))
+			.addRule(Type.NOT, i -> i.addStrings("!"))
+			.addRule(Type.AND, i -> i.addStrings("&&"))
+			.addRule(Type.OR, i -> i.addStrings("||"))
 			
 			// Memory operations
 			.addRule(Type.ASSIGN_OPERATOR, i -> i.addString("="))

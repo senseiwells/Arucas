@@ -15,16 +15,20 @@ public class NullValue extends Value<Object> {
 	public NullValue copy() {
 		return this;
 	}
-
+	
 	@Override
-	public int hashCode() {
-		// This value is taken from Arrays.hash( ... )
+	public int getHashCode(Context context) {
 		return 0;
 	}
-
+	
 	@Override
-	public String getStringValue(Context context) throws CodeError {
+	public String getStringValue(Context context) {
 		return "null";
+	}
+	
+	@Override
+	public boolean isEquals(Context context, Value<?> other) {
+		return other instanceof NullValue;
 	}
 
 	public static class ArucasNullClass extends ArucasClassExtension {

@@ -66,12 +66,11 @@ public abstract class FunctionValue extends Value<String> {
 	}
 
 	protected abstract Value<?> execute(Context context, List<Value<?>> arguments) throws CodeError, ThrowValue;
-
-	public final Value<?> call(Context context, List<Value<?>> arguments) throws CodeError {
-		return this.call(context, arguments, true);
-	}
-
-	public final Value<?> call(Context context, List<Value<?>> arguments, boolean returnable) throws CodeError {
+	
+	/**
+	 * API overridable method
+	 */
+	protected Value<?> callOverride(Context context, List<Value<?>> arguments, boolean returnable) throws CodeError {
 		context.pushFunctionScope(this.syntaxPosition);
 		try {
 			Value<?> value = this.execute(context, arguments);
@@ -88,7 +87,7 @@ public abstract class FunctionValue extends Value<String> {
 			}
 			context.moveScope(context.getReturnScope());
 			context.popScope();
-			return tv.returnValue;
+			return tv.getReturnValue();
 		}
 		catch (ThrowValue tv) {
 			throw new CodeError(
@@ -105,27 +104,39 @@ public abstract class FunctionValue extends Value<String> {
 			);
 		}
 	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(this.value, this.getParameterCount());
+	
+	public final Value<?> call(Context context, List<Value<?>> arguments) throws CodeError {
+		return this.callOverride(context, arguments, true);
 	}
 
-	@Override
-	public boolean equals(Object other) {
-		if (other instanceof FunctionValue functionValue) {
-			return this.getParameterCount() == functionValue.getParameterCount() && super.equals(other);
-		}
-		return false;
+	public final Value<?> call(Context context, List<Value<?>> arguments, boolean returnable) throws CodeError {
+		return this.callOverride(context, arguments, returnable);
 	}
-
+	
 	@Override
 	public final FunctionValue copy() {
 		return this;
 	}
-
+	
+	@Override
+	public int getHashCode(Context context) throws CodeError {
+		return Objects.hash(this.value, this.getParameterCount());
+	}
+	
 	@Override
 	public String getStringValue(Context context) throws CodeError {
-		return "<function %s>".formatted(this.value);
+		return "<function " + this.value + ">";
+	}
+	
+	@Override
+	public boolean isEquals(Context context, Value<?> other) {
+//		if (other instanceof FunctionValue functionValue) {
+//			return this.getParameterCount() == functionValue.getParameterCount() && super.equals(other);
+//		}
+		
+		// The problem here is that it is not enough to check the parameter count and name
+		// If this function was a delegate of a class and then we compared it to a delegate
+		// of the same class but another instance is should always return false.
+		return this == other;
 	}
 }

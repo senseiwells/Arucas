@@ -8,11 +8,11 @@ import me.senseiwells.arucas.values.Value;
 
 import java.util.List;
 
-public abstract class AbstractBuiltInFunction<S extends AbstractBuiltInFunction<?>> extends FunctionValue {
-	public final FunctionDefinition<S> function;
+public abstract class AbstractBuiltInFunction<T extends AbstractBuiltInFunction<?>> extends FunctionValue {
+	public final FunctionDefinition<T> function;
 
-	public AbstractBuiltInFunction(String name, List<String> argumentNames, FunctionDefinition<S> function, String isDeprecated) {
-		super(name, ISyntax.emptyOf("Arucas/%s".formatted(name)), argumentNames, isDeprecated);
+	public AbstractBuiltInFunction(String name, List<String> argumentNames, FunctionDefinition<T> function, String isDeprecated) {
+		super(name, ISyntax.emptyOf("Arucas/" + name), argumentNames, isDeprecated);
 		this.function = function;
 	}
 
@@ -27,11 +27,11 @@ public abstract class AbstractBuiltInFunction<S extends AbstractBuiltInFunction<
 		}
 	}
 
-	public <T extends Value<?>> T getParameterValueOfType(Context context, Class<T> clazz, int index) throws CodeError {
+	public <E extends Value<?>> E getParameterValueOfType(Context context, Class<E> clazz, int index) throws CodeError {
 		return this.getParameterValueOfType(context, clazz, index, null);
 	}
 
-	public <T extends Value<?>> T getParameterValueOfType(Context context, Class<T> clazz, int index, String additionalInfo) throws CodeError {
+	public <E extends Value<?>> E getParameterValueOfType(Context context, Class<E> clazz, int index, String additionalInfo) throws CodeError {
 		Value<?> value = this.getParameterValue(context, index);
 		if (!clazz.isInstance(value)) {
 			throw this.throwInvalidParameterError("Must pass %s into parameter %d for %s()%s".formatted(

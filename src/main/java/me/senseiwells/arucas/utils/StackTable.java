@@ -7,24 +7,24 @@ import me.senseiwells.arucas.values.Value;
 import java.util.*;
 
 public class StackTable {
-	protected final Map<String, Value<?>> symbolMap;
-	protected final Map<String, AbstractClassDefinition> classDefinitions;
+	// Lazy generated
+	protected Map<String, Value<?>> symbolMap;
+	protected ArucasClassDefinitionMap classDefinitions;
 	private final StackTable parentTable;
 	private final ISyntax syntaxPosition;
+	private final StackTable rootTable;
 	
 	protected final boolean canContinue;
 	protected final boolean canBreak;
 	protected final boolean canReturn;
 	
 	public StackTable(StackTable parent, ISyntax syntaxPosition, boolean canBreak, boolean canContinue, boolean canReturn) {
-		this.symbolMap = new HashMap<>();
-		// This is a linked map because order needs to be preserved
-		this.classDefinitions = new LinkedHashMap<>();
 		this.parentTable = parent;
 		this.syntaxPosition = syntaxPosition;
 		this.canContinue = canContinue;
 		this.canReturn = canReturn;
 		this.canBreak = canBreak;
+		this.rootTable = parent == null ? this : parent.rootTable;
 	}
 
 	public StackTable() {
@@ -42,9 +42,11 @@ public class StackTable {
 	 * Returns the value of the variable name.
 	 */
 	public Value<?> get(String name) {
-		Value<?> value = this.symbolMap.get(name);
-		if (value != null) {
-			return value;
+		if (this.symbolMap != null) {
+			Value<?> value = this.symbolMap.get(name);
+			if (value != null) {
+				return value;
+			}
 		}
 		
 		if (this.parentTable != null) {
@@ -60,10 +62,11 @@ public class StackTable {
 	public void set(String name, Value<?> value) {
 		StackTable parentTable = this.getParent(name);
 		if (parentTable != null) {
+			// If a parentTable was found then symbolMap is not null
 			parentTable.symbolMap.put(name, value);
 		}
 		else {
-			this.symbolMap.put(name, value);
+			this.setLocal(name, value);
 		}
 	}
 	
@@ -71,6 +74,10 @@ public class StackTable {
 	 * Change the value of a local variable called name.
 	 */
 	public void setLocal(String name, Value<?> value) {
+		if (this.symbolMap == null) {
+			this.symbolMap = new HashMap<>();
+		}
+		
 		this.symbolMap.put(name, value);
 	}
 	
@@ -79,39 +86,45 @@ public class StackTable {
 	 */
 	public StackTable getParent(String name) {
 		if (this.parentTable != null) {
-			if (this.parentTable.symbolMap.get(name) != null) {
-				return this.parentTable;
-			}
-			else {
+			if (this.parentTable.symbolMap == null
+			|| this.parentTable.symbolMap.get(name) == null) {
 				return this.parentTable.getParent(name);
 			}
+			
+			return this.parentTable;
 		}
 		
 		return null;
 	}
 	
 	public AbstractClassDefinition getClassDefinition(String name) {
-		AbstractClassDefinition definition = this.classDefinitions.get(name);
-		if (definition != null) {
-			return definition;
+		if (this.classDefinitions != null) {
+			AbstractClassDefinition definition = this.classDefinitions.get(name);
+			if(definition != null) {
+				return definition;
+			}
 		}
 		
 		return this.parentTable != null ? this.parentTable.getClassDefinition(name) : null;
 	}
 
 	public boolean hasClassDefinition(String name) {
-		return this.classDefinitions.containsKey(name);
+		return this.classDefinitions != null && this.classDefinitions.has(name);
 	}
 	
 	public void addClassDefinition(AbstractClassDefinition definition) {
-		this.classDefinitions.put(definition.getName(), definition);
+		if (this.classDefinitions == null) {
+			this.classDefinitions = new ArucasClassDefinitionMap();
+		}
+		
+		this.classDefinitions.add(definition);
 	}
 
 	/**
 	 * Returns the root table.
 	 */
 	public StackTable getRoot() {
-		return this.parentTable != null ? this.parentTable.getRoot() : this;
+		return this.rootTable;
 	}
 
 	public StackTable getParentTable() {
@@ -150,11 +163,15 @@ public class StackTable {
 
 	@Override
 	public int hashCode() {
-		return this.symbolMap.hashCode();
+		// TODO: Remove this hashCode
+		return this.symbolMap == null ? 0 : this.symbolMap.hashCode();
 	}
 
 	@Override
 	public boolean equals(Object object) {
+		// TODO: Remove this equals
+		return this == object;
+		/*
 		if (this == object) {
 			return true;
 		}
@@ -170,10 +187,11 @@ public class StackTable {
 			return true;
 		}
 		return false;
+	  */
 	}
 
 	@Override
 	public String toString() {
-		return "%s%s".formatted(this.parentTable == null ? "RootTable":"StackTable", this.symbolMap);
+		return (this.parentTable == null ? "RootTable" : "StackTable") + (this.symbolMap == null ? "{}" : this.symbolMap.toString());
 	}
 }

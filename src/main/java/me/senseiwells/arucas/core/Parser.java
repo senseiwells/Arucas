@@ -39,7 +39,7 @@ public class Parser {
 		this.currentToken = this.operatorTokenIndex < this.tokens.size() ? this.tokens.get(this.operatorTokenIndex) : null;
 	}
 	
-	private Token getLastToken() {
+	private Token getPreviousToken() {
 		int index = this.operatorTokenIndex - 1;
 		return this.tokens.get(index < 0 ? 0 : (index >= this.tokens.size() ? this.tokens.size() - 1 : index));
 	}
@@ -183,12 +183,7 @@ public class Parser {
 		// Push scopes to declare class body
 		this.context.pushScope(startPos);
 
-		
 		while (this.currentToken.type != Token.Type.RIGHT_CURLY_BRACKET) {
-			// [Static/Member] variables
-			// [Static/Member] methods
-			// Constructors
-			
 			boolean isStatic = this.currentToken.type == Token.Type.STATIC;
 			if (isStatic) {
 				this.advance();
@@ -215,33 +210,25 @@ public class Parser {
 					}
 				}
 				case IDENTIFIER -> {
-					// This could either be a constructor or a member variable
-					
 					Token token = this.currentToken;
 					this.advance();
-
-					switch (this.currentToken.type) {
-						case ASSIGN_OPERATOR -> {
-							this.advance();
-							definition.addMemberVariableNode(isStatic, token.content, this.sizeComparisonExpression());
-							this.throwIfNotType(Token.Type.SEMICOLON, "Expected ';'");
-							this.advance();
+	
+					if (this.currentToken.type == Token.Type.LEFT_BRACKET) {
+						if (!token.content.equals(definition.getName())) {
+							throw new CodeError(
+								CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR,
+								"Constructor must have the same name as the class",
+								this.currentToken.syntaxPosition
+							);
 						}
-						case LEFT_BRACKET -> {
-							if (!token.content.equals(definition.getName())) {
-								throw new CodeError(
-									CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR,
-									"Constructor must have the same name as class",
-									this.currentToken.syntaxPosition
-								);
-							}
-							ClassMemberFunction constructor = this.classConstructor(isStatic, token.content);
-							definition.addConstructor(constructor);
-						}
-						case SEMICOLON -> {
-							definition.addMemberVariableNode(isStatic, token.content, new NullNode(this.currentToken));
-							this.advance();
-						}
+						ClassMemberFunction constructor = this.classConstructor(isStatic, token.content);
+						definition.addConstructor(constructor);
+					} else {
+						throw new CodeError(
+							CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR,
+							"Expected class constructor",
+							this.currentToken.syntaxPosition
+						);
 					}
 				}
 				case FUN -> {
@@ -260,7 +247,9 @@ public class Parser {
 					ClassMemberFunction operatorMethod = this.operatorMethod(isStatic, token);
 					definition.addOperatorMethod(token.type, operatorMethod);
 				}
-				case LEFT_CURLY_BRACKET -> definition.addStaticInitialiser(this.statements());
+				case LEFT_CURLY_BRACKET -> {
+					definition.addStaticInitializer(this.statements());
+				}
 				default -> throw new CodeError(
 					CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR,
 					"Expected Identifier or function",
@@ -312,7 +301,6 @@ public class Parser {
 		Token variableNameToken = this.currentToken;
 		this.advance();
 		
-		// Make sure that we can parameter length overload class functions!
 		this.throwIfNotType(Token.Type.LEFT_BRACKET, "Expected '('");
 		this.advance();
 		
@@ -731,8 +719,10 @@ public class Parser {
 			this.advance();
 			
 			if (valueType == null) {
-				if (this.currentToken.type == Token.Type.STRING
-				|| this.currentToken.type == Token.Type.NUMBER) {
+				if (this.currentToken.type == Token.Type.MINUS) {
+					valueType = Token.Type.NUMBER;
+				}
+				else if (this.currentToken.type == Token.Type.STRING || this.currentToken.type == Token.Type.NUMBER) {
 					valueType = this.currentToken.type;
 				}
 				else {
@@ -745,13 +735,28 @@ public class Parser {
 			
 			Set<Value<?>> values = new HashSet<>();
 			while (true) {
+				boolean isNegative = false;
+				if (this.currentToken.type == Token.Type.MINUS) {
+					isNegative = true;
+					this.advance();
+					
+					if (this.currentToken.type != Token.Type.NUMBER || this.currentToken.type != valueType) {
+						throw new CodeError(
+							CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected a value of '%s' but got '%s'".formatted(valueType, this.currentToken.type),
+							this.currentToken.syntaxPosition
+						);
+					}
+				}
+				
 				Token token = this.currentToken;
 				this.throwIfNotType(valueType, "Expected a value of type '%s' but got '%s'".formatted(valueType, token.type));
 				this.advance();
 				
-				Value<?> value = null;
+				Value<?> value;
 				switch (valueType) {
-					case NUMBER -> value = NumberValue.of(Double.parseDouble(token.content));
+					case NUMBER -> {
+						value = NumberValue.of(Double.parseDouble(token.content) * (isNegative ? -1.0D : 1.0D));
+					}
 					case STRING -> {
 						try {
 							value = StringValue.of(StringUtils.unescapeString(token.content.substring(1, token.content.length() - 1)));
@@ -759,6 +764,12 @@ public class Parser {
 						catch (RuntimeException e) {
 							throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, e.getMessage(), token.syntaxPosition);
 						}
+					}
+					default -> {
+						throw new CodeError(
+							CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Switch statements can only contain numbers and strings",
+							this.currentToken.syntaxPosition
+						);
 					}
 				}
 				
@@ -792,13 +803,8 @@ public class Parser {
 	}
 	
 	private Node expression() throws CodeError {
-		// Initialise variable with keyword 'var' -> stores value in map
-		if (this.currentToken.type == Token.Type.VAR) {
-			this.advance();
-			return this.setVariable();
-		}
 		// If identifier is already a variable -> can assign value without 'var' keyword
-		else if (this.currentToken.type == Token.Type.IDENTIFIER) {
+		if (this.currentToken.type == Token.Type.IDENTIFIER) {
 			this.advance();
 			switch (this.currentToken.type) {
 				case ASSIGN_OPERATOR -> {
@@ -1125,7 +1131,7 @@ public class Parser {
 			 * This means that we need to read the previous token and then get the position of the
 			 * last index of that token.
 			 */
-			Token lastToken = this.getLastToken();
+			Token lastToken = this.getPreviousToken();
 			ISyntax lastTokenPosition = ISyntax.lastOf(lastToken.syntaxPosition);
 			throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, errorMessage, lastTokenPosition);
 		}

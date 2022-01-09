@@ -1,5 +1,6 @@
 package me.senseiwells.arucas.values.functions;
 
+import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.values.Value;
 
 @SuppressWarnings("BooleanMethodIsAlwaysInverted")
@@ -37,43 +38,18 @@ public interface MemberOperations {
 	 * Returns a member of this object with the specified amount of parameters
 	 */
 	default FunctionValue getMember(String name, int parameters) {
-		return this.getMember(name, parameters, this.getAllMembers());
-	}
-
-	default FunctionValue getMember(String name, int parameters, Iterable<? extends FunctionValue> members) {
-		for (FunctionValue method : members) {
-			if (method.getParameterCount() == parameters && method.getName().equals(name)) {
-				return method;
-			}
-		}
-		return null;
+		return this.getAllMembers().get(name, parameters);
 	}
 
 	/**
 	 * Returns a delegate value of a function
 	 */
 	default FunctionValue getDelegate(String name) {
-		return this.getDelegate(name, this.getAllMembers());
-	}
-
-	default FunctionValue getDelegate(String name, Iterable<? extends FunctionValue> members) {
-		FunctionValue memberFunction = null;
-		for (FunctionValue method : members) {
-			if (!method.getName().equals(name)) {
-				continue;
-			}
-			// We can only delegate methods that are not overloaded
-			if (memberFunction != null) {
-				return null;
-			}
-			memberFunction = method;
-		}
-
-		return memberFunction;
+		return this.getAllMembers().get(name);
 	}
 
 	/**
 	 * Returns all the member functions of that class
 	 */
-	Iterable<? extends FunctionValue> getAllMembers();
+	ArucasFunctionMap<?> getAllMembers();
 }

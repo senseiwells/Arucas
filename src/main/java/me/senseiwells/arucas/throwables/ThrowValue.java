@@ -20,10 +20,21 @@ public abstract class ThrowValue extends Exception {
 	}
 	
 	public static class Return extends ThrowValue {
-		public final Value<?> returnValue;
+		private Value<?> returnValue;
 		public Return(Value<?> returnValue) {
 			super("Cannot return here");
 			this.returnValue = returnValue;
+		}
+		
+		public Value<?> getReturnValue() {
+			return this.returnValue;
+		}
+		
+		/**
+		 * This method is only used internally and should not be called directly
+		 */
+		public void setReturnValue(Value<?> value) {
+			this.returnValue = value;
 		}
 	}
 }

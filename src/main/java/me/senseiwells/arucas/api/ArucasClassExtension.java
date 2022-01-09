@@ -2,21 +2,20 @@ package me.senseiwells.arucas.api;
 
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
+import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
 import me.senseiwells.arucas.values.functions.ConstructorFunction;
-import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public abstract class ArucasClassExtension extends AbstractClassDefinition {
-	private final Set<ConstructorFunction> constructors;
-	private final Set<MemberFunction> methods;
+	private final ArucasFunctionMap<ConstructorFunction> constructors;
+	private final ArucasFunctionMap<MemberFunction> methods;
 
 	public ArucasClassExtension(String name) {
 		super(name);
@@ -30,7 +29,7 @@ public abstract class ArucasClassExtension extends AbstractClassDefinition {
 	public final void initialiseStatics(Context context) { }
 
 	@Override
-	public final Set<MemberFunction> getMethods() {
+	public final ArucasFunctionMap<MemberFunction> getMethods() {
 		return this.methods;
 	}
 
@@ -45,15 +44,15 @@ public abstract class ArucasClassExtension extends AbstractClassDefinition {
 	/**
 	 * This lets you define constructors for a Class
 	 */
-	public Set<ConstructorFunction> getDefinedConstructors() {
-		return Set.of();
+	public ArucasFunctionMap<ConstructorFunction> getDefinedConstructors() {
+		return ArucasFunctionMap.of();
 	}
 
 	/**
 	 * This lets you define methods for a Class
 	 */
-	public Set<MemberFunction> getDefinedMethods() {
-		return Set.of();
+	public ArucasFunctionMap<MemberFunction> getDefinedMethods() {
+		return ArucasFunctionMap.of();
 	}
 
 	/**
@@ -66,8 +65,8 @@ public abstract class ArucasClassExtension extends AbstractClassDefinition {
 	/**
 	 * This lets you define static methods for a Class
 	 */
-	public List<BuiltInFunction> getDefinedStaticMethods() {
-		return List.of();
+	public ArucasFunctionMap<BuiltInFunction> getDefinedStaticMethods() {
+		return ArucasFunctionMap.of();
 	}
 
 	/**
@@ -78,14 +77,12 @@ public abstract class ArucasClassExtension extends AbstractClassDefinition {
 		if (this.constructors.isEmpty()) {
 			throw new RuntimeError("%s cannot be constructed".formatted(this.getName()), syntaxPosition, context);
 		}
-
-		int parameterCount = parameters.size();
-		for (ConstructorFunction constructor : this.constructors) {
-			if (parameterCount != constructor.getParameterCount()) {
-				continue;
-			}
-			return constructor.call(context, parameters, false);
+		
+		ConstructorFunction constructor = this.constructors.get(this.getName(), parameters.size());
+		if (constructor == null) {
+			throw new RuntimeError("No such constructor for %s".formatted(this.getName()), syntaxPosition, context);
 		}
-		throw new RuntimeError("No such constructor for %s".formatted(this.getName()), syntaxPosition, context);
+		
+		return constructor.call(context, parameters, false);
 	}
 }

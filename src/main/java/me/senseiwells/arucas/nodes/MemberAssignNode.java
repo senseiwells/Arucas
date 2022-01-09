@@ -10,23 +10,23 @@ import me.senseiwells.arucas.values.classes.ArucasClassValue;
 
 public class MemberAssignNode extends Node {
 	private final Node leftNode;
-	private final Node memberName;
+	private final Node memberNameNode;
 	private final Node valueNode;
 	
 	public MemberAssignNode(Node leftNode, Node memberName, Node valueNode) {
 		super(leftNode.token, leftNode.syntaxPosition, valueNode.syntaxPosition);
 		this.leftNode = leftNode;
-		this.memberName = memberName;
+		this.memberNameNode = memberName;
 		this.valueNode = valueNode;
 	}
 
 	@Override
 	public Value<?> visit(Context context) throws CodeError, ThrowValue {
-		// The leftNode holds the Value<?> we which to call this member function on
+		// The leftNode holds the Value that contains the member
 		Value<?> memberValue = this.leftNode.visit(context);
 		
-		// The methodName node is the MemberAccessNode that just contains a string
-		StringValue memberName = (StringValue) this.memberName.visit(context);
+		// The memberNameNode is the MemberAccessNode that contains the name of the member
+		StringValue memberName = (StringValue) this.memberNameNode.visit(context);
 		
 		if (!(memberValue instanceof ArucasClassValue classValue)) {
 			throw new RuntimeError("You can only assign values to class member values", this.syntaxPosition, context);
