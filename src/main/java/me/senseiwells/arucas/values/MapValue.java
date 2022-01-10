@@ -3,7 +3,11 @@ package me.senseiwells.arucas.values;
 import me.senseiwells.arucas.api.ArucasClassExtension;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
-import me.senseiwells.arucas.utils.*;
+import me.senseiwells.arucas.utils.ArucasFunctionMap;
+import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.StringUtils;
+import me.senseiwells.arucas.utils.impl.ArucasValueListCustom;
+import me.senseiwells.arucas.utils.impl.ArucasValueMap;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
 import java.util.Iterator;
@@ -18,7 +22,6 @@ public class MapValue extends Value<ArucasValueMap> {
 	@Override
 	public MapValue copy() {
 		return this;
-		// return new MapValue(this.value);
 	}
 
 	@Override
@@ -62,10 +65,14 @@ public class MapValue extends Value<ArucasValueMap> {
 	
 	@Override
 	public boolean isEquals(Context context, Value<?> other) throws CodeError {
-		if (!(other instanceof MapValue that)) return false;
+		if (!(other instanceof MapValue that)) {
+			return false;
+		}
 		
 		// Do a reference check
-		if (this == other) return true;
+		if (this == other) {
+			return true;
+		}
 		
 		// TODO: Implement the `Custom maps`
 		return this.value.equals(that.value);
@@ -108,14 +115,14 @@ public class MapValue extends Value<ArucasValueMap> {
 
 		private Value<?> mapGetKeys(Context context, MemberFunction function) throws CodeError {
 			MapValue thisValue = function.getParameterValueOfType(context, MapValue.class, 0);
-			ArucasValueList valueList = new ArucasValueList();
+			ArucasValueListCustom valueList = new ArucasValueListCustom();
 			thisValue.value.keySet().forEach(value -> valueList.add(value.newCopy()));
 			return new ListValue(valueList);
 		}
 
 		private Value<?> mapGetValues(Context context, MemberFunction function) throws CodeError {
 			MapValue thisValue = function.getParameterValueOfType(context, MapValue.class, 0);
-			ArucasValueList valueList = new ArucasValueList();
+			ArucasValueListCustom valueList = new ArucasValueListCustom();
 			valueList.addAll(thisValue.value.values().stream().map(Value::newCopy).toList());
 			return new ListValue(valueList);
 		}

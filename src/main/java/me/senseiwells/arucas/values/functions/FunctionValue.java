@@ -5,6 +5,7 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.impl.ArucasValueListCustom;
 import me.senseiwells.arucas.values.Value;
 
 import java.util.List;
@@ -30,7 +31,7 @@ public abstract class FunctionValue extends Value<String> {
 		return this.argumentNames.size();
 	}
 	
-	private void checkArguments(Context context, List<Value<?>> arguments, List<String> argumentNames) throws CodeError {
+	private void checkArguments(Context context, ArucasValueListCustom arguments, List<String> argumentNames) throws CodeError {
 		int argumentSize = arguments == null ? 0 : arguments.size();
 		if (argumentSize > argumentNames.size()) {
 			throw new RuntimeError(
@@ -48,7 +49,7 @@ public abstract class FunctionValue extends Value<String> {
 		}
 	}
 
-	private void populateArguments(Context context, List<Value<?>> arguments, List<String> argumentNames) {
+	private void populateArguments(Context context, ArucasValueListCustom arguments, List<String> argumentNames) {
 		for (int i = 0; i < argumentNames.size(); i++) {
 			String argumentName = argumentNames.get(i);
 			Value<?> argumentValue = arguments.get(i);
@@ -56,7 +57,7 @@ public abstract class FunctionValue extends Value<String> {
 		}
 	}
 
-	public void checkAndPopulateArguments(Context context, List<Value<?>> arguments, List<String> argumentNames) throws CodeError {
+	public void checkAndPopulateArguments(Context context, ArucasValueListCustom arguments, List<String> argumentNames) throws CodeError {
 		this.checkArguments(context, arguments, argumentNames);
 		this.populateArguments(context, arguments, argumentNames);
 	}
@@ -65,12 +66,12 @@ public abstract class FunctionValue extends Value<String> {
 		return new RuntimeError(details, this.syntaxPosition, context);
 	}
 
-	protected abstract Value<?> execute(Context context, List<Value<?>> arguments) throws CodeError, ThrowValue;
+	protected abstract Value<?> execute(Context context, ArucasValueListCustom arguments) throws CodeError, ThrowValue;
 	
 	/**
 	 * API overridable method
 	 */
-	protected Value<?> callOverride(Context context, List<Value<?>> arguments, boolean returnable) throws CodeError {
+	protected Value<?> callOverride(Context context, ArucasValueListCustom arguments, boolean returnable) throws CodeError {
 		context.pushFunctionScope(this.syntaxPosition);
 		try {
 			Value<?> value = this.execute(context, arguments);
@@ -105,11 +106,11 @@ public abstract class FunctionValue extends Value<String> {
 		}
 	}
 	
-	public final Value<?> call(Context context, List<Value<?>> arguments) throws CodeError {
+	public final Value<?> call(Context context, ArucasValueListCustom arguments) throws CodeError {
 		return this.callOverride(context, arguments, true);
 	}
 
-	public final Value<?> call(Context context, List<Value<?>> arguments, boolean returnable) throws CodeError {
+	public final Value<?> call(Context context, ArucasValueListCustom arguments, boolean returnable) throws CodeError {
 		return this.callOverride(context, arguments, returnable);
 	}
 	

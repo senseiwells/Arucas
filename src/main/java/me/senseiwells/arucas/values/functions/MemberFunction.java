@@ -2,6 +2,7 @@ package me.senseiwells.arucas.values.functions;
 
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.impl.ArucasValueListCustom;
 import me.senseiwells.arucas.values.Value;
 
 import java.util.ArrayList;
@@ -32,8 +33,12 @@ public class MemberFunction extends AbstractBuiltInFunction<MemberFunction> {
 		this(name, List.of(), function, isDeprecated);
 	}
 
+	public <T extends Value<?>> T getThis(Context context, Class<T> clazz) throws CodeError {
+		return this.getParameterValueOfType(context, clazz, 0);
+	}
+
 	@Override
-	protected Value<?> execute(Context context, List<Value<?>> arguments) throws CodeError {
+	protected Value<?> execute(Context context, ArucasValueListCustom arguments) throws CodeError {
 		this.checkDeprecated(context);
 		this.checkAndPopulateArguments(context, arguments, this.argumentNames);
 		return this.function.execute(context, this);

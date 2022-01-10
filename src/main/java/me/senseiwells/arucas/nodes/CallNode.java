@@ -4,6 +4,7 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.impl.ArucasValueListCustom;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 
@@ -30,7 +31,7 @@ public class CallNode extends Node {
 			throw new RuntimeError("Cannot call the non function value '%s'".formatted(value.getStringValue(context)), this.syntaxPosition, context);
 		}
 		
-		List<Value<?>> argumentValues = new ArrayList<>();
+		ArucasValueListCustom argumentValues = new ArucasValueListCustom();
 		for (Node node : this.argumentNodes) {
 			argumentValues.add(node.visit(context));
 		}

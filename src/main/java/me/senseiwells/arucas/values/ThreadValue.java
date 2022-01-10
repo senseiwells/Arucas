@@ -4,9 +4,9 @@ import me.senseiwells.arucas.api.ArucasClassExtension;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
-import me.senseiwells.arucas.utils.ArucasValueList;
-import me.senseiwells.arucas.utils.ArucasValueThread;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.impl.ArucasValueListCustom;
+import me.senseiwells.arucas.utils.impl.ArucasValueThread;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.functions.MemberFunction;
@@ -75,7 +75,7 @@ public class ThreadValue extends Value<ArucasValueThread> {
 		private Value<?> runThreaded$1(Context context, BuiltInFunction function) throws CodeError {
 			FunctionValue functionValue = function.getParameterValueOfType(context, FunctionValue.class, 0);
 			ArucasValueThread thread = context.getThreadHandler().runAsyncFunctionInContext(
-				context.createBranch(), (branchContext) -> functionValue.call(branchContext, new ArucasValueList()),
+				context.createBranch(), (branchContext) -> functionValue.call(branchContext, new ArucasValueListCustom()),
 				"Unnamed Arucas Thread"
 			);
 			return ThreadValue.of(thread);
@@ -85,7 +85,7 @@ public class ThreadValue extends Value<ArucasValueThread> {
 			StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
 			FunctionValue functionValue = function.getParameterValueOfType(context, FunctionValue.class, 1);
 			ArucasValueThread thread = context.getThreadHandler().runAsyncFunctionInContext(
-				context.createBranch(), (branchContext) -> functionValue.call(branchContext, new ArucasValueList()),
+				context.createBranch(), (branchContext) -> functionValue.call(branchContext, new ArucasValueListCustom()),
 				stringValue.value
 			);
 			return ThreadValue.of(thread);

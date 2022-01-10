@@ -5,8 +5,8 @@ import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
-import me.senseiwells.arucas.utils.ArucasValueList;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.impl.ArucasValueListCustom;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
 import java.util.List;
@@ -75,7 +75,7 @@ public class StringValue extends Value<String> {
 
 		private Value<?> stringToList(Context context, MemberFunction function) throws CodeError {
 			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
-			ArucasValueList stringList = new ArucasValueList();
+			ArucasValueListCustom stringList = new ArucasValueListCustom();
 			for (char c : thisValue.value.toCharArray()) {
 				stringList.add(new StringValue(String.valueOf(c)));
 			}
@@ -115,7 +115,7 @@ public class StringValue extends Value<String> {
 
 		private Value<?> stringFormatted(Context context, MemberFunction function) throws CodeError {
 			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
-			final Value<?>[] array = function.getParameterValueOfType(context, ListValue.class, 1).value.toArray(Value<?>[]::new);
+			final Value<?>[] array = function.getParameterValueOfType(context, ListValue.class, 1).value.toArray();
 			int i = 0;
 			String string = thisValue.value;
 			while (string.contains("%s")) {
@@ -154,7 +154,7 @@ public class StringValue extends Value<String> {
 		private Value<?> split(Context context, MemberFunction function) throws CodeError {
 			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
 			String otherString = function.getParameterValueOfType(context, StringValue.class, 1).value;
-			ArucasValueList list = new ArucasValueList();
+			ArucasValueListCustom list = new ArucasValueListCustom();
 			for (String string : thisValue.value.split(otherString)) {
 				list.add(new StringValue(string));
 			}

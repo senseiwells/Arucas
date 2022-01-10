@@ -6,6 +6,8 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowStop;
 import me.senseiwells.arucas.utils.*;
+import me.senseiwells.arucas.utils.impl.ArucasValueListCustom;
+import me.senseiwells.arucas.utils.impl.ArucasValueThread;
 import me.senseiwells.arucas.values.*;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
 import me.senseiwells.arucas.values.functions.FunctionValue;
@@ -22,7 +24,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
-import java.util.Set;
 
 public class ArucasBuiltInExtension implements IArucasExtension {
 	private final Scanner scanner = new Scanner(System.in);
@@ -143,7 +144,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 	@Deprecated
 	private Value<?> runThreaded$2(Context context, BuiltInFunction function) throws CodeError {
 		FunctionValue functionValue = function.getParameterValueOfType(context, FunctionValue.class, 0);
-		List<Value<?>> list = function.getParameterValueOfType(context, ListValue.class, 1).value;
+		ArucasValueListCustom list = function.getParameterValueOfType(context, ListValue.class, 1).value;
 		ArucasValueThread thread = context.getThreadHandler().runAsyncFunctionInContext(context.createBranch(), (branchContext) -> functionValue.call(branchContext, list));
 		return ThreadValue.of(thread);
 	}
@@ -215,7 +216,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 			if (files == null) {
 				throw new RuntimeError("Could not find any files", function.syntaxPosition, context);
 			}
-			ArucasValueList fileList = new ArucasValueList();
+			ArucasValueListCustom fileList = new ArucasValueListCustom();
 			for (File file : files) {
 				fileList.add(StringValue.of(file.getName()));
 			}
@@ -233,7 +234,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 
 	private Value<?> callFunctionWithList(Context context, BuiltInFunction function) throws CodeError {
 		FunctionValue functionValue = function.getParameterValueOfType(context, FunctionValue.class, 0);
-		ArucasValueList listValue = function.getParameterValueOfType(context, ListValue.class, 1).value;
+		ArucasValueListCustom listValue = function.getParameterValueOfType(context, ListValue.class, 1).value;
 		return functionValue.call(context, listValue);
 	}
 

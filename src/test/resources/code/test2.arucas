@@ -1,47 +1,31 @@
 // run(getDirectory() + "/src/test/resources/code/test2.arucas");
 
-class Benchmark {
-    static var thread = Thread.getCurrentThread();
+list = [1, 2, 3, 4, 5];
+threads = [];
 
-    static fun average(list) {
-        totalCount = len(list);
-        totalValue = 0;
-        foreach (value : list) totalValue = totalValue + value;
-        return totalValue / totalCount;
-    }
+// This is almost 100% going to throw Index is out of bounds, but that is expected
 
-    static fun valueFunctionCallAvg(value) {
-        times = [];
-        for (i = 0; i < 10; i++) {
-            start = Benchmark.thread.getAge();
-            for (j = 0; j < 1000000; j++) value.toString();
-            end = Benchmark.thread.getAge();
-            times.append(end - start);
+for (i = 0; i < 100; i++) {
+    thread = Thread.runThreaded(fun () {
+        for (j = 0; j < 100; j++) {
+            for (k = 0; k < len(list); k++) {
+                num = list.get(k);
+                list.remove(k);
+                list.insert(num, k);
+            }
         }
-        return Benchmark.average(times) * 10;
+    });
+    threads.append(thread);
+}
+
+
+for (isAlive = true; isAlive;) {
+    isAlive = false;
+    foreach (thread : threads) {
+        if (thread.isAlive()) {
+            isAlive = true;
+        }
     }
 }
 
-class UserClass {
-    UserClass() {
-
-    }
-
-    fun toString() {
-        return '';
-    }
-}
-
-delegate = Benchmark.valueFunctionCallAvg;
-
-s = " ms per 10 million iterations";
-
-print("----------:----------------------------------------------");
-print("Test      > %s%s".formatted([delegate(new Test()), s]));
-print("String    > %s%s".formatted([delegate(""), s]));
-print("List      > %s%s".formatted([delegate([]), s]));
-print("Number    > %s%s".formatted([delegate(0), s]));
-print("Null      > %s%s".formatted([delegate(null), s]));
-print("Map       > %s%s".formatted([delegate({}), s]));
-print("Boolean   > %s%s".formatted([delegate(true), s]));
-print("UserClass > %s%s".formatted([delegate(new UserClass()), s]));
+print(list);

@@ -1,7 +1,7 @@
-package me.senseiwells.arucas.utils;
+package me.senseiwells.arucas.utils.impl;
 
 import me.senseiwells.arucas.throwables.CodeError;
-import me.senseiwells.arucas.utils.impl.ArucasValueListCustom;
+import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.Value;
 
 import java.util.*;
@@ -21,10 +21,6 @@ public class ArucasValueMapCustom {
 		this.mask = ArucasValueMapCustom.INITIAL_SIZE;
 		this.table = new Node[this.mask];
 		this.size = 0;
-	}
-	
-	private synchronized int hash(int h) {
-		return (h ^ (h >>> 16)) & ArucasValueMapCustom.HASH_BITS;
 	}
 	
 	/**
@@ -59,7 +55,7 @@ public class ArucasValueMapCustom {
 	 * Removes an element from the map
 	 */
 	public synchronized Value<?> remove(Context context, Value<?> key) throws CodeError {
-		int hash = hash(key.getHashCode(context)) & (this.mask - 1);
+		int hash = this.hash(key.getHashCode(context)) & (this.mask - 1);
 		Node curr = this.table[hash];
 		Node last = curr;
 		
@@ -78,7 +74,7 @@ public class ArucasValueMapCustom {
 	}
 	
 	public synchronized boolean containsKey(Context context, Value<?> key) throws CodeError {
-		int hash = hash(key.getHashCode(context)) & (this.mask - 1);
+		int hash = this.hash(key.getHashCode(context)) & (this.mask - 1);
 		Node curr = this.table[hash];
 		
 		while (curr != null) {
@@ -103,19 +99,19 @@ public class ArucasValueMapCustom {
 		return this.size;
 	}
 	
-	public synchronized ArucasValueListCustom keys() {
-		ArucasValueListCustom list = new ArucasValueListCustom(this.table.length);
-
-		for (Node value : this.table) {
-			Node node = value;
-
+	public synchronized Set<Value<?>> keySet() {
+		List<Value<?>> list = new ArrayList<>(this.table.length);
+		
+		for (int i = 0, len = this.table.length; i < len; i++) {
+			Node node = this.table[i];
+			
 			while (node != null) {
 				list.add(node.key);
 				node = node.next;
 			}
 		}
 		
-		return list;
+		return new KeySet(list);
 	}
 	
 	public synchronized String toString(Context context) throws CodeError {
@@ -140,6 +136,10 @@ public class ArucasValueMapCustom {
 		
 		return sb.append('}').toString();
 	}
+
+	private synchronized int hash(int h) {
+		return (h ^ (h >>> 16)) & ArucasValueMapCustom.HASH_BITS;
+	}
 	
 	static class Node {
 		Value<?> key;
@@ -157,12 +157,12 @@ public class ArucasValueMapCustom {
 			return old;
 		}
 	}
-	/* I don't think we should have KeySet class, we would need a whole implementation
+
 	static class KeySet implements Set<Value<?>> {
-		final ArucasValueListCustom array;
+		final List<Value<?>> array;
 		final int length;
 		
-		KeySet(ArucasValueListCustom array) {
+		KeySet(List<Value<?>> array) {
 			this.array = array;
 			this.length = array.size();
 		}
@@ -183,5 +183,4 @@ public class ArucasValueMapCustom {
 		@Override public boolean removeAll(Collection<?> c) { throw new UnsupportedOperationException(); }
 		@Override public void clear() { throw new UnsupportedOperationException(); }
 	}
-	*/
 }

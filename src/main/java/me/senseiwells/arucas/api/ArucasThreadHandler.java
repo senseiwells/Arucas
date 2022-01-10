@@ -4,7 +4,7 @@ import me.senseiwells.arucas.core.Run;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowStop;
 import me.senseiwells.arucas.throwables.ThrowValue;
-import me.senseiwells.arucas.utils.ArucasValueThread;
+import me.senseiwells.arucas.utils.impl.ArucasValueThread;
 import me.senseiwells.arucas.utils.Context;
 
 import java.util.function.Consumer;

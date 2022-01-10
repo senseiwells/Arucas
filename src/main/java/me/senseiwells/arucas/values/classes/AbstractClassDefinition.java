@@ -5,6 +5,7 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.impl.ArucasValueListCustom;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.functions.MemberOperations;
@@ -53,7 +54,7 @@ public abstract class AbstractClassDefinition implements MemberOperations {
 	/**
 	 * This gets called when a new instance of this object is created
 	 */
-	public abstract Value<?> createNewDefinition(Context context, List<Value<?>> parameters, ISyntax syntaxPosition) throws CodeError, ThrowValue;
+	public abstract Value<?> createNewDefinition(Context context, ArucasValueListCustom parameters, ISyntax syntaxPosition) throws CodeError, ThrowValue;
 	
 	/**
 	 * These methods are for Runtime, when accessing and assigning static members

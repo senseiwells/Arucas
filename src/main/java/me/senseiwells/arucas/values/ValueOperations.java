@@ -67,7 +67,7 @@ public interface ValueOperations {
 		);
 	}
 
-	Map<Token.Type, Integer> overridableOperatorTokens = Map.ofEntries(
+	final Map<Token.Type, Integer> OVERRIDABLE_OPERATOR_TOKENS = Map.ofEntries(
 		Map.entry(Token.Type.PLUS, 2),
 		Map.entry(Token.Type.MINUS, 2),
 		Map.entry(Token.Type.MULTIPLY, 2),

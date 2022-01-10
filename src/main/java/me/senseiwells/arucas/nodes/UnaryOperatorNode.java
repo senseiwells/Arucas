@@ -4,6 +4,7 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.impl.ArucasValueListCustom;
 import me.senseiwells.arucas.values.NumberValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.ArucasClassValue;
@@ -25,7 +26,7 @@ public class UnaryOperatorNode extends Node {
 			case NOT -> {
 				if (value instanceof ArucasClassValue classValue && classValue.hasOperatorMethod(Token.Type.NOT)) {
 					// TODO: Remove empty allocations
-					return classValue.getOperatorMethod(Token.Type.NOT).call(context, new ArrayList<>());
+					return classValue.getOperatorMethod(Token.Type.NOT).call(context, new ArucasValueListCustom());
 				}
 				value = value.not(context, this.syntaxPosition);
 			}

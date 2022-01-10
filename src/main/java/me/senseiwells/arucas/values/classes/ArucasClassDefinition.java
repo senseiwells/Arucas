@@ -8,6 +8,7 @@ import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.impl.ArucasValueListCustom;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.functions.ClassMemberFunction;
 
@@ -67,7 +68,7 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 		return isStatic ? this.staticMemberVariableNodes.put(name, value) : this.memberVariables.put(name, value);
 	}
 	
-	public ArucasClassValue createNewDefinition(Context context, List<Value<?>> parameters, ISyntax syntaxPosition) throws CodeError, ThrowValue {
+	public ArucasClassValue createNewDefinition(Context context, ArucasValueListCustom parameters, ISyntax syntaxPosition) throws CodeError, ThrowValue {
 		ArucasClassValue thisValue = new ArucasClassValue(this);
 		// Add methods
 		for (ClassMemberFunction function : this.getMethods()) {

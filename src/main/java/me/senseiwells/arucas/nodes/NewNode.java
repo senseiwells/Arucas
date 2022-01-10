@@ -1,5 +1,6 @@
 package me.senseiwells.arucas.nodes;
 
+import me.senseiwells.arucas.utils.impl.ArucasValueListCustom;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.throwables.CodeError;
@@ -32,7 +33,7 @@ public class NewNode extends Node {
 			throw new RuntimeError("The class '%s' does not exist".formatted(this.className.content), this.syntaxPosition, context);
 		}
 		
-		List<Value<?>> parameters = new ArrayList<>();
+		ArucasValueListCustom parameters = new ArucasValueListCustom();
 		for (Node node : this.arguments) {
 			parameters.add(node.visit(context));
 		}

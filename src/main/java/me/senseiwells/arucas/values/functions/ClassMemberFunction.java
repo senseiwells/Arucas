@@ -4,6 +4,7 @@ import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.impl.ArucasValueListCustom;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.ArucasClassValue;
 
@@ -28,7 +29,7 @@ public class ClassMemberFunction extends UserDefinedFunction {
 	}
 	
 	@Override
-	public Value<?> execute(Context context, List<Value<?>> arguments) throws CodeError, ThrowValue {
+	public Value<?> execute(Context context, ArucasValueListCustom arguments) throws CodeError, ThrowValue {
 		// This value is always added as the first parameter
 		arguments.add(0, this.thisValue);
 		return super.execute(context, arguments);

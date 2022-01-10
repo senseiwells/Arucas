@@ -1,5 +1,6 @@
 package me.senseiwells.arucas.nodes;
 
+import me.senseiwells.arucas.utils.impl.ArucasValueListCustom;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
@@ -38,7 +39,7 @@ public class StaticCallNode extends Node {
 			), this.syntaxPosition, context);
 		}
 
-		List<Value<?>> argumentValues = new ArrayList<>();
+		ArucasValueListCustom argumentValues = new ArucasValueListCustom();
 		for (Node node : this.argumentNodes) {
 			argumentValues.add(node.visit(context));
 		}

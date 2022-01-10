@@ -223,7 +223,8 @@ public class Parser {
 						}
 						ClassMemberFunction constructor = this.classConstructor(isStatic, token.content);
 						definition.addConstructor(constructor);
-					} else {
+					}
+					else {
 						throw new CodeError(
 							CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR,
 							"Expected class constructor",
@@ -394,7 +395,7 @@ public class Parser {
 				startPos
 			);
 		}
-		if (!ValueOperations.overridableOperatorTokens.containsKey(token.type)) {
+		if (!ValueOperations.OVERRIDABLE_OPERATOR_TOKENS.containsKey(token.type)) {
 			throw new CodeError(
 				CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
 				"Cannot override operator %s".formatted(this.currentToken.type),
@@ -409,7 +410,7 @@ public class Parser {
 		this.context.pushScope(this.currentToken.syntaxPosition);
 		List<String> argumentNames = this.getClassMemberArguments();
 
-		int requiredParameters = ValueOperations.overridableOperatorTokens.get(token.type);
+		int requiredParameters = ValueOperations.OVERRIDABLE_OPERATOR_TOKENS.get(token.type);
 		if (argumentNames.size() != requiredParameters) {
 			throw new CodeError(
 				CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,

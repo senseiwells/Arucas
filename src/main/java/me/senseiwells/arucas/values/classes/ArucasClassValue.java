@@ -4,6 +4,7 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.impl.ArucasValueListCustom;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.functions.ClassMemberFunction;
 import me.senseiwells.arucas.values.functions.FunctionValue;
@@ -94,7 +95,7 @@ public class ArucasClassValue extends Value<ArucasClassDefinition> implements Me
 		// If 'toString' is overwritten we should return that value here
 		FunctionValue memberFunction = this.getMember("toString", 1);
 		if (memberFunction != null) {
-			return memberFunction.call(context, new ArrayList<>()).getStringValue(context);
+			return memberFunction.call(context, new ArucasValueListCustom()).getStringValue(context);
 		}
 		
 		return "<class " + this.getName() + "@" + Integer.toHexString(this.hashCode()) + ">";

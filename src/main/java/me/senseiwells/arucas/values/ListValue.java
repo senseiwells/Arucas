@@ -4,17 +4,15 @@ import me.senseiwells.arucas.api.ArucasClassExtension;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
-import me.senseiwells.arucas.utils.ArucasValueList;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.utils.StringUtils;
+import me.senseiwells.arucas.utils.impl.ArucasValueListCustom;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
-import java.util.Iterator;
 import java.util.List;
 
-public class ListValue extends Value<ArucasValueList> {
+public class ListValue extends Value<ArucasValueListCustom> {
 
-	public ListValue(ArucasValueList value) {
+	public ListValue(ArucasValueListCustom value) {
 		super(value);
 	}
 
@@ -25,64 +23,25 @@ public class ListValue extends Value<ArucasValueList> {
 
 	@Override
 	public ListValue newCopy() {
-		return new ListValue(new ArucasValueList(this.value));
+		return new ListValue(new ArucasValueListCustom(this.value));
 	}
 	
 	@Override
 	public int getHashCode(Context context) throws CodeError {
-		int hashCode = 0;
-		
-		for (Value<?> value : this.value) {
-			// Get each value in this list
-			hashCode = 32 * hashCode + value.getHashCode(context);
-		}
-		
-		return hashCode;
+		return this.value.getHashCode(context);
 	}
 	
 	@Override
 	public String getStringValue(Context context) throws CodeError {
-		if (this.value.isEmpty()) {
-			return "[]";
-		}
-		
-		StringBuilder sb = new StringBuilder();
-		sb.append('[');
-		
-		// Because value is an instance of CopyOnWriteArrayList this operation
-		// is thread safe but does allocate more memory
-		Iterator<Value<?>> iter = this.value.iterator();
-		
-		while (iter.hasNext()) {
-			sb.append(StringUtils.toPlainString(context, iter.next()));
-			
-			if (iter.hasNext()) {
-				sb.append(", ");
-			}
-		}
-		
-		return sb.append(']').toString();
+		return this.value.getStringValue(context);
 	}
 	
 	@Override
 	public boolean isEquals(Context context, Value<?> other) throws CodeError {
-		if (!(other instanceof ListValue that)) return false;
-		
-		// Do a reference check
-		if (this == other) return true;
-		
-		// Non thread safe iteration could occur here so we need to allocate memory
-		Value<?>[] a = this.value.toArray(Value[]::new);
-		Value<?>[] b = that.value.toArray(Value[]::new);
-		if (a.length != b.length) return false;
-		
-		for (int i = 0, len = a.length; i < len; i++) {
-			if (!a[i].isEquals(context, b[i])) {
-				return false;
-			}
+		if (!(other instanceof ListValue otherList)) {
+			return false;
 		}
-		
-		return true;
+		return this.value.isEquals(context, otherList.value);
 	}
 	
 	public static class ArucasListClass extends ArucasClassExtension {
@@ -107,12 +66,13 @@ public class ListValue extends Value<ArucasValueList> {
 				new MemberFunction("concat", "otherList", this::concatList),
 				new MemberFunction("contains", "value", this::listContains),
 				new MemberFunction("containsAll", "otherList", this::containsAll),
-				new MemberFunction("isEmpty", this::isEmpty)
+				new MemberFunction("isEmpty", this::isEmpty),
+				new MemberFunction("clear", this::clear)
 			);
 		}
 
 		private synchronized Value<?> getListIndex(Context context, MemberFunction function) throws CodeError {
-			ListValue thisValue = function.getParameterValueOfType(context, ListValue.class, 0);
+			ListValue thisValue = function.getThis(context, ListValue.class);
 			NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 1);
 			int index = numberValue.value.intValue();
 			if (index >= thisValue.value.size() || index < 0) {
@@ -122,7 +82,7 @@ public class ListValue extends Value<ArucasValueList> {
 		}
 
 		private synchronized Value<?> removeListIndex(Context context, MemberFunction function) throws CodeError {
-			ListValue thisValue = function.getParameterValueOfType(context, ListValue.class, 0);
+			ListValue thisValue = function.getThis(context, ListValue.class);
 			NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 1);
 			int index = numberValue.value.intValue();
 			if (index >= thisValue.value.size() || index < 0) {
@@ -132,14 +92,14 @@ public class ListValue extends Value<ArucasValueList> {
 		}
 
 		private synchronized Value<?> appendList(Context context, MemberFunction function) throws CodeError {
-			ListValue thisValue = function.getParameterValueOfType(context, ListValue.class, 0);
+			ListValue thisValue = function.getThis(context, ListValue.class);
 			Value<?> value = function.getParameterValue(context, 1);
 			thisValue.value.add(value);
 			return thisValue;
 		}
 
 		private synchronized Value<?> insertList(Context context, MemberFunction function) throws CodeError {
-			ListValue thisValue = function.getParameterValueOfType(context, ListValue.class, 0);
+			ListValue thisValue = function.getThis(context, ListValue.class);
 			Value<?> value = function.getParameterValue(context, 1);
 			int index = function.getParameterValueOfType(context, NumberValue.class, 2).value.intValue();
 			int len = thisValue.value.size();
@@ -151,27 +111,33 @@ public class ListValue extends Value<ArucasValueList> {
 		}
 
 		private synchronized Value<?> concatList(Context context, MemberFunction function) throws CodeError {
-			ListValue thisValue = function.getParameterValueOfType(context, ListValue.class, 0);
+			ListValue thisValue = function.getThis(context, ListValue.class);
 			ListValue list2 = function.getParameterValueOfType(context, ListValue.class, 1);
 			thisValue.value.addAll(list2.value);
 			return thisValue;
 		}
 
 		private synchronized BooleanValue listContains(Context context, MemberFunction function) throws CodeError {
-			ListValue thisValue = function.getParameterValueOfType(context, ListValue.class, 0);
+			ListValue thisValue = function.getThis(context, ListValue.class);
 			Value<?> value = function.getParameterValue(context, 1);
-			return BooleanValue.of(thisValue.value.contains(value));
+			return BooleanValue.of(thisValue.value.contains(context, value));
 		}
 
 		private synchronized BooleanValue containsAll(Context context, MemberFunction function) throws CodeError {
-			ListValue thisValue = function.getParameterValueOfType(context, ListValue.class, 0);
+			ListValue thisValue = function.getThis(context, ListValue.class);
 			ListValue otherList = function.getParameterValueOfType(context, ListValue.class, 1);
-			return BooleanValue.of(thisValue.value.containsAll(otherList.value));
+			return BooleanValue.of(thisValue.value.containsAll(context, otherList.value));
 		}
 
 		private synchronized BooleanValue isEmpty(Context context, MemberFunction function) throws CodeError {
-			ListValue thisValue = function.getParameterValueOfType(context, ListValue.class, 0);
+			ListValue thisValue = function.getThis(context, ListValue.class);
 			return BooleanValue.of(thisValue.value.isEmpty());
+		}
+
+		private synchronized Value<?> clear(Context context, MemberFunction function) throws CodeError {
+			ListValue thisValue = function.getThis(context, ListValue.class);
+			thisValue.value.clear();
+			return NullValue.NULL;
 		}
 	}
 }

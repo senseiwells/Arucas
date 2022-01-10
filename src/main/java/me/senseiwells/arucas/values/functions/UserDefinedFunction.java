@@ -5,6 +5,7 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.nodes.Node;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.impl.ArucasValueListCustom;
 import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
 
@@ -21,7 +22,7 @@ public class UserDefinedFunction extends FunctionValue {
 		this.bodyNode = bodyNode;
 	}
 
-	protected Value<?> execute(Context context, List<Value<?>> arguments) throws CodeError, ThrowValue {
+	protected Value<?> execute(Context context, ArucasValueListCustom arguments) throws CodeError, ThrowValue {
 		this.checkAndPopulateArguments(context, arguments, this.argumentNames);
 		this.bodyNode.visit(context);
 		return NullValue.NULL;

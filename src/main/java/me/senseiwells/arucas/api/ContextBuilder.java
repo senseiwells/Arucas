@@ -8,7 +8,7 @@ import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.*;
 import me.senseiwells.arucas.values.functions.AbstractBuiltInFunction;
-import me.senseiwells.arucas.values.wrapper.ArucasWrapper;
+import me.senseiwells.arucas.api.wrappers.ArucasWrapper;
 
 import java.util.*;
 import java.util.function.Consumer;

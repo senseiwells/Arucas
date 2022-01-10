@@ -4,6 +4,7 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.impl.ArucasValueListCustom;
 import me.senseiwells.arucas.values.StringValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.ArucasClassValue;
@@ -31,7 +32,7 @@ public class MemberCallNode extends CallNode {
 		// The callNode is the MemberAccessNode that contains the name of the member
 		StringValue memberFunctionName = (StringValue) this.callNode.visit(context);
 		
-		List<Value<?>> argumentValues = new ArrayList<>();
+		ArucasValueListCustom argumentValues = new ArucasValueListCustom();
 		FunctionValue function = null;
 		String customClassName = null;
 		if (memberValue instanceof ArucasClassValue classValue) {
