@@ -395,7 +395,7 @@ public class Parser {
 				startPos
 			);
 		}
-		if (!ValueOperations.OVERRIDABLE_OPERATOR_TOKENS.containsKey(token.type)) {
+		if (!Token.Type.OVERRIDABLE_OPERATOR_TOKEN_TYPES.containsKey(token.type)) {
 			throw new CodeError(
 				CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
 				"Cannot override operator %s".formatted(this.currentToken.type),
@@ -410,7 +410,7 @@ public class Parser {
 		this.context.pushScope(this.currentToken.syntaxPosition);
 		List<String> argumentNames = this.getClassMemberArguments();
 
-		int requiredParameters = ValueOperations.OVERRIDABLE_OPERATOR_TOKENS.get(token.type);
+		int requiredParameters = Token.Type.OVERRIDABLE_OPERATOR_TOKEN_TYPES.get(token.type);
 		if (argumentNames.size() != requiredParameters) {
 			throw new CodeError(
 				CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
@@ -882,7 +882,7 @@ public class Parser {
 			return new UnaryOperatorNode(token, node);
 		}
 		Node left = this.arithmeticExpression();
-		while (Token.Type.comparisonTokens.contains(this.currentToken.type)) {
+		while (Token.Type.COMPARISON_TOKEN_TYPES.contains(this.currentToken.type)) {
 			Token operatorToken = this.currentToken;
 			this.advance();
 			Node right = this.arithmeticExpression();

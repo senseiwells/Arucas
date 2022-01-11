@@ -5,7 +5,6 @@ import me.senseiwells.arucas.api.wrappers.IArucasWrappedClass;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.utils.impl.ArucasValueListCustom;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.ArucasClassValue;
 
@@ -56,7 +55,7 @@ public class WrapperClassMemberFunction extends ClassMemberFunction {
 	}
 	
 	@Override
-	protected Value<?> callOverride(Context context, ArucasValueListCustom arguments, boolean returnable) throws CodeError {
+	protected Value<?> callOverride(Context context, List<Value<?>> arguments, boolean returnable) throws CodeError {
 		Object[] args = new Object[1 + this.parameters];
 		if (this.isStatic) {
 			args[0] = context;
@@ -85,7 +84,7 @@ public class WrapperClassMemberFunction extends ClassMemberFunction {
 	}
 	
 	@Override
-	public String getStringValue(Context context) throws CodeError {
+	public String getAsString(Context context) throws CodeError {
 		return "<class %s::%s@%x>".formatted(this.thisValue.getName(), this.getName(), this.hashCode());
 	}
 }

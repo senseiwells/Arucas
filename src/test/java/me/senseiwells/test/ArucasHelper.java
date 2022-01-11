@@ -38,7 +38,7 @@ public class ArucasHelper {
 		NodeContext nodeContext = compile("_run_value=(fun(){%s})();".formatted(syntax));
 		nodeContext.node.visit(nodeContext.context);
 		Value<?> value = nodeContext.context.getStackTable().get("_run_value");
-		return value == null ? null : value.getStringValue(nodeContext.context);
+		return value == null ? null : value.getAsString(nodeContext.context);
 	}
 	
 	public static String runSafe(String syntax) {
@@ -55,7 +55,7 @@ public class ArucasHelper {
 		NodeContext nodeContext = compile(syntax);
 		nodeContext.node.visit(nodeContext.context);
 		Value<?> value = nodeContext.context.getStackTable().get(resultVariable);
-		return value == null ? null : value.getStringValue(nodeContext.context);
+		return value == null ? null : value.getAsString(nodeContext.context);
 	}
 	
 	public static String runSafeFull(String syntax, String resultVariable) {

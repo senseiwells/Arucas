@@ -9,7 +9,7 @@ import java.util.*;
 /**
  * This class cannot contain null values
  */
-public class ArucasValueMapCustom {
+public class ArucasMap /* implements ValueIdentifier */ {
 	static final int HASH_BITS = 0x7fffffff;
 	static final int INITIAL_SIZE = 64;
 	
@@ -17,8 +17,8 @@ public class ArucasValueMapCustom {
 	private final int mask;
 	private int size;
 	
-	public ArucasValueMapCustom() {
-		this.mask = ArucasValueMapCustom.INITIAL_SIZE;
+	public ArucasMap() {
+		this.mask = ArucasMap.INITIAL_SIZE;
 		this.table = new Node[this.mask];
 		this.size = 0;
 	}
@@ -123,7 +123,7 @@ public class ArucasValueMapCustom {
 			Node node = this.table[i];
 			
 			while (node != null) {
-				sb.append(node.key.getStringValue(context)).append(": ").append(node.value.getStringValue(context));
+				sb.append(node.key.getAsString(context)).append(": ").append(node.value.getAsString(context));
 				
 				if (++l >= this.size) {
 					break;
@@ -138,7 +138,7 @@ public class ArucasValueMapCustom {
 	}
 
 	private synchronized int hash(int h) {
-		return (h ^ (h >>> 16)) & ArucasValueMapCustom.HASH_BITS;
+		return (h ^ (h >>> 16)) & ArucasMap.HASH_BITS;
 	}
 	
 	static class Node {
@@ -157,7 +157,7 @@ public class ArucasValueMapCustom {
 			return old;
 		}
 	}
-
+	
 	static class KeySet implements Set<Value<?>> {
 		final List<Value<?>> array;
 		final int length;

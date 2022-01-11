@@ -5,7 +5,6 @@ import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.utils.impl.ArucasValueListCustom;
 import me.senseiwells.arucas.values.BooleanValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.ArucasClassValue;
@@ -49,7 +48,7 @@ public class BinaryOperatorNode extends Node {
 		}
 
 		if (this.token.type != Token.Type.NOT && left instanceof ArucasClassValue classValue && classValue.hasOperatorMethod(this.token.type)) {
-			ArucasValueListCustom parameters = new ArucasValueListCustom();
+			List<Value<?>> parameters = new ArrayList<>();
 			parameters.add(right);
 			return classValue.getOperatorMethod(this.token.type).call(context, parameters);
 		}
@@ -60,8 +59,8 @@ public class BinaryOperatorNode extends Node {
 			case MULTIPLY -> result = left.multiplyBy(context, right, this.syntaxPosition);
 			case DIVIDE -> result = left.divideBy(context, right, this.syntaxPosition);
 			case POWER -> result = left.powerBy(context, right, this.syntaxPosition);
-			case EQUALS -> result = left.isEqual(right);
-			case NOT_EQUALS -> result = left.isNotEqual(right);
+			case EQUALS -> result = left.isEqualTo(right);
+			case NOT_EQUALS -> result = left.isNotEqualTo(right);
 			case LESS_THAN, LESS_THAN_EQUAL, MORE_THAN, MORE_THAN_EQUAL -> result = left.compareNumber(context, right, this.token.type, this.syntaxPosition);
 		}
 

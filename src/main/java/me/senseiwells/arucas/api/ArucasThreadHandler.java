@@ -4,7 +4,7 @@ import me.senseiwells.arucas.core.Run;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowStop;
 import me.senseiwells.arucas.throwables.ThrowValue;
-import me.senseiwells.arucas.utils.impl.ArucasValueThread;
+import me.senseiwells.arucas.utils.impl.ArucasThread;
 import me.senseiwells.arucas.utils.Context;
 
 import java.util.function.Consumer;
@@ -66,14 +66,14 @@ public class ArucasThreadHandler {
 		return Thread.currentThread().getThreadGroup() == this.arucasThreadGroup;
 	}
 	
-	public synchronized ArucasValueThread runOnThread(Context context, String fileName, String fileContent) {
+	public synchronized ArucasThread runOnThread(Context context, String fileName, String fileContent) {
 		// Make sure that this handler belongs to the provided context
 		if (context.getThreadHandler() != this || this.isRunning()) {
 			return null;
 		}
 		
 		this.hasError = false;
-		ArucasValueThread thread = new ArucasValueThread(this.arucasThreadGroup, () -> {
+		ArucasThread thread = new ArucasThread(this.arucasThreadGroup, () -> {
 			try {
 				Run.run(context, fileName, fileContent);
 			}
@@ -95,21 +95,21 @@ public class ArucasThreadHandler {
 		return thread;
 	}
 
-	public synchronized ArucasValueThread runAsyncFunctionInContext(Context context, ThrowableConsumer<Context> consumer) {
+	public synchronized ArucasThread runAsyncFunctionInContext(Context context, ThrowableConsumer<Context> consumer) {
 		return this.runAsyncFunction(context, consumer, "Arucas Runnable Thread");
 	}
 
-	public synchronized ArucasValueThread runAsyncFunctionInContext(Context context, ThrowableConsumer<Context> consumer, String threadName) {
+	public synchronized ArucasThread runAsyncFunctionInContext(Context context, ThrowableConsumer<Context> consumer, String threadName) {
 		return this.runAsyncFunction(context, consumer, threadName);
 	}
 
-	private synchronized ArucasValueThread runAsyncFunction(final Context context, ThrowableConsumer<Context> consumer, String name) {
+	private synchronized ArucasThread runAsyncFunction(final Context context, ThrowableConsumer<Context> consumer, String name) {
 		// Make sure that this handler belongs to the provided context
 		if (context.getThreadHandler() != this || !this.isRunning()) {
 			return null;
 		}
 
-		ArucasValueThread thread = new ArucasValueThread(this.arucasThreadGroup, () -> {
+		ArucasThread thread = new ArucasThread(this.arucasThreadGroup, () -> {
 			try {
 				consumer.accept(context);
 				return;

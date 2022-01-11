@@ -5,14 +5,14 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.utils.impl.ArucasValueListCustom;
+import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
 import java.util.List;
 
-public class ListValue extends Value<ArucasValueListCustom> {
+public class ListValue extends Value<ArucasList> {
 
-	public ListValue(ArucasValueListCustom value) {
+	public ListValue(ArucasList value) {
 		super(value);
 	}
 
@@ -23,7 +23,7 @@ public class ListValue extends Value<ArucasValueListCustom> {
 
 	@Override
 	public ListValue newCopy() {
-		return new ListValue(new ArucasValueListCustom(this.value));
+		return new ListValue(new ArucasList(this.value));
 	}
 	
 	@Override
@@ -32,16 +32,13 @@ public class ListValue extends Value<ArucasValueListCustom> {
 	}
 	
 	@Override
-	public String getStringValue(Context context) throws CodeError {
-		return this.value.getStringValue(context);
+	public String getAsString(Context context) throws CodeError {
+		return this.value.getAsString(context);
 	}
 	
 	@Override
 	public boolean isEquals(Context context, Value<?> other) throws CodeError {
-		if (!(other instanceof ListValue otherList)) {
-			return false;
-		}
-		return this.value.isEquals(context, otherList.value);
+		return this.value.isEquals(context, other);
 	}
 	
 	public static class ArucasListClass extends ArucasClassExtension {

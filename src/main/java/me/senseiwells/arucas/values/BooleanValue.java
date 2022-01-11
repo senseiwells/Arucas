@@ -50,7 +50,7 @@ public class BooleanValue extends Value<Boolean> {
 	}
 	
 	@Override
-	public String getStringValue(Context context) {
+	public String getAsString(Context context) {
 		return this.value ? "true" : "false";
 	}
 	

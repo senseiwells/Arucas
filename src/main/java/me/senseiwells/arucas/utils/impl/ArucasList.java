@@ -4,53 +4,46 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.StringUtils;
 import me.senseiwells.arucas.values.Value;
+import me.senseiwells.arucas.values.ValueIdentifier;
 
 import java.util.*;
 
 /**
- * Custom list implementation
- * Most of the code was taken from ArrayList
+ * Custom list implementation.
+ * Most of the code was taken from ArrayList,
+ * this implements {@link me.senseiwells.arucas.values.ValueIdentifier}
+ * as it is easier to implement these
+ * methods natively
  */
-
-// TODO: rename to ArucasValueList and delete the old one
-public class ArucasValueListCustom implements Iterable<Value<?>> {
+public class ArucasList implements List<Value<?>>, ValueIdentifier {
 	private static final Value<?>[] DEFAULT_DATA = {};
 	private static final int DEFAULT_CAPACITY = 10;
 
-	private Value<?>[] valueData;
+	transient Value<?>[] valueData;
 
 	private int size;
 
-	public ArucasValueListCustom() {
+	public ArucasList() {
 		this.valueData = DEFAULT_DATA;
 	}
 
-	public ArucasValueListCustom(int initialCapacity) {
-		if (initialCapacity > 0) {
-			this.valueData = new Value[initialCapacity];
-		}
-		else if (initialCapacity == 0) {
-			this.valueData = DEFAULT_DATA;
-		}
-		else {
-			throw new IllegalArgumentException("Illegal Capacity: "+ initialCapacity);
-		}
-	}
-
-	public ArucasValueListCustom(ArucasValueListCustom valueList) {
+	public ArucasList(ArucasList valueList) {
 		Value<?>[] valueArray = valueList.toArray();
 		this.size = valueArray.length;
 		this.valueData = this.size == 0 ? DEFAULT_DATA : valueArray;
 	}
 
+	@Override
 	public synchronized int size() {
 		return this.size;
 	}
 
+	@Override
 	public synchronized boolean isEmpty() {
 		return this.size == 0;
 	}
 
+	@Override
 	public synchronized Value<?> get(int index) {
 		this.checkExistingIndex(index);
 		return this.valueData[index];
@@ -60,7 +53,7 @@ public class ArucasValueListCustom implements Iterable<Value<?>> {
 		return this.indexOf(context, value) >= 0;
 	}
 
-	public synchronized boolean containsAll(Context context, ArucasValueListCustom valueList) throws CodeError {
+	public synchronized boolean containsAll(Context context, ArucasList valueList) throws CodeError {
 		for (Value<?> value : valueList) {
 			if (!this.contains(context, value)) {
 				return false;
@@ -79,11 +72,13 @@ public class ArucasValueListCustom implements Iterable<Value<?>> {
 		return -1;
 	}
 
+	@Override
 	public synchronized boolean add(Value<?> value) {
 		this.add(value, this.valueData, this.size);
 		return true;
 	}
 
+	@Override
 	public synchronized void add(int index, Value<?> value) {
 		this.checkAddIndex(index);
 		final int size = this.size;
@@ -104,18 +99,15 @@ public class ArucasValueListCustom implements Iterable<Value<?>> {
 		this.size = size + 1;
 	}
 
-	public synchronized void addAll(ArucasValueListCustom valueList) {
-		this.addAll(valueList.toArray());
+	@Override
+	public synchronized boolean addAll(Collection<? extends Value<?>> values) {
+		return this.addAll(values.toArray(Value[]::new));
 	}
 
-	public synchronized void addAll(Collection<? extends Value<?>> values) {
-		this.addAll(values.toArray(Value[]::new));
-	}
-
-	private synchronized void addAll(Value<?>[] valueArray) {
+	private synchronized boolean addAll(Value<?>[] valueArray) {
 		int newSize = valueArray.length;
 		if (newSize == 0) {
-			return;
+			return false;
 		}
 		Value<?>[] valueData = this.valueData;
 		final int size = this.size;
@@ -124,8 +116,10 @@ public class ArucasValueListCustom implements Iterable<Value<?>> {
 		}
 		System.arraycopy(valueArray, 0, valueData, size, newSize);
 		this.size = size + newSize;
+		return true;
 	}
 
+	@Override
 	public synchronized Value<?> remove(int index) {
 		this.checkAddIndex(index);
 		final Value<?>[] valueData = this.valueData;
@@ -153,8 +147,8 @@ public class ArucasValueListCustom implements Iterable<Value<?>> {
 		valueData[this.size = newSize] = null;
 	}
 
-	@SuppressWarnings("unused")
-	public synchronized boolean removeAll(Collection<?> collection) {
+	@Override
+	public boolean removeAll(Collection<?> collection) {
 		return this.batchRemove(collection, this.size);
 	}
 
@@ -179,6 +173,7 @@ public class ArucasValueListCustom implements Iterable<Value<?>> {
 		return true;
 	}
 
+	@Override
 	public synchronized void clear() {
 		final Value<?>[] valueData = this.valueData;
 		for (int to = this.size, i = this.size = 0; i < to; i++) {
@@ -186,6 +181,7 @@ public class ArucasValueListCustom implements Iterable<Value<?>> {
 		}
 	}
 
+	@Override
 	public Value<?>[] toArray() {
 		return Arrays.copyOf(this.valueData, this.size);
 	}
@@ -222,6 +218,7 @@ public class ArucasValueListCustom implements Iterable<Value<?>> {
 		}
 	}
 
+	@Override
 	public synchronized int getHashCode(Context context) throws CodeError {
 		final Value<?>[] valueData = this.valueData;
 		int hashCode = 1;
@@ -232,19 +229,21 @@ public class ArucasValueListCustom implements Iterable<Value<?>> {
 		return hashCode;
 	}
 
-	public synchronized boolean isEquals(Context context, ArucasValueListCustom other) throws CodeError {
-		if (this == other || this.size != other.size) {
+	@Override
+	public synchronized boolean isEquals(Context context, Value<?> other) throws CodeError {
+		if (this == other.value || !(other.value instanceof ArucasList otherList) || this.size != otherList.size) {
 			return false;
 		}
 		for (int i = 0; i < this.size; i++) {
-			if (!this.valueData[i].isEquals(context, other.valueData[i])) {
+			if (!this.valueData[i].isEquals(context, otherList.valueData[i])) {
 				return false;
 			}
 		}
 		return true;
 	}
 
-	public synchronized String getStringValue(Context context) throws CodeError {
+	@Override
+	public synchronized String getAsString(Context context) throws CodeError {
 		if (this.isEmpty()) {
 			return "[]";
 		}
@@ -272,21 +271,64 @@ public class ArucasValueListCustom implements Iterable<Value<?>> {
 
 			@Override
 			public synchronized boolean hasNext() {
-				return this.cursor != ArucasValueListCustom.this.size;
+				return this.cursor != ArucasList.this.size;
 			}
 
 			@Override
 			public synchronized Value<?> next() {
 				final int i = this.cursor;
-				if (i >= ArucasValueListCustom.this.size) {
+				if (i >= ArucasList.this.size) {
 					throw new NoSuchElementException();
 				}
-				Value<?>[] valueData = ArucasValueListCustom.this.valueData;
+				Value<?>[] valueData = ArucasList.this.valueData;
 				this.cursor = i + 1;
 				return valueData[i];
 			}
 		};
 	}
+
+	/**
+	 * These methods should not be used instead
+	 * {@link #getAsString(Context)},
+	 * {@link #getHashCode(Context)},
+	 * {@link #isEquals(Context, Value)},
+	 * should be used
+	 */
+
+	@Deprecated
+	@Override
+	public final int hashCode() {
+		return super.hashCode();
+	}
+
+	@Deprecated
+	@Override
+	public final boolean equals(Object obj) {
+		return this == obj;
+	}
+
+	@Deprecated
+	@Override
+	public final String toString() {
+		return super.toString();
+	}
+
+	/**
+	 * These methods are unsupported
+	 */
+
+	@Override public boolean addAll(int index, Collection<? extends Value<?>> c) { throw new UnsupportedOperationException(); }
+	@Override public boolean contains(Object o) { throw new UnsupportedOperationException(); }
+	@Override public boolean remove(Object o) { throw new UnsupportedOperationException(); }
+	@Override public boolean containsAll(Collection<?> c) { throw new UnsupportedOperationException(); }
+	@Override public boolean retainAll(Collection<?> c) { throw new UnsupportedOperationException(); }
+	@Override public <T> T[] toArray(T[] a) { throw new UnsupportedOperationException(); }
+	@Override public int indexOf(Object o) { throw new UnsupportedOperationException(); }
+	@Override public int lastIndexOf(Object o) { throw new UnsupportedOperationException(); }
+	@Override public ListIterator<Value<?>> listIterator() { throw new UnsupportedOperationException(); }
+	@Override public ListIterator<Value<?>> listIterator(int index) { throw new UnsupportedOperationException(); }
+	@Override public List<Value<?>> subList(int fromIndex, int toIndex) { throw new UnsupportedOperationException(); }
+	@Override public Value<?> set(int index, Value<?> element) { throw new UnsupportedOperationException(); }
 
 
 	public static final int MAX_ARRAY_LENGTH = Integer.MAX_VALUE - 8;

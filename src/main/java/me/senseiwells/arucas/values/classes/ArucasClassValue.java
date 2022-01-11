@@ -1,10 +1,12 @@
 package me.senseiwells.arucas.values.classes;
 
 import me.senseiwells.arucas.throwables.CodeError;
+import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.utils.impl.ArucasValueListCustom;
+import me.senseiwells.arucas.values.BooleanValue;
+import me.senseiwells.arucas.values.NumberValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.functions.ClassMemberFunction;
 import me.senseiwells.arucas.values.functions.FunctionValue;
@@ -86,29 +88,44 @@ public class ArucasClassValue extends Value<ArucasClassDefinition> implements Me
 	
 	@Override
 	public int getHashCode(Context context) throws CodeError {
-		// TODO: Use the member function hashCode if present
-		return this.hashCode();
+		// If 'hashCode' is overridden we should use that here
+		FunctionValue memberFunction = this.getMember("hashCode", 1);
+		if (memberFunction != null) {
+			Value<?> value = memberFunction.call(context, new ArrayList<>());
+			if (!(value instanceof NumberValue numberValue)) {
+				throw new RuntimeError("hashCode() must return a number", memberFunction.syntaxPosition, context);
+			}
+			return numberValue.value.intValue();
+		}
+
+		return Objects.hashCode(this);
 	}
 	
 	@Override
-	public String getStringValue(Context context) throws CodeError {
-		// If 'toString' is overwritten we should return that value here
+	public String getAsString(Context context) throws CodeError {
+		// If 'toString' is overridden we should use that here
 		FunctionValue memberFunction = this.getMember("toString", 1);
 		if (memberFunction != null) {
-			return memberFunction.call(context, new ArucasValueListCustom()).getStringValue(context);
+			return memberFunction.call(context, new ArrayList<>()).getAsString(context);
 		}
 		
-		return "<class " + this.getName() + "@" + Integer.toHexString(this.hashCode()) + ">";
+		return "<class " + this.getName() + "@" + Integer.toHexString(this.getHashCode(context)) + ">";
 	}
 	
 	@Override
 	public boolean isEquals(Context context, Value<?> other) throws CodeError {
-//		if (other instanceof ArucasClassValue otherClass && this.getName().equals(otherClass.getName())) {
-//			return this.members.equals(otherClass.members);
-//		}
-//		return false;
-		
-		// TODO: Use the member function equals if present
+		// If 'equals' is overridden we should use that here
+		FunctionValue memberFunction = this.getMember("equals", 2);
+		if (memberFunction != null) {
+			List<Value<?>> parameters = new ArrayList<>();
+			parameters.add(other);
+			Value<?> value = memberFunction.call(context, parameters);
+			if (!(value instanceof BooleanValue booleanValue)) {
+				throw new RuntimeError("equals() must return a boolean", memberFunction.syntaxPosition, context);
+			}
+			return booleanValue.value;
+		}
+
 		return this == other;
 	}
 }

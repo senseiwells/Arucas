@@ -6,7 +6,7 @@ import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.StringUtils;
-import me.senseiwells.arucas.utils.impl.ArucasValueListCustom;
+import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.utils.impl.ArucasValueMap;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
@@ -36,7 +36,7 @@ public class MapValue extends Value<ArucasValueMap> {
 	}
 	
 	@Override
-	public String getStringValue(Context context) throws CodeError {
+	public String getAsString(Context context) throws CodeError {
 		ArucasValueMap map = this.value;
 		
 		// Because ArucasMapValue is a subclass of ConcurrentHashMap
@@ -115,14 +115,14 @@ public class MapValue extends Value<ArucasValueMap> {
 
 		private Value<?> mapGetKeys(Context context, MemberFunction function) throws CodeError {
 			MapValue thisValue = function.getParameterValueOfType(context, MapValue.class, 0);
-			ArucasValueListCustom valueList = new ArucasValueListCustom();
+			ArucasList valueList = new ArucasList();
 			thisValue.value.keySet().forEach(value -> valueList.add(value.newCopy()));
 			return new ListValue(valueList);
 		}
 
 		private Value<?> mapGetValues(Context context, MemberFunction function) throws CodeError {
 			MapValue thisValue = function.getParameterValueOfType(context, MapValue.class, 0);
-			ArucasValueListCustom valueList = new ArucasValueListCustom();
+			ArucasList valueList = new ArucasList();
 			valueList.addAll(thisValue.value.values().stream().map(Value::newCopy).toList());
 			return new ListValue(valueList);
 		}

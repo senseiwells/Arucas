@@ -6,8 +6,8 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowStop;
 import me.senseiwells.arucas.utils.*;
-import me.senseiwells.arucas.utils.impl.ArucasValueListCustom;
-import me.senseiwells.arucas.utils.impl.ArucasValueThread;
+import me.senseiwells.arucas.utils.impl.ArucasList;
+import me.senseiwells.arucas.utils.impl.ArucasThread;
 import me.senseiwells.arucas.values.*;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
 import me.senseiwells.arucas.values.functions.FunctionValue;
@@ -102,7 +102,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 	}
 
 	private Value<?> print(Context context, BuiltInFunction function) throws CodeError {
-		context.getOutput().println(function.getParameterValue(context, 0).getStringValue(context));
+		context.getOutput().println(function.getParameterValue(context, 0).getAsString(context));
 		return NullValue.NULL;
 	}
 
@@ -144,8 +144,8 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 	@Deprecated
 	private Value<?> runThreaded$2(Context context, BuiltInFunction function) throws CodeError {
 		FunctionValue functionValue = function.getParameterValueOfType(context, FunctionValue.class, 0);
-		ArucasValueListCustom list = function.getParameterValueOfType(context, ListValue.class, 1).value;
-		ArucasValueThread thread = context.getThreadHandler().runAsyncFunctionInContext(context.createBranch(), (branchContext) -> functionValue.call(branchContext, list));
+		ArucasList list = function.getParameterValueOfType(context, ListValue.class, 1).value;
+		ArucasThread thread = context.getThreadHandler().runAsyncFunctionInContext(context.createBranch(), (branchContext) -> functionValue.call(branchContext, list));
 		return ThreadValue.of(thread);
 	}
 
@@ -216,7 +216,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 			if (files == null) {
 				throw new RuntimeError("Could not find any files", function.syntaxPosition, context);
 			}
-			ArucasValueListCustom fileList = new ArucasValueListCustom();
+			ArucasList fileList = new ArucasList();
 			for (File file : files) {
 				fileList.add(StringValue.of(file.getName()));
 			}
@@ -234,7 +234,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 
 	private Value<?> callFunctionWithList(Context context, BuiltInFunction function) throws CodeError {
 		FunctionValue functionValue = function.getParameterValueOfType(context, FunctionValue.class, 0);
-		ArucasValueListCustom listValue = function.getParameterValueOfType(context, ListValue.class, 1).value;
+		ArucasList listValue = function.getParameterValueOfType(context, ListValue.class, 1).value;
 		return functionValue.call(context, listValue);
 	}
 

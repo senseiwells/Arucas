@@ -3,7 +3,7 @@ package me.senseiwells.arucas.nodes;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.utils.impl.ArucasValueListCustom;
+import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.values.ListValue;
 import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
@@ -28,7 +28,7 @@ public class ForeachNode extends Node {
 			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "For loop must contain a list", this.syntaxPosition);
 		}
 		
-		final ArucasValueListCustom list = listValue.value;
+		final ArucasList list = listValue.value;
 
 		for (Value<?> item : list) {
 			// Throws an error if the thread has been interrupted

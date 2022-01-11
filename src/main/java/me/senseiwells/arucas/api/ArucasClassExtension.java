@@ -4,7 +4,6 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.utils.impl.ArucasValueListCustom;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
@@ -74,7 +73,7 @@ public abstract class ArucasClassExtension extends AbstractClassDefinition {
 	 * This returns the new value that was returned inside the constructor
 	 */
 	@Override
-	public Value<?> createNewDefinition(Context context, ArucasValueListCustom parameters, ISyntax syntaxPosition) throws CodeError {
+	public Value<?> createNewDefinition(Context context, List<Value<?>> parameters, ISyntax syntaxPosition) throws CodeError {
 		if (this.constructors.isEmpty()) {
 			throw new RuntimeError("%s cannot be constructed".formatted(this.getName()), syntaxPosition, context);
 		}

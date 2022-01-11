@@ -6,7 +6,7 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.utils.impl.ArucasValueListCustom;
+import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
 import java.util.List;
@@ -23,7 +23,7 @@ public class StringValue extends Value<String> {
 	
 	@Override
 	public StringValue addTo(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
-		return new StringValue(this.value + other.getStringValue(context));
+		return new StringValue(this.value + other.getAsString(context));
 	}
 
 	@Override
@@ -37,7 +37,7 @@ public class StringValue extends Value<String> {
 	}
 	
 	@Override
-	public String getStringValue(Context context) {
+	public String getAsString(Context context) {
 		return this.value;
 	}
 	
@@ -75,7 +75,7 @@ public class StringValue extends Value<String> {
 
 		private Value<?> stringToList(Context context, MemberFunction function) throws CodeError {
 			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
-			ArucasValueListCustom stringList = new ArucasValueListCustom();
+			ArucasList stringList = new ArucasList();
 			for (char c : thisValue.value.toCharArray()) {
 				stringList.add(new StringValue(String.valueOf(c)));
 			}
@@ -106,7 +106,7 @@ public class StringValue extends Value<String> {
 			}
 			catch (NumberFormatException e) {
 				throw new RuntimeError(
-					"Cannot parse %s as a NumberValue".formatted(thisValue.getStringValue(context)),
+					"Cannot parse %s as a NumberValue".formatted(thisValue.getAsString(context)),
 					function.syntaxPosition,
 					context
 				);
@@ -154,7 +154,7 @@ public class StringValue extends Value<String> {
 		private Value<?> split(Context context, MemberFunction function) throws CodeError {
 			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
 			String otherString = function.getParameterValueOfType(context, StringValue.class, 1).value;
-			ArucasValueListCustom list = new ArucasValueListCustom();
+			ArucasList list = new ArucasList();
 			for (String string : thisValue.value.split(otherString)) {
 				list.add(new StringValue(string));
 			}

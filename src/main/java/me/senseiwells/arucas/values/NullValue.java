@@ -22,7 +22,7 @@ public class NullValue extends Value<Object> {
 	}
 	
 	@Override
-	public String getStringValue(Context context) {
+	public String getAsString(Context context) {
 		return "null";
 	}
 	

@@ -1,9 +1,9 @@
 package me.senseiwells.arucas.utils.impl;
 
-public class ArucasValueThread extends Thread {
+public class ArucasThread extends Thread {
 	private long startTime;
 
-	public ArucasValueThread(ThreadGroup threadGroup, Runnable runnable, String name) {
+	public ArucasThread(ThreadGroup threadGroup, Runnable runnable, String name) {
 		super(threadGroup, runnable, name);
 	}
 

@@ -5,28 +5,28 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.utils.impl.ArucasValueListCustom;
-import me.senseiwells.arucas.utils.impl.ArucasValueThread;
+import me.senseiwells.arucas.utils.impl.ArucasList;
+import me.senseiwells.arucas.utils.impl.ArucasThread;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
 import java.util.List;
 
-public class ThreadValue extends Value<ArucasValueThread> {
+public class ThreadValue extends Value<ArucasThread> {
 	private final StringValue name;
 
-	private ThreadValue(ArucasValueThread value) {
+	private ThreadValue(ArucasThread value) {
 		super(value);
 		this.name = StringValue.of(value.getName());
 	}
 
-	public static ThreadValue of(ArucasValueThread thread) {
+	public static ThreadValue of(ArucasThread thread) {
 		return new ThreadValue(thread);
 	}
 
 	@Override
-	public Value<ArucasValueThread> copy() {
+	public Value<ArucasThread> copy() {
 		return this;
 	}
 	
@@ -36,7 +36,7 @@ public class ThreadValue extends Value<ArucasValueThread> {
 	}
 	
 	@Override
-	public String getStringValue(Context context) throws CodeError {
+	public String getAsString(Context context) throws CodeError {
 		return "<Thread - " + this.name.value + ">";
 	}
 	
@@ -59,33 +59,33 @@ public class ThreadValue extends Value<ArucasValueThread> {
 		public ArucasFunctionMap<BuiltInFunction> getDefinedStaticMethods() {
 			return ArucasFunctionMap.of(
 				new BuiltInFunction("getCurrentThread", this::getCurrentThread),
-				new BuiltInFunction("runThreaded", List.of("function"), this::runThreaded$1),
-				new BuiltInFunction("runThreaded", List.of("name", "function"), this::runThreaded$2)
+				new BuiltInFunction("runThreaded", List.of("function"), this::runThreaded1),
+				new BuiltInFunction("runThreaded", List.of("name", "function"), this::runThreaded2)
 			);
 		}
 
 		private Value<?> getCurrentThread(Context context, BuiltInFunction function) throws RuntimeError {
 			Thread currentThread = Thread.currentThread();
-			if (currentThread instanceof ArucasValueThread arucasValueThread) {
+			if (currentThread instanceof ArucasThread arucasValueThread) {
 				return ThreadValue.of(arucasValueThread);
 			}
 			throw new RuntimeError("Thread is not safe to get", function.syntaxPosition, context);
 		}
 
-		private Value<?> runThreaded$1(Context context, BuiltInFunction function) throws CodeError {
+		private Value<?> runThreaded1(Context context, BuiltInFunction function) throws CodeError {
 			FunctionValue functionValue = function.getParameterValueOfType(context, FunctionValue.class, 0);
-			ArucasValueThread thread = context.getThreadHandler().runAsyncFunctionInContext(
-				context.createBranch(), (branchContext) -> functionValue.call(branchContext, new ArucasValueListCustom()),
+			ArucasThread thread = context.getThreadHandler().runAsyncFunctionInContext(
+				context.createBranch(), (branchContext) -> functionValue.call(branchContext, new ArucasList()),
 				"Unnamed Arucas Thread"
 			);
 			return ThreadValue.of(thread);
 		}
 
-		private Value<?> runThreaded$2(Context context, BuiltInFunction function) throws CodeError {
+		private Value<?> runThreaded2(Context context, BuiltInFunction function) throws CodeError {
 			StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
 			FunctionValue functionValue = function.getParameterValueOfType(context, FunctionValue.class, 1);
-			ArucasValueThread thread = context.getThreadHandler().runAsyncFunctionInContext(
-				context.createBranch(), (branchContext) -> functionValue.call(branchContext, new ArucasValueListCustom()),
+			ArucasThread thread = context.getThreadHandler().runAsyncFunctionInContext(
+				context.createBranch(), (branchContext) -> functionValue.call(branchContext, new ArucasList()),
 				stringValue.value
 			);
 			return ThreadValue.of(thread);
