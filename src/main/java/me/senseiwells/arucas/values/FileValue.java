@@ -66,6 +66,18 @@ public class FileValue extends Value<File> {
 		}
 
 		@Override
+		public ArucasFunctionMap<BuiltInFunction> getDefinedStaticMethods() {
+			return ArucasFunctionMap.of(
+					new BuiltInFunction("getDirectory", this::getDirectory)
+			);
+		}
+
+		private Value<?> getDirectory(Context context, BuiltInFunction function) {
+			String filePath = System.getProperty("user.dir");
+			return FileValue.of(new File(filePath));
+		}
+
+		@Override
 		public ArucasFunctionMap<MemberFunction> getDefinedMethods() {
 			return ArucasFunctionMap.of(
 				new MemberFunction("read", this::readFile),
@@ -201,18 +213,6 @@ public class FileValue extends Value<File> {
 				);
 			}
 			return NullValue.NULL;
-		}
-
-		@Override
-		public ArucasFunctionMap<BuiltInFunction> getDefinedStaticMethods() {
-			return ArucasFunctionMap.of(
-				new BuiltInFunction("getDirectory", this::getDirectory)
-			);
-		}
-
-		private Value<?> getDirectory(Context context, BuiltInFunction function) {
-			String filePath = System.getProperty("user.dir");
-			return FileValue.of(new File(filePath));
 		}
 
 		@Override

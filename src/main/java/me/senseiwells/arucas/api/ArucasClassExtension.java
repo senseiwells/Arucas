@@ -78,7 +78,7 @@ public abstract class ArucasClassExtension extends AbstractClassDefinition {
 			throw new RuntimeError("%s cannot be constructed".formatted(this.getName()), syntaxPosition, context);
 		}
 		
-		ConstructorFunction constructor = this.constructors.get(this.getName(), parameters.size());
+		ConstructorFunction constructor = this.constructors.get("", parameters.size());
 		if (constructor == null) {
 			throw new RuntimeError("No such constructor for %s".formatted(this.getName()), syntaxPosition, context);
 		}

@@ -60,12 +60,6 @@ public class ArucasThreadHandler {
 		return this.arucasThreadGroup.activeCount() > 0;
 	}
 	
-	@Deprecated
-	public boolean isScriptThread() {
-		// TODO: Implement this check when running scripts!
-		return Thread.currentThread().getThreadGroup() == this.arucasThreadGroup;
-	}
-	
 	public synchronized ArucasThread runOnThread(Context context, String fileName, String fileContent) {
 		// Make sure that this handler belongs to the provided context
 		if (context.getThreadHandler() != this || this.isRunning()) {

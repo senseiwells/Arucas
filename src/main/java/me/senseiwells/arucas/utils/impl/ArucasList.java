@@ -229,6 +229,7 @@ public class ArucasList implements List<Value<?>>, ValueIdentifier {
 		return hashCode;
 	}
 
+	@SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
 	@Override
 	public synchronized boolean isEquals(Context context, Value<?> other) throws CodeError {
 		if (!(other.value instanceof ArucasList that)) {

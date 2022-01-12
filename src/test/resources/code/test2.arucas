@@ -1,31 +1,11 @@
-// run(getDirectory() + "/src/test/resources/code/test2.arucas");
+// run(File.getDirectory().getPath() + "/src/test/resources/code/test2.arucas");
 
-list = [1, 2, 3, 4, 5];
-threads = [];
+file = new File(File.getDirectory().getPath() + "/src/test/resources/code/Teams.json");
 
-// This is almost 100% going to throw Index is out of bounds, but that is expected
+teamList = Json.fromString(file.read()).getValue();
 
-for (i = 0; i < 100; i++) {
-    thread = Thread.runThreaded(fun () {
-        for (j = 0; j < 100; j++) {
-            for (k = 0; k < len(list); k++) {
-                num = list.get(k);
-                list.remove(k);
-                list.insert(num, k);
-            }
-        }
-    });
-    threads.append(thread);
-}
-
-
-for (isAlive = true; isAlive;) {
-    isAlive = false;
-    foreach (thread : threads) {
-        if (thread.isAlive()) {
-            isAlive = true;
-        }
+foreach (team : teamList) {
+    if (team.get("name") == "CloudTech") {
+        print(team.get("members").split(":"));
     }
 }
-
-print(list);

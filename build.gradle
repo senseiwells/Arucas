@@ -28,8 +28,6 @@ sourceSets {
 dependencies {
     implementation 'junit:junit:4.13.2'
     testImplementation 'junit:junit:4.13.2'
-    implementation 'org.json:json:20211205'
-    testImplementation 'org.json:json:20211205'
     implementation 'com.google.code.gson:gson:2.8.9'
     testImplementation 'com.google.code.gson:gson:2.8.9'
 }

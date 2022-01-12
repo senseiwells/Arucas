@@ -1,0 +1,162 @@
+[
+  {
+    "_id": 0,
+    "prefix": "Melon",
+    "name": "MelonTech",
+    "members": "Flamin__Dragon:enbyd:Unscientifically:Watermelon58:h_j_thorsi",
+    "logo": "https://bit.ly/3rmfkLQ",
+    "wins": 0,
+    "colour": "DARK_BLUE",
+    "discord_colour": "ff199a"
+  },
+  {
+    "_id": 1,
+    "prefix": "Ingenium",
+    "name": "Ingenium",
+    "members": "eztaK_red:KingMoshe:CapixKW:Zepheron:Satsujintako",
+    "logo": "https://bit.ly/3xATJAc",
+    "wins": 0,
+    "discord_colour": "f57731",
+    "colour": "GOLD"
+  },
+  {
+    "_id": 2,
+    "prefix": "Wave",
+    "name": "WaveTech",
+    "members": "Ruthro:Tombot1:Ti_cTac:blockder:luke_sch02",
+    "logo": "https://bit.ly/3yEShxf",
+    "wins": 0,
+    "discord_colour": "ff1818",
+    "colour": "RED"
+  },
+  {
+    "_id": 3,
+    "prefix": "Sci",
+    "name": "SciCraft",
+    "members": "",
+    "logo": "https://bit.ly/3o67fZz",
+    "wins": 0,
+    "discord_colour": "f8c300",
+    "colour": "YELLOW"
+  },
+  {
+    "_id": 4,
+    "prefix": "Ambition",
+    "name": "AmbitionCraft",
+    "members": "Avnar:epteon:xX_LERTUN_Xx:the12dukes:Shaydeejay",
+    "logo": "https://bit.ly/32Q0hQh",
+    "wins": 0,
+    "discord_colour": "36f3ff",
+    "colour": "AQUA"
+  },
+  {
+    "_id": 5,
+    "prefix": "Hypnos",
+    "name": "Hypnos",
+    "members": "Londonmine:_Ciren_:Kahyxen:theosib",
+    "logo": "https://bit.ly/3G2hIeG",
+    "wins": 0,
+    "discord_colour": "754ffc",
+    "colour": "DARK_PURPLE"
+  },
+  {
+    "_id": 6,
+    "prefix": "Proto",
+    "name": "ProtoTech",
+    "members": "",
+    "logo": "https://bit.ly/3pbMpXV",
+    "wins": 0,
+    "discord_colour": "03c04a",
+    "colour": "DARK_GREEN"
+  },
+  {
+    "_id": 7,
+    "prefix": "Hekate",
+    "name": "Hekate",
+    "members": "Dramwertz:MunchyG:itssunnyk:lenrik:Earthcomputer",
+    "logo": "https://bit.ly/3d3AUwb",
+    "wins": 0,
+    "discord_colour": "ff7dd0",
+    "colour": "LIGHT_PURPLE"
+  },
+  {
+    "_id": 8,
+    "prefix": "Void",
+    "name": "VoidCraft",
+    "members": "",
+    "logo": "https://bit.ly/3o67fZz",
+    "wins": 0,
+    "discord_colour": "6623ca",
+    "colour": "DARK_PURPLE"
+  },
+  {
+    "_id": 9,
+    "prefix": "Lite",
+    "name": "LiteTech",
+    "members": "",
+    "logo": "https://bit.ly/2ZOLhkA",
+    "wins": 0,
+    "discord_colour": "bd75e2",
+    "colour": "GRAY"
+  },
+  {
+    "_id": 10,
+    "prefix": "Mecha",
+    "name": "Mechanists",
+    "members": "",
+    "logo": "https://bit.ly/3G26U04",
+    "wins": 0,
+    "discord_colour": "0088ff",
+    "colour": "BLUE"
+  },
+  {
+    "_id": 11,
+    "prefix": "EndTech",
+    "name": "EndTech",
+    "members": " ",
+    "logo": "https://bit.ly/3Ei1kGs",
+    "wins": 0,
+    "discord_colour": "a12ac2",
+    "colour": "DARK_PURPLE"
+  },
+  {
+    "_id": 12,
+    "prefix": "Ionic",
+    "name": "Ionic",
+    "members": "",
+    "logo": "https://bit.ly/3o67fZz",
+    "wins": 0,
+    "discord_colour": "daff33",
+    "colour": "GREEN"
+  },
+  {
+    "_id": 13,
+    "prefix": "Lambda",
+    "name": "LambdaTech",
+    "members": "HapppyAlien:mlcrowave:Serzbiedry:Garneek:CoolKangaroo",
+    "logo": "https://bit.ly/3e8SX4s",
+    "wins": 0,
+    "discord_colour": "ff9000",
+    "colour": "YELLOW"
+  },
+  {
+    "_id": 14,
+    "prefix": "Hammer",
+    "name": "HammerSMP",
+    "members": "",
+    "logo": "https://bit.ly/3rw9fMC",
+    "wins": 0,
+    "discord_colour": "a62019",
+    "colour": "DARK_RED"
+  },
+  {
+    "_id": 15,
+    "prefix": "Cloud",
+    "name": "CloudTech",
+    "members": "Pixeils:defnot001:Rybot666:TerraVoxel:_cherrybunny_",
+    "logo": "https://bit.ly/3p5YaAt",
+    "wins": 0,
+    "discord_colour": "36f3ff",
+    "colour": "DARK_AQUA"
+  }
+]

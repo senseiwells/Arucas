@@ -73,7 +73,8 @@ public class ArucasMap implements ValueIdentifier {
 		
 		return sb.append('}').toString();
 	}
-	
+
+	@SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
 	@Override
 	public synchronized boolean isEquals(Context context, Value<?> other) throws CodeError {
 		if (!(other.value instanceof ArucasMap that)) {
@@ -114,6 +115,7 @@ public class ArucasMap implements ValueIdentifier {
 	/**
 	 * Add all elements from one map to this map.
 	 */
+	@SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
 	public synchronized void putAll(Context context, ArucasMap map) throws CodeError {
 		synchronized (map) {
 			for (int i = 0, len = map.table.length; i < len; i++) {
@@ -277,7 +279,7 @@ public class ArucasMap implements ValueIdentifier {
 		
 		return new KeySet(array);
 	}
-	
+
 	public synchronized Set<Node> entrySet(Context context) throws CodeError {
 		final Node[] array = new Node[this.size];
 		
@@ -316,7 +318,7 @@ public class ArucasMap implements ValueIdentifier {
 	}
 	
 	public static class Node {
-		private Value<?> key;
+		private final Value<?> key;
 		private Value<?> value;
 		private Node next;
 		
@@ -407,30 +409,31 @@ public class ArucasMap implements ValueIdentifier {
 		public Object[] toArray() {
 			return this.array;
 		}
-		
-		@Override
+
+
 		@SuppressWarnings("unchecked")
+		@Override
 		public <E> E[] toArray(E[] a) {
-			return (E[])Arrays.copyOf(this.array, this.size(), a.getClass());
+			return (E[]) Arrays.copyOf(this.array, this.size(), a.getClass());
 		}
 		
 		@Override
 		public Iterator<T> iterator() {
-			return new Iterator<T>() {
+			return new Iterator<>() {
 				private int index;
-				
+
 				@Override
 				public synchronized boolean hasNext() {
 					return this.index < MapSet.this.length;
 				}
-				
+
 				@Override
 				public synchronized T next() {
 					if (this.index >= MapSet.this.length) {
 						return null;
 					}
-					
-					return MapSet.this.array[this.index ++];
+
+					return MapSet.this.array[this.index++];
 				}
 			};
 		}
