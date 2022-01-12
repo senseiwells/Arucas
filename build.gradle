@@ -25,10 +25,19 @@ sourceSets {
     }
 }
 
+configurations {
+    // implementations that should be included in the jar file
+    packImplementation {
+        transitive false
+    }
+
+    implementation.extendsFrom(packImplementation)
+}
+
 dependencies {
     implementation 'junit:junit:4.13.2'
     testImplementation 'junit:junit:4.13.2'
-    implementation 'com.google.code.gson:gson:2.8.9'
+    packImplementation 'com.google.code.gson:gson:2.8.9'
     testImplementation 'com.google.code.gson:gson:2.8.9'
 }
 
@@ -43,6 +52,12 @@ test {
     }
     testLogging {
         events "passed", "skipped", "failed"
+    }
+}
+
+jar {
+    from {
+        configurations.packImplementation.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
 

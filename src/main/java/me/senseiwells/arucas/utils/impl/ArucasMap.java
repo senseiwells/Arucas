@@ -74,7 +74,6 @@ public class ArucasMap implements ValueIdentifier {
 		return sb.append('}').toString();
 	}
 
-	@SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
 	@Override
 	public synchronized boolean isEquals(Context context, Value<?> other) throws CodeError {
 		if (!(other.value instanceof ArucasMap that)) {
@@ -115,7 +114,6 @@ public class ArucasMap implements ValueIdentifier {
 	/**
 	 * Add all elements from one map to this map.
 	 */
-	@SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
 	public synchronized void putAll(Context context, ArucasMap map) throws CodeError {
 		synchronized (map) {
 			for (int i = 0, len = map.table.length; i < len; i++) {

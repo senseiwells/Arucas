@@ -68,7 +68,7 @@ public class FileValue extends Value<File> {
 		@Override
 		public ArucasFunctionMap<BuiltInFunction> getDefinedStaticMethods() {
 			return ArucasFunctionMap.of(
-					new BuiltInFunction("getDirectory", this::getDirectory)
+				new BuiltInFunction("getDirectory", this::getDirectory)
 			);
 		}
 
