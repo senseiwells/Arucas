@@ -1,109 +1,32 @@
 package me.senseiwells.arucas.values;
 
 import me.senseiwells.arucas.api.ArucasClassExtension;
-import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.throwables.CodeError;
-import me.senseiwells.arucas.throwables.RuntimeError;
-import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.classes.ArucasClassValue;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
-public abstract class Value<T> implements ValueIdentifier {
+public abstract class Value<T> extends BaseValue {
 	public final T value;
 	
 	public Value(T value) {
 		this.value = value;
 	}
-	
-	// Shallow copy
+
+	@Override
 	public abstract Value<T> copy();
 
-	// Deep copy
+	@Override
 	public Value<T> newCopy() {
 		return this.copy();
 	}
 
-	public BooleanValue isAnd(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
-		throw cannotApplyError(context, "AND", other, syntaxPosition);
-	}
-
-	public BooleanValue isOr(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
-		throw cannotApplyError(context, "OR", other, syntaxPosition);
-	}
-
-	public Value<?> addTo(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
-		throw cannotApplyError(context, "ADD", other, syntaxPosition);
-	}
-
-	public Value<?> subtractBy(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
-		throw cannotApplyError(context, "SUBTRACT", other, syntaxPosition);
-	}
-
-	public Value<?> multiplyBy(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
-		throw cannotApplyError(context, "MULTIPLY", other, syntaxPosition);
-	}
-
-	public Value<?> divideBy(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
-		throw cannotApplyError(context, "DIVIDE", other, syntaxPosition);
-	}
-
-	public Value<?> powerBy(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
-		throw cannotApplyError(context, "POWER", other, syntaxPosition);
-	}
-
-	public BooleanValue compareNumber(Context context, Value<?> other, Token.Type type, ISyntax syntaxPosition) throws CodeError {
-		throw cannotApplyError(context, type.toString(), other, syntaxPosition);
-	}
-
-	public BooleanValue not(Context context, ISyntax syntaxPosition) throws CodeError {
-		throw new RuntimeError("The operation 'NOT' cannot be applied to %s".formatted(this.getAsString(context)), syntaxPosition, context);
-	}
-
-	public BooleanValue isEqualTo(Value<?> other) {
-		return BooleanValue.of(this.equals(other));
-	}
-
-	public BooleanValue isNotEqualTo(Value<?> other) {
-		return BooleanValue.of(!this.equals(other));
-	}
-
-	private RuntimeError cannotApplyError(Context context, String operation, Value<?> other, ISyntax syntaxPosition) throws CodeError {
-		return new RuntimeError("The operation '%s' cannot be applied to %s and %s".formatted(
-			operation,
-			this.getAsString(context),
-			other.getAsString(context)),
-			syntaxPosition,
-			context
-		);
-	}
-
-	/**
-	 * These methods should not be used instead
-	 * {@link #getAsString(Context)},
-	 * {@link #getHashCode(Context)},
-	 * {@link #isEquals(Context, Value)},
-	 * should be used
-	 */
-	@Deprecated
 	@Override
-	public final boolean equals(Object other) {
-		return this == other;
+	protected final T getValue() {
+		return this.value;
 	}
 
-	@Deprecated
-	@Override
-	public final int hashCode() {
-		return this.value.hashCode();
-	}
-
-	@Deprecated
-	@Override
-	public final String toString() {
-		return this.value == null ? "null" : this.value.toString();
-	}
-	
 	public static class ArucasBaseClass extends ArucasClassExtension {
 		public ArucasBaseClass() {
 			super("Object");

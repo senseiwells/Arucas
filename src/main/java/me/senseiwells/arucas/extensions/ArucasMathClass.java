@@ -1,5 +1,7 @@
 package me.senseiwells.arucas.extensions;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import me.senseiwells.arucas.api.ArucasClassExtension;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;

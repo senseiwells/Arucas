@@ -36,6 +36,10 @@ public class BooleanValue extends Value<Boolean> {
 
 	@Override
 	public BooleanValue not(Context context, ISyntax syntaxPosition) throws RuntimeError {
+		return this.not();
+	}
+
+	public BooleanValue not() {
 		return BooleanValue.of(!this.value);
 	}
 	

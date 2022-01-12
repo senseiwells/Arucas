@@ -18,7 +18,7 @@ public class ArucasClassDefinitionMap implements Iterable<AbstractClassDefinitio
 	}
 	
 	/**
-	 * Returns the index of the class in the specified list
+	 * Returns the index of the class in the specified list.
 	 */
 	private int getClassIndex(Class<?> clazz, List<AbstractClassDefinition> list) {
 		final int length = list.size();
@@ -33,7 +33,7 @@ public class ArucasClassDefinitionMap implements Iterable<AbstractClassDefinitio
 	}
 	
 	/**
-	 * This method adds the class definition value to all of its subclasses
+	 * This method adds the class definition value to all of its subclasses.
 	 */
 	private void addSubclasses(AbstractClassDefinition value) {
 		Class<?> clazz = value.getValueClass();
@@ -69,7 +69,7 @@ public class ArucasClassDefinitionMap implements Iterable<AbstractClassDefinitio
 	}
 	
 	/**
-	 * Add all the values from the specified map without doing any hierarchy checks
+	 * Add all the values from the specified map without doing any hierarchy checks.
 	 */
 	public void insertAll(ArucasClassDefinitionMap map) {
 		for (Class<?> key : map.classMap.keySet()) {
@@ -94,7 +94,7 @@ public class ArucasClassDefinitionMap implements Iterable<AbstractClassDefinitio
 	}
 	
 	/**
-	 * Returns true if the function did not exist
+	 * Returns true if the function did not exist.
 	 */
 	public boolean add(AbstractClassDefinition value) {
 		if (this.nameMap.containsKey(value.getName())) {
@@ -107,28 +107,28 @@ public class ArucasClassDefinitionMap implements Iterable<AbstractClassDefinitio
 	}
 	
 	/**
-	 * Returns true if this map is empty
+	 * Returns true if this map is empty.
 	 */
 	public boolean isEmpty() {
 		return this.classMap.isEmpty();
 	}
 
 	/**
-	 * Returns the class definitions defined of the specified class
+	 * Returns the class definitions defined of the specified class.
 	 */
 	public List<AbstractClassDefinition> get(Class<?> clazz) {
 		return this.classMap.get(clazz);
 	}
 	
 	/**
-	 * Returns the class definition of the specified name
+	 * Returns the class definition of the specified name.
 	 */
 	public AbstractClassDefinition get(String name) {
 		return this.nameMap.get(name);
 	}
 	
 	/**
-	 * Returns true if this map contains the specified name
+	 * Returns true if this map contains the specified name.
 	 */
 	public boolean has(String name) {
 		return this.nameMap.containsKey(name);

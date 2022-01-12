@@ -13,7 +13,7 @@ import java.util.*;
  * Most of the code was taken from ArrayList,
  * this implements {@link me.senseiwells.arucas.values.ValueIdentifier}
  * as it is easier to implement these
- * methods natively
+ * methods natively.
  */
 public class ArucasList implements List<Value<?>>, ValueIdentifier {
 	private static final Value<?>[] DEFAULT_DATA = {};
@@ -292,7 +292,7 @@ public class ArucasList implements List<Value<?>>, ValueIdentifier {
 	 * {@link #getAsString(Context)},
 	 * {@link #getHashCode(Context)},
 	 * {@link #isEquals(Context, Value)},
-	 * should be used
+	 * should be used.
 	 */
 
 	@Deprecated
@@ -314,7 +314,7 @@ public class ArucasList implements List<Value<?>>, ValueIdentifier {
 	}
 
 	/**
-	 * These methods are unsupported
+	 * These methods are unsupported.
 	 */
 
 	@Override public boolean addAll(int index, Collection<? extends Value<?>> c) { throw new UnsupportedOperationException(); }

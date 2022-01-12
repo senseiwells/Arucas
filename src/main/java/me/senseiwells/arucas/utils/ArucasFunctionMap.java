@@ -17,7 +17,7 @@ public class ArucasFunctionMap<T extends FunctionValue> implements Iterable<T> {
 	}
 	
 	/**
-	 * Returns true if the function did not exist
+	 * Returns true if the function did not exist.
 	 */
 	public boolean add(T value) {
 		// If the value is a member value it still has the `this`. We need to get the true argument count
@@ -35,35 +35,35 @@ public class ArucasFunctionMap<T extends FunctionValue> implements Iterable<T> {
 	}
 	
 	/**
-	 * Adds all functions in the specified map to this map
+	 * Adds all functions in the specified map to this map.
 	 */
 	public void addAll(ArucasFunctionMap<? extends T> functions) {
 		functions.forEach(this::add);
 	}
 	
 	/**
-	 * Adds all functions in the specified map to this map
+	 * Adds all functions in the specified map to this map.
 	 */
 	public void addAll(Collection<? extends T> functions) {
 		functions.forEach(this::add);
 	}
 	
 	/**
-	 * Returns true if this map is empty
+	 * Returns true if this map is empty.
 	 */
 	public boolean isEmpty() {
 		return this.map.isEmpty();
 	}
 
 	/**
-	 * Returns true if this map contains the function
+	 * Returns true if this map contains the function.
 	 */
 	public boolean has(String name) {
 		return this.map.containsKey(name);
 	}
 	
 	/**
-	 * Returns true if this map contains the function with the specified amount of parameters
+	 * Returns true if this map contains the function with the specified amount of parameters.
 	 */
 	public boolean has(String name, int parameters) {
 		Map<Integer, T> map = this.map.get(name);
@@ -71,7 +71,7 @@ public class ArucasFunctionMap<T extends FunctionValue> implements Iterable<T> {
 	}
 	
 	/**
-	 * Returns the function value only if no overloads exist
+	 * Returns the function value only if no overloads exist.
 	 */
 	public T get(String name) {
 		Map<Integer, T> map = this.map.get(name);
@@ -79,7 +79,7 @@ public class ArucasFunctionMap<T extends FunctionValue> implements Iterable<T> {
 	}
 	
 	/**
-	 * Returns the function value with the specified amount of parameters
+	 * Returns the function value with the specified amount of parameters.
 	 */
 	public T get(String name, int parameters) {
 		Map<Integer, T> map = this.map.get(name);

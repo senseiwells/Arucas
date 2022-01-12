@@ -26,7 +26,9 @@ public class ArucasWrapper {
 		
 		for (Method method : this.clazz.getMethods()) {
 			ArucasFunction annotation = method.getAnnotation(ArucasFunction.class);
-			if (annotation == null) continue;
+			if (annotation == null) {
+				continue;
+			}
 			
 			if (!this.addMethod(this.clazz, method, annotation)) {
 				throw invalidWrapperMethod(this.clazz, method, "Invalid method signature");
@@ -35,7 +37,7 @@ public class ArucasWrapper {
 	}
 	
 	/**
-	 * Returns the method handle if the method was valid
+	 * Returns the method handle if the method was valid.
 	 */
 	private MethodHandle getMethodHandle(Class<?> clazz, Method method, boolean isStatic) {
 		Class<?>[] parameters = method.getParameterTypes();
@@ -68,7 +70,8 @@ public class ArucasWrapper {
 			
 			if (isStatic) {
 				return lookup.findStatic(clazz, method.getName(), methodType);
-			} else {
+			}
+			else {
 				return lookup.findVirtual(clazz, method.getName(), methodType);
 			}
 		}
@@ -82,7 +85,7 @@ public class ArucasWrapper {
 	}
 	
 	/**
-	 * Returns true if this method was added
+	 * Returns true if this method was added.
 	 */
 	private boolean addMethod(Class<?> clazz, Method method, ArucasFunction annotation) {
 		boolean isStatic = Modifier.isStatic(method.getModifiers());
@@ -99,7 +102,8 @@ public class ArucasWrapper {
 		
 		if (isStatic) {
 			this.classDefinition.addStaticMethod(function);
-		} else {
+		}
+		else {
 			this.classDefinition.addMethod(function);
 		}
 		

@@ -5,7 +5,7 @@ import me.senseiwells.arucas.values.*;
 
 public class StringUtils {
 	/**
-	 * Joins all arguments using <code>StringBuilder</code>
+	 * Joins all arguments using <code>StringBuilder</code>.
 	 */
 	public static String join(Object... args) {
 		final int length = args.length;

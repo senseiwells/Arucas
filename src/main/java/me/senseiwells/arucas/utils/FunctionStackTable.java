@@ -6,7 +6,7 @@ import me.senseiwells.arucas.values.Value;
 import java.util.HashMap;
 
 /**
- * This class is a special symbol table that only allows changing global and local variables
+ * This class is a special symbol table that only allows changing global and local variables.
  */
 public class FunctionStackTable extends StackTable {
 	private final StackTable root;

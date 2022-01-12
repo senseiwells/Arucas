@@ -7,7 +7,7 @@ import me.senseiwells.arucas.values.Value;
 import java.util.*;
 
 /**
- * This class cannot contain null values
+ * This class cannot contain null values.
  */
 public class ArucasMap /* implements ValueIdentifier */ {
 	static final int HASH_BITS = 0x7fffffff;
@@ -24,7 +24,7 @@ public class ArucasMap /* implements ValueIdentifier */ {
 	}
 	
 	/**
-	 * Adds an element to the map
+	 * Adds an element to the map.
 	 */
 	public synchronized Value<?> put(Context context, Value<?> key, Value<?> value) throws CodeError {
 		int hash = hash(key.getHashCode(context)) & (this.mask - 1);
@@ -52,7 +52,7 @@ public class ArucasMap /* implements ValueIdentifier */ {
 	}
 	
 	/**
-	 * Removes an element from the map
+	 * Removes an element from the map.
 	 */
 	public synchronized Value<?> remove(Context context, Value<?> key) throws CodeError {
 		int hash = this.hash(key.getHashCode(context)) & (this.mask - 1);

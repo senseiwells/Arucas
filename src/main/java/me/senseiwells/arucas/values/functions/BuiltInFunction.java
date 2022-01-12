@@ -27,6 +27,10 @@ public class BuiltInFunction extends AbstractBuiltInFunction<BuiltInFunction> {
 		this(name, List.of(), function, null);
 	}
 
+	public BuiltInFunction(String name, FunctionDefinition<BuiltInFunction> function, String deprecatedMessage) {
+		this(name, List.of(), function, deprecatedMessage);
+	}
+
 	@Override
 	protected Value<?> execute(Context context, List<Value<?>> arguments) throws CodeError {
 		this.checkDeprecated(context);

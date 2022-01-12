@@ -45,7 +45,7 @@ public class StringValue extends Value<String> {
 	public boolean isEquals(Context context, Value<?> other) {
 		return (other instanceof StringValue that) && this.value.equals(that.value);
 	}
-	
+
 	public static class ArucasStringClass extends ArucasClassExtension {
 		public ArucasStringClass() {
 			super("String");

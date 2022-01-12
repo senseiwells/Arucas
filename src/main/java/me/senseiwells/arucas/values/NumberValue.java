@@ -92,10 +92,10 @@ public class NumberValue extends Value<Double> {
 	public String getAsString(Context context) {
 		return NumberValue.DECIMAL_FORMAT.format(this.value);
 	}
-	
+
 	@Override
 	public boolean isEquals(Context context, Value<?> other) {
-		return (other instanceof NumberValue that) && this.value.doubleValue() == that.value.doubleValue();
+		return this.isEqualTo(other).value;
 	}
 
 	public static class ArucasNumberClass extends ArucasClassExtension {

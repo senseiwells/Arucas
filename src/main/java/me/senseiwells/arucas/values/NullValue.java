@@ -28,7 +28,12 @@ public class NullValue extends Value<Object> {
 	
 	@Override
 	public boolean isEquals(Context context, Value<?> other) {
-		return other instanceof NullValue;
+		return other == NULL;
+	}
+
+	@Override
+	public BooleanValue isEqualTo(Value<?> other) {
+		return BooleanValue.of(other == NULL);
 	}
 
 	public static class ArucasNullClass extends ArucasClassExtension {

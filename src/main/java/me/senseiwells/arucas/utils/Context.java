@@ -97,7 +97,7 @@ public class Context {
 	}
 	
 	/**
-	 * Returns this thread handler
+	 * Returns this thread handler.
 	 */
 	public ArucasThreadHandler getThreadHandler() {
 		return this.threadHandler;

@@ -41,22 +41,22 @@ public abstract class AbstractClassDefinition implements MemberOperations {
 	}
 	
 	/**
-	 * Returns the value type of this class
+	 * Returns the value type of this class.
 	 */
 	public abstract Class<?> getValueClass();
 	
 	/**
-	 * This gets called when the class is initialised
+	 * This gets called when the class is initialised.
 	 */
 	public abstract void initialiseStatics(Context context) throws CodeError, ThrowValue;
 	
 	/**
-	 * This gets called when a new instance of this object is created
+	 * This gets called when a new instance of this object is created.
 	 */
 	public abstract Value<?> createNewDefinition(Context context, List<Value<?>> parameters, ISyntax syntaxPosition) throws CodeError, ThrowValue;
 	
 	/**
-	 * These methods are for Runtime, when accessing and assigning static members
+	 * These methods are for Runtime, when accessing and assigning static members.
 	 */
 	
 	@Override

@@ -34,7 +34,7 @@ public abstract class ArucasClassExtension extends AbstractClassDefinition {
 	}
 
 	/**
-	 * No members are assignable by default
+	 * No members are assignable by default.
 	 */
 	@Override
 	public boolean isAssignable(String name) {
@@ -42,35 +42,35 @@ public abstract class ArucasClassExtension extends AbstractClassDefinition {
 	}
 
 	/**
-	 * This lets you define constructors for a Class
+	 * This lets you define constructors for a Class.
 	 */
 	public ArucasFunctionMap<ConstructorFunction> getDefinedConstructors() {
 		return ArucasFunctionMap.of();
 	}
 
 	/**
-	 * This lets you define methods for a Class
+	 * This lets you define methods for a Class.
 	 */
 	public ArucasFunctionMap<MemberFunction> getDefinedMethods() {
 		return ArucasFunctionMap.of();
 	}
 
 	/**
-	 * This lets you define static variables for a Class
+	 * This lets you define static variables for a Class.
 	 */
 	public Map<String, Value<?>> getDefinedStaticVariables() {
 		return Map.of();
 	}
 
 	/**
-	 * This lets you define static methods for a Class
+	 * This lets you define static methods for a Class.
 	 */
 	public ArucasFunctionMap<BuiltInFunction> getDefinedStaticMethods() {
 		return ArucasFunctionMap.of();
 	}
 
 	/**
-	 * This returns the new value that was returned inside the constructor
+	 * This returns the new value that was returned inside the constructor.
 	 */
 	@Override
 	public Value<?> createNewDefinition(Context context, List<Value<?>> parameters, ISyntax syntaxPosition) throws CodeError {
