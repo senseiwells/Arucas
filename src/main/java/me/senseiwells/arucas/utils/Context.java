@@ -243,7 +243,7 @@ public class Context {
 		List<AbstractClassDefinition> definitions = this.stackTable.getRoot().classDefinitions.get(value.getClass());
 		
 		// TODO: Make this O(1) for builtIn classes
-		for(AbstractClassDefinition definition : definitions) {
+		for (AbstractClassDefinition definition : definitions) {
 			FunctionValue targetMethod = definition.getMethods().get(methodName, parameters);
 			if (targetMethod != null) {
 				return targetMethod;

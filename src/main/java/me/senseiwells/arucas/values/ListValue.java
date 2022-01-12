@@ -17,12 +17,12 @@ public class ListValue extends Value<ArucasList> {
 	}
 
 	@Override
-	public ListValue copy() {
+	public ListValue copy(Context context) {
 		return new ListValue(this.value);
 	}
 
 	@Override
-	public ListValue newCopy() {
+	public ListValue newCopy(Context context) {
 		return new ListValue(new ArucasList(this.value));
 	}
 	

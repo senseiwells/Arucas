@@ -18,9 +18,8 @@ import java.util.*;
 public class ArucasList implements List<Value<?>>, ValueIdentifier {
 	private static final Value<?>[] DEFAULT_DATA = {};
 	private static final int DEFAULT_CAPACITY = 10;
-
-	transient Value<?>[] valueData;
-
+	
+	private Value<?>[] valueData;
 	private int size;
 
 	public ArucasList() {
@@ -54,6 +53,7 @@ public class ArucasList implements List<Value<?>>, ValueIdentifier {
 	}
 
 	public synchronized boolean containsAll(Context context, ArucasList valueList) throws CodeError {
+		// TODO: This allocates another iterator.. Try make it faster
 		for (Value<?> value : valueList) {
 			if (!this.contains(context, value)) {
 				return false;
@@ -231,12 +231,24 @@ public class ArucasList implements List<Value<?>>, ValueIdentifier {
 
 	@Override
 	public synchronized boolean isEquals(Context context, Value<?> other) throws CodeError {
-		if (this == other.value || !(other.value instanceof ArucasList otherList) || this.size != otherList.size) {
+		if (!(other.value instanceof ArucasList that)) {
 			return false;
 		}
-		for (int i = 0; i < this.size; i++) {
-			if (!this.valueData[i].isEquals(context, otherList.valueData[i])) {
+		
+		if (this == that) {
+			return true;
+		}
+		
+		// Make sure we are synchronized so that range checks do not give out of bounds exceptions
+		synchronized (that) {
+			if (this.size != that.size) {
 				return false;
+			}
+			
+			for (int i = 0; i < this.size; i++) {
+				if (!this.valueData[i].isEquals(context, that.valueData[i])) {
+					return false;
+				}
 			}
 		}
 		return true;

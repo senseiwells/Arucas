@@ -100,7 +100,7 @@ public class StackTable {
 	public AbstractClassDefinition getClassDefinition(String name) {
 		if (this.classDefinitions != null) {
 			AbstractClassDefinition definition = this.classDefinitions.get(name);
-			if(definition != null) {
+			if (definition != null) {
 				return definition;
 			}
 		}

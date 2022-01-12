@@ -15,11 +15,11 @@ public abstract class Value<T> extends BaseValue {
 	}
 
 	@Override
-	public abstract Value<T> copy();
+	public abstract Value<T> copy(Context context) throws CodeError;
 
 	@Override
-	public Value<T> newCopy() {
-		return this.copy();
+	public Value<T> newCopy(Context context) throws CodeError {
+		return this.copy(context);
 	}
 
 	@Override
@@ -82,9 +82,9 @@ public abstract class Value<T> extends BaseValue {
 			return StringValue.of(valueType);
 		}
 
-		private Value<?> newCopy(Context context, MemberFunction function) {
+		private Value<?> newCopy(Context context, MemberFunction function) throws CodeError {
 			Value<?> thisValue = function.getParameterValue(context, 0);
-			return thisValue.newCopy();
+			return thisValue.newCopy(context);
 		}
 
 		private NumberValue hashCode(Context context, MemberFunction function) throws CodeError {

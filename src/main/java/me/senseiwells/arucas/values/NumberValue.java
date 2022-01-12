@@ -79,7 +79,7 @@ public class NumberValue extends Value<Double> {
 	}
 
 	@Override
-	public NumberValue copy() {
+	public NumberValue copy(Context context) {
 		return this;
 	}
 	

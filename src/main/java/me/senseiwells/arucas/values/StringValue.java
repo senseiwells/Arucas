@@ -27,7 +27,7 @@ public class StringValue extends Value<String> {
 	}
 
 	@Override
-	public StringValue copy() {
+	public StringValue copy(Context context) {
 		return this;
 	}
 	

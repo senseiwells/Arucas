@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * Impl: This class has been tested and does not throw any exceptions.
  */
-@Deprecated
+@Deprecated(forRemoval = true)
 public class ArucasValueMap extends ConcurrentHashMap<Value<?>, Value<?>> {
 	public ArucasValueMap() {
 	

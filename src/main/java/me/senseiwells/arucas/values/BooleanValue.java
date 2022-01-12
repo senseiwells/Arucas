@@ -44,7 +44,7 @@ public class BooleanValue extends Value<Boolean> {
 	}
 	
 	@Override
-	public BooleanValue copy() {
+	public BooleanValue copy(Context context) {
 		return this;
 	}
 	

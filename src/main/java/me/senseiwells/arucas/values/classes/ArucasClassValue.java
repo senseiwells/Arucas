@@ -82,7 +82,7 @@ public class ArucasClassValue extends Value<ArucasClassDefinition> implements Me
 	}
 
 	@Override
-	public ArucasClassValue copy() {
+	public ArucasClassValue copy(Context context) {
 		return this;
 	}
 	

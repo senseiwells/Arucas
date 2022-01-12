@@ -5,7 +5,7 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.tokens.Token;
-import me.senseiwells.arucas.utils.impl.ArucasValueMap;
+import me.senseiwells.arucas.utils.impl.ArucasMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.MapValue;
 import me.senseiwells.arucas.values.Value;
@@ -22,7 +22,7 @@ public class MapNode extends Node {
 
 	@Override
 	public Value<?> visit(Context context) throws CodeError, ThrowValue {
-		ArucasValueMap valueMap = new ArucasValueMap();
+		ArucasMap valueMap = new ArucasMap();
 		for (Map.Entry<Node, Node> entry : this.mapNode.entrySet()) {
 			Value<?> key = entry.getKey().visit(context);
 			Value<?> value = entry.getValue().visit(context);
@@ -30,7 +30,7 @@ public class MapNode extends Node {
 				throw new RuntimeError("Cannot put null inside a map", this.syntaxPosition, context);
 			}
 			
-			valueMap.put(key, value);
+			valueMap.put(context, key, value);
 		}
 		return new MapValue(valueMap);
 	}

@@ -10,7 +10,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *
  * Impl: This class has been tested and does not throw any exceptions.
  */
-@Deprecated
+@Deprecated(forRemoval = true)
 public class ArucasValueList extends CopyOnWriteArrayList<Value<?>> {
 	public ArucasValueList() {
 	

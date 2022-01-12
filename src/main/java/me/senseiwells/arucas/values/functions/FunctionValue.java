@@ -114,7 +114,7 @@ public abstract class FunctionValue extends Value<String> {
 	}
 	
 	@Override
-	public final FunctionValue copy() {
+	public final FunctionValue copy(Context context) {
 		return this;
 	}
 	

@@ -26,7 +26,7 @@ public class ThreadValue extends Value<ArucasThread> {
 	}
 
 	@Override
-	public Value<ArucasThread> copy() {
+	public ThreadValue copy(Context context) {
 		return this;
 	}
 	

@@ -21,13 +21,13 @@ public abstract class BaseValue implements ValueIdentifier {
 	 * This should return a shallow copy of
 	 * an applicable Value
 	 */
-	public abstract Value<?> copy();
+	public abstract Value<?> copy(Context context) throws CodeError;
 
 	/**
 	 * This should return a deep copy
 	 * of an applicable Value
 	 */
-	public abstract Value<?> newCopy();
+	public abstract Value<?> newCopy(Context context) throws CodeError;
 
 	/**
 	 * This gets called when the <code>&&</code> binary operator

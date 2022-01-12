@@ -5,77 +5,41 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.utils.StringUtils;
 import me.senseiwells.arucas.utils.impl.ArucasList;
-import me.senseiwells.arucas.utils.impl.ArucasValueMap;
+import me.senseiwells.arucas.utils.impl.ArucasMap;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
-public class MapValue extends Value<ArucasValueMap> {
-	public MapValue(ArucasValueMap value) {
+// TODO: Before we can switch to using ArucasMap we need to make sure copy works and that no elements goes lost
+public class MapValue extends Value<ArucasMap> {
+	public MapValue(ArucasMap value) {
 		super(value);
 	}
 
 	@Override
-	public MapValue copy() {
+	public MapValue copy(Context context) {
 		return this;
 	}
 
 	@Override
-	public MapValue newCopy() {
-		return new MapValue(new ArucasValueMap(this.value));
+	public MapValue newCopy(Context context) throws CodeError {
+		return new MapValue(new ArucasMap(context, this.value));
 	}
 	
 	@Override
 	public int getHashCode(Context context) throws CodeError {
-		// TODO: Implement a better hashCode value for this map!
-		return this.hashCode();
+		return this.value.getHashCode(context);
 	}
 	
 	@Override
 	public String getAsString(Context context) throws CodeError {
-		ArucasValueMap map = this.value;
-		
-		// Because ArucasMapValue is a subclass of ConcurrentHashMap
-		// it will never throw an ConcurrentModificationException.
-		if (map.isEmpty()) {
-			return "{}";
-		}
-		
-		StringBuilder sb = new StringBuilder();
-		sb.append('{');
-		
-		Iterator<Map.Entry<Value<?>, Value<?>>> iter = map.entrySet().iterator();
-		
-		while (iter.hasNext()) {
-			Map.Entry<Value<?>, Value<?>> entry = iter.next();
-			sb.append(StringUtils.toPlainString(context, entry.getKey())).append(": ")
-			  .append(StringUtils.toPlainString(context, entry.getValue()));
-			
-			if (iter.hasNext()) {
-				sb.append(", ");
-			}
-		}
-		
-		return sb.append('}').toString();
+		return this.value.getAsString(context);
 	}
 	
 	@Override
 	public boolean isEquals(Context context, Value<?> other) throws CodeError {
-		if (!(other instanceof MapValue that)) {
-			return false;
-		}
-		
-		// Do a reference check
-		if (this == other) {
-			return true;
-		}
-		
-		// TODO: Implement the `Custom maps`
-		return this.value.equals(that.value);
+		return this.value.isEquals(context, other);
 	}
 
 	public static class ArucasMapClass extends ArucasClassExtension {
@@ -109,21 +73,21 @@ public class MapValue extends Value<ArucasValueMap> {
 			if (key.value == null) {
 				throw new RuntimeError("Cannot get null from a map", function.syntaxPosition, context);
 			}
-			Value<?> value = thisValue.value.get(key);
-			return value == null ? NullValue.NULL : value.newCopy();
+			Value<?> value = thisValue.value.get(context, key);
+			return value == null ? NullValue.NULL : value;
 		}
 
 		private Value<?> mapGetKeys(Context context, MemberFunction function) throws CodeError {
 			MapValue thisValue = function.getParameterValueOfType(context, MapValue.class, 0);
 			ArucasList valueList = new ArucasList();
-			thisValue.value.keySet().forEach(value -> valueList.add(value.newCopy()));
+			valueList.addAll(thisValue.value.keySet(context));
 			return new ListValue(valueList);
 		}
 
 		private Value<?> mapGetValues(Context context, MemberFunction function) throws CodeError {
 			MapValue thisValue = function.getParameterValueOfType(context, MapValue.class, 0);
 			ArucasList valueList = new ArucasList();
-			valueList.addAll(thisValue.value.values().stream().map(Value::newCopy).toList());
+			valueList.addAll(thisValue.value.values(context));
 			return new ListValue(valueList);
 		}
 
@@ -134,8 +98,8 @@ public class MapValue extends Value<ArucasValueMap> {
 			if (key.value == null || value.value == null) {
 				throw new RuntimeError("Cannot put null into a map", function.syntaxPosition, context);
 			}
-			Value<?> returnValue = thisValue.value.put(key, value);
-			return returnValue == null ? NullValue.NULL : returnValue.newCopy();
+			Value<?> returnValue = thisValue.value.put(context, key, value);
+			return returnValue == null ? NullValue.NULL : returnValue;
 		}
 
 		private Value<?> mapPutIfAbsent(Context context, MemberFunction function) throws CodeError {
@@ -145,14 +109,14 @@ public class MapValue extends Value<ArucasValueMap> {
 			if (key.value == null || value.value == null) {
 				throw new RuntimeError("Cannot put null into a map", function.syntaxPosition, context);
 			}
-			Value<?> returnValue = thisValue.value.putIfAbsent(key, value);
-			return returnValue == null ? NullValue.NULL : returnValue.newCopy();
+			Value<?> returnValue = thisValue.value.putIfAbsent(context, key, value);
+			return returnValue == null ? NullValue.NULL : returnValue;
 		}
 
 		private Value<?> mapPutAll(Context context, MemberFunction function) throws CodeError {
 			MapValue thisValue = function.getParameterValueOfType(context, MapValue.class, 0);
 			MapValue anotherMapValue = function.getParameterValueOfType(context, MapValue.class, 1);
-			thisValue.value.putAll(anotherMapValue.value);
+			thisValue.value.putAll(context, anotherMapValue.value);
 			return NullValue.NULL;
 		}
 
@@ -162,8 +126,8 @@ public class MapValue extends Value<ArucasValueMap> {
 			if (key.value == null) {
 				throw new RuntimeError("Cannot remove null from a map", function.syntaxPosition, context);
 			}
-			Value<?> removedValue = thisValue.value.remove(key);
-			return removedValue == null ? NullValue.NULL : removedValue.newCopy();
+			Value<?> removedValue = thisValue.value.remove(context, key);
+			return removedValue == null ? NullValue.NULL : removedValue;
 		}
 
 		private Value<?> mapClear(Context context, MemberFunction function) throws CodeError {

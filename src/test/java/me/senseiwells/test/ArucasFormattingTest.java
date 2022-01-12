@@ -5,19 +5,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 public class ArucasFormattingTest {
-	@Test
-	public void testMapFormatting() {
-		assertEquals("{\"a\": 123}", ArucasHelper.runSafe("return {'a': 123};"));
-		assertEquals("{321: \"b\"}", ArucasHelper.runSafe("return {321: 'b'};"));
-		assertEquals("{<list>: <map>}", ArucasHelper.runSafe("return {[]: {}};"));
-	}
-	
-	@Test
-	public void testListFormatting() {
-		assertEquals("[\"a\", 123]", ArucasHelper.runSafe("return ['a', 123];"));
-		assertEquals("[321, \"b\"]", ArucasHelper.runSafe("return [321, 'b'];"));
-		assertEquals("[<list>, <map>]", ArucasHelper.runSafe("return [[], {}];"));
-	}
+	// If possible move these into the value tests
 	
 	@Test
 	public void testBooleanFormatting() {

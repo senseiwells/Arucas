@@ -17,6 +17,7 @@ public class VariableAccessNode extends Node {
 			throw new CodeError(CodeError.ErrorType.UNKNOWN_IDENTIFIER, "%s is not defined".formatted(this.token.content), this.syntaxPosition);
 		}
 		
-		return value.copy();
+		// TODO: When accessing a variable from the stack table it should not be copied
+		return value.copy(context);
 	}
 }

@@ -29,7 +29,7 @@ public class FileValue extends Value<File> {
 	}
 
 	@Override
-	public Value<File> copy() {
+	public Value<File> copy(Context context) {
 		return this;
 	}
 
@@ -62,7 +62,7 @@ public class FileValue extends Value<File> {
 
 		private FileValue newFile(Context context, BuiltInFunction function) throws CodeError {
 			StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
-			return of(new File(stringValue.value));
+			return FileValue.of(new File(stringValue.value));
 		}
 
 		@Override

@@ -1,7 +1,6 @@
 package me.senseiwells.arucas.values;
 
 import me.senseiwells.arucas.api.ArucasClassExtension;
-import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.utils.Context;
 
 public class NullValue extends Value<Object> {
@@ -12,7 +11,7 @@ public class NullValue extends Value<Object> {
 	}
 
 	@Override
-	public NullValue copy() {
+	public NullValue copy(Context context) {
 		return this;
 	}
 	
