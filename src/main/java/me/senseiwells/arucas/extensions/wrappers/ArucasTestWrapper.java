@@ -1,5 +1,6 @@
 package me.senseiwells.arucas.extensions.wrappers;
 
+import me.senseiwells.arucas.api.wrappers.ArucasConstructor;
 import me.senseiwells.arucas.api.wrappers.ArucasFunction;
 import me.senseiwells.arucas.api.wrappers.ArucasMember;
 import me.senseiwells.arucas.api.wrappers.IArucasWrappedClass;
@@ -14,15 +15,22 @@ public class ArucasTestWrapper implements IArucasWrappedClass {
 	}
 	
 	@ArucasMember
-	public Value<?> memberValue = NullValue.NULL;
+	public Value<?> memberValue = StringValue.of("MEMBER!");
 	
 	@ArucasFunction
 	public Value<?> getName(Context context, ListValue list, MapValue map, StringValue string) {
 		return null;
 	}
-	
+
+	@ArucasConstructor
+	public void constructor(Context context) {
+		System.out.println("CONSTRUCTING");
+		System.out.println(this);
+	}
+
 	@ArucasFunction
 	public Value<?> awesomeTestMethod(Context context, ListValue list) {
+		System.out.println(memberValue);
 		System.out.println("I got called OMG :D 1");
 		System.out.printf("0: %s\n", this);
 		System.out.printf("1: %s\n", list);

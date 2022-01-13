@@ -86,7 +86,7 @@ public abstract class AbstractClassDefinition implements MemberOperations {
 	}
 	
 	@Override
-	public final boolean setMember(String name, Value<?> value) {
+	public boolean setMember(String name, Value<?> value) {
 		if (!this.isAssignable(name)) {
 			return false;
 		}
@@ -96,7 +96,7 @@ public abstract class AbstractClassDefinition implements MemberOperations {
 	}
 	
 	@Override
-	public final Value<?> getMember(String name) {
+	public Value<?> getMember(String name) {
 		Value<?> member = this.staticMemberVariables.get(name);
 		return member == null ? this.staticMethods.get(name) : member;
 	}

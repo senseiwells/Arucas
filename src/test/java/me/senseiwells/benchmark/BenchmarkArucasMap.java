@@ -46,14 +46,14 @@ public class BenchmarkArucasMap {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private static void debug(String name, List<Time> times) {
 		System.out.printf("\n%s:\n", name);
 		for (Time time : times) {
 			System.out.printf("  %s\n", time);
 		}
 	}
-	
+
 	private static List<Time> benchmark_arucas_map(Context context, final int STEPS, final int WARMUP, final int MAX_VALUE, Random random) throws Exception {
 		final double TIME = 1.0 / (double)STEPS;
 		final double WARMUP_TIME = 1.0 / (double)WARMUP;

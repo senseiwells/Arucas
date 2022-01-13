@@ -14,12 +14,12 @@ import me.senseiwells.arucas.values.functions.MemberOperations;
 
 import java.util.*;
 
-public class ArucasClassValue extends Value<ArucasClassDefinition> implements MemberOperations {
+public class ArucasClassValue extends Value<AbstractClassDefinition> implements MemberOperations {
 	private final ArucasFunctionMap<ClassMemberFunction> methods;
 	private final Map<Token.Type, ClassMemberFunction> operatorMethods;
 	private final Map<String, Value<?>> members;
 	
-	public ArucasClassValue(ArucasClassDefinition arucasClass) {
+	public ArucasClassValue(AbstractClassDefinition arucasClass) {
 		super(arucasClass);
 		this.methods = new ArucasFunctionMap<>();
 		this.operatorMethods = new HashMap<>();
@@ -38,7 +38,7 @@ public class ArucasClassValue extends Value<ArucasClassDefinition> implements Me
 		this.operatorMethods.put(type, method);
 	}
 	
-	protected void addMemberVariable(String name, Value<?> value) {
+	public void addMemberVariable(String name, Value<?> value) {
 		this.members.put(name, value);
 	}
 
@@ -77,7 +77,7 @@ public class ArucasClassValue extends Value<ArucasClassDefinition> implements Me
 	}
 
 	@Override
-	public ArucasFunctionMap<?> getAllMembers() {
+	public final ArucasFunctionMap<?> getAllMembers() {
 		return this.methods;
 	}
 

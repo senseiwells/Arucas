@@ -2,75 +2,141 @@ package me.senseiwells.arucas.values.classes;
 
 import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.api.wrappers.IArucasWrappedClass;
-import me.senseiwells.arucas.nodes.Node;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
-import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.tokens.Token;
+import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.Value;
-import me.senseiwells.arucas.values.functions.ClassMemberFunction;
+import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.functions.WrapperClassMemberFunction;
 
-import java.util.*;
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 
-public class WrapperArucasClassDefinition extends ArucasClassDefinition {
+public class WrapperArucasClassDefinition extends AbstractClassDefinition {
+	private final IArucasWrappedClass wrapperClass;
 	private final Supplier<IArucasWrappedClass> supplier;
+	private final Map<String, FieldBoolean> fieldMap;
+	private final Map<String, FieldBoolean> staticFieldMap;
+	private final ArucasFunctionMap<WrapperClassMemberFunction> methods;
+	private final ArucasFunctionMap<WrapperClassMemberFunction> constructors;
+	private final Map<Token.Type, WrapperClassMemberFunction> operatorMethods;
 	
-	public WrapperArucasClassDefinition(String name, Supplier<IArucasWrappedClass> supplier) {
-		super(name);
+	public WrapperArucasClassDefinition(IArucasWrappedClass wrapperClass, Supplier<IArucasWrappedClass> supplier) {
+		super(wrapperClass.getName());
+		this.wrapperClass = wrapperClass;
 		this.supplier = supplier;
+		this.fieldMap = new HashMap<>();
+		this.staticFieldMap = new HashMap<>();
+		this.methods = new ArucasFunctionMap<>();
+		this.constructors = new ArucasFunctionMap<>();
+		this.operatorMethods = new HashMap<>();
 	}
-	
+
+	public void addField(Field field, boolean isFinal) {
+		this.fieldMap.put(field.getName(), new FieldBoolean(field, isFinal));
+	}
+
+	public void addStaticField(Field field, boolean isFinal) {
+		this.staticFieldMap.put(field.getName(), new FieldBoolean(field, isFinal));
+	}
+
+	public void addMethod(WrapperClassMemberFunction method) {
+		this.methods.add(method);
+	}
+
+	public void addConstructor(WrapperClassMemberFunction constructor) {
+		this.constructors.add(constructor);
+	}
+
+	public void addOperatorMethod(Token.Type tokenType, WrapperClassMemberFunction method) {
+		this.operatorMethods.put(tokenType, method);
+	}
+
 	@Override
-	public void addMethod(ClassMemberFunction method) {
-		// Make sure that method is an instance of the Wrapper members
-		this.methods.add((WrapperClassMemberFunction) method);
+	public ArucasFunctionMap<? extends FunctionValue> getMethods() {
+		return this.methods;
 	}
-	
+
 	@Override
-	public void addConstructor(ClassMemberFunction constructor) {
-		// Make sure that method is an instance of the Wrapper members
-		this.constructors.add((WrapperClassMemberFunction) constructor);
-	}
-	
+	public void initialiseStatics(Context context) { }
+
 	@Override
-	public void addOperatorMethod(Token.Type tokenType, ClassMemberFunction method) {
-		// Make sure that method is an instance of the Wrapper members
-		this.operatorMethods.put(tokenType, (WrapperClassMemberFunction) method);
-	}
-	
-	public ArucasClassValue createNewDefinition(Context context, List<Value<?>> parameters, ISyntax syntaxPosition) throws CodeError, ThrowValue {
-		ArucasClassValue thisValue = new ArucasClassValue(this);
+	public ArucasClassValue createNewDefinition(Context context, List<Value<?>> parameters, ISyntax syntaxPosition) throws CodeError {
+		ArucasWrapperClassValue thisValue = new ArucasWrapperClassValue(this, this.wrapperClass);
 		IArucasWrappedClass wrappedClass = this.supplier.get();
 		
-		for (ClassMemberFunction function : this.methods) {
-			thisValue.addMethod(((WrapperClassMemberFunction) function).copy(wrappedClass));
+		for (WrapperClassMemberFunction function : this.methods) {
+			thisValue.addMethod(function.copy(wrappedClass));
+		}
+
+		for (Map.Entry<Token.Type, WrapperClassMemberFunction> entry : this.operatorMethods.entrySet()) {
+			thisValue.addOperatorMethods(entry.getKey(), entry.getValue().copy(wrappedClass));
 		}
 		
-		// TODO: There are no Nodes inside a wrapped arucas class
-		// Add operator methods
-		for (Map.Entry<Token.Type, ClassMemberFunction> entry : this.operatorMethods.entrySet()) {
-			thisValue.addOperatorMethods(entry.getKey(), ((WrapperClassMemberFunction) entry.getValue()).copy(wrappedClass));
-		}
-		
-		// Add member variables
-		for (Map.Entry<String, Node> entry : this.memberVariables.entrySet()) {
-			thisValue.addMemberVariable(entry.getKey(), entry.getValue().visit(context));
+		for (Map.Entry<String, FieldBoolean> entry : this.fieldMap.entrySet()) {
+			thisValue.addField(entry.getKey(), entry.getValue());
 		}
 		
 		int parameterCount = parameters.size() + 1;
 		if (this.constructors.isEmpty() && parameterCount == 1) {
 			return thisValue;
 		}
-		
-		ClassMemberFunction constructor = this.constructors.get(this.getName(), parameterCount);
+
+		WrapperClassMemberFunction constructor = this.constructors.get(this.getName(), parameterCount);
 		if (constructor == null) {
 			throw new RuntimeError("No such constructor for %s".formatted(this.getName()), syntaxPosition, context);
 		}
 		
-		constructor.copy(thisValue).call(context, parameters, false);
+		constructor.copy(wrappedClass).call(context, parameters, false);
 		return thisValue;
 	}
+
+	@Override
+	public boolean isAssignable(String name) {
+		FieldBoolean fieldBoolean = this.staticFieldMap.get(name);
+		return fieldBoolean != null && !fieldBoolean.isFinal;
+	}
+
+	@Override
+	public boolean setMember(String name, Value<?> value) {
+		if (this.staticFieldMap.containsKey(name)) {
+			FieldBoolean fieldBoolean = this.staticFieldMap.get(name);
+			if (fieldBoolean.isFinal) {
+				return false;
+			}
+			try {
+				fieldBoolean.field.set(null, value);
+				return true;
+			}
+			catch (IllegalAccessException e) {
+				this.staticFieldMap.remove(name);
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public Value<?> getMember(String name) {
+		if (this.staticFieldMap.containsKey(name)) {
+			try {
+				return (Value<?>) this.staticFieldMap.get(name).field.get(null);
+			}
+			catch (IllegalAccessException e) {
+				this.staticFieldMap.remove(name);
+			}
+		}
+		return this.getStaticMethods().get(name);
+	}
+
+	@Override
+	public Class<?> getValueClass() {
+		return ArucasClassValue.class;
+	}
+
+	public static record FieldBoolean(Field field, boolean isFinal) { }
 }

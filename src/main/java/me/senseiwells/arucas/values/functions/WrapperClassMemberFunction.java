@@ -5,6 +5,7 @@ import me.senseiwells.arucas.api.wrappers.IArucasWrappedClass;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.ArucasClassValue;
 
@@ -72,7 +73,11 @@ public class WrapperClassMemberFunction extends ClassMemberFunction {
 		}
 		
 		try {
-			return (Value<?>)this.methodHandle.invokeWithArguments(args);
+			if (returnable) {
+				return (Value<?>) this.methodHandle.invokeWithArguments(args);
+			}
+			this.methodHandle.invokeWithArguments(args);
+			return NullValue.NULL;
 		}
 		catch (ClassCastException e) {
 			// TODO: Generate a more descriptive error message for the invalid parameter value

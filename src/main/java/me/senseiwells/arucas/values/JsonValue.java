@@ -1,17 +1,18 @@
 package me.senseiwells.arucas.values;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonSyntaxException;
+import com.google.gson.*;
 import me.senseiwells.arucas.api.ArucasClassExtension;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.ExceptionUtils;
 import me.senseiwells.arucas.utils.JsonUtils;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
 import me.senseiwells.arucas.values.functions.MemberFunction;
+
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 
 public class JsonValue extends Value<JsonElement> {
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -66,6 +67,8 @@ public class JsonValue extends Value<JsonElement> {
 
 		private Value<?> fromList(Context context, BuiltInFunction function) throws CodeError {
 			ListValue listValue = function.getParameterValueOfType(context, ListValue.class, 0);
+			new JsonObject().deepCopy();
+
 			return new JsonValue(JsonUtils.fromValue(context, listValue));
 		}
 
@@ -77,13 +80,31 @@ public class JsonValue extends Value<JsonElement> {
 		@Override
 		public ArucasFunctionMap<MemberFunction> getDefinedMethods() {
 			return ArucasFunctionMap.of(
-				new MemberFunction("getValue", this::getValue)
+				new MemberFunction("getValue", this::getValue),
+				new MemberFunction("writeToFile", "file", this::writeToFile)
 			);
 		}
 
 		private Value<?> getValue(Context context, MemberFunction function) throws CodeError {
 			JsonValue thisValue = function.getThis(context, JsonValue.class);
 			return JsonUtils.toValue(context, thisValue.value);
+		}
+
+		private Value<?> writeToFile(Context context, MemberFunction function) throws CodeError {
+			JsonValue thisValue = function.getThis(context, JsonValue.class);
+			FileValue fileValue = function.getParameterValueOfType(context, FileValue.class, 1);
+
+			try (PrintWriter printWriter = new PrintWriter(fileValue.value)) {
+				printWriter.println(thisValue.getAsString(context));
+				return NullValue.NULL;
+			}
+			catch (FileNotFoundException | SecurityException e) {
+				throw new RuntimeError(
+					"There was an error writing the file: \"%s\"\n%s".formatted(fileValue.getAsString(context), ExceptionUtils.getStackTrace(e)),
+					function.syntaxPosition,
+					context
+				);
+			}
 		}
 
 		@Override

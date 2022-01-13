@@ -14,12 +14,12 @@ import me.senseiwells.arucas.values.functions.ClassMemberFunction;
 import java.util.*;
 
 public class ArucasClassDefinition extends AbstractClassDefinition {
-	protected final ArucasFunctionMap<ClassMemberFunction> methods;
-	protected final ArucasFunctionMap<ClassMemberFunction> constructors;
-	protected final Map<String, Node> memberVariables;
-	protected final Map<String, Node> staticMemberVariableNodes;
-	protected final List<Node> staticInitializers;
-	protected final Map<Token.Type, ClassMemberFunction> operatorMethods;
+	private final ArucasFunctionMap<ClassMemberFunction> methods;
+	private final ArucasFunctionMap<ClassMemberFunction> constructors;
+	private final Map<String, Node> memberVariables;
+	private final Map<String, Node> staticMemberVariableNodes;
+	private final List<Node> staticInitializers;
+	private final Map<Token.Type, ClassMemberFunction> operatorMethods;
 	
 	public ArucasClassDefinition(String name) {
 		super(name);
@@ -52,6 +52,7 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 		return this.methods;
 	}
 
+	@Override
 	public void initialiseStatics(Context context) throws CodeError, ThrowValue {
 		for (Map.Entry<String, Node> entry : this.staticMemberVariableNodes.entrySet()) {
 			this.getStaticMemberVariables().put(entry.getKey(), entry.getValue().visit(context));
@@ -66,7 +67,8 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 	public Node addMemberVariableNode(boolean isStatic, String name, Node value) {
 		return isStatic ? this.staticMemberVariableNodes.put(name, value) : this.memberVariables.put(name, value);
 	}
-	
+
+	@Override
 	public ArucasClassValue createNewDefinition(Context context, List<Value<?>> parameters, ISyntax syntaxPosition) throws CodeError, ThrowValue {
 		ArucasClassValue thisValue = new ArucasClassValue(this);
 		// Add methods
