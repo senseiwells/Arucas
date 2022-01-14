@@ -395,13 +395,6 @@ public class Parser {
 				startPos
 			);
 		}
-		if (!Token.Type.OVERRIDABLE_OPERATOR_TOKEN_TYPES.containsKey(token.type)) {
-			throw new CodeError(
-				CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
-				"Cannot override operator %s".formatted(this.currentToken.type),
-				startPos
-			);
-		}
 		this.advance();
 
 		this.throwIfNotType(Token.Type.LEFT_BRACKET, "Expected '('");
@@ -409,15 +402,28 @@ public class Parser {
 
 		this.context.pushScope(this.currentToken.syntaxPosition);
 		List<String> argumentNames = this.getClassMemberArguments();
+		int parameters = argumentNames.size();
 
-		int requiredParameters = Token.Type.OVERRIDABLE_OPERATOR_TOKEN_TYPES.get(token.type);
-		if (argumentNames.size() != requiredParameters) {
-			throw new CodeError(
-				CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
-				"Operator %s requires %d parameters".formatted(token.type, requiredParameters - 1),
-				startPos
-			);
+		CodeError noSuchOperator = new CodeError(
+			CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
+			"No such operator %s with %d parameters".formatted(token.type, parameters),
+			startPos
+		);
+
+		switch (parameters) {
+			case 1 -> {
+				if (!Token.Type.OVERRIDABLE_UNARY_OPERATORS.contains(token.type)) {
+					throw noSuchOperator;
+				}
+			}
+			case 2 -> {
+				if (!Token.Type.OVERRIDABLE_BINARY_OPERATORS.contains(token.type)) {
+					throw noSuchOperator;
+				}
+			}
+			default -> throw noSuchOperator;
 		}
+
 
 		MutableSyntaxImpl syntaxPosition = new MutableSyntaxImpl(startPos.getStartPos(), null);
 		ClassMemberFunction operatorMethod = new ClassMemberFunction("$%s".formatted(token.type), argumentNames, syntaxPosition);

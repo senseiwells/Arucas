@@ -65,6 +65,23 @@ public class ArucasClassTest {
 			X = !new Test();
 			""", "X"
 		));
+		assertEquals("-10", ArucasHelper.runSafeFull(
+			"""
+			class Test {
+				var num = 1;
+			
+				operator - (other) {
+					this.num = 10;
+					return this;
+				}
+				
+				operator - () {
+					return this.num * -1;
+				}
+			}
+			X = -(new Test() - 0);
+			""", "X"
+		));
 		assertEquals("30", ArucasHelper.runSafeFull(
 			"""
 			class Test {
@@ -76,6 +93,24 @@ public class ArucasClassTest {
 			}
 			X = new Test() + 10;
 			""", "X"
+		));
+		assertThrows(CodeError.class, () -> ArucasHelper.compile(
+			"""
+			class Test {
+				operator ! (param) {
+					return this;
+				}
+			}
+			"""
+		));
+		assertThrows(CodeError.class, () -> ArucasHelper.compile(
+			"""
+			class Test {
+				operator == () {
+					return false;
+				}
+			}
+			"""
 		));
 	}
 

@@ -1,9 +1,7 @@
 package me.senseiwells.arucas.extensions.wrappers;
 
-import me.senseiwells.arucas.api.wrappers.ArucasConstructor;
-import me.senseiwells.arucas.api.wrappers.ArucasFunction;
-import me.senseiwells.arucas.api.wrappers.ArucasMember;
-import me.senseiwells.arucas.api.wrappers.IArucasWrappedClass;
+import me.senseiwells.arucas.api.wrappers.*;
+import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.*;
 
@@ -14,7 +12,7 @@ public class ArucasTestWrapper implements IArucasWrappedClass {
 	}
 	
 	@ArucasMember
-	public static Value<?> memberStaticValue = StringValue.of("Static MEMBER!");
+	public static final Value<?> memberStaticValue = StringValue.of("Static MEMBER!");
 	
 	@ArucasMember
 	public Value<?> memberValue = StringValue.of("Normal MEMBER!");
@@ -27,6 +25,21 @@ public class ArucasTestWrapper implements IArucasWrappedClass {
 	@ArucasConstructor
 	public void constructor(Context context) {
 		this.memberValue = NumberValue.of(10);
+	}
+
+	@ArucasOperator(Token.Type.MINUS)
+	public Value<?> minusU(Context context) {
+		return NumberValue.of(-10);
+	}
+
+	@ArucasOperator(Token.Type.MINUS)
+	public Value<?> minusBin(Context context, NumberValue numberValue) {
+		return NumberValue.of(10 - numberValue.value);
+	}
+
+	@ArucasOperator(Token.Type.NOT)
+	public Value<?> not(Context context) {
+		return BooleanValue.TRUE;
 	}
 
 	@ArucasFunction
@@ -64,12 +77,6 @@ public class ArucasTestWrapper implements IArucasWrappedClass {
 	public static Value<?> staticMethod(Context context) {
 		return NullValue.NULL;
 	}
-	
-//	@ArucasOperator(Token.Type.PLUS)
-//	public Value<?> op_add(Context context, ListValue list, MapValue map, StringValue string) {
-//
-//		return null;
-//	}
 	
 	@ArucasFunction
 	public Value<?> toString(Context context) {

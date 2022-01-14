@@ -80,6 +80,7 @@ public class FileValue extends Value<File> {
 		@Override
 		public ArucasFunctionMap<MemberFunction> getDefinedMethods() {
 			return ArucasFunctionMap.of(
+				new MemberFunction("getName", this::getName),
 				new MemberFunction("read", this::readFile),
 				new MemberFunction("write", "string", this::writeFile),
 				new MemberFunction("delete", this::deleteFile),
@@ -90,6 +91,11 @@ public class FileValue extends Value<File> {
 				new MemberFunction("getAbsolutePath", this::getAbsolutePath),
 				new MemberFunction("open", this::open)
 			);
+		}
+
+		private Value<?> getName(Context context, MemberFunction function) throws CodeError {
+			FileValue thisValue = function.getThis(context, FileValue.class);
+			return StringValue.of(thisValue.value.getName());
 		}
 
 		private Value<?> readFile(Context context, MemberFunction function) throws CodeError {
@@ -138,7 +144,7 @@ public class FileValue extends Value<File> {
 				}
 				ArucasList fileList = new ArucasList();
 				for (File file : files) {
-					fileList.add(StringValue.of(file.getName()));
+					fileList.add(FileValue.of(file));
 				}
 				return new ListValue(fileList);
 			}

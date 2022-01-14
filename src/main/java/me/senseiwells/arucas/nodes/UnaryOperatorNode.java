@@ -21,14 +21,11 @@ public class UnaryOperatorNode extends Node {
 	@Override
 	public Value<?> visit(Context context) throws CodeError, ThrowValue {
 		Value<?> value = this.node.visit(context);
+		if (value instanceof ArucasClassValue classValue && classValue.hasOperatorMethod(this.token.type, 1)) {
+			return classValue.getOperatorMethod(this.token.type, 1).call(context, new ArrayList<>(1));
+		}
 		switch (this.token.type) {
-			case NOT -> {
-				if (value instanceof ArucasClassValue classValue && classValue.hasOperatorMethod(Token.Type.NOT)) {
-					// TODO: Remove empty allocations
-					return classValue.getOperatorMethod(Token.Type.NOT).call(context, new ArrayList<>());
-				}
-				value = value.not(context, this.syntaxPosition);
-			}
+			case NOT -> value = value.not(context, this.syntaxPosition);
 			case MINUS -> value = value.multiplyBy(context, NumberValue.of(-1), this.syntaxPosition);
 		}
 		return value;

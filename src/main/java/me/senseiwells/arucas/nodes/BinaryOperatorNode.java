@@ -47,10 +47,10 @@ public class BinaryOperatorNode extends Node {
 			default -> right = this.rightNode.visit(context);
 		}
 
-		if (this.token.type != Token.Type.NOT && left instanceof ArucasClassValue classValue && classValue.hasOperatorMethod(this.token.type)) {
+		if (left instanceof ArucasClassValue classValue && classValue.hasOperatorMethod(this.token.type, 2)) {
 			List<Value<?>> parameters = new ArrayList<>();
 			parameters.add(right);
-			return classValue.getOperatorMethod(this.token.type).call(context, parameters);
+			return classValue.getOperatorMethod(this.token.type, 2).copy(classValue).call(context, parameters);
 		}
 
 		switch (this.token.type) {

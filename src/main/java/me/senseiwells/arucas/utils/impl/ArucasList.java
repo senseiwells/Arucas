@@ -16,6 +16,7 @@ import java.util.*;
  * methods natively.
  */
 public class ArucasList implements List<Value<?>>, ValueIdentifier {
+	private static final Object DEADLOCKED_HANDLER = new Object();
 	private static final Value<?>[] DEFAULT_DATA = {};
 	private static final int DEFAULT_CAPACITY = 10;
 	
@@ -53,8 +54,12 @@ public class ArucasList implements List<Value<?>>, ValueIdentifier {
 	}
 
 	public synchronized boolean containsAll(Context context, ArucasList valueList) throws CodeError {
+		if (this.size < valueList.size) {
+			return false;
+		}
 		// TODO: This allocates another iterator.. Try make it faster
-		for (Value<?> value : valueList) {
+		// This calls .toArray() because it may cause deadlocks
+		for (Value<?> value : valueList.toArray()) {
 			if (!this.contains(context, value)) {
 				return false;
 			}
@@ -230,7 +235,7 @@ public class ArucasList implements List<Value<?>>, ValueIdentifier {
 	}
 
 	@Override
-	public synchronized boolean isEquals(Context context, Value<?> other) throws CodeError {
+	public boolean isEquals(Context context, Value<?> other) throws CodeError {
 		if (!(other.value instanceof ArucasList that)) {
 			return false;
 		}
@@ -239,18 +244,22 @@ public class ArucasList implements List<Value<?>>, ValueIdentifier {
 			return true;
 		}
 		
-		// Make sure we are synchronized so that range checks do not give out of bounds exceptions
-		synchronized (that) {
-			if (this.size != that.size) {
-				return false;
-			}
-			
-			for (int i = 0; i < this.size; i++) {
-				if (!this.valueData[i].isEquals(context, that.valueData[i])) {
-					return false;
+		synchronized (DEADLOCKED_HANDLER) {
+			synchronized (this) {
+				synchronized (that) {
+					if (this.size != that.size) {
+						return false;
+					}
+
+					for (int i = 0; i < this.size; i++) {
+						if (!this.valueData[i].isEquals(context, that.valueData[i])) {
+							return false;
+						}
+					}
 				}
 			}
 		}
+
 		return true;
 	}
 

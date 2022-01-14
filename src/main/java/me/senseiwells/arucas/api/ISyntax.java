@@ -7,6 +7,8 @@ import me.senseiwells.arucas.utils.ImmutableSyntaxImpl;
  * Syntax position interface.
  */
 public interface ISyntax {
+	ISyntax EMPTY = ISyntax.of(Position.empty(), Position.empty());
+
 	/**
 	 * Returns the start position of the syntax.
 	 */
@@ -30,8 +32,7 @@ public interface ISyntax {
 	}
 	
 	static ISyntax empty() {
-		// TODO: Remove empty allocations
-		return ISyntax.of(Position.empty(), Position.empty());
+		return EMPTY;
 	}
 	
 	static ISyntax emptyOf(String name) {

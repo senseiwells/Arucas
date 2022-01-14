@@ -7,6 +7,7 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
+import me.senseiwells.arucas.utils.ArucasOperatorMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.functions.FunctionValue;
@@ -23,7 +24,7 @@ public class WrapperArucasClassDefinition extends AbstractClassDefinition {
 	private final Map<String, ArucasMemberHandle> staticFieldMap;
 	private final ArucasFunctionMap<WrapperClassMemberFunction> methods;
 	private final ArucasFunctionMap<WrapperClassMemberFunction> constructors;
-	private final Map<Token.Type, WrapperClassMemberFunction> operatorMethods;
+	private final ArucasOperatorMap<WrapperClassMemberFunction> operatorMap;
 	
 	public WrapperArucasClassDefinition(String name, Supplier<IArucasWrappedClass> supplier) {
 		super(name);
@@ -32,7 +33,7 @@ public class WrapperArucasClassDefinition extends AbstractClassDefinition {
 		this.staticFieldMap = new HashMap<>();
 		this.methods = new ArucasFunctionMap<>();
 		this.constructors = new ArucasFunctionMap<>();
-		this.operatorMethods = new HashMap<>();
+		this.operatorMap = new ArucasOperatorMap<>();
 	}
 
 	public void addField(ArucasMemberHandle field) {
@@ -52,7 +53,11 @@ public class WrapperArucasClassDefinition extends AbstractClassDefinition {
 	}
 
 	public void addOperatorMethod(Token.Type tokenType, WrapperClassMemberFunction method) {
-		this.operatorMethods.put(tokenType, method);
+		this.operatorMap.add(tokenType, method);
+	}
+
+	public ArucasMemberHandle getMemberHandle(String name) {
+		return this.fieldMap.get(name);
 	}
 
 	@Override
@@ -72,14 +77,8 @@ public class WrapperArucasClassDefinition extends AbstractClassDefinition {
 			thisValue.addMethod(function.copy(wrappedClass));
 		}
 
-		for (Map.Entry<Token.Type, WrapperClassMemberFunction> entry : this.operatorMethods.entrySet()) {
-			thisValue.addOperatorMethods(entry.getKey(), entry.getValue().copy(wrappedClass));
-		}
-		
-		for (ArucasMemberHandle member : this.fieldMap.values()) {
-			thisValue.addField(member);
-		}
-		
+		this.operatorMap.forEach((type, function) -> thisValue.addOperatorMethod(type, function.copy(wrappedClass)));
+
 		int parameterCount = parameters.size() + 1;
 		if (this.constructors.isEmpty() && parameterCount == 1) {
 			return thisValue;

@@ -4,6 +4,7 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
+import me.senseiwells.arucas.utils.ArucasOperatorMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.BooleanValue;
 import me.senseiwells.arucas.values.NumberValue;
@@ -16,14 +17,14 @@ import java.util.*;
 
 public class ArucasClassValue extends Value<AbstractClassDefinition> implements MemberOperations {
 	private final ArucasFunctionMap<ClassMemberFunction> methods;
-	private final Map<Token.Type, ClassMemberFunction> operatorMethods;
 	private final Map<String, Value<?>> members;
+	private final ArucasOperatorMap<ClassMemberFunction> operatorMap;
 	
 	public ArucasClassValue(AbstractClassDefinition arucasClass) {
 		super(arucasClass);
 		this.methods = new ArucasFunctionMap<>();
-		this.operatorMethods = new HashMap<>();
 		this.members = new HashMap<>();
+		this.operatorMap = new ArucasOperatorMap<>();
 	}
 	
 	public String getName() {
@@ -33,21 +34,21 @@ public class ArucasClassValue extends Value<AbstractClassDefinition> implements 
 	protected void addMethod(ClassMemberFunction method) {
 		this.methods.add(method);
 	}
-
-	protected void addOperatorMethods(Token.Type type, ClassMemberFunction method) {
-		this.operatorMethods.put(type, method);
-	}
 	
 	public void addMemberVariable(String name, Value<?> value) {
 		this.members.put(name, value);
 	}
 
-	public boolean hasOperatorMethod(Token.Type type) {
-		return this.operatorMethods.containsKey(type);
+	public void addOperatorMethod(Token.Type type, ClassMemberFunction method) {
+		this.operatorMap.add(type, method);
 	}
 
-	public ClassMemberFunction getOperatorMethod(Token.Type type) {
-		return this.operatorMethods.get(type);
+	public boolean hasOperatorMethod(Token.Type type, int parameters) {
+		return this.operatorMap.hasOperator(type, parameters);
+	}
+
+	public ClassMemberFunction getOperatorMethod(Token.Type type, int parameters) {
+		return this.operatorMap.get(type, parameters);
 	}
 
 	@Override

@@ -61,14 +61,12 @@ public class JsonValue extends Value<JsonElement> {
 				return new JsonValue(GSON.fromJson(stringValue.value, JsonElement.class));
 			}
 			catch (JsonSyntaxException e) {
-				throw new RuntimeError(e.getMessage(), function.syntaxPosition, context);
+				throw new RuntimeError("Json could not be parsed", function.syntaxPosition, context);
 			}
 		}
 
 		private Value<?> fromList(Context context, BuiltInFunction function) throws CodeError {
 			ListValue listValue = function.getParameterValueOfType(context, ListValue.class, 0);
-			new JsonObject().deepCopy();
-
 			return new JsonValue(JsonUtils.fromValue(context, listValue));
 		}
 

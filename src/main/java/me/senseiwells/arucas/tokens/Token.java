@@ -121,20 +121,23 @@ public class Token {
 			MORE_THAN_EQUAL
 		);
 
-		// TODO: rework this to allow for other unary operators
-		public static final Map<Type, Integer> OVERRIDABLE_OPERATOR_TOKEN_TYPES = Map.ofEntries(
-			Map.entry(PLUS, 2),
-			Map.entry(MINUS, 2),
-			Map.entry(MULTIPLY, 2),
-			Map.entry(DIVIDE, 2),
-			Map.entry(POWER, 2),
-			Map.entry(LESS_THAN, 2),
-			Map.entry(LESS_THAN_EQUAL, 2),
-			Map.entry(MORE_THAN, 2),
-			Map.entry(MORE_THAN_EQUAL, 2),
-			Map.entry(EQUALS, 2),
-			Map.entry(NOT_EQUALS, 2),
-			Map.entry(NOT, 1)
+		public static final Set<Type> OVERRIDABLE_UNARY_OPERATORS = Set.of(
+			NOT,
+			MINUS
+		);
+
+		public static final Set<Type> OVERRIDABLE_BINARY_OPERATORS = Set.of(
+			PLUS,
+			MINUS,
+			MULTIPLY,
+			DIVIDE,
+			POWER,
+			LESS_THAN,
+			LESS_THAN_EQUAL,
+			MORE_THAN,
+			MORE_THAN_EQUAL,
+			EQUALS,
+			NOT_EQUALS
 		);
 	}
 }

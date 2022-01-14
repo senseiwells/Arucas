@@ -162,35 +162,6 @@ public class StackTable {
 	}
 
 	@Override
-	public int hashCode() {
-		// TODO: Remove this hashCode
-		return this.symbolMap == null ? 0 : this.symbolMap.hashCode();
-	}
-
-	@Override
-	public boolean equals(Object object) {
-		// TODO: Remove this equals
-		return this == object;
-		/*
-		if (this == object) {
-			return true;
-		}
-		if (object instanceof StackTable otherTable) {
-			if (this.symbolMap.size() != otherTable.symbolMap.size()) {
-				return false;
-			}
-			for (Map.Entry<String, Value<?>> entry : this.symbolMap.entrySet()) {
-				if (!otherTable.get(entry.getKey()).equals(entry.getValue())) {
-					return false;
-				}
-			}
-			return true;
-		}
-		return false;
-	  */
-	}
-
-	@Override
 	public String toString() {
 		return (this.parentTable == null ? "RootTable" : "StackTable") + (this.symbolMap == null ? "{}" : this.symbolMap.toString());
 	}

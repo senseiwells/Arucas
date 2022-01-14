@@ -7,6 +7,7 @@ import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
+import me.senseiwells.arucas.utils.ArucasOperatorMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.functions.ClassMemberFunction;
@@ -19,7 +20,7 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 	private final Map<String, Node> memberVariables;
 	private final Map<String, Node> staticMemberVariableNodes;
 	private final List<Node> staticInitializers;
-	private final Map<Token.Type, ClassMemberFunction> operatorMethods;
+	private final ArucasOperatorMap<ClassMemberFunction> operatorMap;
 	
 	public ArucasClassDefinition(String name) {
 		super(name);
@@ -28,7 +29,7 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 		this.memberVariables = new HashMap<>();
 		this.staticMemberVariableNodes = new HashMap<>();
 		this.staticInitializers = new ArrayList<>();
-		this.operatorMethods = new HashMap<>();
+		this.operatorMap = new ArucasOperatorMap<>();
 	}
 
 	public void addMethod(ClassMemberFunction method) {
@@ -44,7 +45,7 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 	}
 
 	public void addOperatorMethod(Token.Type tokenType, ClassMemberFunction method) {
-		this.operatorMethods.put(tokenType, method);
+		this.operatorMap.add(tokenType, method);
 	}
 
 	@Override
@@ -76,15 +77,12 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 			thisValue.addMethod(function.copy(thisValue));
 		}
 
-		// Add operator methods
-		for (Map.Entry<Token.Type, ClassMemberFunction> entry : this.operatorMethods.entrySet()) {
-			thisValue.addOperatorMethods(entry.getKey(), entry.getValue().copy(thisValue));
-		}
-
 		// Add member variables
 		for (Map.Entry<String, Node> entry : this.memberVariables.entrySet()) {
 			thisValue.addMemberVariable(entry.getKey(), entry.getValue().visit(context));
 		}
+
+		this.operatorMap.forEach((type, function) -> thisValue.addOperatorMethod(type, function.copy(thisValue)));
 
 		int parameterCount = parameters.size() + 1;
 		if (this.constructors.isEmpty() && parameterCount == 1) {
