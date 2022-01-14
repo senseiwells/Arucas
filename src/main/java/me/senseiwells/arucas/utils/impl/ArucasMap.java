@@ -12,6 +12,9 @@ import java.util.*;
  * This class cannot contain null values.
  */
 public class ArucasMap implements ValueIdentifier {
+	// This field is used to prevent deadlocks.
+	static final Object DEADLOCK_HANDLE = new Object();
+	
 	static final int HASH_BITS = 0x7fffffff;
 	// Using an INITIAL SIZE of 2048 makes this map implementation just 10 times slower than the
 	// Java implementation. Because Java dynamically expands their maps their implementation will
@@ -31,100 +34,6 @@ public class ArucasMap implements ValueIdentifier {
 	public ArucasMap(Context context, ArucasMap map) throws CodeError {
 		this();
 		this.putAll(context, map);
-	}
-	
-	@Override
-	public int getHashCode(Context context) throws CodeError {
-		int h = 0;
-		
-		for (int i = 0, len = this.table.length; i < len; i++) {
-			Node node = this.table[i];
-			
-			while (node != null) {
-				h += node.getHashCode(context);
-				node = node.next;
-			}
-		}
-		
-		return h;
-	}
-	
-	@Override
-	public synchronized String getAsString(Context context) throws CodeError {
-		StringBuilder sb = new StringBuilder();
-		sb.append('{');
-		
-		final int size = this.size;
-		for (int i = 0, l = 0; l < size; i++) {
-			Node node = this.table[i];
-			
-			while (node != null) {
-				sb.append(StringUtils.toPlainString(context, node.key)).append(": ")
-				  .append(StringUtils.toPlainString(context, node.value));
-				
-				if (++l >= this.size) {
-					break;
-				}
-				
-				sb.append(", ");
-				node = node.next;
-			}
-		}
-		
-		return sb.append('}').toString();
-	}
-
-	@Override
-	public synchronized boolean isEquals(Context context, Value<?> other) throws CodeError {
-		if (!(other.value instanceof ArucasMap that)) {
-			return false;
-		}
-		
-		if (this == that) {
-			return true;
-		}
-		
-		// If another thread is trying to access this object while we are trying to access that
-		// we might have a deadlock.
-		synchronized (that) {
-			if (this.size != that.size) {
-				return false;
-			}
-			
-			for (int i = 0, len = that.table.length; i < len; i++) {
-				Node thatNode = that.table[i];
-				
-				while (thatNode != null) {
-					// Check if keys are equal
-					Node thisNode = this.getNode(context, thatNode.key);
-					
-					// Check if the nodes are equal
-					if (thisNode == null || !thisNode.isEquals(context, thatNode)) {
-						return false;
-					}
-					
-					thatNode = thatNode.next;
-				}
-			}
-			
-			return true;
-		}
-	}
-	
-	/**
-	 * Add all elements from one map to this map.
-	 */
-	public synchronized void putAll(Context context, ArucasMap map) throws CodeError {
-		synchronized (map) {
-			for (int i = 0, len = map.table.length; i < len; i++) {
-				Node node = map.table[i];
-				
-				while (node != null) {
-					this.put(context, node.key, node.value);
-					node = node.next;
-				}
-			}
-		}
 	}
 	
 	/**
@@ -165,6 +74,26 @@ public class ArucasMap implements ValueIdentifier {
 	}
 	
 	/**
+	 * Add all elements from one map to this map.
+	 */
+	public void putAll(Context context, ArucasMap map) throws CodeError {
+		synchronized (DEADLOCK_HANDLE) {
+			synchronized (this) {
+				synchronized (map) {
+					for (int i = 0, len = map.table.length; i < len; i++) {
+						Node node = map.table[i];
+						
+						while (node != null) {
+							this.put(context, node.key, node.value);
+							node = node.next;
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	/**
 	 * Clear this map.
 	 */
 	public synchronized void clear() {
@@ -172,6 +101,76 @@ public class ArucasMap implements ValueIdentifier {
 		for (int i = 0, len = this.table.length; i < len; i++) {
 			this.table[i] = null;
 		}
+	}
+	
+	/**
+	 * Returns if this map is empty
+	 */
+	public boolean isEmpty() {
+		return this.size == 0;
+	}
+	
+	/**
+	 * Returns the size of this map
+	 */
+	public int size() {
+		return this.size;
+	}
+	
+	/**
+	 * Returns all keys inside this map
+	 */
+	public synchronized Set<Value<?>> keySet(Context context) throws CodeError {
+		final Value<?>[] array = new Value<?>[this.size];
+		int j = 0;
+		
+		for (int i = 0, len = this.table.length; i < len; i++) {
+			Node node = this.table[i];
+			
+			while (node != null) {
+				array[j++] = node.key;
+				node = node.next;
+			}
+		}
+		
+		return new KeySet(array.length == j ? array : Arrays.copyOf(array, j));
+	}
+	
+	/**
+	 * Returns a collection of all values inside this map
+	 */
+	public synchronized Collection<? extends Value<?>> values(Context context) throws CodeError {
+		final Value<?>[] array = new Value<?>[this.size];
+		int j = 0;
+		
+		for (int i = 0, len = this.table.length; i < len; i++) {
+			Node node = this.table[i];
+			
+			while (node != null) {
+				array[j++] = node.value;
+				node = node.next;
+			}
+		}
+		
+		return List.of(array.length == j ? array : Arrays.copyOf(array, j));
+	}
+	
+	/**
+	 * Returns a set of all entries inside this map
+	 */
+	public synchronized Set<Node> entrySet(Context context) throws CodeError {
+		final Node[] array = new Node[this.size];
+		
+		for (int i = 0, j = 0, len = this.table.length; i < len; i++) {
+			Node node = this.table[i];
+			
+			while (node != null) {
+				array[j++] = node;
+				node = node.next;
+			}
+		}
+		
+		return new EntrySet(array);
 	}
 	
 	private synchronized Value<?> putNode(Context context, Value<?> key, Value<?> value, boolean putIfAbsent) throws CodeError {
@@ -239,63 +238,95 @@ public class ArucasMap implements ValueIdentifier {
 		
 		return null;
 	}
-	
-	public synchronized boolean isEmpty() {
-		return this.size == 0;
-	}
-	
-	public synchronized int size() {
-		return this.size;
-	}
-	
-	public synchronized Set<Value<?>> keySet(Context context) throws CodeError {
-		final Value<?>[] array = new Value<?>[this.size];
-		
-		for (int i = 0, j = 0, len = this.table.length; i < len; i++) {
-			Node node = this.table[i];
-			
-			while (node != null) {
-				array[j++] = node.key;
-				node = node.next;
-			}
-		}
-		
-		return new KeySet(array);
-	}
-	
-	public synchronized Set<Value<?>> values(Context context) throws CodeError {
-		final Value<?>[] array = new Value<?>[this.size];
-		
-		for (int i = 0, j = 0, len = this.table.length; i < len; i++) {
-			Node node = this.table[i];
-			
-			while (node != null) {
-				array[j++] = node.value;
-				node = node.next;
-			}
-		}
-		
-		return new KeySet(array);
-	}
-
-	public synchronized Set<Node> entrySet(Context context) throws CodeError {
-		final Node[] array = new Node[this.size];
-		
-		for (int i = 0, j = 0, len = this.table.length; i < len; i++) {
-			Node node = this.table[i];
-			
-			while (node != null) {
-				array[j++] = node;
-				node = node.next;
-			}
-		}
-		
-		return new EntrySet(array);
-	}
 
 	private synchronized int hash(int h) {
 		return (h ^ (h >>> 16)) & ArucasMap.HASH_BITS;
 	}
+	
+	@Override
+	public int getHashCode(Context context) throws CodeError {
+		int h = 0;
+		
+		for (int i = 0, len = this.table.length; i < len; i++) {
+			Node node = this.table[i];
+			
+			while (node != null) {
+				h += node.getHashCode(context);
+				node = node.next;
+			}
+		}
+		
+		return h;
+	}
+	
+	@Override
+	public synchronized String getAsString(Context context) throws CodeError {
+		StringBuilder sb = new StringBuilder();
+		sb.append('{');
+		
+		final int size = this.size;
+		for (int i = 0, l = 0; l < size; i++) {
+			Node node = this.table[i];
+			
+			while (node != null) {
+				sb.append(StringUtils.toPlainString(context, node.key)).append(": ")
+				  .append(StringUtils.toPlainString(context, node.value));
+				
+				if (++l >= this.size) {
+					break;
+				}
+				
+				sb.append(", ");
+				node = node.next;
+			}
+		}
+		
+		return sb.append('}').toString();
+	}
+	
+	@Override
+	public boolean isEquals(Context context, Value<?> other) throws CodeError {
+		if (!(other.value instanceof ArucasMap that)) {
+			return false;
+		}
+		
+		if (this == that) {
+			return true;
+		}
+		
+		// If we always synchronize on DEADLOCK_HANDLE when locking on parameters
+		// we will never let two threads lock on each other without waiting for
+		// the other thread to release their lock on DEADLOCK_HANDLE.
+		// This prevents any deadlocks from happening.
+		synchronized (DEADLOCK_HANDLE) {
+			synchronized (this) {
+				synchronized (that) {
+					if (this.size != that.size) {
+						return false;
+					}
+					
+					for (int i = 0, len = that.table.length; i < len; i++) {
+						Node thatNode = that.table[i];
+						
+						while (thatNode != null) {
+							// Check if keys are equal
+							Node thisNode = this.getNode(context, thatNode.key);
+							
+							// Check if the nodes are equal
+							if (thisNode == null || !thisNode.isEquals(context, thatNode)) {
+								return false;
+							}
+							
+							thatNode = thatNode.next;
+						}
+					}
+				}
+			}
+		}
+		
+		return true;
+	}
+	
 	
 	@Deprecated
 	@Override
