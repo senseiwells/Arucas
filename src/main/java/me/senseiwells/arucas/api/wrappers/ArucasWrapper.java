@@ -150,29 +150,49 @@ public class ArucasWrapper {
 		this.classDefinition.addConstructor(function);
 		return true;
 	}
+	
+	/**
+	 * Returns the field handle if the field was valid.
+	 */
+	private ArucasMemberHandle getFieldHandle(Class<?> clazz, Field field, boolean isStatic, boolean isFinal) {
+		if (!Value.class.isAssignableFrom(field.getType())) {
+			throw invalidWrapperField(clazz, field, "Field type was not a subclass of Value");
+		}
+		
+		try {
+			MethodHandles.Lookup lookup = MethodHandles.publicLookup();
+			return new ArucasMemberHandle(
+				field.getName(),
+				lookup.unreflectGetter(field),
+				lookup.unreflectSetter(field),
+				isStatic,
+				isFinal
+			);
+		}
+		catch (IllegalAccessException ignored) {
+			throw invalidWrapperField(clazz, field, "Failed to get field handle");
+		}
+	}
 
 	private boolean addMemberVariable(Field field) {
 		int modifiers = field.getModifiers();
 		if (!Modifier.isPublic(modifiers)) {
 			throw invalidWrapperField(this.clazz, field, "Field is not public");
 		}
+		
 		final boolean isStatic = Modifier.isStatic(modifiers);
 		final boolean isFinal = Modifier.isFinal(modifiers);
-		try {
-			Class<?> classType = field.getType();
-			if (!Value.class.isAssignableFrom(classType)) {
-				throw invalidWrapperField(this.clazz, field, "Field is not Value type");
-			}
-			if (isStatic) {
-				this.classDefinition.addStaticField(field, isFinal);
-			}
-			else {
-				this.classDefinition.addField(field, isFinal);
-			}
+		
+		ArucasMemberHandle handle = this.getFieldHandle(this.clazz, field, isStatic, isFinal);
+		System.out.printf("Member: %s%s::%s (get=%s) (set=%s)\n", isStatic ? "static " : "", this.clazz.getSimpleName(), handle.getName(), handle.getter, handle.setter);
+		
+		if (isStatic) {
+			this.classDefinition.addStaticField(handle);
 		}
-		catch (IllegalAccessException e) {
-			throw invalidWrapperField(this.clazz, field, "Field is not accessible");
+		else {
+			this.classDefinition.addField(handle);
 		}
+		
 		return true;
 	}
 	

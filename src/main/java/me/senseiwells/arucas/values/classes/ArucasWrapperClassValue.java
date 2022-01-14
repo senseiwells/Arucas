@@ -1,51 +1,48 @@
 package me.senseiwells.arucas.values.classes;
 
+import me.senseiwells.arucas.api.wrappers.ArucasMemberHandle;
 import me.senseiwells.arucas.api.wrappers.IArucasWrappedClass;
 import me.senseiwells.arucas.values.Value;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ArucasWrapperClassValue extends ArucasClassValue {
 	private final IArucasWrappedClass wrapperClass;
+	private final Map<String, ArucasMemberHandle> fieldMap;
 
 	public ArucasWrapperClassValue(WrapperArucasClassDefinition arucasClass, IArucasWrappedClass wrapperClass) {
 		super(arucasClass);
 		this.wrapperClass = wrapperClass;
+		this.fieldMap = new HashMap<>();
 	}
 
 	@Override
 	public boolean isAssignable(String name) {
-		WrapperArucasClassDefinition.FieldBoolean fieldBoolean = this.getField(name);
-		return fieldBoolean != null && !fieldBoolean.isFinal();
+		ArucasMemberHandle handle = this.fieldMap.get(name);
+		return handle != null && !handle.isFinal();
 	}
 
 	@Override
 	public boolean setMember(String name, Value<?> value) {
-		WrapperArucasClassDefinition.FieldBoolean fieldBoolean = this.getField(name);
-		if (fieldBoolean != null) {
-			if (fieldBoolean.isFinal()) {
-				return false;
-			}
-			try {
-				fieldBoolean.field().set(this.wrapperClass, value);
-				return true;
-			}
-			catch (IllegalAccessException ignored) { }
+		ArucasMemberHandle handle = this.fieldMap.get(name);
+		if (handle != null) {
+			return handle.set(this.wrapperClass, value);
 		}
+		
 		return false;
 	}
 
 	@Override
 	public Value<?> getMember(String name) {
-		WrapperArucasClassDefinition.FieldBoolean fieldBoolean = this.getField(name);
-		if (fieldBoolean != null) {
-			try {
-				return (Value<?>) fieldBoolean.field().get(this.wrapperClass);
-			}
-			catch (IllegalAccessException ignored) { }
+		ArucasMemberHandle handle = this.fieldMap.get(name);
+		if (handle != null) {
+			return handle.get(this.wrapperClass);
 		}
 		return this.getAllMembers().get(name);
 	}
-
-	private WrapperArucasClassDefinition.FieldBoolean getField(String name) {
-		return ((WrapperArucasClassDefinition) this.value).getField(name);
+	
+	public void addField(ArucasMemberHandle handle) {
+		this.fieldMap.put(handle.getName(), handle);
 	}
 }

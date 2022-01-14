@@ -1,6 +1,7 @@
 package me.senseiwells.arucas.values.classes;
 
 import me.senseiwells.arucas.api.ISyntax;
+import me.senseiwells.arucas.api.wrappers.ArucasMemberHandle;
 import me.senseiwells.arucas.api.wrappers.IArucasWrappedClass;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
@@ -11,7 +12,6 @@ import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.functions.WrapperClassMemberFunction;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,8 +19,8 @@ import java.util.function.Supplier;
 
 public class WrapperArucasClassDefinition extends AbstractClassDefinition {
 	private final Supplier<IArucasWrappedClass> supplier;
-	private final Map<String, FieldBoolean> fieldMap;
-	private final Map<String, FieldBoolean> staticFieldMap;
+	private final Map<String, ArucasMemberHandle> fieldMap;
+	private final Map<String, ArucasMemberHandle> staticFieldMap;
 	private final ArucasFunctionMap<WrapperClassMemberFunction> methods;
 	private final ArucasFunctionMap<WrapperClassMemberFunction> constructors;
 	private final Map<Token.Type, WrapperClassMemberFunction> operatorMethods;
@@ -35,12 +35,12 @@ public class WrapperArucasClassDefinition extends AbstractClassDefinition {
 		this.operatorMethods = new HashMap<>();
 	}
 
-	public void addField(Field field, boolean isFinal) {
-		this.fieldMap.put(field.getName(), new FieldBoolean(field, isFinal));
+	public void addField(ArucasMemberHandle field) {
+		this.fieldMap.put(field.getName(), field);
 	}
 
-	public void addStaticField(Field field, boolean isFinal) {
-		this.staticFieldMap.put(field.getName(), new FieldBoolean(field, isFinal));
+	public void addStaticField(ArucasMemberHandle field) {
+		this.staticFieldMap.put(field.getName(), field);
 	}
 
 	public void addMethod(WrapperClassMemberFunction method) {
@@ -53,10 +53,6 @@ public class WrapperArucasClassDefinition extends AbstractClassDefinition {
 
 	public void addOperatorMethod(Token.Type tokenType, WrapperClassMemberFunction method) {
 		this.operatorMethods.put(tokenType, method);
-	}
-
-	public FieldBoolean getField(String name) {
-		return this.fieldMap.get(name);
 	}
 
 	@Override
@@ -80,6 +76,10 @@ public class WrapperArucasClassDefinition extends AbstractClassDefinition {
 			thisValue.addOperatorMethods(entry.getKey(), entry.getValue().copy(wrappedClass));
 		}
 		
+		for (ArucasMemberHandle member : this.fieldMap.values()) {
+			thisValue.addField(member);
+		}
+		
 		int parameterCount = parameters.size() + 1;
 		if (this.constructors.isEmpty() && parameterCount == 1) {
 			return thisValue;
@@ -96,37 +96,23 @@ public class WrapperArucasClassDefinition extends AbstractClassDefinition {
 
 	@Override
 	public boolean isAssignable(String name) {
-		FieldBoolean fieldBoolean = this.staticFieldMap.get(name);
-		return fieldBoolean != null && !fieldBoolean.isFinal;
+		ArucasMemberHandle handle = this.staticFieldMap.get(name);
+		return handle != null && !handle.isFinal();
 	}
 
 	@Override
 	public boolean setMember(String name, Value<?> value) {
 		if (this.staticFieldMap.containsKey(name)) {
-			FieldBoolean fieldBoolean = this.staticFieldMap.get(name);
-			if (fieldBoolean.isFinal) {
-				return false;
-			}
-			try {
-				fieldBoolean.field.set(null, value);
-				return true;
-			}
-			catch (IllegalAccessException e) {
-				this.staticFieldMap.remove(name);
-			}
+			return this.staticFieldMap.get(name).set(null, value);
 		}
+		
 		return false;
 	}
 
 	@Override
 	public Value<?> getMember(String name) {
 		if (this.staticFieldMap.containsKey(name)) {
-			try {
-				return (Value<?>) this.staticFieldMap.get(name).field.get(null);
-			}
-			catch (IllegalAccessException e) {
-				this.staticFieldMap.remove(name);
-			}
+			return this.staticFieldMap.get(name).get(null);
 		}
 		return this.getStaticMethods().get(name);
 	}
@@ -135,6 +121,4 @@ public class WrapperArucasClassDefinition extends AbstractClassDefinition {
 	public Class<?> getValueClass() {
 		return ArucasClassValue.class;
 	}
-
-	public static record FieldBoolean(Field field, boolean isFinal) { }
 }

@@ -6,7 +6,6 @@ import me.senseiwells.arucas.api.wrappers.ArucasMember;
 import me.senseiwells.arucas.api.wrappers.IArucasWrappedClass;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.*;
-import me.senseiwells.arucas.values.classes.ArucasClassValue;
 
 public class ArucasTestWrapper implements IArucasWrappedClass {
 	@Override
@@ -15,7 +14,10 @@ public class ArucasTestWrapper implements IArucasWrappedClass {
 	}
 	
 	@ArucasMember
-	public Value<?> memberValue = StringValue.of("MEMBER!");
+	public static Value<?> memberStaticValue = StringValue.of("Static MEMBER!");
+	
+	@ArucasMember
+	public Value<?> memberValue = StringValue.of("Normal MEMBER!");
 	
 	@ArucasFunction
 	public Value<?> getName(Context context, ListValue list, MapValue map, StringValue string) {
@@ -25,8 +27,6 @@ public class ArucasTestWrapper implements IArucasWrappedClass {
 	@ArucasConstructor
 	public void constructor(Context context) {
 		this.memberValue = NumberValue.of(10);
-		System.out.println("CONSTRUCTING");
-		System.out.println(this);
 	}
 
 	@ArucasFunction
