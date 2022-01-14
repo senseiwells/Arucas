@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 public class WrapperArucasClassDefinition extends AbstractClassDefinition {
-	private final IArucasWrappedClass wrapperClass;
 	private final Supplier<IArucasWrappedClass> supplier;
 	private final Map<String, FieldBoolean> fieldMap;
 	private final Map<String, FieldBoolean> staticFieldMap;
@@ -26,9 +25,8 @@ public class WrapperArucasClassDefinition extends AbstractClassDefinition {
 	private final ArucasFunctionMap<WrapperClassMemberFunction> constructors;
 	private final Map<Token.Type, WrapperClassMemberFunction> operatorMethods;
 	
-	public WrapperArucasClassDefinition(IArucasWrappedClass wrapperClass, Supplier<IArucasWrappedClass> supplier) {
-		super(wrapperClass.getName());
-		this.wrapperClass = wrapperClass;
+	public WrapperArucasClassDefinition(String name, Supplier<IArucasWrappedClass> supplier) {
+		super(name);
 		this.supplier = supplier;
 		this.fieldMap = new HashMap<>();
 		this.staticFieldMap = new HashMap<>();
@@ -57,6 +55,10 @@ public class WrapperArucasClassDefinition extends AbstractClassDefinition {
 		this.operatorMethods.put(tokenType, method);
 	}
 
+	public FieldBoolean getField(String name) {
+		return this.fieldMap.get(name);
+	}
+
 	@Override
 	public ArucasFunctionMap<? extends FunctionValue> getMethods() {
 		return this.methods;
@@ -67,8 +69,8 @@ public class WrapperArucasClassDefinition extends AbstractClassDefinition {
 
 	@Override
 	public ArucasClassValue createNewDefinition(Context context, List<Value<?>> parameters, ISyntax syntaxPosition) throws CodeError {
-		ArucasWrapperClassValue thisValue = new ArucasWrapperClassValue(this, this.wrapperClass);
 		IArucasWrappedClass wrappedClass = this.supplier.get();
+		ArucasWrapperClassValue thisValue = new ArucasWrapperClassValue(this, wrappedClass);
 		
 		for (WrapperClassMemberFunction function : this.methods) {
 			thisValue.addMethod(function.copy(wrappedClass));
@@ -76,10 +78,6 @@ public class WrapperArucasClassDefinition extends AbstractClassDefinition {
 
 		for (Map.Entry<Token.Type, WrapperClassMemberFunction> entry : this.operatorMethods.entrySet()) {
 			thisValue.addOperatorMethods(entry.getKey(), entry.getValue().copy(wrappedClass));
-		}
-		
-		for (Map.Entry<String, FieldBoolean> entry : this.fieldMap.entrySet()) {
-			thisValue.addField(entry.getKey(), entry.getValue());
 		}
 		
 		int parameterCount = parameters.size() + 1;

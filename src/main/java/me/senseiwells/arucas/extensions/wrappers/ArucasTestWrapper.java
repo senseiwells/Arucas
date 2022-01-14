@@ -24,6 +24,7 @@ public class ArucasTestWrapper implements IArucasWrappedClass {
 
 	@ArucasConstructor
 	public void constructor(Context context) {
+		this.memberValue = NumberValue.of(10);
 		System.out.println("CONSTRUCTING");
 		System.out.println(this);
 	}

@@ -19,10 +19,9 @@ public class ArucasWrapper {
 	private final Class<?> clazz;
 	
 	private ArucasWrapper(Supplier<IArucasWrappedClass> supplier) {
-		// TODO: Figure out how to get the class type from the wrapper
 		this.value = supplier.get();
 		this.clazz = this.value.getClass();
-		this.classDefinition = new WrapperArucasClassDefinition(this.value, supplier);
+		this.classDefinition = new WrapperArucasClassDefinition(this.value.getName(), supplier);
 		
 		for (Method method : this.clazz.getMethods()) {
 			ArucasFunction functionAnnotation = method.getAnnotation(ArucasFunction.class);
@@ -160,8 +159,8 @@ public class ArucasWrapper {
 		final boolean isStatic = Modifier.isStatic(modifiers);
 		final boolean isFinal = Modifier.isFinal(modifiers);
 		try {
-			Object object = field.get(isStatic ? null : this.value);
-			if (!(object instanceof Value<?>)) {
+			Class<?> classType = field.getType();
+			if (!Value.class.isAssignableFrom(classType)) {
 				throw invalidWrapperField(this.clazz, field, "Field is not Value type");
 			}
 			if (isStatic) {
