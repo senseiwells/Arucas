@@ -327,7 +327,6 @@ public class ArucasMap implements ValueIdentifier {
 		return true;
 	}
 	
-	
 	@Deprecated
 	@Override
 	public final int hashCode() {

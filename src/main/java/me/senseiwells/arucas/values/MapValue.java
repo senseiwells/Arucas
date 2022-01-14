@@ -11,7 +11,6 @@ import me.senseiwells.arucas.values.functions.MemberFunction;
 
 import java.util.List;
 
-// TODO: Before we can switch to using ArucasMap we need to make sure copy works and that no elements goes lost
 public class MapValue extends Value<ArucasMap> {
 	public MapValue(ArucasMap value) {
 		super(value);

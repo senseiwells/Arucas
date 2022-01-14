@@ -4,28 +4,23 @@ import me.senseiwells.arucas.api.wrappers.ArucasMemberHandle;
 import me.senseiwells.arucas.api.wrappers.IArucasWrappedClass;
 import me.senseiwells.arucas.values.Value;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class ArucasWrapperClassValue extends ArucasClassValue {
 	private final IArucasWrappedClass wrapperClass;
-	private final Map<String, ArucasMemberHandle> fieldMap;
 
 	public ArucasWrapperClassValue(WrapperArucasClassDefinition arucasClass, IArucasWrappedClass wrapperClass) {
 		super(arucasClass);
 		this.wrapperClass = wrapperClass;
-		this.fieldMap = new HashMap<>();
 	}
 
 	@Override
 	public boolean isAssignable(String name) {
-		ArucasMemberHandle handle = this.fieldMap.get(name);
+		ArucasMemberHandle handle = this.getHandle(name);
 		return handle != null && !handle.isFinal();
 	}
 
 	@Override
 	public boolean setMember(String name, Value<?> value) {
-		ArucasMemberHandle handle = this.fieldMap.get(name);
+		ArucasMemberHandle handle = this.getHandle(name);
 		if (handle != null) {
 			return handle.set(this.wrapperClass, value);
 		}
@@ -35,14 +30,14 @@ public class ArucasWrapperClassValue extends ArucasClassValue {
 
 	@Override
 	public Value<?> getMember(String name) {
-		ArucasMemberHandle handle = this.fieldMap.get(name);
+		ArucasMemberHandle handle = this.getHandle(name);
 		if (handle != null) {
 			return handle.get(this.wrapperClass);
 		}
 		return this.getAllMembers().get(name);
 	}
-	
-	public void addField(ArucasMemberHandle handle) {
-		this.fieldMap.put(handle.getName(), handle);
+
+	private ArucasMemberHandle getHandle(String name) {
+		return ((WrapperArucasClassDefinition) this.value).getMemberHandle(name);
 	}
 }

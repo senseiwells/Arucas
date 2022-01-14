@@ -1,5 +1,6 @@
 package me.senseiwells.arucas.api.wrappers;
 
+import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.WrapperArucasClassDefinition;
@@ -35,6 +36,13 @@ public class ArucasWrapper {
 			if (constructorAnnotation != null) {
 				if (!this.addConstructor(method)) {
 					throw invalidWrapperMethod(this.clazz, method, "Invalid constructor signature");
+				}
+				continue;
+			}
+			ArucasOperator operatorAnnotation = method.getAnnotation(ArucasOperator.class);
+			if (operatorAnnotation != null) {
+				if (!this.addOperator(method, operatorAnnotation)) {
+					throw invalidWrapperMethod(this.clazz, method, "Invalid operator signature");
 				}
 			}
 		}
@@ -132,6 +140,9 @@ public class ArucasWrapper {
 		return true;
 	}
 
+	/**
+	 * Returns true if constructor was added.
+	 */
 	private boolean addConstructor(Method method) {
 		if (Modifier.isStatic(method.getModifiers())) {
 			throw invalidWrapperMethod(this.clazz, method, "Constructors cannot be static");
@@ -150,13 +161,58 @@ public class ArucasWrapper {
 		this.classDefinition.addConstructor(function);
 		return true;
 	}
+
+	/**
+	 * Returns true if the operator was added.
+	 */
+	private boolean addOperator(Method method, ArucasOperator operatorAnnotation) {
+		if (Modifier.isStatic(method.getModifiers())) {
+			throw invalidWrapperMethod(this.clazz, method, "Operator methods cannot be static");
+		}
+		MethodHandle handle = this.getMethodHandle(this.clazz, method, false, false);
+		if (handle == null) {
+			throw invalidWrapperMethod(this.clazz, method, "Failed to get method handle");
+		}
+
+		Class<?>[] parameters = method.getParameterTypes();
+		final int parameterLength = parameters.length;
+
+		Token.Type operatorToken = operatorAnnotation.value();
+
+		RuntimeException noSuchOperator = invalidWrapperMethod(
+			this.clazz,
+			method,
+			"No such operator %s with %d parameters".formatted(operatorToken, parameterLength)
+		);
+
+		switch (parameterLength) {
+			case 1 -> {
+				if (!Token.Type.OVERRIDABLE_UNARY_OPERATORS.contains(operatorToken)) {
+					throw noSuchOperator;
+				}
+			}
+			case 2 -> {
+				if (!Token.Type.OVERRIDABLE_BINARY_OPERATORS.contains(operatorToken)) {
+					throw noSuchOperator;
+				}
+			}
+			default -> throw noSuchOperator;
+		}
+
+		System.out.printf("Operator: %s::%s (%s)\n", this.clazz.getSimpleName(), method.getName(), handle);
+		WrapperClassMemberFunction function = new WrapperClassMemberFunction(method.getName(), parameterLength, false, handle);
+
+		this.classDefinition.addOperatorMethod(operatorToken, function);
+		return true;
+	}
 	
 	/**
 	 * Returns the field handle if the field was valid.
 	 */
 	private ArucasMemberHandle getFieldHandle(Class<?> clazz, Field field, boolean isStatic, boolean isFinal) {
-		if (!Value.class.isAssignableFrom(field.getType())) {
-			throw invalidWrapperField(clazz, field, "Field type was not a subclass of Value");
+		// We must force fields to be Value
+		if (field.getType() != Value.class) {
+			throw invalidWrapperField(clazz, field, "Field type must be type Value");
 		}
 		
 		try {
@@ -174,6 +230,9 @@ public class ArucasWrapper {
 		}
 	}
 
+	/**
+	 * Returns true if the member was added.
+	 */
 	private boolean addMemberVariable(Field field) {
 		int modifiers = field.getModifiers();
 		if (!Modifier.isPublic(modifiers)) {
