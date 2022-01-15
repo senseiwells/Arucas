@@ -220,7 +220,7 @@ public class ArucasWrapper {
 			return new ArucasMemberHandle(
 				field.getName(),
 				lookup.unreflectGetter(field),
-				lookup.unreflectSetter(field),
+				isFinal ? null : lookup.unreflectSetter(field) ,
 				isStatic,
 				isFinal
 			);

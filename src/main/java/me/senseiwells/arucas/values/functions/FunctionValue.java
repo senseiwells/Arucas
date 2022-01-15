@@ -130,13 +130,9 @@ public abstract class FunctionValue extends Value<String> {
 	
 	@Override
 	public boolean isEquals(Context context, Value<?> other) {
-//		if (other instanceof FunctionValue functionValue) {
-//			return this.getParameterCount() == functionValue.getParameterCount() && super.equals(other);
-//		}
-		
 		// The problem here is that it is not enough to check the parameter count and name
-		// If this function was a delegate of a class and then we compared it to a delegate
-		// of the same class but another instance is should always return false.
+		// If this function was a delegate of a class, and then we compared it to a delegate
+		// of the same class but another instance it should always return false.
 		return this == other;
 	}
 }

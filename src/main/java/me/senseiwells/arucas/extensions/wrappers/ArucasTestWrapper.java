@@ -12,7 +12,7 @@ public class ArucasTestWrapper implements IArucasWrappedClass {
 	}
 	
 	@ArucasMember
-	public static Value<?> memberStaticValue = StringValue.of("Static MEMBER!");
+	public static final Value<?> memberStaticValue = StringValue.of("Static MEMBER!");
 	
 	@ArucasMember
 	public Value<?> memberValue = StringValue.of("Normal MEMBER!");
