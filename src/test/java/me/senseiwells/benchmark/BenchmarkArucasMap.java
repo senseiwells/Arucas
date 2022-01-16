@@ -5,7 +5,7 @@ import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.impl.ArucasMap;
 import me.senseiwells.arucas.values.NumberValue;
 import me.senseiwells.arucas.values.StringValue;
-import me.senseiwells.arucas.extensions.wrappers.ArucasTestWrapper;
+import me.senseiwells.impl.wrappers.ArucasTestWrapper;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

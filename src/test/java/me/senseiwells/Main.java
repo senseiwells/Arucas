@@ -1,18 +1,17 @@
 package me.senseiwells;
 
 import me.senseiwells.arucas.api.ContextBuilder;
-import me.senseiwells.arucas.extensions.wrappers.ArucasTestWrapper;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.impl.values.TestOrderValues;
 
 import java.util.Scanner;
+import java.util.concurrent.CountDownLatch;
 
 public class Main {
-	public static void main(String[] args) {
-		// TODO: Debugging wrapper functionality
+	public static void main(String[] args) throws InterruptedException {
 		Context context = new ContextBuilder()
 			.setDisplayName("System.in")
 			.addDefault()
-			.addWrapper(ArucasTestWrapper::new)
 			.build();
 		
 		context.getThreadHandler()
@@ -26,7 +25,10 @@ public class Main {
 			if (line.trim().equals("")) {
 				continue;
 			}
-			context.getThreadHandler().runOnThread(context, "System.in", line);
+			
+			CountDownLatch latch = new CountDownLatch(1);
+			context.getThreadHandler().runOnThread(context, "System.in", line, latch);
+			latch.await();
 		}
 	}
 }

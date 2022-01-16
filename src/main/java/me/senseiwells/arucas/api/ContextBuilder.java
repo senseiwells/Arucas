@@ -7,6 +7,7 @@ import me.senseiwells.arucas.utils.ArucasClassDefinitionMap;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.*;
+import me.senseiwells.arucas.values.classes.ArucasClassValue;
 import me.senseiwells.arucas.values.functions.AbstractBuiltInFunction;
 import me.senseiwells.arucas.api.wrappers.ArucasWrapper;
 
@@ -62,6 +63,7 @@ public class ContextBuilder {
 	
 	public ContextBuilder addDefaultClasses() {
 		return this.addClasses(
+			Value.ArucasBaseClass::new,
 			StringValue.ArucasStringClass::new,
 			BooleanValue.ArucasBooleanClass::new,
 			ListValue.ArucasListClass::new,
@@ -71,7 +73,6 @@ public class ContextBuilder {
 			ThreadValue.ArucasThreadClass::new,
 			FileValue.ArucasFileClass::new,
 			JsonValue.ArucasJsonClass::new,
-			Value.ArucasBaseClass::new,
 			ArucasMathClass::new
 		);
 	}
@@ -117,8 +118,8 @@ public class ContextBuilder {
 		for (Supplier<IArucasWrappedClass> supplier : this.wrappers) {
 			classDefinitions.add(ArucasWrapper.createWrapper(supplier));
 		}
-		
-		// TODO: Combine class extensions so that they are `O(1)` lookup
+
+		classDefinitions.merge();
 		
 		ArucasOutput arucasOutput = new ArucasOutput();
 		arucasOutput.setOutputHandler(this.outputHandler);

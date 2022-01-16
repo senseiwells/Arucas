@@ -69,7 +69,8 @@ public class StringValue extends Value<String> {
 				new MemberFunction("contains", "otherString", this::stringContainsString),
 				new MemberFunction("strip", this::strip),
 				new MemberFunction("capitalise", this::capitalise),
-				new MemberFunction("split", "delimited", this::split)
+				new MemberFunction("split", "delimiter", this::split),
+				new MemberFunction("subString", List.of("from", "to"), this::subString)
 			);
 		}
 
@@ -120,7 +121,7 @@ public class StringValue extends Value<String> {
 			String string = thisValue.value;
 			while (string.contains("%s")) {
 				try {
-					string = string.replaceFirst("%s", array[i].toString());
+					string = string.replaceFirst("%s", array[i].getAsString(context));
 				}
 				catch (IndexOutOfBoundsException e) {
 					throw new RuntimeError("You are missing values to be formatted!", function.syntaxPosition, context);
@@ -159,6 +160,16 @@ public class StringValue extends Value<String> {
 				list.add(new StringValue(string));
 			}
 			return new ListValue(list);
+		}
+
+		private Value<?> subString(Context context, MemberFunction function) throws CodeError {
+			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
+			int fromIndex = function.getParameterValueOfType(context, NumberValue.class, 1).value.intValue();
+			int toIndex = function.getParameterValueOfType(context, NumberValue.class, 2).value.intValue();
+			if (fromIndex < 0 || toIndex > thisValue.value.length()) {
+				throw new RuntimeError("Index out of bounds", function.syntaxPosition, context);
+			}
+			return StringValue.of(thisValue.value.substring(fromIndex, toIndex));
 		}
 	}
 }

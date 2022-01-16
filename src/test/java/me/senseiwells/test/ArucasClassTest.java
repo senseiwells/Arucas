@@ -116,6 +116,15 @@ public class ArucasClassTest {
 
 	@Test
 	public void testClassFunction() {
+		assertEquals("true", ArucasHelper.runSafeFull(
+				"""
+				class Test {
+					
+				}
+				test = new Test();
+				X = test.equals(test);
+				""", "X"
+		));
 		assertEquals("test", ArucasHelper.runSafeFull(
 			"""
 			class Test {
@@ -187,15 +196,6 @@ public class ArucasClassTest {
 			}
 			new Test();
 			"""
-		));
-		assertEquals("true", ArucasHelper.runSafeFull(
-			"""
-			class Test {
-				
-			}
-			test = new Test();
-			X = test.equals(test);
-			""", "X"
 		));
 		assertEquals("true", ArucasHelper.runSafeFull(
 			"""

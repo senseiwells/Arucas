@@ -60,7 +60,7 @@ public abstract class Value<T> extends BaseValue {
 				return BooleanValue.of(classValue.getName().equals(stringValue.value));
 			}
 
-			Class<?> clazz = this.getClass();
+			Class<?> clazz = thisValue.getClass();
 			while (clazz != null && clazz != Object.class) {
 				if (clazz.getSimpleName().replaceFirst("Value$", "").equals(stringValue.value)) {
 					return BooleanValue.TRUE;
@@ -78,7 +78,7 @@ public abstract class Value<T> extends BaseValue {
 				return StringValue.of(classValue.getName());
 			}
 
-			String valueType = this.getClass().getSimpleName().replaceFirst("Value$", "");
+			String valueType = thisValue.getClass().getSimpleName().replaceFirst("Value$", "");
 			return StringValue.of(valueType);
 		}
 

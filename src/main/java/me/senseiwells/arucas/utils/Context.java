@@ -240,20 +240,7 @@ public class Context {
 	}
 
 	public FunctionValue getMemberFunction(Value<?> value, String methodName, int parameters) {
-		List<AbstractClassDefinition> definitions = this.stackTable.getRoot().classDefinitions.get(value.getClass());
-		if (definitions == null) {
-			return null;
-		}
-
-		// TODO: Make this O(1) for builtIn classes
-		for (AbstractClassDefinition definition : definitions) {
-			FunctionValue targetMethod = definition.getMethods().get(methodName, parameters);
-			if (targetMethod != null) {
-				return targetMethod;
-			}
-		}
-		
-		return null;
+		return this.stackTable.getRoot().classDefinitions.getFunctionForClass(value.getClass(), methodName, parameters);
 	}
 	
 	@Deprecated(forRemoval = true)

@@ -1,4 +1,4 @@
-package me.senseiwells.arucas.extensions.wrappers;
+package me.senseiwells.impl.wrappers;
 
 import me.senseiwells.arucas.api.wrappers.*;
 import me.senseiwells.arucas.tokens.Token;

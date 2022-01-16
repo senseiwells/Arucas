@@ -27,6 +27,7 @@ public class ArucasFunctionMap<T extends FunctionValue> implements Iterable<T> {
 		Map<Integer, T> map = this.map.computeIfAbsent(value.getName(), (name) -> new HashMap<>());
 		
 		if (map.containsKey(parameters)) {
+			map.put(parameters, value);
 			return false;
 		}
 		
@@ -40,7 +41,7 @@ public class ArucasFunctionMap<T extends FunctionValue> implements Iterable<T> {
 	public void addAll(ArucasFunctionMap<? extends T> functions) {
 		functions.forEach(this::add);
 	}
-	
+
 	/**
 	 * Adds all functions in the specified map to this map.
 	 */
@@ -75,7 +76,7 @@ public class ArucasFunctionMap<T extends FunctionValue> implements Iterable<T> {
 	 */
 	public T get(String name) {
 		Map<Integer, T> map = this.map.get(name);
-		return map != null && map.size() == 1 ? map.values().stream().findFirst().orElse(null):null;
+		return map != null && map.size() == 1 ? map.values().stream().findFirst().orElse(null) : null;
 	}
 	
 	/**

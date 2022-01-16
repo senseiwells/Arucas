@@ -33,6 +33,12 @@ public class ArucasHelper {
 		List<Token> tokens = new Lexer(syntax, "").createTokens();
 		return new NodeContext(new Parser(tokens, context).parse(), context);
 	}
+
+	public static NodeContext compileWithContext(String syntax, Context context) throws CodeError {
+		context = context.createChildContext("Test Context");
+		List<Token> tokens = new Lexer(syntax, "").createTokens();
+		return new NodeContext(new Parser(tokens, context).parse(), context);
+	}
 	
 	public static String runUnsafe(String syntax) throws CodeError, ThrowValue {
 		NodeContext nodeContext = compile("_run_value=(fun(){%s})();".formatted(syntax));
@@ -61,6 +67,23 @@ public class ArucasHelper {
 	public static String runSafeFull(String syntax, String resultVariable) {
 		try {
 			return runUnsafeFull(syntax, resultVariable);
+		}
+		catch (CodeError | ThrowValue e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public static String runUnsafeFull(String syntax, String resultVariable, Context context) throws CodeError, ThrowValue {
+		NodeContext nodeContext = compileWithContext(syntax, context);
+		nodeContext.node.visit(nodeContext.context);
+		Value<?> value = nodeContext.context.getStackTable().get(resultVariable);
+		return value == null ? null : value.getAsString(nodeContext.context);
+	}
+
+	public static String runSafeFull(String syntax, String resultVariable, Context context) {
+		try {
+			return runUnsafeFull(syntax, resultVariable, context);
 		}
 		catch (CodeError | ThrowValue e) {
 			e.printStackTrace();

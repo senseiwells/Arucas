@@ -7,6 +7,7 @@ import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.impl.ArucasThread;
 import me.senseiwells.arucas.utils.Context;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 
 @SuppressWarnings({"UnusedReturnValue", "unused"})
@@ -59,10 +60,20 @@ public class ArucasThreadHandler {
 	private boolean isRunning() {
 		return this.arucasThreadGroup.activeCount() > 0;
 	}
-	
-	public synchronized ArucasThread runOnThread(Context context, String fileName, String fileContent) {
+
+	/**
+	 * This method is to run the base script from
+	 * @param context the base context
+	 * @param fileName the name of the file you are running from
+	 * @param fileContent the Arucas code you want to execute
+	 * @param latch this can be null, counts down when thread has finished executing
+	 */
+	public synchronized ArucasThread runOnThread(Context context, String fileName, String fileContent, CountDownLatch latch) {
 		// Make sure that this handler belongs to the provided context
 		if (context.getThreadHandler() != this || this.isRunning()) {
+			if (latch != null) {
+				latch.countDown();
+			}
 			return null;
 		}
 		
@@ -81,6 +92,9 @@ public class ArucasThreadHandler {
 				this.fatalErrorHandler.accept(context, t, fileContent);
 			}
 			finally {
+				if (latch != null) {
+					latch.countDown();
+				}
 				this.stop();
 			}
 		}, "Arucas Main Thread");
@@ -89,10 +103,20 @@ public class ArucasThreadHandler {
 		return thread;
 	}
 
+	/**
+	 * @see #runAsyncFunctionInContext(Context, ThrowableConsumer, String) 
+	 */
 	public synchronized ArucasThread runAsyncFunctionInContext(Context context, ThrowableConsumer<Context> consumer) {
 		return this.runAsyncFunction(context, consumer, "Arucas Runnable Thread");
 	}
 
+	/**
+	 * This lets you run something on a different thread with
+	 * a passed in context, this context is used in the consumer
+	 * @param context the context you want to use in the consumer
+	 * @param consumer the code you want to execute on the thread
+	 * @param threadName the name of the thread
+	 */
 	public synchronized ArucasThread runAsyncFunctionInContext(Context context, ThrowableConsumer<Context> consumer, String threadName) {
 		return this.runAsyncFunction(context, consumer, threadName);
 	}

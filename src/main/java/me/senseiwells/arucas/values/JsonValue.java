@@ -1,6 +1,9 @@
 package me.senseiwells.arucas.values;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonSyntaxException;
 import me.senseiwells.arucas.api.ArucasClassExtension;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
@@ -91,7 +94,6 @@ public class JsonValue extends Value<JsonElement> {
 		private Value<?> writeToFile(Context context, MemberFunction function) throws CodeError {
 			JsonValue thisValue = function.getThis(context, JsonValue.class);
 			FileValue fileValue = function.getParameterValueOfType(context, FileValue.class, 1);
-
 			try (PrintWriter printWriter = new PrintWriter(fileValue.value)) {
 				printWriter.println(thisValue.getAsString(context));
 				return NullValue.NULL;
