@@ -239,8 +239,8 @@ public class Context {
 		return this.extensions.get(methodName, parameters);
 	}
 
-	public FunctionValue getMemberFunction(Value<?> value, String methodName, int parameters) {
-		return this.stackTable.getRoot().classDefinitions.getFunctionForClass(value.getClass(), methodName, parameters);
+	public FunctionValue getMemberFunction(Class<?> clazz, String methodName, int parameters) {
+		return this.stackTable.getRoot().classDefinitions.getFunctionForClass(clazz, methodName, parameters);
 	}
 	
 	@Deprecated(forRemoval = true)

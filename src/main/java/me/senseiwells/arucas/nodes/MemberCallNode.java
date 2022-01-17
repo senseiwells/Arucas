@@ -7,6 +7,7 @@ import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.StringValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.ArucasClassValue;
+import me.senseiwells.arucas.values.functions.ClassMemberFunction;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 
 import java.util.ArrayList;
@@ -32,17 +33,21 @@ public class MemberCallNode extends CallNode {
 		StringValue memberFunctionName = (StringValue) this.callNode.visit(context);
 		
 		List<Value<?>> argumentValues = new ArrayList<>();
-		FunctionValue function = null;
+		FunctionValue function;
 		String customClassName = null;
 		if (memberValue instanceof ArucasClassValue classValue) {
 			customClassName = classValue.getName();
 			// Get the class method from the value
 			function = classValue.getMember(memberFunctionName.value, this.argumentNodes.size() + 1);
+
+			if (function == null) {
+				// If we had a class value, but we didn't find the member we should search the generic type members
+				function = context.getMemberFunction(Value.class, memberFunctionName.value, this.argumentNodes.size() + 1);
+				argumentValues.add(classValue);
+			}
 		}
-		
-		if (function == null) {
-			// If we had a class value, but we didn't find the member we should search the generic type members
-			function = context.getMemberFunction(memberValue, memberFunctionName.value, this.argumentNodes.size() + 1);
+		else {
+			function = context.getMemberFunction(memberValue.getClass(), memberFunctionName.value, this.argumentNodes.size() + 1);
 			argumentValues.add(memberValue);
 		}
 		

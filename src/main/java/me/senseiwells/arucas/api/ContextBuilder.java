@@ -1,17 +1,19 @@
 package me.senseiwells.arucas.api;
 
 import me.senseiwells.arucas.api.impl.ArucasOutput;
+import me.senseiwells.arucas.api.wrappers.ArucasWrapper;
 import me.senseiwells.arucas.api.wrappers.IArucasWrappedClass;
-import me.senseiwells.arucas.extensions.*;
+import me.senseiwells.arucas.extensions.ArucasBuiltInExtension;
+import me.senseiwells.arucas.extensions.ArucasMathClass;
 import me.senseiwells.arucas.utils.ArucasClassDefinitionMap;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.*;
-import me.senseiwells.arucas.values.classes.ArucasClassValue;
 import me.senseiwells.arucas.values.functions.AbstractBuiltInFunction;
-import me.senseiwells.arucas.api.wrappers.ArucasWrapper;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
