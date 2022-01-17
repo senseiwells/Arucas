@@ -6,6 +6,7 @@ import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.*;
 
 public class ArucasTestWrapper implements IArucasWrappedClass {
+	// TODO: add test cases
 	@Override
 	public String getName() {
 		return "Test";

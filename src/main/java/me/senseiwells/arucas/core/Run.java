@@ -1,5 +1,6 @@
 package me.senseiwells.arucas.core;
 
+import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
@@ -15,7 +16,9 @@ public class Run {
 		List<Token> values = new Lexer(fileContent, fileName).createTokens();
 		Node nodeResult = new Parser(values, context).parse();
 		try {
+			context.pushScope(ISyntax.EMPTY);
 			Value<?> value = nodeResult.visit(context);
+			context.popScope();
 			if (context.isDebug()) {
 				context.getOutput().println(value);
 			}

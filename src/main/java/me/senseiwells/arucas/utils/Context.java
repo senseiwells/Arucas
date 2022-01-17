@@ -240,7 +240,7 @@ public class Context {
 	}
 
 	public FunctionValue getMemberFunction(Class<?> clazz, String methodName, int parameters) {
-		return this.stackTable.getRoot().classDefinitions.getFunctionForClass(clazz, methodName, parameters);
+		return this.stackTable.getClassFunction(clazz, methodName, parameters);
 	}
 	
 	@Deprecated(forRemoval = true)

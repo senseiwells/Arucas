@@ -3,6 +3,7 @@ package me.senseiwells.arucas.utils;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.values.Value;
+import me.senseiwells.arucas.values.functions.FunctionValue;
 
 import java.util.*;
 
@@ -96,6 +97,18 @@ public class StackTable {
 		
 		return null;
 	}
+
+	public FunctionValue getClassFunction(Class<?> clazz, String name, int parameters) {
+		FunctionValue functionValue = null;
+		if (this.classDefinitions != null) {
+			functionValue = this.classDefinitions.getFunctionForClass(clazz, name, parameters);
+		}
+		if (functionValue == null && this.parentTable != null) {
+			return this.parentTable.getClassFunction(clazz, name, parameters);
+		}
+
+		return functionValue;
+	}
 	
 	public AbstractClassDefinition getClassDefinition(String name) {
 		if (this.classDefinitions != null) {
@@ -109,7 +122,11 @@ public class StackTable {
 	}
 
 	public boolean hasClassDefinition(String name) {
-		return this.classDefinitions != null && this.classDefinitions.has(name);
+		if (this.classDefinitions == null || !this.classDefinitions.has(name)) {
+			return this.parentTable != null && this.parentTable.hasClassDefinition(name);
+		}
+
+		return true;
 	}
 	
 	public void addClassDefinition(AbstractClassDefinition definition) {

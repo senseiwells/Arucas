@@ -103,6 +103,7 @@ public class ArucasClassDefinitionMap implements Iterable<AbstractClassDefinitio
 		for (Class<?> key : this.classMap.keySet().toArray(Class<?>[]::new)) {
 			this.mergedClassMap.put(key, MergedClassMethods.mergeMethods(this.classMap.get(key)));
 		}
+
 		this.isMerged = true;
 		this.classMap.clear();
 	}

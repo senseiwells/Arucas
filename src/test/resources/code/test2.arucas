@@ -1,11 +1,2 @@
 // run(File.getDirectory().getPath() + "/src/test/resources/code/test2.arucas");
-
-file = new File(File.getDirectory().getPath() + "/src/test/resources/code/Teams.json");
-
-teamList = Json.fromString(file.read()).getValue();
-
-foreach (team : teamList) {
-    if (team.get("name") == "CloudTech") {
-        print(team.get("members").split(":"));
-    }
-}
+return ["hi"].toString();

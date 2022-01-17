@@ -1,99 +1,19 @@
 // run(getDirectory() + "/src/test/resources/code/test.arucas");
 
-// Lets sort this list for only realstrings
-
-/* 
-This is a multiline comment
-You can write whatever you want in here
-And it won't get read
-*/
-
-/*
-suppressDeprecated(true);
-
-valueList = ["foo", 89, true, "bar", null, "3.14", false, 3.14, "baz"];
-stringList = [];
-
-fun testThings(t) {
-    test = t;
-    print("Testing: " + test);
-}
-
-foreach (value : valueList) {
-    insideFunction = "this is outside";
-    sleep(200);
-    if (isString(value)) {
-        try value.toNumber;
-        catch (e) stringList.append(value);
-    }
-    testThings(fun(param) {
-        return param;
-    }(value));
+class A {
 
 }
 
-//Expected list for stringList is ["foo", "bar", "baz"]
-
-
-fun a(sum, tail) {
-    print(sum.toString() + ", " + tail.toString());
-    if(tail == 0)
-        return sum;
-    return a(sum + tail, tail - 1);
-}
-
-print(a(0, 100));
-
-
-fun test() { test(); }
-map = {
-    test: 'abcdefg',
-    -43: 'testing'
-};
-
-try {
-    test();
-} catch(testError) {
-    print("testError says: " + testError);
-}
-
-print(map.get("test"));
-print(map.get(-43));
-
-//map = { "crash": fun() { return map.get("crash")(); } };
-//map.get("crash")();
-
-map.put(0.15, "test");
-
-print(map.get(0.1 + 0.05));
-if("a" && ("b" && (fun() { throwRuntimeError("I'm crashing before the class cast exception"); }() ))) {
+fun B() {
 
 }
 
-value = (-1) ^ (2 ^ 0.5);
-value = 1 ^ (((-0.5) ^ 1));
-print(value);
-
-// map = { 0.15: 'test' };
-// print(map.get(0.1 + 0.05));
-list = [ 1, 2, 3 ];
-*/
-
-// run(getDirectory() + "/src/test/resources/code/test.arucas");
-fun test(a) {
-    try {
-        print(a);
-        return test(a + 1);
-    } catch(error) {
-        return test(a + 1);
-    }
+{
+    print("inside scope " + new A());
 }
 
-quest = fun(a) {
-    return 0;
-};
+print(new A());
 
-//test();
-//quest();
+t = run(File.getDirectory().getPath() + "/src/test/resources/code/test2.arucas");
 
-test(0);
+print(t);
