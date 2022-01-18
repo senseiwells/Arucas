@@ -3,15 +3,20 @@ package me.senseiwells.arucas.utils;
 import me.senseiwells.arucas.api.ArucasThreadHandler;
 import me.senseiwells.arucas.api.IArucasOutput;
 import me.senseiwells.arucas.api.ISyntax;
+import me.senseiwells.arucas.api.wrappers.IArucasWrappedClass;
 import me.senseiwells.arucas.throwables.CodeError;
+import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
+import me.senseiwells.arucas.values.classes.ArucasClassValue;
+import me.senseiwells.arucas.values.classes.WrapperArucasClassDefinition;
 import me.senseiwells.arucas.values.functions.AbstractBuiltInFunction;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 
 import java.util.*;
+import java.util.function.Supplier;
 
 /**
  * Runtime context class of the programming language.
@@ -225,6 +230,16 @@ public class Context {
 		if (!this.suppressDeprecated) {
 			this.getOutput().println(message);
 		}
+	}
+
+	@SuppressWarnings("unused")
+	public ArucasClassValue createWrapperClass(Supplier<IArucasWrappedClass> supplier, List<Value<?>> parameters, ISyntax syntaxPosition) throws CodeError {
+		IArucasWrappedClass wrappedClass = supplier.get();
+		AbstractClassDefinition classDefinition = this.getClassDefinition(wrappedClass.getName());
+		if (classDefinition instanceof WrapperArucasClassDefinition wrappedClassDefinition) {
+			return wrappedClassDefinition.createNewDefinition(wrappedClass, this, parameters, syntaxPosition);
+		}
+		throw new RuntimeError("No such wrapper class exists", syntaxPosition, this);
 	}
 	
 	public AbstractClassDefinition getClassDefinition(String name) {
