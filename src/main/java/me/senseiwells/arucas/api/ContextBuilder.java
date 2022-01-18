@@ -1,7 +1,7 @@
 package me.senseiwells.arucas.api;
 
 import me.senseiwells.arucas.api.impl.ArucasOutput;
-import me.senseiwells.arucas.api.wrappers.ArucasWrapper;
+import me.senseiwells.arucas.api.wrappers.ArucasWrapperExtension;
 import me.senseiwells.arucas.api.wrappers.IArucasWrappedClass;
 import me.senseiwells.arucas.extensions.ArucasBuiltInExtension;
 import me.senseiwells.arucas.extensions.ArucasMathClass;
@@ -118,7 +118,7 @@ public class ContextBuilder {
 		}
 		
 		for (Supplier<IArucasWrappedClass> supplier : this.wrappers) {
-			classDefinitions.add(ArucasWrapper.createWrapper(supplier));
+			classDefinitions.add(ArucasWrapperExtension.createWrapper(supplier));
 		}
 
 		classDefinitions.merge();

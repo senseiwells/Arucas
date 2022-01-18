@@ -72,12 +72,8 @@ public class WrapperArucasClassDefinition extends AbstractClassDefinition {
 	public ArucasClassValue createNewDefinition(Context context, List<Value<?>> parameters, ISyntax syntaxPosition) throws CodeError {
 		return this.createNewDefinition(this.supplier.get(), context, parameters, syntaxPosition);
 	}
-
-	public ArucasClassValue createNewDefinition(IArucasWrappedClass wrappedClass, Context context, List<Value<?>> parameters, ISyntax syntaxPosition) throws CodeError {
-		if (!wrappedClass.getName().equals(this.getName())) {
-			throw new RuntimeError("Tried to create wrapped class with different wrapper", syntaxPosition, context);
-		}
-
+	
+	private ArucasClassValue createNewDefinition(IArucasWrappedClass wrappedClass, Context context, List<Value<?>> parameters, ISyntax syntaxPosition) throws CodeError {
 		ArucasWrapperClassValue thisValue = new ArucasWrapperClassValue(this, wrappedClass);
 
 		for (WrapperClassMemberFunction function : this.methods) {
@@ -91,7 +87,7 @@ public class WrapperArucasClassDefinition extends AbstractClassDefinition {
 			return thisValue;
 		}
 
-		WrapperClassMemberFunction constructor = this.constructors.get(this.getName(), parameterCount);
+		WrapperClassMemberFunction constructor = this.constructors.get("", parameterCount);
 		if (constructor == null) {
 			throw new RuntimeError("No such constructor for %s".formatted(this.getName()), syntaxPosition, context);
 		}
