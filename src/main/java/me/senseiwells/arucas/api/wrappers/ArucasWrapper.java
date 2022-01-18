@@ -50,7 +50,7 @@ public class ArucasWrapper {
 		for (Field field : this.clazz.getFields()) {
 			ArucasMember memberAnnotation = field.getAnnotation(ArucasMember.class);
 			if (memberAnnotation != null) {
-				if (!this.addMemberVariable(field)) {
+				if (!this.addMemberVariable(field, memberAnnotation)) {
 					throw invalidWrapperField(this.clazz, field, "Invalid field signature");
 				}
 			}
@@ -209,10 +209,16 @@ public class ArucasWrapper {
 	/**
 	 * Returns the field handle if the field was valid.
 	 */
-	private ArucasMemberHandle getFieldHandle(Class<?> clazz, Field field, boolean isStatic, boolean isFinal) {
-		// We must force fields to be Value
-		if (field.getType() != Value.class) {
-			throw invalidWrapperField(clazz, field, "Field type must be type Value");
+	private ArucasMemberHandle getFieldHandle(Class<?> clazz, Field field, boolean isStatic, boolean isFinal, boolean isAssignable) {
+		// We must force fields to be Value if they can be assigned in the language
+
+		if (isAssignable) {
+			if (field.getType() != Value.class) {
+				throw invalidWrapperField(clazz, field, "Field type must be type Value");
+			}
+		}
+		else if (Value.class.isAssignableFrom(field.getType())) {
+			throw invalidWrapperField(clazz, field, "Return type was not a subclass of Value");
 		}
 		
 		try {
@@ -222,7 +228,7 @@ public class ArucasWrapper {
 				lookup.unreflectGetter(field),
 				isFinal ? null : lookup.unreflectSetter(field) ,
 				isStatic,
-				isFinal
+				!isFinal && isAssignable
 			);
 		}
 		catch (IllegalAccessException ignored) {
@@ -233,7 +239,7 @@ public class ArucasWrapper {
 	/**
 	 * Returns true if the member was added.
 	 */
-	private boolean addMemberVariable(Field field) {
+	private boolean addMemberVariable(Field field, ArucasMember memberAnnotation) {
 		int modifiers = field.getModifiers();
 		if (!Modifier.isPublic(modifiers)) {
 			throw invalidWrapperField(this.clazz, field, "Field is not public");
@@ -242,7 +248,7 @@ public class ArucasWrapper {
 		final boolean isStatic = Modifier.isStatic(modifiers);
 		final boolean isFinal = Modifier.isFinal(modifiers);
 		
-		ArucasMemberHandle handle = this.getFieldHandle(this.clazz, field, isStatic, isFinal);
+		ArucasMemberHandle handle = this.getFieldHandle(this.clazz, field, isStatic, isFinal, memberAnnotation.assignable());
 		System.out.printf("Member: %s%s::%s (get=%s) (set=%s)\n", isStatic ? "static " : "", this.clazz.getSimpleName(), handle.getName(), handle.getter, handle.setter);
 		
 		if (isStatic) {

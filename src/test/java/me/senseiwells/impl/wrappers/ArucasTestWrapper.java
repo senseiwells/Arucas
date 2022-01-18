@@ -11,8 +11,8 @@ public class ArucasTestWrapper implements IArucasWrappedClass {
 	public String getName() {
 		return "Test";
 	}
-	
-	@ArucasMember
+
+	@ArucasMember(assignable = false)
 	public static final Value<?> memberStaticValue = StringValue.of("Static MEMBER!");
 	
 	@ArucasMember

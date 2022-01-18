@@ -15,7 +15,7 @@ public class ArucasWrapperClassValue extends ArucasClassValue {
 	@Override
 	public boolean isAssignable(String name) {
 		ArucasMemberHandle handle = this.getHandle(name);
-		return handle != null && !handle.isFinal();
+		return handle != null && handle.isAssignable();
 	}
 
 	@Override

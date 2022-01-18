@@ -2,7 +2,7 @@ package me.senseiwells;
 
 import me.senseiwells.arucas.api.ContextBuilder;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.impl.values.TestOrderValues;
+import me.senseiwells.impl.wrappers.ArucasTestWrapper;
 
 import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
@@ -12,6 +12,7 @@ public class Main {
 		Context context = new ContextBuilder()
 			.setDisplayName("System.in")
 			.addDefault()
+			.addWrapper(ArucasTestWrapper::new)
 			.build();
 		
 		context.getThreadHandler()

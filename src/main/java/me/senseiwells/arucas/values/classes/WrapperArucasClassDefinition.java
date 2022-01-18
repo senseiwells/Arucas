@@ -96,7 +96,7 @@ public class WrapperArucasClassDefinition extends AbstractClassDefinition {
 	@Override
 	public boolean isAssignable(String name) {
 		ArucasMemberHandle handle = this.staticFieldMap.get(name);
-		return handle != null && !handle.isFinal();
+		return handle != null && !handle.isAssignable();
 	}
 
 	@Override

@@ -10,14 +10,14 @@ public class ArucasMemberHandle {
 	final MethodHandle setter;
 	final MethodHandle getter;
 	final boolean isStatic;
-	final boolean isFinal;
+	final boolean isAssignable;
 	
-	public ArucasMemberHandle(String name, MethodHandle getter, MethodHandle setter, boolean isStatic, boolean isFinal) {
+	public ArucasMemberHandle(String name, MethodHandle getter, MethodHandle setter, boolean isStatic, boolean isAssignable) {
 		this.name = name;
 		this.getter = getter;
 		this.setter = setter;
 		this.isStatic = isStatic;
-		this.isFinal = isFinal;
+		this.isAssignable = isAssignable;
 	}
 	
 	public String getName() {
@@ -28,8 +28,8 @@ public class ArucasMemberHandle {
 		return this.isStatic;
 	}
 	
-	public boolean isFinal() {
-		return this.isFinal;
+	public boolean isAssignable() {
+		return this.isAssignable;
 	}
 	
 	public Value<?> get(IArucasWrappedClass parent) {
@@ -50,7 +50,7 @@ public class ArucasMemberHandle {
 	}
 	
 	public boolean set(IArucasWrappedClass parent, Value<?> value) {
-		if (this.isFinal) {
+		if (!this.isAssignable) {
 			return false;
 		}
 		
