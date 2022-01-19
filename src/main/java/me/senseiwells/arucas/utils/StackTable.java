@@ -14,18 +14,24 @@ public class StackTable {
 	private final StackTable parentTable;
 	private final ISyntax syntaxPosition;
 	private final StackTable rootTable;
+	private final StackTable globalRootTable;
 	
 	protected final boolean canContinue;
 	protected final boolean canBreak;
 	protected final boolean canReturn;
-	
-	public StackTable(StackTable parent, ISyntax syntaxPosition, boolean canBreak, boolean canContinue, boolean canReturn) {
+
+	StackTable(StackTable parent, StackTable globalRootTable, ISyntax syntaxPosition, boolean canBreak, boolean canContinue, boolean canReturn) {
 		this.parentTable = parent;
 		this.syntaxPosition = syntaxPosition;
 		this.canContinue = canContinue;
 		this.canReturn = canReturn;
 		this.canBreak = canBreak;
 		this.rootTable = parent == null ? this : parent.rootTable;
+		this.globalRootTable = globalRootTable == null ? this : globalRootTable;
+	}
+
+	public StackTable(StackTable parent, ISyntax syntaxPosition, boolean canBreak, boolean canContinue, boolean canReturn) {
+		this(parent, parent == null ? null : parent.globalRootTable, syntaxPosition, canBreak, canContinue, canReturn);
 	}
 
 	public StackTable() {
@@ -142,6 +148,10 @@ public class StackTable {
 	 */
 	public StackTable getRoot() {
 		return this.rootTable;
+	}
+
+	public StackTable getGlobalRoot() {
+		return this.globalRootTable;
 	}
 
 	public StackTable getParentTable() {

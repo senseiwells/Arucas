@@ -13,7 +13,7 @@ public class FunctionStackTable extends StackTable {
 	
 	public FunctionStackTable(StackTable parent, ISyntax syntaxPosition) {
 		super(parent, syntaxPosition, false, false, true);
-		this.root = parent.getRoot();
+		this.root = parent.getGlobalRoot();
 	}
 	
 	@Override

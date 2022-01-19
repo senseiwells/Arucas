@@ -46,6 +46,7 @@ public class Context {
 		
 		this.displayName = displayName;
 		this.parentContext = parentContext;
+		this.suppressDeprecated = parentContext != null && parentContext.suppressDeprecated;
 		this.stackTable = new StackTable();
 		
 		// Initialize the class definitions map by inserting the previous table values
@@ -64,6 +65,7 @@ public class Context {
 		this.arucasOutput = branch.arucasOutput;
 		this.extensions = branch.extensions;
 		this.parentContext = branch.parentContext;
+		this.suppressDeprecated = branch.suppressDeprecated;
 	}
 
 	@SuppressWarnings("unused")
@@ -138,6 +140,10 @@ public class Context {
 	public void pushScope(ISyntax syntaxPosition) {
 		this.stackTable = new StackTable(this.stackTable, syntaxPosition, false, false, false);
 	}
+
+	public void pushRunScope() {
+		this.stackTable = new StackTable(this.stackTable, null, ISyntax.empty(), false, false, true);
+	}
 	
 	public void pushLoopScope(ISyntax syntaxPosition) {
 		this.stackTable = new StackTable(this.stackTable, syntaxPosition, true, true, false);
@@ -180,6 +186,9 @@ public class Context {
 
 	public void setSuppressDeprecated(boolean suppressed) {
 		this.suppressDeprecated = suppressed;
+		if (this.parentContext != null) {
+			this.parentContext.setSuppressDeprecated(suppressed);
+		}
 	}
 
 	public boolean isSuppressDeprecated() {

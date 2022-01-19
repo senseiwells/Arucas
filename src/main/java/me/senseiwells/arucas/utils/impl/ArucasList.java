@@ -106,6 +106,9 @@ public class ArucasList implements List<Value<?>>, ValueIdentifier {
 
 	@Override
 	public synchronized boolean addAll(Collection<? extends Value<?>> values) {
+		if (values instanceof ArucasList arucasList) {
+			return this.addAll(arucasList.toArray());
+		}
 		return this.addAll(values.toArray(Value[]::new));
 	}
 
