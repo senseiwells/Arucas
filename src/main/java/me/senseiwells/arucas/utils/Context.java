@@ -138,6 +138,10 @@ public class Context {
 	public void pushScope(ISyntax syntaxPosition) {
 		this.stackTable = new StackTable(this.stackTable, syntaxPosition, false, false, false);
 	}
+
+	public void pushRunScope() {
+		this.stackTable = new StackTable(this.stackTable, null, ISyntax.empty(), false, false, true);
+	}
 	
 	public void pushLoopScope(ISyntax syntaxPosition) {
 		this.stackTable = new StackTable(this.stackTable, syntaxPosition, true, true, false);

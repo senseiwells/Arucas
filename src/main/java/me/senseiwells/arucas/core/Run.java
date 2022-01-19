@@ -1,11 +1,10 @@
 package me.senseiwells.arucas.core;
 
-import me.senseiwells.arucas.api.ISyntax;
-import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.nodes.Node;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
-import me.senseiwells.arucas.nodes.Node;
 import me.senseiwells.arucas.tokens.Token;
+import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
 
@@ -16,7 +15,7 @@ public class Run {
 		List<Token> values = new Lexer(fileContent, fileName).createTokens();
 		Node nodeResult = new Parser(values, context).parse();
 		try {
-			context.pushScope(ISyntax.EMPTY);
+			context.pushRunScope();
 			Value<?> value = nodeResult.visit(context);
 			context.popScope();
 			if (context.isDebug()) {
