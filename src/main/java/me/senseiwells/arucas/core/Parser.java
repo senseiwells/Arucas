@@ -701,10 +701,11 @@ public class Parser {
 		this.throwIfNotType(Token.Type.LEFT_CURLY_BRACKET, "Expected '{'");
 		this.advance();
 		
+		List<Set<Object>> valueList = new ArrayList<>();
+		List<Node> caseList = new ArrayList<>();
+		Set<Object> allValues = new HashSet<>();
 		Node defaultCase = null;
-		Set<Value<?>> allValues = new HashSet<>();
 		Token.Type valueType = null;
-		Map<Node, Set<Value<?>>> cases = new LinkedHashMap<>();
 		while (this.currentToken.type != Token.Type.RIGHT_CURLY_BRACKET) {
 			if (this.currentToken.type == Token.Type.DEFAULT) {
 				if (defaultCase != null) {
@@ -740,7 +741,7 @@ public class Parser {
 				}
 			}
 			
-			Set<Value<?>> values = new HashSet<>();
+			Set<Object> values = new HashSet<>();
 			while (true) {
 				boolean isNegative = false;
 				if (this.currentToken.type == Token.Type.MINUS) {
@@ -759,14 +760,14 @@ public class Parser {
 				this.throwIfNotType(valueType, "Expected a value of type '%s' but got '%s'".formatted(valueType, token.type));
 				this.advance();
 				
-				Value<?> value;
+				Object value;
 				switch (valueType) {
 					case NUMBER -> {
-						value = NumberValue.of(Double.parseDouble(token.content) * (isNegative ? -1.0D : 1.0D));
+						value = Double.parseDouble(token.content) * (isNegative ? -1.0D : 1.0D);
 					}
 					case STRING -> {
 						try {
-							value = StringValue.of(StringUtils.unescapeString(token.content.substring(1, token.content.length() - 1)));
+							value = StringUtils.unescapeString(token.content.substring(1, token.content.length() - 1));
 						}
 						catch (RuntimeException e) {
 							throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, e.getMessage(), token.syntaxPosition);
@@ -781,7 +782,7 @@ public class Parser {
 				}
 				
 				if (!allValues.add(value)) {
-					// We do not allow multiple cases to have the same condition.
+					// We do not allow multiple cases to have the same condition
 					throw new CodeError(
 						CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Switch statements can not contain duplicate conditions. '%s'".formatted(token.content),
 						token.syntaxPosition
@@ -799,14 +800,15 @@ public class Parser {
 				break;
 			}
 			
-			Node caseBody = this.statements();
-			cases.put(caseBody, values);
+			valueList.add(values);
+			caseList.add(this.statements());
 		}
 		
 		this.throwIfNotType(Token.Type.RIGHT_CURLY_BRACKET, "Expected '}'");
 		ISyntax endPos = this.currentToken.syntaxPosition;
 		this.advance();
-		return new SwitchNode(valueNode, defaultCase, cases, startPos, endPos);
+		
+		return new SwitchNode(valueNode, defaultCase, valueList, caseList, startPos, endPos);
 	}
 	
 	private Node expression() throws CodeError {

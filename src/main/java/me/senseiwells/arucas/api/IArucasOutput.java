@@ -1,6 +1,5 @@
 package me.senseiwells.arucas.api;
 
-import java.util.Locale;
 import java.util.function.Consumer;
 
 /**
@@ -14,12 +13,6 @@ public interface IArucasOutput {
 	
 	// Declare methods used for printing
 	void print(Object object);
-
-	@Deprecated
-	void printf(String format, Object... args);
-	
-	@Deprecated
-	void printf(Locale locale, String format, Object... args);
 
 	void println();
 

@@ -51,7 +51,7 @@ public class StringUtils {
 						String hex = string.substring(i + 1, i + 3);
 
 						try {
-							sb.append((char)Integer.parseInt(hex, 16));
+							sb.append((char) Integer.parseInt(hex, 16));
 						}
 						catch (NumberFormatException e) {
 							throw new RuntimeException("(index:%d) Invalid escape '\\x%s'".formatted(i, hex));
@@ -68,7 +68,7 @@ public class StringUtils {
 						String hex = string.substring(i + 1, i + 5);
 
 						try {
-							sb.append((char)Integer.parseInt(hex, 16));
+							sb.append((char) Integer.parseInt(hex, 16));
 						}
 						catch (NumberFormatException e) {
 							throw new RuntimeException("(index:%d) Invalid escape '\\u%s'".formatted(i, hex));

@@ -39,6 +39,7 @@ public class ArucasWrapperExtension {
 				}
 				continue;
 			}
+			
 			ArucasOperator operatorAnnotation = method.getAnnotation(ArucasOperator.class);
 			if (operatorAnnotation != null) {
 				if (!this.addOperator(method, operatorAnnotation)) {
@@ -127,6 +128,7 @@ public class ArucasWrapperExtension {
 		Class<?>[] parameters = method.getParameterTypes();
 		final int parameterLength = parameters.length - (isStatic ? 1 : 0);
 		
+		// TODO: Remove before merging with main
 		System.out.printf("Method: %s%s::%s (%s)\n", isStatic ? "static " : "", this.clazz.getSimpleName(), method.getName(), handle);
 		WrapperClassMemberFunction function = new WrapperClassMemberFunction(method.getName(), parameterLength, isStatic, handle);
 		
@@ -155,6 +157,7 @@ public class ArucasWrapperExtension {
 		Class<?>[] parameters = method.getParameterTypes();
 		final int parameterLength = parameters.length;
 		
+		// TODO: Remove before merging with main
 		System.out.printf("Constructor: %s::%s (%s)\n", this.clazz.getSimpleName(), method.getName(), handle);
 		WrapperClassMemberFunction function = new WrapperClassMemberFunction("", parameterLength, false, handle);
 
@@ -198,7 +201,8 @@ public class ArucasWrapperExtension {
 			}
 			default -> throw noSuchOperator;
 		}
-
+		
+		// TODO: Remove before merging with main
 		System.out.printf("Operator: %s::%s (%s)\n", this.clazz.getSimpleName(), method.getName(), handle);
 		WrapperClassMemberFunction function = new WrapperClassMemberFunction(method.getName(), parameterLength, false, handle);
 
@@ -217,7 +221,7 @@ public class ArucasWrapperExtension {
 				throw invalidWrapperField(clazz, field, "Field type must be type Value");
 			}
 		}
-		else if (Value.class.isAssignableFrom(field.getType())) {
+		else if (!Value.class.isAssignableFrom(field.getType())) {
 			throw invalidWrapperField(clazz, field, "Return type was not a subclass of Value");
 		}
 		
@@ -249,6 +253,7 @@ public class ArucasWrapperExtension {
 		final boolean isFinal = Modifier.isFinal(modifiers);
 		
 		ArucasMemberHandle handle = this.getFieldHandle(this.clazz, field, isStatic, isFinal, memberAnnotation.assignable());
+		// TODO: Remove before merging with main
 		System.out.printf("Member: %s%s::%s (get=%s) (set=%s)\n", isStatic ? "static " : "", this.clazz.getSimpleName(), handle.getName(), handle.getter, handle.setter);
 		
 		if (isStatic) {
@@ -261,7 +266,7 @@ public class ArucasWrapperExtension {
 		return true;
 	}
 	
-	public WrapperArucasClassDefinition getClassDefinition() {
+	private WrapperArucasClassDefinition getClassDefinition() {
 		return this.classDefinition;
 	}
 	

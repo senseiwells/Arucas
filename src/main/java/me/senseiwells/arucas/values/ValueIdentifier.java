@@ -8,28 +8,24 @@ import me.senseiwells.arucas.utils.Context;
  * {@link #toString()},
  * {@link #hashCode()},
  * {@link #equals(Object)},
- * with methods that pass in context,
- * for Arucas Values.
+ * with methods that pass in context, for Arucas Values.
  * When implementing this you should make
  * these methods final and deprecated
  */
 public interface ValueIdentifier {
 
 	/**
-	 * This method should return the string
-	 * representation of an object
+	 * This method returns the string representation of this object
 	 */
 	String getAsString(Context context) throws CodeError;
 
 	/**
-	 * This method should return the
-	 * hashcode of an object
+	 * This method returns the hashcode of this object
 	 */
 	int getHashCode(Context context) throws CodeError;
 
 	/**
-	 * This method should return
-	 * whether two objects are equal
+	 * This method returns whether this object equals another object
 	 */
 	boolean isEquals(Context context, Value<?> other) throws CodeError;
 }

@@ -55,8 +55,8 @@ public class BenchmarkArucasMap {
 	}
 
 	private static List<Time> benchmark_arucas_map(Context context, final int STEPS, final int WARMUP, final int MAX_VALUE, Random random) throws Exception {
-		final double TIME = 1.0 / (double)STEPS;
-		final double WARMUP_TIME = 1.0 / (double)WARMUP;
+		final double TIME = 1.0 / (double) STEPS;
+		final double WARMUP_TIME = 1.0 / (double) WARMUP;
 		List<Time> times = new ArrayList<>();
 		
 		ArucasCache.generate(MAX_VALUE);
@@ -104,8 +104,8 @@ public class BenchmarkArucasMap {
 	}
 	
 	private static List<Time> benchmark_java_map(final int STEPS, final int WARMUP, final int MAX_VALUE, Random random) throws Exception {
-		final double TIME = 1.0 / (double)STEPS;
-		final double WARMUP_TIME = 1.0 / (double)WARMUP;
+		final double TIME = 1.0 / (double) STEPS;
+		final double WARMUP_TIME = 1.0 / (double) WARMUP;
 		List<Time> times = new ArrayList<>();
 		
 		JavaCache.generate(MAX_VALUE);
