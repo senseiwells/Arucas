@@ -5,15 +5,11 @@ import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.*;
 
+@ArucasWrapper(name="Test")
 public class ArucasTestWrapper implements IArucasWrappedClass {
-	// TODO: add test cases
-	@Override
-	public String getName() {
-		return "Test";
-	}
-
-//	@ArucasMember(assignable = false)
-//	public static final StringValue memberStaticValue = StringValue.of("Static MEMBER!");
+	
+	@ArucasMember(assignable = false)
+	public static final Value<?> memberStaticValue = StringValue.of("Static MEMBER!");
 	
 	@ArucasMember
 	public Value<?> memberValue = StringValue.of("Normal MEMBER!");

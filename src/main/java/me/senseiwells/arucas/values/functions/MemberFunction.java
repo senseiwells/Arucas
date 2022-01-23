@@ -13,7 +13,7 @@ public class MemberFunction extends AbstractBuiltInFunction<MemberFunction> {
 	}
 
 	public MemberFunction(String name, List<String> argumentNames, FunctionDefinition<MemberFunction> function) {
-		super(name, addThis(argumentNames), function, null);
+		this(name, addThis(argumentNames), function, null);
 	}
 
 	public MemberFunction(String name, String argument, FunctionDefinition<MemberFunction> function) {
@@ -21,6 +21,7 @@ public class MemberFunction extends AbstractBuiltInFunction<MemberFunction> {
 	}
 
 	public MemberFunction(String name, FunctionDefinition<MemberFunction> function) {
+		// TODO: Remove empty redundant allocations
 		this(name, List.of(), function, null);
 	}
 
@@ -29,6 +30,7 @@ public class MemberFunction extends AbstractBuiltInFunction<MemberFunction> {
 	}
 
 	public MemberFunction(String name, FunctionDefinition<MemberFunction> function, String isDeprecated) {
+		// TODO: Remove empty redundant allocations
 		this(name, List.of(), function, isDeprecated);
 	}
 
@@ -42,8 +44,7 @@ public class MemberFunction extends AbstractBuiltInFunction<MemberFunction> {
 		this.checkAndPopulateArguments(context, arguments, this.argumentNames);
 		return this.function.execute(context, this);
 	}
-
-
+	
 	private static List<String> addThis(List<String> stringList) {
 		if (stringList.isEmpty() || !stringList.get(0).equals("this")) {
 			stringList = new ArrayList<>(stringList);

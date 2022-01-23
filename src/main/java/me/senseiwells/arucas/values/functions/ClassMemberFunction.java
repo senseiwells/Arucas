@@ -8,6 +8,7 @@ import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.ArucasClassValue;
 
 import java.util.List;
+import java.util.Objects;
 
 public class ClassMemberFunction extends UserDefinedFunction {
 	protected final ArucasClassValue thisValue;
@@ -36,6 +37,6 @@ public class ClassMemberFunction extends UserDefinedFunction {
 	
 	@Override
 	public String getAsString(Context context) throws CodeError {
-		return "<class " + this.thisValue.getName() + "::" + this.getName() + "@" + Integer.toHexString(this.hashCode()) + ">";
+		return "<class " + this.thisValue.getName() + "::" + this.getName() + "@" + Integer.toHexString(Objects.hashCode(this)) + ">";
 	}
 }

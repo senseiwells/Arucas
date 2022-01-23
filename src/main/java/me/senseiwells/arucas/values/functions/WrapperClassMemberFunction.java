@@ -13,6 +13,7 @@ import java.lang.invoke.MethodHandle;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
 
 public class WrapperClassMemberFunction extends ClassMemberFunction {
@@ -76,11 +77,9 @@ public class WrapperClassMemberFunction extends ClassMemberFunction {
 	}
 
 	private String formatCastException(String message) {
-		String[] matches = Pattern.compile("([a-zA-Z]*Value(?!\\.))")
-			.matcher(message).results().map(matchResult -> {
-				String match = matchResult.group(1);
-				return match.substring(0, match.length() - 5);
-			}).toArray(String[]::new);
+		String[] matches = Pattern.compile("[a-zA-Z]+(?=Value(?!\\.))")
+			.matcher(message).results().map(MatchResult::group)
+			.toArray(String[]::new);
 		if (matches.length != 2) {
 			return message;
 		}
@@ -89,6 +88,6 @@ public class WrapperClassMemberFunction extends ClassMemberFunction {
 	
 	@Override
 	public String getAsString(Context context) throws CodeError {
-		return "<class %s::%s@%x>".formatted(this.thisValue.getName(), this.getName(), Objects.hashCode(this));
+		return "<class " + this.thisValue.getName() + "::" + this.getName() + "@" + Integer.toHexString(Objects.hashCode(this)) + ">";
 	}
 }

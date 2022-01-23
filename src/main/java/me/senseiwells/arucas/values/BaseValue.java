@@ -6,6 +6,8 @@ import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.Context;
 
+import java.util.Objects;
+
 /**
  * This class should only be extended by {@link Value}.
  */
@@ -30,7 +32,7 @@ public abstract class BaseValue implements ValueIdentifier {
 	public abstract Value<?> newCopy(Context context) throws CodeError;
 
 	/**
-	 * This gets called when the <code>&&</code> binary operator
+	 * This gets called when the binary operator <code>&&</code>
 	 * is used in Arucas
 	 *
 	 * @param context The current context
@@ -44,7 +46,7 @@ public abstract class BaseValue implements ValueIdentifier {
 	}
 
 	/**
-	 * This gets called when the <code>||</code> binary operator
+	 * This gets called when the binary operator <code>||</code>
 	 * is used in Arucas
 	 *
 	 * @param context The current context
@@ -58,7 +60,7 @@ public abstract class BaseValue implements ValueIdentifier {
 	}
 
 	/**
-	 * This gets called when the <code>+</code> binary operator
+	 * This gets called when the binary operator <code>+</code>
 	 * is used in Arucas
 	 *
 	 * @param context The current context
@@ -72,7 +74,7 @@ public abstract class BaseValue implements ValueIdentifier {
 	}
 
 	/**
-	 * This gets called when the <code>-</code> binary operator
+	 * This gets called when the binary operator <code>-</code>
 	 * is used in Arucas
 	 *
 	 * @param context The current context
@@ -86,7 +88,7 @@ public abstract class BaseValue implements ValueIdentifier {
 	}
 
 	/**
-	 * This gets called when the <code>-</code> binary operator
+	 * This gets called when the binary operator <code>*</code>
 	 * is used in Arucas
 	 *
 	 * @param context The current context
@@ -100,7 +102,7 @@ public abstract class BaseValue implements ValueIdentifier {
 	}
 
 	/**
-	 * This gets called when the <code>/</code> binary operator
+	 * This gets called when the binary operator <code>/</code>
 	 * is used in Arucas
 	 *
 	 * @param context The current context
@@ -114,7 +116,7 @@ public abstract class BaseValue implements ValueIdentifier {
 	}
 
 	/**
-	 * This gets called when the <code>^</code> binary operator
+	 * This gets called when the binary operator <code>^</code>
 	 * is used in Arucas
 	 *
 	 * @param context The current context
@@ -128,7 +130,7 @@ public abstract class BaseValue implements ValueIdentifier {
 	}
 
 	/**
-	 * This gets called when <code>>, >=, <, <=</code> binary operators
+	 * This gets called when binary operators <code>>, >=, <, <=</code>
 	 * is used in Arucas
 	 *
 	 * @param context The current context
@@ -142,7 +144,7 @@ public abstract class BaseValue implements ValueIdentifier {
 	}
 
 	/**
-	 * This gets called when the <code>!</code> unary operators
+	 * This gets called when the unary operator <code>!</code>
 	 * is used in Arucas
 	 *
 	 * @param context The current context
@@ -155,18 +157,18 @@ public abstract class BaseValue implements ValueIdentifier {
 	}
 
 	/**
-	 * This gets called when the <code>==</code> binary operator
+	 * This gets called when the binary operator <code>==</code>
 	 * is used in Arucas
 	 *
 	 * @param other The other Value you are comparing
 	 * @return Whether the two values are equal
 	 */
 	public BooleanValue isEqualTo(Value<?> other) {
-		return BooleanValue.of(this.equals(other));
+		return BooleanValue.of(Objects.equals(this.getValue(), other.getValue()));
 	}
 
 	/**
-	 * This gets called when the <code>==</code> binary operator
+	 * This gets called when the binary operator <code>!=</code>
 	 * is used in Arucas
 	 *
 	 * @param other The other Value you are comparing
@@ -189,35 +191,29 @@ public abstract class BaseValue implements ValueIdentifier {
 	/**
 	 * This method should not be used, instead
 	 * {@link #isEquals(Context, Value)}
-	 * should be used.
-	 *
-	 * This cannot do reference check only,
-	 * Parser#switchStatement() would break.
+	 * should be used
 	 */
 	@Deprecated
 	@Override
 	public final boolean equals(Object other) {
-		if (other instanceof Value<?> otherValue) {
-			return this.getValue().equals(otherValue.getValue());
-		}
-		return false;
+		return this == other;
 	}
 
 	/**
 	 * This method should not be used, instead
 	 * {@link #getHashCode(Context)}
-	 * should be used.
+	 * should be used
 	 */
 	@Deprecated
 	@Override
 	public final int hashCode() {
-		return this.getValue().hashCode();
+		return this.getValue() == null ? 0 : this.getValue().hashCode();
 	}
 
 	/**
 	 * This method should not be used, instead
 	 * {@link #getAsString(Context)},
-	 * should be used.
+	 * should be used
 	 */
 	@Deprecated
 	@Override

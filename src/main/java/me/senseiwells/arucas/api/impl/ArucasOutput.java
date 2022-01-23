@@ -2,7 +2,6 @@ package me.senseiwells.arucas.api.impl;
 
 import me.senseiwells.arucas.api.IArucasOutput;
 
-import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -22,18 +21,6 @@ public class ArucasOutput implements IArucasOutput {
 	@Override
 	public void print(Object object) {
 		this.outputHandler.accept(String.valueOf(object));
-	}
-	
-	@Override
-	@Deprecated
-	public void printf(String format, Object... args) {
-		this.print(String.format(Locale.ROOT, format, args));
-	}
-	
-	@Override
-	@Deprecated
-	public void printf(Locale locale, String format, Object... args) {
-		this.print(String.format(locale, format, args));
 	}
 	
 	@Override
