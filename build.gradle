@@ -37,8 +37,6 @@ configurations {
 dependencies {
     implementation 'junit:junit:4.13.2'
     testImplementation 'junit:junit:4.13.2'
-    packImplementation 'com.google.code.gson:gson:2.8.9'
-    testImplementation 'com.google.code.gson:gson:2.8.9'
 }
 
 tasks.withType(JavaCompile).configureEach {

@@ -74,7 +74,6 @@ public class ContextBuilder {
 			NumberValue.ArucasNumberClass::new,
 			ThreadValue.ArucasThreadClass::new,
 			FileValue.ArucasFileClass::new,
-			JsonValue.ArucasJsonClass::new,
 			ArucasMathClass::new
 		);
 	}
