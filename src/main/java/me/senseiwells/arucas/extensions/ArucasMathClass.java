@@ -40,6 +40,7 @@ public class ArucasMathClass extends ArucasClassExtension {
 			new BuiltInFunction("toRadians", "num", this::toRadians),
 			new BuiltInFunction("toDegrees", "num", this::toDegrees),
 			new BuiltInFunction("log", "num", this::log),
+			new BuiltInFunction("log", List.of("base", "num"), this::logBase),
 			new BuiltInFunction("log10", "num", this::log10),
 			new BuiltInFunction("sin", "num", this::sin),
 			new BuiltInFunction("cos", "num", this::cos),
@@ -116,6 +117,12 @@ public class ArucasMathClass extends ArucasClassExtension {
 	private Value<?> log(Context context, BuiltInFunction function) throws CodeError {
 		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
 		return NumberValue.of(Math.log(numberValue));
+	}
+
+	private Value<?> logBase(Context context, BuiltInFunction function) throws CodeError {
+		double baseNumber = function.getParameterValueOfType(context, NumberValue.class, 0).value;
+		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 1).value;
+		return NumberValue.of(Math.log(numberValue) / Math.log(baseNumber));
 	}
 
 	private Value<?> log10(Context context, BuiltInFunction function) throws CodeError {
