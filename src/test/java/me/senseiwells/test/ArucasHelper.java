@@ -23,13 +23,16 @@ public class ArucasHelper {
 		}
 	}
 	
-	public static NodeContext compile(String syntax) throws CodeError {
-		Context context = new ContextBuilder()
+	public static Context createDefaultContext() {
+		return new ContextBuilder()
 			.setDisplayName("root")
 			.setOutputHandler(System.out::print)
 			.addDefault()
 			.build();
-		
+	}
+	
+	public static NodeContext compile(String syntax) throws CodeError {
+		Context context = createDefaultContext();
 		List<Token> tokens = new Lexer(syntax, "").createTokens();
 		return new NodeContext(new Parser(tokens, context).parse(), context);
 	}
