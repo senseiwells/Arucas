@@ -4,10 +4,13 @@ import me.senseiwells.arucas.core.Run;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowStop;
 import me.senseiwells.arucas.throwables.ThrowValue;
-import me.senseiwells.arucas.utils.impl.ArucasThread;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.impl.ArucasThread;
+import me.senseiwells.arucas.values.NullValue;
+import me.senseiwells.arucas.values.Value;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 @SuppressWarnings({"UnusedReturnValue", "unused"})
@@ -57,7 +60,7 @@ public class ArucasThreadHandler {
 		}
 	}
 
-	private boolean isRunning() {
+	public boolean isRunning() {
 		return this.arucasThreadGroup.activeCount() > 0;
 	}
 
@@ -68,7 +71,7 @@ public class ArucasThreadHandler {
 	 * @param fileContent the Arucas code you want to execute
 	 * @param latch this can be null, counts down when thread has finished executing
 	 */
-	public synchronized ArucasThread runOnThread(Context context, String fileName, String fileContent, CountDownLatch latch) {
+	public ArucasThread runOnThread(Context context, String fileName, String fileContent, CountDownLatch latch) {
 		// Make sure that this handler belongs to the provided context
 		if (context.getThreadHandler() != this || this.isRunning()) {
 			if (latch != null) {
@@ -103,10 +106,46 @@ public class ArucasThreadHandler {
 		return thread;
 	}
 
+	public Value<?> runOnThreadReturnable(Context context, String fileName, String fileContent) throws CodeError {
+		if (context.getThreadHandler() != this || this.isRunning()) {
+			return null;
+		}
+
+		final CountDownLatch latch = new CountDownLatch(1);
+		final AtomicReference<CodeError> atomicError = new AtomicReference<>(null);
+		final AtomicReference<Value<?>> atomicValue = new AtomicReference<>(NullValue.NULL);
+
+		ArucasThread thread = new ArucasThread(this.arucasThreadGroup, () -> {
+			try {
+				atomicValue.set(Run.run(context, fileName, fileContent));
+			}
+			catch (CodeError thrownCodeError) {
+				atomicError.set(thrownCodeError);
+			}
+			finally {
+				latch.countDown();
+			}
+		}, "Arucas Test Thread");
+		thread.setDaemon(true);
+		thread.start();
+
+		try {
+			latch.await();
+			// This sleep statement is required
+			Thread.sleep(1);
+		}
+		catch (InterruptedException ignored) { }
+
+		if (atomicError.get() != null) {
+			throw atomicError.get();
+		}
+		return atomicValue.get();
+	}
+
 	/**
 	 * @see #runAsyncFunctionInContext(Context, ThrowableConsumer, String) 
 	 */
-	public synchronized ArucasThread runAsyncFunctionInContext(Context context, ThrowableConsumer<Context> consumer) {
+	public ArucasThread runAsyncFunctionInContext(Context context, ThrowableConsumer<Context> consumer) {
 		return this.runAsyncFunction(context, consumer, "Arucas Runnable Thread");
 	}
 
@@ -117,11 +156,11 @@ public class ArucasThreadHandler {
 	 * @param consumer the code you want to execute on the thread
 	 * @param threadName the name of the thread
 	 */
-	public synchronized ArucasThread runAsyncFunctionInContext(Context context, ThrowableConsumer<Context> consumer, String threadName) {
+	public ArucasThread runAsyncFunctionInContext(Context context, ThrowableConsumer<Context> consumer, String threadName) {
 		return this.runAsyncFunction(context, consumer, threadName);
 	}
 
-	private synchronized ArucasThread runAsyncFunction(final Context context, ThrowableConsumer<Context> consumer, String name) {
+	private ArucasThread runAsyncFunction(final Context context, ThrowableConsumer<Context> consumer, String name) {
 		// Make sure that this handler belongs to the provided context
 		if (context.getThreadHandler() != this || !this.isRunning()) {
 			return null;
@@ -149,7 +188,7 @@ public class ArucasThreadHandler {
 		return thread;
 	}
 
-	private synchronized void tryError(Context context, CodeError error) {
+	public synchronized void tryError(Context context, CodeError error) {
 		if (this.hasError || error.errorType == CodeError.ErrorType.INTERRUPTED_ERROR) {
 			return;
 		}

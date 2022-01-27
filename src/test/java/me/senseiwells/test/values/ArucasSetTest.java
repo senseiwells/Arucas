@@ -12,7 +12,7 @@ import static org.junit.Assert.*;
 public class ArucasSetTest {
 	@Test
 	public void setAddSimpleTest() throws CodeError  {
-		Context context = ArucasHelper.createDefaultContext();
+		Context context = ArucasHelper.createContext();
 		ArucasSet set = new ArucasSet();
 		
 		assertEquals(set.size(), 0);
@@ -25,7 +25,7 @@ public class ArucasSetTest {
 	
 	@Test
 	public void setClearTest() throws CodeError {
-		Context context = ArucasHelper.createDefaultContext();
+		Context context = ArucasHelper.createContext();
 		ArucasSet set = new ArucasSet();
 		
 		for (int i = 0; i < 10000; i++) {
@@ -39,7 +39,7 @@ public class ArucasSetTest {
 	
 	@Test
 	public void setRemoveTest() throws CodeError {
-		Context context = ArucasHelper.createDefaultContext();
+		Context context = ArucasHelper.createContext();
 		ArucasSet set = new ArucasSet();
 		
 		for (int i = 0; i < 10000; i++) {

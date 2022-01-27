@@ -55,6 +55,7 @@ public class WrapperClassMemberFunction extends ClassMemberFunction {
 			args[0] = this.classValue;
 			iModifier = 1;
 		}
+		args[iModifier] = context;
 		int parameters = this.parameters - iModifier;
 		iModifier++;
 		for (int i = 0; i < parameters; i++) {
@@ -67,6 +68,9 @@ public class WrapperClassMemberFunction extends ClassMemberFunction {
 			}
 			this.methodHandle.invokeWithArguments(args);
 			return NullValue.NULL;
+		}
+		catch (CodeError codeError) {
+			throw codeError;
 		}
 		catch (ClassCastException e) {
 			throw new RuntimeError(this.formatCastException(e.getMessage()), this.syntaxPosition, context);

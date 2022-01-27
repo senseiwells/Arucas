@@ -14,7 +14,7 @@ import static org.junit.Assert.*;
 public class ArucasMapTest {
 	@Test
 	public void mapPutTest() throws CodeError  {
-		Context context = ArucasHelper.createDefaultContext();
+		Context context = ArucasHelper.createContext();
 		ArucasMap map = new ArucasMap();
 		
 		assertEquals(map.size(), 0);
@@ -28,7 +28,7 @@ public class ArucasMapTest {
 	
 	@Test
 	public void mapClearTest() throws CodeError {
-		Context context = ArucasHelper.createDefaultContext();
+		Context context = ArucasHelper.createContext();
 		ArucasMap map = new ArucasMap();
 		
 		for (int i = 0; i < 10000; i++) {
@@ -42,7 +42,7 @@ public class ArucasMapTest {
 	
 	@Test
 	public void mapRemoveTest() throws CodeError {
-		Context context = ArucasHelper.createDefaultContext();
+		Context context = ArucasHelper.createContext();
 		ArucasMap map = new ArucasMap();
 		
 		for (int i = 0; i < 10000; i++) {

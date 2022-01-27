@@ -17,7 +17,6 @@ public class Run {
 		try {
 			context.pushRunScope();
 			Value<?> value = nodeResult.visit(context);
-			context.popScope();
 			if (context.isDebug()) {
 				context.getOutput().println(value);
 			}

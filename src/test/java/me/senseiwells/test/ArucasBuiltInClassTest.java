@@ -92,8 +92,7 @@ public class ArucasBuiltInClassTest {
 		assertEquals("1.414213562373", ArucasHelper.runSafe("return Math.root2;"));
 	}
 
-	/* TODO: These must be run on an Arucas Thread and currently ArucasHelper runs on main thread
-	@Test
+	@Test(timeout = 1000)
 	public void testThreadClass() {
 		assertEquals("true", ArucasHelper.runSafe("return Thread.getCurrentThread().isAlive();"));
 		assertEquals("false", ArucasHelper.runSafe("t = Thread.runThreaded(fun() { }); sleep(100); return t.isAlive();"));
@@ -101,5 +100,4 @@ public class ArucasBuiltInClassTest {
 		assertEquals("Thread", ArucasHelper.runSafe("return Thread.getCurrentThread().getValueType();"));
 		assertEquals("true", ArucasHelper.runSafe("return Thread.getCurrentThread().instanceOf('Thread');"));
 	}
-	*/
 }
