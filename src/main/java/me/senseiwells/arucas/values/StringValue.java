@@ -4,134 +4,172 @@ import me.senseiwells.arucas.api.ArucasClassExtension;
 import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
-import me.senseiwells.arucas.utils.ArucasValueList;
+import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 public class StringValue extends Value<String> {
-	public StringValue(String value) {
+	private StringValue(String value) {
 		super(value);
 	}
-
+	
+	public static StringValue of(String value) {
+		return new StringValue(value);
+	}
+	
 	@Override
 	public StringValue addTo(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
-		return new StringValue(this.value + other.getStringValue(context));
+		return new StringValue(this.value + other.getAsString(context));
 	}
 
 	@Override
-	public StringValue copy() {
+	public StringValue copy(Context context) {
 		return this;
 	}
 	
 	@Override
-	public int hashCode() {
+	public int getHashCode(Context context) {
 		return this.value.hashCode();
 	}
-
+	
 	@Override
-	protected Set<MemberFunction> getDefinedFunctions() {
-		Set<MemberFunction> memberFunctions = super.getDefinedFunctions();
-		memberFunctions.addAll(Set.of(
-			new MemberFunction("toList", this::stringToList),
-			new MemberFunction("replaceAll", List.of("regex", "replace"), this::stringReplaceAll),
-			new MemberFunction("uppercase", this::stringUppercase),
-			new MemberFunction("lowercase", this::stringLowercase),
-			new MemberFunction("toNumber", this::stringToNumber),
-			new MemberFunction("formatted", "values", this::stringFormatted),
-			new MemberFunction("containsString", List.of("otherString"), this::stringContainsString, "Use '<String>.contains(otherString)'"),
-			new MemberFunction("contains", "otherString", this::stringContainsString),
-			new MemberFunction("strip", this::strip),
-			new MemberFunction("capitalise", this::capitalise),
-			new MemberFunction("split", "delimited", this::split)
-		));
-		return memberFunctions;
+	public String getAsString(Context context) {
+		return this.value;
 	}
-
-	private Value<?> stringToList(Context context, MemberFunction function) {
-		ArucasValueList stringList = new ArucasValueList();
-		for (char c : this.value.toCharArray()) {
-			stringList.add(new StringValue(String.valueOf(c)));
-		}
-		return new ListValue(stringList);
-	}
-
-	private Value<?> stringReplaceAll(Context context, MemberFunction function) throws CodeError {
-		StringValue remove = function.getParameterValueOfType(context, StringValue.class, 0);
-		StringValue replace = function.getParameterValueOfType(context, StringValue.class, 1);
-		return new StringValue(this.value.replaceAll(remove.value, replace.value));
-	}
-
-	private Value<?> stringUppercase(Context context, MemberFunction function) {
-		return new StringValue(this.value.toUpperCase(Locale.ROOT));
-	}
-
-	private Value<?> stringLowercase(Context context, MemberFunction function) {
-		return new StringValue(this.value.toLowerCase(Locale.ROOT));
-	}
-
-	private Value<?> stringToNumber(Context context, MemberFunction function) throws CodeError {
-		try {
-			return new NumberValue(Double.parseDouble(this.value));
-		}
-		catch (NumberFormatException e) {
-			throw new RuntimeError(
-				"Cannot parse %s as a NumberValue".formatted(this.getStringValue(context)),
-				function.syntaxPosition,
-				context
-			);
-		}
-	}
-
-	private Value<?> stringFormatted(Context context, MemberFunction function) throws CodeError {
-		final Value<?>[] array = function.getParameterValueOfType(context, ListValue.class, 0).value.toArray(Value<?>[]::new);
-		int i = 0;
-		String string = this.value;
-		while (string.contains("%s")) {
-			try {
-				string = string.replaceFirst("%s", array[i].toString());
-			}
-			catch (IndexOutOfBoundsException e) {
-				throw new RuntimeError("You are missing values to be formatted!", function.syntaxPosition, context);
-			}
-			i++;
-		}
-		return new StringValue(string);
-	}
-
-	private Value<?> stringContainsString(Context context, MemberFunction function) throws CodeError {
-		String otherString = function.getParameterValueOfType(context, StringValue.class, 0).value;
-		return BooleanValue.of(this.value.contains(otherString));
-	}
-
-	private Value<?> strip(Context context, MemberFunction function) {
-		return new StringValue(this.value.strip());
-	}
-
-	private Value<?> capitalise(Context context, MemberFunction function) {
-		if (this.value.isEmpty()) {
-			return this;
-		}
-		char[] chars = this.value.toCharArray();
-		chars[0] = Character.toUpperCase(chars[0]);
-		return new StringValue(new String(chars));
-	}
-
-	private Value<?> split(Context context, MemberFunction function) throws CodeError {
-		String otherString = function.getParameterValueOfType(context, StringValue.class, 0).value;
-		ArucasValueList list = new ArucasValueList();
-		for (String string : this.value.split(otherString)) {
-			list.add(new StringValue(string));
-		}
-		return new ListValue(list);
+	
+	@Override
+	public boolean isEquals(Context context, Value<?> other) {
+		return (other instanceof StringValue that) && this.value.equals(that.value);
 	}
 
 	public static class ArucasStringClass extends ArucasClassExtension {
 		public ArucasStringClass() {
 			super("String");
+		}
+
+		@Override
+		public Class<?> getValueClass() {
+			return StringValue.class;
+		}
+
+		@Override
+		public ArucasFunctionMap<MemberFunction> getDefinedMethods() {
+			return ArucasFunctionMap.of(
+				new MemberFunction("toList", this::stringToList),
+				new MemberFunction("replaceAll", List.of("regex", "replace"), this::stringReplaceAll),
+				new MemberFunction("uppercase", this::stringUppercase),
+				new MemberFunction("lowercase", this::stringLowercase),
+				new MemberFunction("toNumber", this::stringToNumber),
+				new MemberFunction("formatted", "values", this::stringFormatted),
+				new MemberFunction("containsString", List.of("otherString"), this::stringContainsString, "Use '<String>.contains(otherString)'"),
+				new MemberFunction("contains", "otherString", this::stringContainsString),
+				new MemberFunction("strip", this::strip),
+				new MemberFunction("capitalise", this::capitalise),
+				new MemberFunction("split", "delimiter", this::split),
+				new MemberFunction("subString", List.of("from", "to"), this::subString)
+			);
+		}
+
+		private Value<?> stringToList(Context context, MemberFunction function) throws CodeError {
+			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
+			ArucasList stringList = new ArucasList();
+			for (char c : thisValue.value.toCharArray()) {
+				stringList.add(new StringValue(String.valueOf(c)));
+			}
+			return new ListValue(stringList);
+		}
+
+		private Value<?> stringReplaceAll(Context context, MemberFunction function) throws CodeError {
+			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
+			StringValue remove = function.getParameterValueOfType(context, StringValue.class, 1);
+			StringValue replace = function.getParameterValueOfType(context, StringValue.class, 2);
+			return new StringValue(thisValue.value.replaceAll(remove.value, replace.value));
+		}
+
+		private Value<?> stringUppercase(Context context, MemberFunction function) throws CodeError {
+			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
+			return new StringValue(thisValue.value.toUpperCase(Locale.ROOT));
+		}
+
+		private Value<?> stringLowercase(Context context, MemberFunction function) throws CodeError {
+			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
+			return new StringValue(thisValue.value.toLowerCase(Locale.ROOT));
+		}
+
+		private Value<?> stringToNumber(Context context, MemberFunction function) throws CodeError {
+			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
+			try {
+				return NumberValue.of(Double.parseDouble(thisValue.value));
+			}
+			catch (NumberFormatException e) {
+				throw new RuntimeError(
+					"Cannot parse %s as a NumberValue".formatted(thisValue.getAsString(context)),
+					function.syntaxPosition,
+					context
+				);
+			}
+		}
+
+		private Value<?> stringFormatted(Context context, MemberFunction function) throws CodeError {
+			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
+			final Value<?>[] array = function.getParameterValueOfType(context, ListValue.class, 1).value.toArray();
+			int i = 0;
+			String string = thisValue.value;
+			while (string.contains("%s")) {
+				try {
+					string = string.replaceFirst("%s", array[i].getAsString(context));
+				}
+				catch (IndexOutOfBoundsException e) {
+					throw new RuntimeError("You are missing values to be formatted!", function.syntaxPosition, context);
+				}
+				i++;
+			}
+			return new StringValue(string);
+		}
+
+		private Value<?> stringContainsString(Context context, MemberFunction function) throws CodeError {
+			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
+			String otherString = function.getParameterValueOfType(context, StringValue.class, 1).value;
+			return BooleanValue.of(thisValue.value.contains(otherString));
+		}
+
+		private Value<?> strip(Context context, MemberFunction function) throws CodeError {
+			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
+			return new StringValue(thisValue.value.strip());
+		}
+
+		private Value<?> capitalise(Context context, MemberFunction function) throws CodeError {
+			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
+			if (thisValue.value.isEmpty()) {
+				return thisValue;
+			}
+			char[] chars = thisValue.value.toCharArray();
+			chars[0] = Character.toUpperCase(chars[0]);
+			return new StringValue(new String(chars));
+		}
+
+		private Value<?> split(Context context, MemberFunction function) throws CodeError {
+			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
+			String otherString = function.getParameterValueOfType(context, StringValue.class, 1).value;
+			ArucasList list = new ArucasList();
+			for (String string : thisValue.value.split(otherString)) {
+				list.add(new StringValue(string));
+			}
+			return new ListValue(list);
+		}
+
+		private Value<?> subString(Context context, MemberFunction function) throws CodeError {
+			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
+			int fromIndex = function.getParameterValueOfType(context, NumberValue.class, 1).value.intValue();
+			int toIndex = function.getParameterValueOfType(context, NumberValue.class, 2).value.intValue();
+			if (fromIndex < 0 || toIndex > thisValue.value.length()) {
+				throw new RuntimeError("Index out of bounds", function.syntaxPosition, context);
+			}
+			return StringValue.of(thisValue.value.substring(fromIndex, toIndex));
 		}
 	}
 }

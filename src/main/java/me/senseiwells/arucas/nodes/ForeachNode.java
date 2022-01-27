@@ -2,8 +2,8 @@ package me.senseiwells.arucas.nodes;
 
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
-import me.senseiwells.arucas.utils.ArucasValueList;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.values.ListValue;
 import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
@@ -28,18 +28,13 @@ public class ForeachNode extends Node {
 			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "For loop must contain a list", this.syntaxPosition);
 		}
 		
-		final ArucasValueList list = listValue.value;
-		
-		// This for loop must not iterate over the elements in the list with 'for (element : list)'
-		// because this would cause an ConcurrentModificationException
-		for (int i = 0; i < list.size(); i++) {
+		final ArucasList list = listValue.value;
+
+		for (Value<?> item : list) {
 			// Throws an error if the thread has been interrupted
 			this.keepRunning();
-			
-			// If the list is not synchronized this could cause an IndexOutOfBoundsException
-			Value<?> value = list.get(i);
-			
-			context.setLocal(this.forParameterName, value);
+
+			context.setLocal(this.forParameterName, item);
 			try {
 				this.body.visit(context);
 			}

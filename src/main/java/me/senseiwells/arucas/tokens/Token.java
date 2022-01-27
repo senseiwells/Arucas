@@ -3,6 +3,7 @@ package me.senseiwells.arucas.tokens;
 import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.utils.Position;
 
+import java.util.Map;
 import java.util.Set;
 
 public class Token {
@@ -111,13 +112,32 @@ public class Token {
 		POINTER
 		;
 
-		public static final Set<Type> comparisonTokens = Set.of(
+		public static final Set<Type> COMPARISON_TOKEN_TYPES = Set.of(
 			EQUALS,
 			NOT_EQUALS,
 			LESS_THAN,
 			MORE_THAN,
 			LESS_THAN_EQUAL,
 			MORE_THAN_EQUAL
+		);
+
+		public static final Set<Type> OVERRIDABLE_UNARY_OPERATORS = Set.of(
+			NOT,
+			MINUS
+		);
+
+		public static final Set<Type> OVERRIDABLE_BINARY_OPERATORS = Set.of(
+			PLUS,
+			MINUS,
+			MULTIPLY,
+			DIVIDE,
+			POWER,
+			LESS_THAN,
+			LESS_THAN_EQUAL,
+			MORE_THAN,
+			MORE_THAN_EQUAL,
+			EQUALS,
+			NOT_EQUALS
 		);
 	}
 }

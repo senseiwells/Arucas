@@ -4,7 +4,8 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 public class ArucasClassTest {
 	@Test(timeout = 1000)
@@ -64,6 +65,23 @@ public class ArucasClassTest {
 			X = !new Test();
 			""", "X"
 		));
+		assertEquals("-10", ArucasHelper.runSafeFull(
+			"""
+			class Test {
+				var num = 1;
+			
+				operator - (other) {
+					this.num = 10;
+					return this;
+				}
+				
+				operator - () {
+					return this.num * -1;
+				}
+			}
+			X = -(new Test() - 0);
+			""", "X"
+		));
 		assertEquals("30", ArucasHelper.runSafeFull(
 			"""
 			class Test {
@@ -76,10 +94,37 @@ public class ArucasClassTest {
 			X = new Test() + 10;
 			""", "X"
 		));
+		assertThrows(CodeError.class, () -> ArucasHelper.compile(
+			"""
+			class Test {
+				operator ! (param) {
+					return this;
+				}
+			}
+			"""
+		));
+		assertThrows(CodeError.class, () -> ArucasHelper.compile(
+			"""
+			class Test {
+				operator == () {
+					return false;
+				}
+			}
+			"""
+		));
 	}
 
 	@Test
 	public void testClassFunction() {
+		assertEquals("true", ArucasHelper.runSafeFull(
+				"""
+				class Test {
+					
+				}
+				test = new Test();
+				X = test.equals(test);
+				""", "X"
+		));
 		assertEquals("test", ArucasHelper.runSafeFull(
 			"""
 			class Test {
@@ -90,7 +135,7 @@ public class ArucasClassTest {
 			X = new Test().toString();
 			""", "X"
 		));
-		assertEquals("[\"test\"]", ArucasHelper.runSafeFull(
+		assertEquals("[test]", ArucasHelper.runSafeFull(
 			"""
 			class Test {
 				fun toString() {
@@ -98,6 +143,16 @@ public class ArucasClassTest {
 				}
 			}
 			X = [new Test()];
+			""", "X"
+		));
+		assertEquals("[\"test\"]", ArucasHelper.runSafeFull(
+			"""
+			class Test {
+				fun toString() {
+					return 'test';
+				}
+			}
+			X = [new Test().toString()];
 			""", "X"
 		));
 		assertEquals("1", ArucasHelper.runSafeFull(
@@ -141,15 +196,6 @@ public class ArucasClassTest {
 			}
 			new Test();
 			"""
-		));
-		assertEquals("true", ArucasHelper.runSafeFull(
-			"""
-			class Test {
-				
-			}
-			test = new Test();
-			X = test.equals(test);
-			""", "X"
 		));
 		assertEquals("true", ArucasHelper.runSafeFull(
 			"""

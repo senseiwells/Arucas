@@ -1,1 +1,2 @@
-// run(getDirectory() + "/src/test/resources/code/test2.arucas");
+// run(File.getDirectory().getPath() + "/src/test/resources/code/test2.arucas");
+return ["hi"].toString();

@@ -47,10 +47,10 @@ public class BinaryOperatorNode extends Node {
 			default -> right = this.rightNode.visit(context);
 		}
 
-		if (this.token.type != Token.Type.NOT && left instanceof ArucasClassValue classValue && classValue.hasOperatorMethod(this.token.type)) {
+		if (left instanceof ArucasClassValue classValue && classValue.hasOperatorMethod(this.token.type, 2)) {
 			List<Value<?>> parameters = new ArrayList<>();
 			parameters.add(right);
-			return classValue.getOperatorMethod(this.token.type).call(context, parameters);
+			return classValue.getOperatorMethod(this.token.type, 2).copy(classValue).call(context, parameters);
 		}
 
 		switch (this.token.type) {
@@ -59,8 +59,8 @@ public class BinaryOperatorNode extends Node {
 			case MULTIPLY -> result = left.multiplyBy(context, right, this.syntaxPosition);
 			case DIVIDE -> result = left.divideBy(context, right, this.syntaxPosition);
 			case POWER -> result = left.powerBy(context, right, this.syntaxPosition);
-			case EQUALS -> result = left.isEqual(right);
-			case NOT_EQUALS -> result = left.isNotEqual(right);
+			case EQUALS -> result = left.isEqualTo(right);
+			case NOT_EQUALS -> result = left.isNotEqualTo(right);
 			case LESS_THAN, LESS_THAN_EQUAL, MORE_THAN, MORE_THAN_EQUAL -> result = left.compareNumber(context, right, this.token.type, this.syntaxPosition);
 		}
 

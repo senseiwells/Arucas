@@ -11,7 +11,6 @@ public class BuiltInFunction extends AbstractBuiltInFunction<BuiltInFunction> {
 		super(name, argumentNames, function, deprecatedMessage);
 	}
 
-	@SuppressWarnings("unused")
 	public BuiltInFunction(String name, String argument, FunctionDefinition<BuiltInFunction> function, String deprecatedMessage) {
 		this(name, List.of(argument), function, deprecatedMessage);
 	}
@@ -26,6 +25,10 @@ public class BuiltInFunction extends AbstractBuiltInFunction<BuiltInFunction> {
 
 	public BuiltInFunction(String name, FunctionDefinition<BuiltInFunction> function) {
 		this(name, List.of(), function, null);
+	}
+
+	public BuiltInFunction(String name, FunctionDefinition<BuiltInFunction> function, String deprecatedMessage) {
+		this(name, List.of(), function, deprecatedMessage);
 	}
 
 	@Override

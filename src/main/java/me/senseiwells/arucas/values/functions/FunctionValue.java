@@ -1,14 +1,14 @@
 package me.senseiwells.arucas.values.functions;
 
 import me.senseiwells.arucas.api.ISyntax;
-import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
+import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.Value;
 
 import java.util.List;
-import java.util.Set;
+import java.util.Objects;
 
 public abstract class FunctionValue extends Value<String> {
 	public final List<String> argumentNames;
@@ -66,12 +66,11 @@ public abstract class FunctionValue extends Value<String> {
 	}
 
 	protected abstract Value<?> execute(Context context, List<Value<?>> arguments) throws CodeError, ThrowValue;
-
-	public final Value<?> call(Context context, List<Value<?>> arguments) throws CodeError {
-		return this.call(context, arguments, true);
-	}
-
-	public final Value<?> call(Context context, List<Value<?>> arguments, boolean returnable) throws CodeError {
+	
+	/**
+	 * API overridable method.
+	 */
+	protected Value<?> callOverride(Context context, List<Value<?>> arguments, boolean returnable) throws CodeError {
 		context.pushFunctionScope(this.syntaxPosition);
 		try {
 			Value<?> value = this.execute(context, arguments);
@@ -88,7 +87,7 @@ public abstract class FunctionValue extends Value<String> {
 			}
 			context.moveScope(context.getReturnScope());
 			context.popScope();
-			return tv.returnValue;
+			return tv.getReturnValue();
 		}
 		catch (ThrowValue tv) {
 			throw new CodeError(
@@ -105,30 +104,35 @@ public abstract class FunctionValue extends Value<String> {
 			);
 		}
 	}
-
-	/**
-	 * Functions cannot have functions
-	 */
-	@Override
-	protected final Set<MemberFunction> getDefinedFunctions() {
-		return Set.of();
+	
+	public final Value<?> call(Context context, List<Value<?>> arguments) throws CodeError {
+		return this.callOverride(context, arguments, true);
 	}
 
-	@Override
-	public boolean equals(Object other) {
-		if (other instanceof FunctionValue functionValue) {
-			return this.getParameterCount() == functionValue.getParameterCount() && super.equals(other);
-		}
-		return false;
+	public final Value<?> call(Context context, List<Value<?>> arguments, boolean returnable) throws CodeError {
+		return this.callOverride(context, arguments, returnable);
 	}
-
+	
 	@Override
-	public final FunctionValue copy() {
+	public final FunctionValue copy(Context context) {
 		return this;
 	}
-
+	
 	@Override
-	public String getStringValue(Context context) throws CodeError {
-		return "<function %s>".formatted(this.value);
+	public int getHashCode(Context context) throws CodeError {
+		return Objects.hash(this.value, this.getParameterCount());
+	}
+	
+	@Override
+	public String getAsString(Context context) throws CodeError {
+		return "<function " + this.value + ">";
+	}
+	
+	@Override
+	public boolean isEquals(Context context, Value<?> other) {
+		// The problem here is that it is not enough to check the parameter count and name
+		// If this function was a delegate of a class, and then we compared it to a delegate
+		// of the same class but another instance it should always return false.
+		return this == other;
 	}
 }

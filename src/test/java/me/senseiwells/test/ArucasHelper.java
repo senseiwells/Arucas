@@ -23,13 +23,22 @@ public class ArucasHelper {
 		}
 	}
 	
-	public static NodeContext compile(String syntax) throws CodeError {
-		Context context = new ContextBuilder()
+	public static Context createDefaultContext() {
+		return new ContextBuilder()
 			.setDisplayName("root")
 			.setOutputHandler(System.out::print)
 			.addDefault()
 			.build();
-		
+	}
+	
+	public static NodeContext compile(String syntax) throws CodeError {
+		Context context = createDefaultContext();
+		List<Token> tokens = new Lexer(syntax, "").createTokens();
+		return new NodeContext(new Parser(tokens, context).parse(), context);
+	}
+
+	public static NodeContext compileWithContext(String syntax, Context context) throws CodeError {
+		context = context.createChildContext("Test Context");
 		List<Token> tokens = new Lexer(syntax, "").createTokens();
 		return new NodeContext(new Parser(tokens, context).parse(), context);
 	}
@@ -38,7 +47,7 @@ public class ArucasHelper {
 		NodeContext nodeContext = compile("_run_value=(fun(){%s})();".formatted(syntax));
 		nodeContext.node.visit(nodeContext.context);
 		Value<?> value = nodeContext.context.getStackTable().get("_run_value");
-		return value == null ? null : value.getStringValue(nodeContext.context);
+		return value == null ? null : value.getAsString(nodeContext.context);
 	}
 	
 	public static String runSafe(String syntax) {
@@ -55,12 +64,29 @@ public class ArucasHelper {
 		NodeContext nodeContext = compile(syntax);
 		nodeContext.node.visit(nodeContext.context);
 		Value<?> value = nodeContext.context.getStackTable().get(resultVariable);
-		return value == null ? null : value.getStringValue(nodeContext.context);
+		return value == null ? null : value.getAsString(nodeContext.context);
 	}
 	
 	public static String runSafeFull(String syntax, String resultVariable) {
 		try {
 			return runUnsafeFull(syntax, resultVariable);
+		}
+		catch (CodeError | ThrowValue e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public static String runUnsafeFull(String syntax, String resultVariable, Context context) throws CodeError, ThrowValue {
+		NodeContext nodeContext = compileWithContext(syntax, context);
+		nodeContext.node.visit(nodeContext.context);
+		Value<?> value = nodeContext.context.getStackTable().get(resultVariable);
+		return value == null ? null : value.getAsString(nodeContext.context);
+	}
+
+	public static String runSafeFull(String syntax, String resultVariable, Context context) {
+		try {
+			return runUnsafeFull(syntax, resultVariable, context);
 		}
 		catch (CodeError | ThrowValue e) {
 			e.printStackTrace();

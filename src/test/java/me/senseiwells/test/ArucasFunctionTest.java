@@ -1,7 +1,6 @@
 package me.senseiwells.test;
 
 import me.senseiwells.arucas.throwables.CodeError;
-import me.senseiwells.arucas.throwables.RuntimeError;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

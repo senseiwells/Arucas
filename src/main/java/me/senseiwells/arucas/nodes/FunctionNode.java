@@ -18,13 +18,6 @@ public class FunctionNode extends Node {
 		this.variableNameToken = varNameToken;
 		this.functionValue = new UserDefinedFunction(varNameToken.content, argumentNames, functionToken.syntaxPosition);
 	}
-
-	public FunctionNode(Token varNameToken, UserDefinedFunction functionValue) {
-		super(varNameToken, new MutableSyntaxImpl(varNameToken.syntaxPosition.getStartPos(), functionValue.syntaxPosition.getEndPos()));
-		this.variableNameToken = varNameToken;
-		this.functionValue = functionValue;
-
-	}
 	
 	public void complete(Node bodyNode) {
 		// Because recursive calls need access to the node before

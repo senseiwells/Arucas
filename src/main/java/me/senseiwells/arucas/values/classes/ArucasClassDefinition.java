@@ -6,33 +6,32 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.tokens.Token;
+import me.senseiwells.arucas.utils.ArucasFunctionMap;
+import me.senseiwells.arucas.utils.ArucasOperatorMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.functions.ClassMemberFunction;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ArucasClassDefinition extends AbstractClassDefinition {
-	private final List<ClassMemberFunction> methods;
-	private final List<ClassMemberFunction> constructors;
+	private final ArucasFunctionMap<ClassMemberFunction> methods;
+	private final ArucasFunctionMap<ClassMemberFunction> constructors;
 	private final Map<String, Node> memberVariables;
 	private final Map<String, Node> staticMemberVariableNodes;
-	private final List<Node> staticInitialisers;
-	private final Map<Token.Type, ClassMemberFunction> operatorMethods;
+	private final List<Node> staticInitializers;
+	private final ArucasOperatorMap<ClassMemberFunction> operatorMap;
 	
 	public ArucasClassDefinition(String name) {
 		super(name);
-		this.methods = new ArrayList<>();
-		this.constructors = new ArrayList<>();
+		this.methods = new ArucasFunctionMap<>();
+		this.constructors = new ArucasFunctionMap<>();
 		this.memberVariables = new HashMap<>();
 		this.staticMemberVariableNodes = new HashMap<>();
-		this.staticInitialisers = new ArrayList<>();
-		this.operatorMethods = new HashMap<>();
+		this.staticInitializers = new ArrayList<>();
+		this.operatorMap = new ArucasOperatorMap<>();
 	}
-	
+
 	public void addMethod(ClassMemberFunction method) {
 		this.methods.add(method);
 	}
@@ -41,23 +40,26 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 		this.constructors.add(constructor);
 	}
 
-	public void addStaticInitialiser(Node node) {
-		this.staticInitialisers.add(node);
+	public void addStaticInitializer(Node node) {
+		this.staticInitializers.add(node);
 	}
 
 	public void addOperatorMethod(Token.Type tokenType, ClassMemberFunction method) {
-		this.operatorMethods.put(tokenType, method);
+		this.operatorMap.add(tokenType, method);
 	}
 
-	public List<ClassMemberFunction> getConstructors() {
-		return this.constructors;
+	@Override
+	public ArucasFunctionMap<ClassMemberFunction> getMethods() {
+		return this.methods;
 	}
 
-	public void initialiseStatics(Context context) throws ThrowValue, CodeError {
+	@Override
+	public void initialiseStatics(Context context) throws CodeError, ThrowValue {
 		for (Map.Entry<String, Node> entry : this.staticMemberVariableNodes.entrySet()) {
 			this.getStaticMemberVariables().put(entry.getKey(), entry.getValue().visit(context));
 		}
-		for (Node staticNode : this.staticInitialisers) {
+		
+		for (Node staticNode : this.staticInitializers) {
 			staticNode.visit(context);
 		}
 	}
@@ -66,17 +68,13 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 	public Node addMemberVariableNode(boolean isStatic, String name, Node value) {
 		return isStatic ? this.staticMemberVariableNodes.put(name, value) : this.memberVariables.put(name, value);
 	}
-	
+
+	@Override
 	public ArucasClassValue createNewDefinition(Context context, List<Value<?>> parameters, ISyntax syntaxPosition) throws CodeError, ThrowValue {
 		ArucasClassValue thisValue = new ArucasClassValue(this);
 		// Add methods
-		for (ClassMemberFunction function : this.methods) {
+		for (ClassMemberFunction function : this.getMethods()) {
 			thisValue.addMethod(function.copy(thisValue));
-		}
-
-		// Add operator methods
-		for (Map.Entry<Token.Type, ClassMemberFunction> entry : this.operatorMethods.entrySet()) {
-			thisValue.addOperatorMethods(entry.getKey(), entry.getValue().copy(thisValue));
 		}
 
 		// Add member variables
@@ -84,24 +82,24 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 			thisValue.addMemberVariable(entry.getKey(), entry.getValue().visit(context));
 		}
 
+		this.operatorMap.forEach((type, function) -> thisValue.addOperatorMethod(type, function.copy(thisValue)));
+
 		int parameterCount = parameters.size() + 1;
-		if (this.getConstructors().isEmpty() && parameterCount == 1) {
+		if (this.constructors.isEmpty() && parameterCount == 1) {
 			return thisValue;
 		}
-		// Finding the constructor with the correct amount of parameters
-		boolean matched = false;
-		for (ClassMemberFunction constructor : this.getConstructors()) {
-			if (parameterCount != constructor.getParameterCount()) {
-				continue;
-			}
-			matched = true;
-			constructor.copy(thisValue).call(context, parameters, false);
-			break;
-		}
-		if (!matched) {
+		
+		ClassMemberFunction constructor = this.constructors.get(this.getName(), parameterCount);
+		if (constructor == null) {
 			throw new RuntimeError("No such constructor for %s".formatted(this.getName()), syntaxPosition, context);
 		}
 		
+		constructor.copy(thisValue).call(context, parameters, false);
 		return thisValue;
+	}
+
+	@Override
+	public Class<ArucasClassValue> getValueClass() {
+		return ArucasClassValue.class;
 	}
 }

@@ -1,127 +1,106 @@
 package me.senseiwells.arucas.values;
 
+import me.senseiwells.arucas.api.ArucasClassExtension;
 import me.senseiwells.arucas.throwables.CodeError;
+import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.classes.ArucasClassValue;
-import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.functions.MemberFunction;
-import me.senseiwells.arucas.values.functions.MemberOperations;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-
-public abstract class Value<T> implements ValueOperations, MemberOperations {
+public abstract class Value<T> extends BaseValue {
 	public final T value;
-	public final Set<MemberFunction> memberFunctions;
 	
 	public Value(T value) {
 		this.value = value;
-		this.memberFunctions = this.getDefinedFunctions();
-	}
-	
-	// Shallow copy
-	public abstract Value<T> copy();
-
-	// Deep copy
-	public Value<T> newCopy() {
-		return this.copy();
-	}
-
-	public String getStringValue(Context context) throws CodeError {
-		return this.value.toString();
 	}
 
 	@Override
-	public boolean isAssignable(String name) {
-		return false;
+	public abstract Value<T> copy(Context context) throws CodeError;
+
+	@Override
+	public Value<T> newCopy(Context context) throws CodeError {
+		return this.copy(context);
 	}
 
 	@Override
-	public boolean setMember(String name, Value<?> value) {
-		return false;
+	protected final T getValue() {
+		return this.value;
 	}
 
-	@Override
-	public Value<?> getMember(String name) {
-		return null;
-	}
-
-	@Override
-	public Iterable<? extends FunctionValue> getAllMembers() {
-		return this.memberFunctions;
-	}
-
-	/**
-	 * We only care about comparing the value not the position
-	 * So overriding the equals and hashCode methods for maps
-	 */
-	@Override
-	public boolean equals(Object other) {
-		if (!(other instanceof Value<?> otherValue)) {
-			return false;
+	public static class ArucasBaseClass extends ArucasClassExtension {
+		public ArucasBaseClass() {
+			super("Object");
 		}
-		
-		// Object.equals takes null values into perspective.
-		return Objects.equals(this.value, otherValue.value);
-	}
 
-	@Override
-	public int hashCode() {
-		return this.value.hashCode();
-	}
+		@Override
+		public Class<?> getValueClass() {
+			return Value.class;
+		}
 
-	@Override
-	public final String toString() {
-		return this.value == null ? "null" : this.value.toString();
-	}
+		@Override
+		public ArucasFunctionMap<MemberFunction> getDefinedMethods() {
+			return ArucasFunctionMap.of(
+				new MemberFunction("instanceOf", "class", this::instanceOf),
+				new MemberFunction("getValueType", this::getValueType),
+				new MemberFunction("copy", this::newCopy),
+				new MemberFunction("hashCode", this::hashCode),
+				new MemberFunction("equals", "other", this::equals),
+				new MemberFunction("toString", this::toString)
+			);
+		}
 
+		private Value<?> instanceOf(Context context, MemberFunction function) throws CodeError {
+			Value<?> thisValue = function.getParameterValue(context, 0);
+			StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 1);
+			if (stringValue.value.isEmpty()) {
+				return BooleanValue.FALSE;
+			}
 
-	protected Set<MemberFunction> getDefinedFunctions() {
-		Set<MemberFunction> memberFunctions = new HashSet<>();
-		memberFunctions.addAll(Set.of(
-			new MemberFunction("instanceOf", "class", this::instanceOf),
-			new MemberFunction("getValueType", this::getValueType),
-			new MemberFunction("copy", (context, function) -> this.newCopy()),
-			new MemberFunction("equals", "other", this::equals),
-			new MemberFunction("toString", (context, function) -> new StringValue(this.getStringValue(context)))
-		));
-		return memberFunctions;
-	}
+			if (thisValue instanceof ArucasClassValue classValue) {
+				return BooleanValue.of(classValue.getName().equals(stringValue.value));
+			}
 
-	private Value<?> instanceOf(Context context, MemberFunction function) throws CodeError {
-		StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
-		if (stringValue.value.isEmpty()) {
+			Class<?> clazz = thisValue.getClass();
+			while (clazz != null && clazz != Object.class) {
+				if (clazz.getSimpleName().replaceFirst("Value$", "").equals(stringValue.value)) {
+					return BooleanValue.TRUE;
+				}
+
+				clazz = clazz.getSuperclass();
+			}
+
 			return BooleanValue.FALSE;
 		}
 
-		if (this instanceof ArucasClassValue classValue) {
-			return BooleanValue.of(classValue.getName().equals(stringValue.value));
-		}
-
-		Class<?> clazz = this.getClass();
-		while (clazz != null && clazz != Object.class) {
-			if (clazz.getSimpleName().replaceFirst("Value$", "").equals(stringValue.value)) {
-				return BooleanValue.TRUE;
+		private Value<?> getValueType(Context context, MemberFunction function) {
+			Value<?> thisValue = function.getParameterValue(context, 0);
+			if (thisValue instanceof ArucasClassValue classValue) {
+				return StringValue.of(classValue.getName());
 			}
 
-			clazz = clazz.getSuperclass();
+			String valueType = thisValue.getClass().getSimpleName().replaceFirst("Value$", "");
+			return StringValue.of(valueType);
 		}
 
-		return BooleanValue.FALSE;
-	}
-
-	private Value<?> getValueType(Context context, MemberFunction function) {
-		if (this instanceof ArucasClassValue classValue) {
-			return new StringValue(classValue.getName());
+		private Value<?> newCopy(Context context, MemberFunction function) throws CodeError {
+			Value<?> thisValue = function.getParameterValue(context, 0);
+			return thisValue.newCopy(context);
 		}
 
-		String valueType = this.getClass().getSimpleName().replaceFirst("Value$", "");
-		return new StringValue(valueType);
-	}
+		private NumberValue hashCode(Context context, MemberFunction function) throws CodeError {
+			Value<?> thisValue = function.getParameterValue(context, 0);
+			return NumberValue.of(thisValue.getHashCode(context));
+		}
 
-	private BooleanValue equals(Context context, MemberFunction function) {
-		Value<?> otherValue = function.getParameterValue(context, 0);
-		return this.isEqual(otherValue);
+		private BooleanValue equals(Context context, MemberFunction function) throws CodeError {
+			Value<?> thisValue = function.getParameterValue(context, 0);
+			Value<?> otherValue = function.getParameterValue(context, 1);
+			return BooleanValue.of(thisValue.isEquals(context, otherValue));
+		}
+
+		private StringValue toString(Context context, MemberFunction function) throws CodeError {
+			Value<?> thisValue = function.getParameterValue(context, 0);
+			return StringValue.of(thisValue.getAsString(context));
+		}
 	}
 }

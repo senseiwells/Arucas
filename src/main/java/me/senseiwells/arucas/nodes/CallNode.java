@@ -27,7 +27,7 @@ public class CallNode extends Node {
 		
 		Value<?> value = this.callNode.visit(context);
 		if (!(value instanceof FunctionValue functionValue)) {
-			throw new RuntimeError("Cannot call the non function value '%s'".formatted(value.getStringValue(context)), this.syntaxPosition, context);
+			throw new RuntimeError("Cannot call the non function value '%s'".formatted(value.getAsString(context)), this.syntaxPosition, context);
 		}
 		
 		List<Value<?>> argumentValues = new ArrayList<>();

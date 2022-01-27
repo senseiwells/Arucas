@@ -11,7 +11,7 @@ public class FunctionAccessNode extends Node {
 	
 	public FunctionAccessNode(Token token) {
 		super(token);
-		this.functionName = new StringValue(token.content);
+		this.functionName = StringValue.of(token.content);
 	}
 
 	@Override

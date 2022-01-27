@@ -7,11 +7,10 @@ import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.Context;
 
 public class BooleanValue extends Value<Boolean> {
-	public static BooleanValue
-		TRUE = new BooleanValue(true),
-		FALSE = new BooleanValue(false);
+	public static final BooleanValue TRUE = new BooleanValue(true);
+	public static final BooleanValue FALSE = new BooleanValue(false);
 
-	private BooleanValue(Boolean value) {
+	private BooleanValue(boolean value) {
 		super(value);
 	}
 
@@ -37,22 +36,41 @@ public class BooleanValue extends Value<Boolean> {
 
 	@Override
 	public BooleanValue not(Context context, ISyntax syntaxPosition) throws RuntimeError {
+		return this.not();
+	}
+
+	public BooleanValue not() {
 		return BooleanValue.of(!this.value);
 	}
 	
 	@Override
-	public BooleanValue copy() {
+	public BooleanValue copy(Context context) {
 		return this;
 	}
 	
 	@Override
-	public int hashCode() {
-		return this.value.hashCode();
+	public int getHashCode(Context context) {
+		return Boolean.hashCode(this.value);
 	}
-
+	
+	@Override
+	public String getAsString(Context context) {
+		return this.value ? "true" : "false";
+	}
+	
+	@Override
+	public boolean isEquals(Context context, Value<?> other) {
+		return (other instanceof BooleanValue that) && this.value == that.value;
+	}
+	
 	public static class ArucasBooleanClass extends ArucasClassExtension {
 		public ArucasBooleanClass() {
 			super("Boolean");
+		}
+
+		@Override
+		public Class<?> getValueClass() {
+			return BooleanValue.class;
 		}
 	}
 }

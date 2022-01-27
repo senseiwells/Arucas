@@ -1,21 +1,32 @@
 package me.senseiwells.arucas.utils;
 
-import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
-import me.senseiwells.arucas.api.IArucasExtension;
+import me.senseiwells.arucas.api.ArucasThreadHandler;
 import me.senseiwells.arucas.api.IArucasOutput;
 import me.senseiwells.arucas.api.ISyntax;
+import me.senseiwells.arucas.api.wrappers.ArucasWrapperExtension;
+import me.senseiwells.arucas.api.wrappers.IArucasWrappedClass;
 import me.senseiwells.arucas.throwables.CodeError;
+import me.senseiwells.arucas.throwables.RuntimeError;
+import me.senseiwells.arucas.throwables.ThrowValue;
+import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
+import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
+import me.senseiwells.arucas.values.classes.ArucasClassValue;
+import me.senseiwells.arucas.values.classes.WrapperArucasClassDefinition;
 import me.senseiwells.arucas.values.functions.AbstractBuiltInFunction;
+import me.senseiwells.arucas.values.functions.FunctionValue;
 
 import java.util.*;
 
 /**
- * Runtime context class of the programming language
+ * Runtime context class of the programming language.
+ *
+ * A context is never shared across two threads and is
+ * threadsafe.
  */
 public class Context {
-	private final Set<String> builtInFunctions;
-	private final List<IArucasExtension> extensions;
+	private final ArucasThreadHandler threadHandler;
+	private final ArucasFunctionMap<AbstractBuiltInFunction<?>> extensions;
 	private final IArucasOutput arucasOutput;
 	
 	private final String displayName;
@@ -23,38 +34,38 @@ public class Context {
 	private StackTable stackTable;
 	private boolean isDebug;
 	private boolean suppressDeprecated;
-
-	private Context(String displayName, Context parentContext, List<IArucasExtension> extensions, Collection<AbstractClassDefinition> classDefinitions, IArucasOutput arucasOutput) {
-		this.builtInFunctions = new HashSet<>();
+	
+	private final ThrowValue.Continue continueThrowable = new ThrowValue.Continue();
+	private final ThrowValue.Break breakThrowable = new ThrowValue.Break();
+	private final ThrowValue.Return returnThrowable = new ThrowValue.Return(NullValue.NULL);
+	
+	private Context(String displayName, Context parentContext, ArucasFunctionMap<AbstractBuiltInFunction<?>> extensions, ArucasClassDefinitionMap classDefinitions, ArucasThreadHandler threadHandler, IArucasOutput arucasOutput) {
 		this.extensions = extensions;
 		this.arucasOutput = arucasOutput;
+		this.threadHandler = threadHandler;
 		
 		this.displayName = displayName;
-		this.stackTable = new StackTable();
 		this.parentContext = parentContext;
+		this.suppressDeprecated = parentContext != null && parentContext.suppressDeprecated;
+		this.stackTable = new StackTable();
 		
-		for (IArucasExtension extension : extensions) {
-			for (AbstractBuiltInFunction<?> function : extension.getDefinedFunctions()) {
-				this.builtInFunctions.add(function.value);
-			}
-		}
-
-		for (AbstractClassDefinition classDefinition : classDefinitions) {
-			this.addClassDefinition(classDefinition);
-		}
+		// Initialize the class definitions map by inserting the previous table values
+		this.stackTable.classDefinitions = new ArucasClassDefinitionMap();
+		this.stackTable.classDefinitions.insertAll(classDefinitions);
 	}
 	
-	public Context(String displayName, List<IArucasExtension> extensions, Collection<AbstractClassDefinition> classDefinitions, IArucasOutput arucasOutput) {
-		this(displayName, null, extensions, classDefinitions, arucasOutput);
+	public Context(String displayName, ArucasFunctionMap<AbstractBuiltInFunction<?>> extensions, ArucasClassDefinitionMap classDefinitions, ArucasThreadHandler threadHandler, IArucasOutput arucasOutput) {
+		this(displayName, null, extensions, classDefinitions, threadHandler, arucasOutput);
 	}
 	
 	private Context(Context branch, StackTable stackTable) {
 		this.displayName = branch.displayName;
 		this.stackTable = stackTable;
+		this.threadHandler = branch.threadHandler;
 		this.arucasOutput = branch.arucasOutput;
 		this.extensions = branch.extensions;
-		this.builtInFunctions = branch.builtInFunctions;
 		this.parentContext = branch.parentContext;
+		this.suppressDeprecated = branch.suppressDeprecated;
 	}
 
 	@SuppressWarnings("unused")
@@ -76,7 +87,27 @@ public class Context {
 	}
 	
 	public Context createChildContext(String displayName) {
-		return new Context(displayName, this, this.extensions, this.stackTable.getRoot().classDefinitions.values(), this.arucasOutput);
+		return new Context(displayName, this, this.extensions, this.stackTable.getRoot().classDefinitions, this.threadHandler, this.arucasOutput);
+	}
+	
+	public ThrowValue.Continue getContinueThrowable() {
+		return this.continueThrowable;
+	}
+	
+	public ThrowValue.Break getBreakThrowable() {
+		return this.breakThrowable;
+	}
+	
+	public ThrowValue.Return getReturnThrowable(Value<?> value) {
+		this.returnThrowable.setReturnValue(value);
+		return this.returnThrowable;
+	}
+	
+	/**
+	 * Returns this thread handler.
+	 */
+	public ArucasThreadHandler getThreadHandler() {
+		return this.threadHandler;
 	}
 	
 	/**
@@ -108,6 +139,10 @@ public class Context {
 	
 	public void pushScope(ISyntax syntaxPosition) {
 		this.stackTable = new StackTable(this.stackTable, syntaxPosition, false, false, false);
+	}
+
+	public void pushRunScope() {
+		this.stackTable = new StackTable(this.stackTable, null, ISyntax.empty(), false, false, true);
 	}
 	
 	public void pushLoopScope(ISyntax syntaxPosition) {
@@ -151,6 +186,9 @@ public class Context {
 
 	public void setSuppressDeprecated(boolean suppressed) {
 		this.suppressDeprecated = suppressed;
+		if (this.parentContext != null) {
+			this.parentContext.setSuppressDeprecated(suppressed);
+		}
 	}
 
 	public boolean isSuppressDeprecated() {
@@ -158,7 +196,7 @@ public class Context {
 	}
 
 	public boolean isBuiltInFunction(String name) {
-		return this.builtInFunctions.contains(name);
+		return this.extensions.has(name);
 	}
 
 	public boolean isDefinedClass(String name) {
@@ -202,6 +240,21 @@ public class Context {
 			this.getOutput().println(message);
 		}
 	}
+
+	@SuppressWarnings("unused")
+	public ArucasClassValue createWrapperClass(Class<? extends IArucasWrappedClass> clazz, List<Value<?>> parameters, ISyntax syntaxPosition) throws CodeError {
+		String wrapperName = ArucasWrapperExtension.getWrapperName(clazz);
+		
+		if (wrapperName == null) {
+			throw new RuntimeError("No such wrapper class exists", syntaxPosition, this);
+		}
+		
+		AbstractClassDefinition classDefinition = this.getClassDefinition(wrapperName);
+		if (classDefinition instanceof WrapperArucasClassDefinition wrappedClassDefinition) {
+			return wrappedClassDefinition.createNewDefinition(this, parameters, syntaxPosition);
+		}
+		throw new RuntimeError("No such wrapper class exists", syntaxPosition, this);
+	}
 	
 	public AbstractClassDefinition getClassDefinition(String name) {
 		return this.stackTable.getClassDefinition(name);
@@ -212,15 +265,11 @@ public class Context {
 	}
 
 	public AbstractBuiltInFunction<?> getBuiltInFunction(String methodName, int parameters) {
-		for (IArucasExtension extension : this.extensions) {
-			for (AbstractBuiltInFunction<?> function : extension.getDefinedFunctions()) {
-				if (function.getName().equals(methodName) && parameters == function.getParameterCount()) {
-					return function;
-				}
-			}
-		}
+		return this.extensions.get(methodName, parameters);
+	}
 
-		return null;
+	public FunctionValue getMemberFunction(Class<?> clazz, String methodName, int parameters) {
+		return this.stackTable.getClassFunction(clazz, methodName, parameters);
 	}
 	
 	@Deprecated(forRemoval = true)
@@ -233,6 +282,7 @@ public class Context {
 			sb.append(iter.next()).append("\n");
 		}
 		
+		this.stackTable.getRoot().classDefinitions.iterator().forEachRemaining(System.out::println);
 		System.out.println(sb);
 	}
 }

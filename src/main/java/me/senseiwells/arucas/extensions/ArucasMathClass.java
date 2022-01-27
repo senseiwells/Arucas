@@ -2,10 +2,11 @@ package me.senseiwells.arucas.extensions;
 
 import me.senseiwells.arucas.api.ArucasClassExtension;
 import me.senseiwells.arucas.throwables.CodeError;
+import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.NumberValue;
 import me.senseiwells.arucas.values.Value;
-import me.senseiwells.arucas.values.functions.MemberFunction;
+import me.senseiwells.arucas.values.functions.BuiltInFunction;
 
 import java.util.List;
 import java.util.Map;
@@ -18,152 +19,164 @@ public class ArucasMathClass extends ArucasClassExtension {
 	@Override
 	public Map<String, Value<?>> getDefinedStaticVariables() {
 		return Map.of(
-			"pi", new NumberValue(Math.PI),
-			"e", new NumberValue(Math.E),
-			"root2", new NumberValue(Math.sqrt(2))
+			"pi", NumberValue.of(Math.PI),
+			"e", NumberValue.of(Math.E),
+			"root2", NumberValue.of(Math.sqrt(2))
 		);
 	}
 
 	@Override
-	public List<MemberFunction> getDefinedStaticMethods() {
-		return List.of(
-			new MemberFunction("round", "num", this::round),
-			new MemberFunction("ceil", "num", this::ceil),
-			new MemberFunction("floor", "num", this::floor),
-			new MemberFunction("sqrt", "num", this::sqrt),
-			new MemberFunction("abs", "num", this::abs),
-			new MemberFunction("mod", List.of("num1", "num2"), this::mod),
-			new MemberFunction("max", List.of("num1", "num2"), this::max),
-			new MemberFunction("min", List.of("num1", "num2"), this::min),
-			new MemberFunction("clamp", List.of("num", "min", "max"), this::clamp),
-			new MemberFunction("toRandians", "num", this::toRadians),
-			new MemberFunction("toDegrees", "num", this::toDegrees),
-			new MemberFunction("log", "num", this::log),
-			new MemberFunction("log10", "num", this::log10),
-			new MemberFunction("sin", "num", this::sin),
-			new MemberFunction("cos", "num", this::cos),
-			new MemberFunction("tan", "num", this::tan),
-			new MemberFunction("arcsin", "num", this::arcsin),
-			new MemberFunction("arccos", "num", this::arccos),
-			new MemberFunction("arctan", "num", this::arctan),
-			new MemberFunction("cosec", "num", this::cosec),
-			new MemberFunction("sec", "num", this::sec),
-			new MemberFunction("cot", "num", this::cot)
+	public ArucasFunctionMap<BuiltInFunction> getDefinedStaticMethods() {
+		return ArucasFunctionMap.of(
+			new BuiltInFunction("round", "num", this::round),
+			new BuiltInFunction("ceil", "num", this::ceil),
+			new BuiltInFunction("floor", "num", this::floor),
+			new BuiltInFunction("sqrt", "num", this::sqrt),
+			new BuiltInFunction("abs", "num", this::abs),
+			new BuiltInFunction("mod", List.of("num1", "num2"), this::mod),
+			new BuiltInFunction("max", List.of("num1", "num2"), this::max),
+			new BuiltInFunction("min", List.of("num1", "num2"), this::min),
+			new BuiltInFunction("clamp", List.of("num", "min", "max"), this::clamp),
+			new BuiltInFunction("toRadians", "num", this::toRadians),
+			new BuiltInFunction("toDegrees", "num", this::toDegrees),
+			new BuiltInFunction("log", "num", this::log),
+			new BuiltInFunction("log", List.of("base", "num"), this::logBase),
+			new BuiltInFunction("log10", "num", this::log10),
+			new BuiltInFunction("sin", "num", this::sin),
+			new BuiltInFunction("cos", "num", this::cos),
+			new BuiltInFunction("tan", "num", this::tan),
+			new BuiltInFunction("arcsin", "num", this::arcsin),
+			new BuiltInFunction("arccos", "num", this::arccos),
+			new BuiltInFunction("arctan", "num", this::arctan),
+			new BuiltInFunction("cosec", "num", this::cosec),
+			new BuiltInFunction("sec", "num", this::sec),
+			new BuiltInFunction("cot", "num", this::cot)
 		);
 	}
 
-	private NumberValue round(Context context, MemberFunction function) throws CodeError {
+	private NumberValue round(Context context, BuiltInFunction function) throws CodeError {
 		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
-		return new NumberValue(Math.round(numberValue));
+		return NumberValue.of(Math.round(numberValue));
 	}
 
-	private NumberValue ceil(Context context, MemberFunction function) throws CodeError {
+	private NumberValue ceil(Context context, BuiltInFunction function) throws CodeError {
 		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
-		return new NumberValue(Math.ceil(numberValue));
+		return NumberValue.of(Math.ceil(numberValue));
 	}
 
-	private NumberValue floor(Context context, MemberFunction function) throws CodeError {
+	private NumberValue floor(Context context, BuiltInFunction function) throws CodeError {
 		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
-		return new NumberValue(Math.floor(numberValue));
+		return NumberValue.of(Math.floor(numberValue));
 	}
 
-	private Value<?> sqrt(Context context, MemberFunction function) throws CodeError {
+	private Value<?> sqrt(Context context, BuiltInFunction function) throws CodeError {
 		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
-		return new NumberValue(Math.sqrt(numberValue));
+		return NumberValue.of(Math.sqrt(numberValue));
 	}
 
-	private Value<?> abs(Context context, MemberFunction function) throws CodeError {
+	private Value<?> abs(Context context, BuiltInFunction function) throws CodeError {
 		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
-		return new NumberValue(Math.abs(numberValue));
+		return NumberValue.of(Math.abs(numberValue));
 	}
 
-	private Value<?> mod(Context context, MemberFunction function) throws CodeError {
-		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
-		double otherNumber = function.getParameterValueOfType(context, NumberValue.class, 1).value;
-		return new NumberValue(numberValue % otherNumber);
-	}
-
-	private Value<?> max(Context context, MemberFunction function) throws CodeError {
+	private Value<?> mod(Context context, BuiltInFunction function) throws CodeError {
 		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
 		double otherNumber = function.getParameterValueOfType(context, NumberValue.class, 1).value;
-		return new NumberValue(Math.max(numberValue, otherNumber));
+		return NumberValue.of(numberValue % otherNumber);
 	}
 
-	private Value<?> min(Context context, MemberFunction function) throws CodeError {
+	private Value<?> max(Context context, BuiltInFunction function) throws CodeError {
 		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
 		double otherNumber = function.getParameterValueOfType(context, NumberValue.class, 1).value;
-		return new NumberValue(Math.min(numberValue, otherNumber));
+		return NumberValue.of(Math.max(numberValue, otherNumber));
 	}
 
-	private Value<?> clamp(Context context, MemberFunction function) throws CodeError {
+	private Value<?> min(Context context, BuiltInFunction function) throws CodeError {
+		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
+		double otherNumber = function.getParameterValueOfType(context, NumberValue.class, 1).value;
+		return NumberValue.of(Math.min(numberValue, otherNumber));
+	}
+
+	private Value<?> clamp(Context context, BuiltInFunction function) throws CodeError {
 		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
 		double minNumber = function.getParameterValueOfType(context, NumberValue.class, 1).value;
 		double maxNumber = function.getParameterValueOfType(context, NumberValue.class, 2).value;
-		return new NumberValue(numberValue < minNumber ? minNumber : Math.min(numberValue, maxNumber));
+		return NumberValue.of(numberValue < minNumber ? minNumber : Math.min(numberValue, maxNumber));
 	}
 
-	private Value<?> toRadians(Context context, MemberFunction function) throws CodeError {
+	private Value<?> toRadians(Context context, BuiltInFunction function) throws CodeError {
 		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
-		return new NumberValue(Math.toRadians(numberValue));
+		return NumberValue.of(Math.toRadians(numberValue));
 	}
 
-	private Value<?> toDegrees(Context context, MemberFunction function) throws CodeError {
+	private Value<?> toDegrees(Context context, BuiltInFunction function) throws CodeError {
 		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
-		return new NumberValue(Math.toDegrees(numberValue));
+		return NumberValue.of(Math.toDegrees(numberValue));
 	}
 
-	private Value<?> log(Context context, MemberFunction function) throws CodeError {
+	private Value<?> log(Context context, BuiltInFunction function) throws CodeError {
 		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
-		return new NumberValue(Math.log(numberValue));
+		return NumberValue.of(Math.log(numberValue));
 	}
 
-	private Value<?> log10(Context context, MemberFunction function) throws CodeError {
-		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
-		return new NumberValue(Math.log10(numberValue));
+	private Value<?> logBase(Context context, BuiltInFunction function) throws CodeError {
+		double baseNumber = function.getParameterValueOfType(context, NumberValue.class, 0).value;
+		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 1).value;
+		return NumberValue.of(Math.log(numberValue) / Math.log(baseNumber));
 	}
 
-	private Value<?> sin(Context context, MemberFunction function) throws CodeError {
+	private Value<?> log10(Context context, BuiltInFunction function) throws CodeError {
 		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
-		return new NumberValue(Math.sin(numberValue));
+		return NumberValue.of(Math.log10(numberValue));
 	}
 
-	private Value<?> cos(Context context, MemberFunction function) throws CodeError {
+	private Value<?> sin(Context context, BuiltInFunction function) throws CodeError {
 		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
-		return new NumberValue(Math.cos(numberValue));
+		return NumberValue.of(Math.sin(numberValue));
 	}
 
-	private Value<?> tan(Context context, MemberFunction function) throws CodeError {
+	private Value<?> cos(Context context, BuiltInFunction function) throws CodeError {
 		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
-		return new NumberValue(Math.tan(numberValue));
+		return NumberValue.of(Math.cos(numberValue));
 	}
 
-	private Value<?> arcsin(Context context, MemberFunction function) throws CodeError {
+	private Value<?> tan(Context context, BuiltInFunction function) throws CodeError {
 		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
-		return new NumberValue(Math.asin(numberValue));
+		return NumberValue.of(Math.tan(numberValue));
 	}
 
-	private Value<?> arccos(Context context, MemberFunction function) throws CodeError {
+	private Value<?> arcsin(Context context, BuiltInFunction function) throws CodeError {
 		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
-		return new NumberValue(Math.acos(numberValue));
+		return NumberValue.of(Math.asin(numberValue));
 	}
 
-	private Value<?> arctan(Context context, MemberFunction function) throws CodeError {
+	private Value<?> arccos(Context context, BuiltInFunction function) throws CodeError {
 		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
-		return new NumberValue(Math.atan(numberValue));
+		return NumberValue.of(Math.acos(numberValue));
 	}
 
-	private Value<?> cosec(Context context, MemberFunction function) throws CodeError {
+	private Value<?> arctan(Context context, BuiltInFunction function) throws CodeError {
 		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
-		return new NumberValue(1 / Math.sin(numberValue));
+		return NumberValue.of(Math.atan(numberValue));
 	}
 
-	private Value<?> sec(Context context, MemberFunction function) throws CodeError {
+	private Value<?> cosec(Context context, BuiltInFunction function) throws CodeError {
 		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
-		return new NumberValue(1 / Math.cos(numberValue));
+		return NumberValue.of(1 / Math.sin(numberValue));
 	}
 
-	private Value<?> cot(Context context, MemberFunction function) throws CodeError {
+	private Value<?> sec(Context context, BuiltInFunction function) throws CodeError {
 		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
-		return new NumberValue(1 / Math.tan(numberValue));
+		return NumberValue.of(1 / Math.cos(numberValue));
+	}
+
+	private Value<?> cot(Context context, BuiltInFunction function) throws CodeError {
+		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
+		return NumberValue.of(1 / Math.tan(numberValue));
+	}
+
+	@Override
+	public Class<?> getValueClass() {
+		return null;
 	}
 }

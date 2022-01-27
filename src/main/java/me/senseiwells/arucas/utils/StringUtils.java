@@ -1,12 +1,24 @@
 package me.senseiwells.arucas.utils;
 
 import me.senseiwells.arucas.throwables.CodeError;
-import me.senseiwells.arucas.values.ListValue;
-import me.senseiwells.arucas.values.MapValue;
-import me.senseiwells.arucas.values.StringValue;
-import me.senseiwells.arucas.values.Value;
+import me.senseiwells.arucas.values.*;
 
 public class StringUtils {
+	/**
+	 * Joins all arguments using <code>StringBuilder</code>.
+	 */
+	public static String join(Object... args) {
+		final int length = args.length;
+		if (length == 0) return "";
+		StringBuilder sb = new StringBuilder();
+		
+		for (int i = 0; i < length; i++) {
+			sb.append(args[i]);
+		}
+		
+		return sb.toString();
+	}
+	
 	/**
 	 * Converts all instances of <code>[\'] [\"] [\\] [\r] [\n] [\b] [\t] [\x..] [&bsol;u....]</code> to the correct character.
 	 */
@@ -39,7 +51,7 @@ public class StringUtils {
 						String hex = string.substring(i + 1, i + 3);
 
 						try {
-							sb.append((char)Integer.parseInt(hex, 16));
+							sb.append((char) Integer.parseInt(hex, 16));
 						}
 						catch (NumberFormatException e) {
 							throw new RuntimeException("(index:%d) Invalid escape '\\x%s'".formatted(i, hex));
@@ -56,7 +68,7 @@ public class StringUtils {
 						String hex = string.substring(i + 1, i + 5);
 
 						try {
-							sb.append((char)Integer.parseInt(hex, 16));
+							sb.append((char) Integer.parseInt(hex, 16));
 						}
 						catch (NumberFormatException e) {
 							throw new RuntimeException("(index:%d) Invalid escape '\\u%s'".formatted(i, hex));
@@ -233,7 +245,10 @@ public class StringUtils {
 	 */
 	public static String toPlainString(Context context, Value<?> value) throws CodeError {
 		if (value instanceof StringValue) {
-			return "\"%s\"".formatted(value.getStringValue(context));
+			return "\"" + value.getAsString(context) + "\"";
+		}
+		else if (value instanceof NumberValue) {
+			return value.getAsString(context);
 		}
 		else if (value instanceof ListValue) {
 			return "<list>";
@@ -242,7 +257,7 @@ public class StringUtils {
 			return "<map>";
 		}
 		else {
-			return "\"%s\"".formatted(value.getStringValue(context));
+			return value.getAsString(context);
 		}
 	}
 }

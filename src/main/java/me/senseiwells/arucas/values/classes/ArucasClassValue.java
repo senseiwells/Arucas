@@ -1,25 +1,30 @@
 package me.senseiwells.arucas.values.classes;
 
 import me.senseiwells.arucas.throwables.CodeError;
+import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.tokens.Token;
+import me.senseiwells.arucas.utils.ArucasFunctionMap;
+import me.senseiwells.arucas.utils.ArucasOperatorMap;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.utils.StackTable;
+import me.senseiwells.arucas.values.BooleanValue;
+import me.senseiwells.arucas.values.NumberValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.functions.ClassMemberFunction;
 import me.senseiwells.arucas.values.functions.FunctionValue;
+import me.senseiwells.arucas.values.functions.MemberOperations;
 
 import java.util.*;
 
-public class ArucasClassValue extends Value<ArucasClassDefinition> {
-	private final List<ClassMemberFunction> methods;
-	private final Map<Token.Type, ClassMemberFunction> operatorMethods;
-	private final StackTable members;
+public class ArucasClassValue extends Value<AbstractClassDefinition> implements MemberOperations {
+	private final ArucasFunctionMap<ClassMemberFunction> methods;
+	private final Map<String, Value<?>> members;
+	private final ArucasOperatorMap<ClassMemberFunction> operatorMap;
 	
-	public ArucasClassValue(ArucasClassDefinition arucasClass) {
+	public ArucasClassValue(AbstractClassDefinition arucasClass) {
 		super(arucasClass);
-		this.methods = new ArrayList<>();
-		this.operatorMethods = new HashMap<>();
-		this.members = new StackTable();
+		this.methods = new ArucasFunctionMap<>();
+		this.members = new HashMap<>();
+		this.operatorMap = new ArucasOperatorMap<>();
 	}
 	
 	public String getName() {
@@ -29,21 +34,21 @@ public class ArucasClassValue extends Value<ArucasClassDefinition> {
 	protected void addMethod(ClassMemberFunction method) {
 		this.methods.add(method);
 	}
-
-	protected void addOperatorMethods(Token.Type type, ClassMemberFunction method) {
-		this.operatorMethods.put(type, method);
-	}
 	
-	protected void addMemberVariable(String name, Value<?> value) {
-		this.members.setLocal(name, value);
+	public void addMemberVariable(String name, Value<?> value) {
+		this.members.put(name, value);
 	}
 
-	public boolean hasOperatorMethod(Token.Type type) {
-		return this.operatorMethods.containsKey(type);
+	public void addOperatorMethod(Token.Type type, ClassMemberFunction method) {
+		this.operatorMap.add(type, method);
 	}
 
-	public ClassMemberFunction getOperatorMethod(Token.Type type) {
-		return this.operatorMethods.get(type);
+	public boolean hasOperatorMethod(Token.Type type, int parameters) {
+		return this.operatorMap.hasOperator(type, parameters);
+	}
+
+	public ClassMemberFunction getOperatorMethod(Token.Type type, int parameters) {
+		return this.operatorMap.get(type, parameters);
 	}
 
 	@Override
@@ -58,7 +63,7 @@ public class ArucasClassValue extends Value<ArucasClassDefinition> {
 			return false;
 		}
 
-		this.members.set(name, value);
+		this.members.put(name, value);
 		return true;
 	}
 	
@@ -68,50 +73,60 @@ public class ArucasClassValue extends Value<ArucasClassDefinition> {
 		if (member != null) {
 			return member;
 		}
+		
+		return this.methods.get(name);
+	}
 
-		member = super.getMember(name);
-		if (member != null) {
-			return member;
-		}
-		return this.getDelegate(name, this.methods);
+	@Override
+	public final ArucasFunctionMap<?> getAllMembers() {
+		return this.methods;
+	}
+
+	@Override
+	public ArucasClassValue copy(Context context) {
+		return this;
 	}
 	
 	@Override
-	public FunctionValue getMember(String name, int parameters) {
-		for (ClassMemberFunction method : this.methods) {
-			if (method.getParameterCount() == parameters && method.getName().equals(name)) {
-				return method;
+	public int getHashCode(Context context) throws CodeError {
+		// If 'hashCode' is overridden we should use that here
+		FunctionValue memberFunction = this.getMember("hashCode", 1);
+		if (memberFunction != null) {
+			Value<?> value = memberFunction.call(context, new ArrayList<>());
+			if (!(value instanceof NumberValue numberValue)) {
+				throw new RuntimeError("hashCode() must return a number", memberFunction.syntaxPosition, context);
 			}
+			return numberValue.value.intValue();
 		}
-		return super.getMember(name, parameters);
-	}
 
-	@Override
-	public ArucasClassValue copy() {
-		// You should not be able to
-		return this;
+		return Objects.hashCode(this);
 	}
-
+	
 	@Override
-	public int hashCode() {
-		return this.value.hashCode();
-	}
-
-	@Override
-	public boolean equals(Object other) {
-		if (other instanceof ArucasClassValue otherClass && this.getName().equals(otherClass.getName())) {
-			return this.members.equals(otherClass.members);
-		}
-		return false;
-	}
-
-	@Override
-	public String getStringValue(Context context) throws CodeError {
-		// If 'toString' is overwritten we should return that value here
+	public String getAsString(Context context) throws CodeError {
+		// If 'toString' is overridden we should use that here
 		FunctionValue memberFunction = this.getMember("toString", 1);
 		if (memberFunction != null) {
-			return memberFunction.call(context, new ArrayList<>()).getStringValue(context);
+			return memberFunction.call(context, new ArrayList<>()).getAsString(context);
 		}
-		return "<class %s@%x>".formatted(this.getName(), this.hashCode());
+		
+		return "<class " + this.getName() + "@" + Integer.toHexString(this.getHashCode(context)) + ">";
+	}
+	
+	@Override
+	public boolean isEquals(Context context, Value<?> other) throws CodeError {
+		// If 'equals' is overridden we should use that here
+		FunctionValue memberFunction = this.getMember("equals", 2);
+		if (memberFunction != null) {
+			List<Value<?>> parameters = new ArrayList<>();
+			parameters.add(other);
+			Value<?> value = memberFunction.call(context, parameters);
+			if (!(value instanceof BooleanValue booleanValue)) {
+				throw new RuntimeError("equals() must return a boolean", memberFunction.syntaxPosition, context);
+			}
+			return booleanValue.value;
+		}
+
+		return this == other;
 	}
 }

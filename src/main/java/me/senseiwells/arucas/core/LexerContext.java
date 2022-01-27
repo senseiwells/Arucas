@@ -99,7 +99,6 @@ public class LexerContext {
 			else {
 				String e = StringUtils.regexEscape(escape);
 				regex = s + "(?:" + e + "(?:" + e + "|" + c + "|(?!" + c + ").)|(?!" + e + "|" + c + ").)*" + c;
-				//regex = "%s(?:%s(?:%s|%s|(?!%s).)|(?!%s|%s).)*%s".formatted(s, e, e, c, c, e, c, c);
 			}
 			
 			this.matches.add(Pattern.compile(regex, Pattern.DOTALL));
@@ -115,7 +114,7 @@ public class LexerContext {
 				}
 			}
 			
-			return length < 1 ? -1:length;
+			return length < 1 ? -1 : length;
 		}
 	}
 }
