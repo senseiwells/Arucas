@@ -77,10 +77,10 @@ public class WrapperArucasClassDefinition extends AbstractClassDefinition {
 		ArucasWrapperClassValue thisValue = new ArucasWrapperClassValue(this, wrappedClass);
 
 		for (WrapperClassMemberFunction function : this.methods) {
-			thisValue.addMethod(function.copy(wrappedClass));
+			thisValue.addMethod(function.copy(thisValue, wrappedClass));
 		}
 
-		this.operatorMap.forEach((type, function) -> thisValue.addOperatorMethod(type, function.copy(wrappedClass)));
+		this.operatorMap.forEach((type, function) -> thisValue.addOperatorMethod(type, function.copy(thisValue, wrappedClass)));
 
 		int parameterCount = parameters.size() + 1;
 		if (this.constructors.isEmpty() && parameterCount == 1) {
@@ -92,7 +92,7 @@ public class WrapperArucasClassDefinition extends AbstractClassDefinition {
 			throw new RuntimeError("No such constructor for %s".formatted(this.getName()), syntaxPosition, context);
 		}
 
-		constructor.copy(wrappedClass).call(context, parameters, false);
+		constructor.copy(thisValue, wrappedClass).call(context, parameters, false);
 		return thisValue;
 	}
 

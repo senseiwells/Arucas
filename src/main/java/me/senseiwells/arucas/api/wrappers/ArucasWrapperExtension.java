@@ -69,13 +69,14 @@ public class ArucasWrapperExtension {
 			throw invalidWrapperMethod(clazz, method, "First parameter was not Context");
 		}
 
+		Class<?> returnType = method.getReturnType();
 		if (isConstructor) {
-			if (method.getReturnType() != void.class) {
+			if (returnType != void.class) {
 				throw invalidWrapperMethod(clazz, method, "Constructors must return void");
 			}
 		}
-		else if (!Value.class.isAssignableFrom(method.getReturnType())) {
-			throw invalidWrapperMethod(clazz, method, "Return type was not a subclass of Value");
+		else if (getMethodReturnType(clazz, method) == null) {
+			throw invalidWrapperMethod(clazz, method, "Return type was not a subclass of Value, or void, or %s".formatted(clazz.getName()));
 		}
 		
 		// Make sure that all parameters after the first one extends Value<?>
@@ -115,6 +116,20 @@ public class ArucasWrapperExtension {
 		return new RuntimeException("Invalid wrapper field '%s:%s'. %s".formatted(clazz, field.getName(), message));
 	}
 
+	private static ArucasMethodHandle.ReturnType getMethodReturnType(Class<?> clazz, Method method) {
+		Class<?> returnType = method.getReturnType();
+		if (returnType == void.class) {
+			return ArucasMethodHandle.ReturnType.VOID;
+		}
+		if (returnType == clazz) {
+			return ArucasMethodHandle.ReturnType.THIS;
+		}
+		if (Value.class.isAssignableFrom(returnType)) {
+			return ArucasMethodHandle.ReturnType.VALUE;
+		}
+		return null;
+	}
+
 	/**
 	 * Returns true if this method was added.
 	 */
@@ -124,11 +139,12 @@ public class ArucasWrapperExtension {
 		if (handle == null) {
 			throw invalidWrapperMethod(this.clazz, method, "Failed to get method handle");
 		}
-		
+
 		Class<?>[] parameters = method.getParameterTypes();
 		final int parameterLength = parameters.length - (isStatic ? 1 : 0);
-		
-		WrapperClassMemberFunction function = new WrapperClassMemberFunction(method.getName(), parameterLength, isStatic, handle);
+
+		ArucasMethodHandle methodHandle = new ArucasMethodHandle(handle, getMethodReturnType(this.clazz, method));
+		WrapperClassMemberFunction function = new WrapperClassMemberFunction(method.getName(), parameterLength, isStatic, methodHandle);
 		
 		if (isStatic) {
 			this.classDefinition.addStaticMethod(function);
@@ -155,7 +171,7 @@ public class ArucasWrapperExtension {
 		Class<?>[] parameters = method.getParameterTypes();
 		final int parameterLength = parameters.length;
 		
-		WrapperClassMemberFunction function = new WrapperClassMemberFunction("", parameterLength, false, handle);
+		WrapperClassMemberFunction function = new WrapperClassMemberFunction("", parameterLength, false, new ArucasMethodHandle(handle, null));
 
 		this.classDefinition.addConstructor(function);
 		return true;
@@ -197,8 +213,9 @@ public class ArucasWrapperExtension {
 			}
 			default -> throw noSuchOperator;
 		}
-		
-		WrapperClassMemberFunction function = new WrapperClassMemberFunction(method.getName(), parameterLength, false, handle);
+
+		ArucasMethodHandle methodHandle = new ArucasMethodHandle(handle, getMethodReturnType(this.clazz, method));
+		WrapperClassMemberFunction function = new WrapperClassMemberFunction(method.getName(), parameterLength, false, methodHandle);
 
 		this.classDefinition.addOperatorMethod(operatorToken, function);
 		return true;
