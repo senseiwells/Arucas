@@ -5,7 +5,6 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.utils.impl.ArucasMap;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
@@ -78,16 +77,12 @@ public class MapValue extends Value<ArucasMap> {
 
 		private Value<?> mapGetKeys(Context context, MemberFunction function) throws CodeError {
 			MapValue thisValue = function.getParameterValueOfType(context, MapValue.class, 0);
-			ArucasList valueList = new ArucasList();
-			valueList.addAll(thisValue.value.keySet(context));
-			return new ListValue(valueList);
+			return new ListValue(thisValue.value.keys());
 		}
 
 		private Value<?> mapGetValues(Context context, MemberFunction function) throws CodeError {
 			MapValue thisValue = function.getParameterValueOfType(context, MapValue.class, 0);
-			ArucasList valueList = new ArucasList();
-			valueList.addAll(thisValue.value.values(context));
-			return new ListValue(valueList);
+			return new ListValue(thisValue.value.values());
 		}
 
 		private Value<?> mapPut(Context context, MemberFunction function) throws CodeError {

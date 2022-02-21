@@ -6,509 +6,1167 @@ import me.senseiwells.arucas.utils.StringUtils;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.ValueIdentifier;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * This class cannot contain null values.
+ * This map implementation is just identity theft of HashMap.
+ * This map is synchronized and Thread-Safe, it also makes use
+ * of ValueIdentifier's isEquals, getHashCode, and getAsString
+ * methods for Arucas support.
+ * This map also cannot contain null values.
  */
 public class ArucasMap implements ValueIdentifier {
-	// This field is used to prevent deadlocks.
-	static final Object DEADLOCK_HANDLE = new Object();
-	
-	static final int HASH_BITS = 0x7fffffff;
-	// Using an INITIAL SIZE of 2048 makes this map implementation just 10 times slower than the
-	// Java implementation. Because Java dynamically expands their maps their implementation will
-	// become faster regardless.
-	static final int INITIAL_SIZE = 2048;
-	
-	private final Node[] table;
-	private final int mask;
+	private static final Object TOTAL_LOCK = new Object();
+
+	private static final int INITIAL_CAPACITY = 16;
+	private static final int MAX_CAPACITY = 1 << 30;
+	private static final int TREEIFY_THRESHOLD = 8;
+	private static final int UNTREEIFY_THRESHOLD = 6;
+	private static final int MIN_TREEIFY_CAPACITY = 64;
+	private static final float DEFAULT_LOAD_FACTOR = 0.75F;
+
+	private final Object LOCK = new Object();
+	private Node[] table;
 	private int size;
-	
+	private int threshold;
+	private final float loadFactor;
+
 	public ArucasMap() {
-		this.mask = ArucasMap.INITIAL_SIZE;
-		this.table = new Node[this.mask];
-		this.size = 0;
+		this.loadFactor = DEFAULT_LOAD_FACTOR;
 	}
-	
+
 	public ArucasMap(Context context, ArucasMap map) throws CodeError {
 		this();
-		this.putAll(context, map);
+		this.putMapEntries(context, map, false);
 	}
-	
-	/**
-	 * Adds an element to the map.
-	 */
-	public synchronized Value<?> put(Context context, Value<?> key, Value<?> value) throws CodeError {
-		return this.putNode(context, key, value, false);
+
+	void putMapEntries(Context context, ArucasMap otherMap, boolean evict) throws CodeError {
+		synchronized (this.LOCK) {
+			int size = otherMap.size;
+			if (size > 0) {
+				if (this.table == null) {
+					float factorThreshold = (size / this.loadFactor) + 1.0F;
+					int threshold = Math.min((int) factorThreshold, MAX_CAPACITY);
+					if (threshold > this.threshold) {
+						this.threshold = tableSizeFor(threshold);
+					}
+				}
+				else {
+					while (size > this.threshold && this.table.length < MAX_CAPACITY) {
+						this.resize();
+					}
+				}
+				this.deadlockSafe(otherMap, map -> {
+					for (Node node : map.nodeSet()) {
+						Value<?> key = node.key;
+						Value<?> value = node.value;
+						this.putVal(context, hash(context, key), key, value, false, evict);
+					}
+				});
+			}
+		}
 	}
-	
-	/**
-	 * Adds an element to the map if it doesn't exist in the map.
-	 */
-	public synchronized Value<?> putIfAbsent(Context context, Value<?> key, Value<?> value) throws CodeError {
-		return this.putNode(context, key, value, true);
+
+	public int size() {
+		return this.size;
 	}
-	
-	/**
-	 * Gets the specified key inside this map.
-	 */
-	public synchronized Value<?> get(Context context, Value<?> key) throws CodeError {
-		Node node = this.getNode(context,key);
+
+	public boolean isEmpty() {
+		return this.size == 0;
+	}
+
+	public Value<?> get(Context context, Value<?> key) throws CodeError {
+		Node node = this.getNode(context, key);
 		return node == null ? null : node.value;
 	}
-	
-	/**
-	 * Removes an element from the map.
-	 */
-	public synchronized Value<?> remove(Context context, Value<?> key) throws CodeError {
-		Node node = this.removeNode(context, key);
-		return node == null ? null : node.value;
+
+	Node getNode(Context context, Value<?> key) throws CodeError {
+		// This map doesn't allow null keys
+		Objects.requireNonNull(key);
+		synchronized (this.LOCK) {
+			Node[] table = this.table;
+			int size;
+			if (table != null && (size = table.length) > 0) {
+				int hash = hash(context, key);
+				Node first = table[size - 1 & hash];
+				if (first == null) {
+					return null;
+				}
+				Value<?> k;
+				if (first.hash == hash && ((k = first.key) == key || key.isEquals(context, k))) {
+					return first;
+				}
+				Node e = first.next;
+				if (e != null) {
+					if (first instanceof TreeNode treeNode) {
+						return treeNode.getTreeNode(context, hash, key);
+					}
+					do {
+						if (e.hash == hash && ((k = e.key) == key || key.isEquals(context, k))) {
+							return e;
+						}
+					}
+					while ((e = e.next) != null);
+				}
+			}
+			return null;
+		}
 	}
-	
-	/**
-	 * Returns if the specified key exists inside this map.
-	 */
-	public synchronized boolean containsKey(Context context, Value<?> key) throws CodeError {
+
+	public boolean containsKey(Context context, Value<?> key) throws CodeError {
 		return this.getNode(context, key) != null;
 	}
-	
-	/**
-	 * Add all elements from one map to this map.
-	 */
-	public void putAll(Context context, ArucasMap map) throws CodeError {
-		synchronized (DEADLOCK_HANDLE) {
-			synchronized (this) {
-				synchronized (map) {
-					for (int i = 0, len = map.table.length; i < len; i++) {
-						Node node = map.table[i];
-						
-						while (node != null) {
-							this.put(context, node.key, node.value);
-							node = node.next;
+
+	public Value<?> put(Context context, Value<?> key, Value<?> value) throws CodeError {
+		return this.putVal(context, hash(context, key), key, value, false, true);
+	}
+
+	public Value<?> putIfAbsent(Context context, Value<?> key, Value<?> value) throws CodeError {
+		return this.putVal(context, hash(context, key), key, value, true, true);
+	}
+
+	Value<?> putVal(Context context, int hash, Value<?> key, Value<?> value, boolean onlyIfAbsent, boolean evict) throws CodeError {
+		// This map doesn't allow any null values
+		Objects.requireNonNull(key);
+		Objects.requireNonNull(value);
+		synchronized (this.LOCK) {
+			Node[] tab = this.table;
+			Node p;
+			int n, i;
+			if (tab == null || (n = tab.length) == 0) {
+				n = (tab = this.resize()).length;
+			}
+			if ((p = tab[i = (n - 1) & hash]) == null) {
+				tab[i] = this.newNode(hash, key, value, null);
+			}
+			else {
+				Node e;
+				Value<?> k;
+				if (p.hash == hash && ((k = p.key) == key || key.isEquals(context, k))) {
+					e = p;
+				}
+				else if (p instanceof TreeNode pt) {
+					e = pt.putTreeVal(context, this, tab, hash, key, value);
+				}
+				else {
+					for (int binCount = 0; ; ++binCount) {
+						if ((e = p.next) == null) {
+							p.next = this.newNode(hash, key, value, null);
+							if (binCount >= TREEIFY_THRESHOLD - 1) {
+								this.treeifyBin(tab, hash);
+							}
+							break;
+						}
+						if (e.hash == hash && ((k = e.key) == key || key.isEquals(context, k))) {
+							break;
+						}
+						p = e;
+					}
+				}
+				if (e != null) {
+					Value<?> oldValue = e.value;
+					if (!onlyIfAbsent || oldValue == null) {
+						e.value = value;
+					}
+					this.afterNodeAccess(e);
+					return oldValue;
+				}
+			}
+			if (this.size++ > this.threshold) {
+				this.resize();
+			}
+			this.afterNodeInsertion(evict);
+			return null;
+		}
+	}
+
+	Node[] resize() {
+		synchronized (this.LOCK) {
+			Node[] oldTab = this.table;
+			int oldCap = (oldTab == null) ? 0 : oldTab.length;
+			int oldThr = this.threshold;
+			int newCap, newThr = 0;
+			if (oldCap > 0) {
+				if (oldCap >= MAX_CAPACITY) {
+					this.threshold = Integer.MAX_VALUE;
+					return oldTab;
+				}
+				if ((newCap = oldCap << 1) < MAX_CAPACITY &&
+					oldCap >= INITIAL_CAPACITY) {
+					newThr = oldThr << 1;
+				}
+			}
+			else if (oldThr > 0) {
+				newCap = oldThr;
+			}
+			else {
+				newCap = INITIAL_CAPACITY;
+				newThr = (int) (DEFAULT_LOAD_FACTOR * INITIAL_CAPACITY);
+			}
+			if (newThr == 0) {
+				float ft = (float) newCap * this.loadFactor;
+				newThr = newCap < MAX_CAPACITY && ft < (float) MAX_CAPACITY ? (int) ft : Integer.MAX_VALUE;
+			}
+			this.threshold = newThr;
+			Node[] newTab = new Node[newCap];
+			this.table = newTab;
+			if (oldTab != null) {
+				for (int j = 0; j < oldCap; ++j) {
+					Node e;
+					if ((e = oldTab[j]) != null) {
+						oldTab[j] = null;
+						if (e.next == null) {
+							newTab[e.hash & (newCap - 1)] = e;
+						}
+						else if (e instanceof TreeNode et) {
+							et.split(this, newTab, j, oldCap);
+						}
+						else {
+							Node loHead = null, loTail = null;
+							Node hiHead = null, hiTail = null;
+							Node next;
+							do {
+								next = e.next;
+								if ((e.hash & oldCap) == 0) {
+									if (loTail == null) {
+										loHead = e;
+									}
+									else {
+										loTail.next = e;
+									}
+									loTail = e;
+								}
+								else {
+									if (hiTail == null) {
+										hiHead = e;
+									}
+									else {
+										hiTail.next = e;
+									}
+									hiTail = e;
+								}
+							}
+							while ((e = next) != null);
+							if (loTail != null) {
+								loTail.next = null;
+								newTab[j] = loHead;
+							}
+							if (hiTail != null) {
+								hiTail.next = null;
+								newTab[j + oldCap] = hiHead;
+							}
 						}
 					}
 				}
 			}
+			return newTab;
 		}
-	}
-	
-	/**
-	 * Clear this map.
-	 */
-	public synchronized void clear() {
-		this.size = 0;
-		for (int i = 0, len = this.table.length; i < len; i++) {
-			this.table[i] = null;
-		}
-	}
-	
-	/**
-	 * Returns if this map is empty
-	 */
-	public boolean isEmpty() {
-		return this.size == 0;
-	}
-	
-	/**
-	 * Returns the size of this map
-	 */
-	public int size() {
-		return this.size;
-	}
-	
-	/**
-	 * Returns all keys inside this map
-	 */
-	public synchronized Set<Value<?>> keySet(Context context) throws CodeError {
-		final Value<?>[] array = new Value<?>[this.size];
-		int j = 0;
-		
-		for (int i = 0, len = this.table.length; i < len; i++) {
-			Node node = this.table[i];
-			
-			while (node != null) {
-				array[j++] = node.key;
-				node = node.next;
-			}
-		}
-		
-		return new KeySet(array.length == j ? array : Arrays.copyOf(array, j));
-	}
-	
-	/**
-	 * Returns a collection of all values inside this map
-	 */
-	public synchronized Collection<? extends Value<?>> values(Context context) throws CodeError {
-		final Value<?>[] array = new Value<?>[this.size];
-		int j = 0;
-		
-		for (int i = 0, len = this.table.length; i < len; i++) {
-			Node node = this.table[i];
-			
-			while (node != null) {
-				array[j++] = node.value;
-				node = node.next;
-			}
-		}
-		
-		return List.of(array.length == j ? array : Arrays.copyOf(array, j));
-	}
-	
-	/**
-	 * Returns a set of all entries inside this map
-	 */
-	public synchronized Set<Node> entrySet(Context context) throws CodeError {
-		final Node[] array = new Node[this.size];
-		
-		for (int i = 0, j = 0, len = this.table.length; i < len; i++) {
-			Node node = this.table[i];
-			
-			while (node != null) {
-				array[j++] = node;
-				node = node.next;
-			}
-		}
-		
-		return new EntrySet(array);
-	}
-	
-	private synchronized Value<?> putNode(Context context, Value<?> key, Value<?> value, boolean putIfAbsent) throws CodeError {
-		int hash = hash(key.getHashCode(context)) & (this.mask - 1);
-		Node curr = this.table[hash];
-		
-		if (curr == null) {
-			this.size ++;
-			this.table[hash] = new Node(key, value);
-			return null;
-		}
-		
-		Node last = curr;
-		while (curr != null) {
-			if (key.isEquals(context, curr.key)) {
-				return putIfAbsent ? curr.value : curr.setValue(value);
-			}
-			
-			last = curr;
-			curr = curr.next;
-		}
-		
-		this.size ++;
-		last.next = new Node(key, value);
-		return null;
-	}
-	
-	private synchronized Node removeNode(Context context, Value<?> key) throws CodeError {
-		int hash = this.hash(key.getHashCode(context)) & (this.mask - 1);
-		Node curr = this.table[hash];
-		Node last = null;
-		
-		while (curr != null) {
-			if (key.isEquals(context, curr.key)) {
-				if (last == null) {
-					// Make sure we remove this element from the map
-					this.table[hash] = curr.next;
-				}
-				else {
-					last.next = curr.next;
-				}
-				
-				this.size --;
-				return curr;
-			}
-			
-			last = curr;
-			curr = curr.next;
-		}
-		
-		return null;
-	}
-	
-	private synchronized Node getNode(Context context, Value<?> key) throws CodeError {
-		int hash = hash(key.getHashCode(context)) & (this.mask - 1);
-		Node curr = this.table[hash];
-		
-		while (curr != null) {
-			if (key.isEquals(context, curr.key)) {
-				return curr;
-			}
-			
-			curr = curr.next;
-		}
-		
-		return null;
 	}
 
-	private synchronized int hash(int h) {
-		return (h ^ (h >>> 16)) & ArucasMap.HASH_BITS;
-	}
-	
-	@Override
-	public int getHashCode(Context context) throws CodeError {
-		int h = 0;
-		
-		for (int i = 0, len = this.table.length; i < len; i++) {
-			Node node = this.table[i];
-			
-			while (node != null) {
-				h += node.getHashCode(context);
-				node = node.next;
+	void treeifyBin(Node[] tab, int hash) {
+		synchronized (this.LOCK) {
+			int n, index;
+			Node e;
+			if (tab == null || (n = tab.length) < MIN_TREEIFY_CAPACITY) {
+				this.resize();
+			}
+			else if ((e = tab[index = (n - 1) & hash]) != null) {
+				TreeNode hd = null, tl = null;
+				do {
+					TreeNode p = this.replacementTreeNode(e, null);
+					if (tl == null) {
+						hd = p;
+					}
+					else {
+						p.previous = tl;
+						tl.next = p;
+					}
+					tl = p;
+				}
+				while ((e = e.next) != null);
+				if ((tab[index] = hd) != null) {
+					hd.treeify(tab);
+				}
 			}
 		}
-		
-		return h;
 	}
-	
+
+	public void putAll(Context context, ArucasMap map) throws CodeError {
+		this.putMapEntries(context, map, true);
+	}
+
+	public Value<?> remove(Context context, Value<?> key) throws CodeError {
+		Node e = this.removeNode(context, hash(context, key), key, null, false, true);
+		return e == null ? null : e.value;
+	}
+
+	public boolean remove(Context context, Value<?> key, Value<?> value) throws CodeError {
+		return this.removeNode(context, hash(context, key), key, value, true, true) != null;
+	}
+
+	@SuppressWarnings("SameParameterValue")
+	Node removeNode(Context context, int hash, Value<?> key, Value<?> value, boolean matchValue, boolean movable) throws CodeError {
+		Objects.requireNonNull(key);
+		synchronized (this.LOCK) {
+			Node[] tab;
+			Node p;
+			int n, index;
+			if ((tab = this.table) != null && (n = tab.length) > 0 &&
+				(p = tab[index = (n - 1) & hash]) != null) {
+				Node node = null, e;
+				Value<?> k;
+				Value<?> v;
+				if (p.hash == hash && ((k = p.key) == key || key.isEquals(context, k))) {
+					node = p;
+				}
+				else if ((e = p.next) != null) {
+					if (p instanceof TreeNode pt) {
+						node = pt.getTreeNode(context, hash, key);
+					}
+					else {
+						do {
+							if (e.hash == hash && ((k = e.key) == key || key.isEquals(context, k))) {
+								node = e;
+								break;
+							}
+							p = e;
+						}
+						while ((e = e.next) != null);
+					}
+				}
+				if (node != null && (!matchValue || (v = node.value) == value ||
+					(value != null && value.isEquals(context, v)))) {
+					if (node instanceof TreeNode treeNode) {
+						treeNode.removeTreeNode(this, tab, movable);
+					}
+					else if (node == p) {
+						tab[index] = node.next;
+					}
+					else {
+						p.next = node.next;
+					}
+					this.size--;
+					this.afterNodeRemoval(node);
+					return node;
+				}
+			}
+			return null;
+		}
+	}
+
+	public void clear() {
+		synchronized (this.LOCK) {
+			Node[] table = this.table;
+			if (table != null && this.size > 0) {
+				this.size = 0;
+				Arrays.fill(table, null);
+			}
+		}
+	}
+
+	@SuppressWarnings("unused")
+	public boolean containsValue(Context context, Value<?> value) throws CodeError {
+		if (value == null) {
+			return false;
+		}
+		synchronized (this.LOCK) {
+			Node[] table = this.table;
+			Value<?> v;
+			if (table != null && this.size > 0) {
+				for (Node e : table) {
+					for (; e != null; e = e.next) {
+						if ((v = e.value) == value || value.isEquals(context, v)) {
+							return true;
+						}
+					}
+				}
+			}
+			return false;
+		}
+	}
+
+	public ArucasList keys() {
+		ArucasList keyList = new ArucasList();
+		synchronized (this.LOCK) {
+			Node[] table = this.table;
+			if (this.size > 0 && table != null) {
+				for (Node node : table) {
+					for (; node != null; node = node.next) {
+						keyList.add(node.key);
+					}
+				}
+			}
+			return keyList;
+		}
+	}
+
+	public ArucasList values() {
+		ArucasList valueList = new ArucasList();
+		synchronized (this.LOCK) {
+			Node[] table = this.table;
+			if (this.size > 0 && table != null) {
+				for (Node node : table) {
+					for (; node != null; node = node.next) {
+						valueList.add(node.value);
+					}
+				}
+			}
+			return valueList;
+		}
+	}
+
+	public Set<Node> nodeSet() {
+		Set<Node> nodeSet = new HashSet<>();
+		synchronized (this.LOCK) {
+			Node[] table = this.table;
+			if (this.size > 0 && table != null) {
+				for (Node node : table) {
+					for (; node != null; node = node.next) {
+						nodeSet.add(node);
+					}
+				}
+			}
+			return nodeSet;
+		}
+	}
+
+	private void deadlockSafe(ArucasMap otherMap, MapConsumer consumer) throws CodeError {
+		/*
+		 * If we always synchronize on DEADLOCK_HANDLE when locking on parameters
+		 * we will never let two threads lock on each other without waiting for
+		 * the other thread to release their lock on DEADLOCK_HANDLE.
+		 * This prevents any deadlocks from happening.
+		 */
+		synchronized (TOTAL_LOCK) {
+			synchronized (this.LOCK) {
+				synchronized (otherMap.LOCK) {
+					consumer.accept(otherMap);
+				}
+			}
+		}
+	}
+
+	@SuppressWarnings("SameParameterValue")
+	Node newNode(int hash, Value<?> key, Value<?> value, TreeNode next) {
+		return new Node(hash, key, value, next);
+	}
+
+	@SuppressWarnings("SameParameterValue")
+	Node replacementNode(Node node, Node next) {
+		return new Node(node.hash, node.key, node.value, next);
+	}
+
+	TreeNode newTreeNode(int hash, Value<?> key, Value<?> value, Node next) {
+		return new TreeNode(hash, key, value, next);
+	}
+
+	@SuppressWarnings("SameParameterValue")
+	TreeNode replacementTreeNode(Node node, Node next) {
+		return new TreeNode(node.hash, node.key, node.value, next);
+	}
+
+	@SuppressWarnings("unused")
+	void afterNodeAccess(Node p) { }
+	@SuppressWarnings("unused")
+	void afterNodeInsertion(boolean evict) { }
+	@SuppressWarnings("unused")
+	void afterNodeRemoval(Node p) { }
+
+	@Override
+	public int getHashCode(Context context) throws CodeError {
+		synchronized (this.LOCK) {
+			int h = 0;
+
+			for (Node value : this.table) {
+				Node node = value;
+
+				while (node != null) {
+					h += node.getHashCode(context);
+					node = node.next;
+				}
+			}
+
+			return h;
+		}
+	}
+
 	@Override
 	public synchronized String getAsString(Context context) throws CodeError {
 		StringBuilder sb = new StringBuilder();
 		sb.append('{');
-		
+
 		final int size = this.size;
 		for (int i = 0, l = 0; l < size; i++) {
 			Node node = this.table[i];
-			
+
 			while (node != null) {
 				sb.append(StringUtils.toPlainString(context, node.key)).append(": ")
-				  .append(StringUtils.toPlainString(context, node.value));
-				
+					.append(StringUtils.toPlainString(context, node.value));
+
 				if (++l >= this.size) {
 					break;
 				}
-				
+
 				sb.append(", ");
 				node = node.next;
 			}
 		}
-		
+
 		return sb.append('}').toString();
 	}
-	
+
 	@Override
 	public boolean isEquals(Context context, Value<?> other) throws CodeError {
 		if (!(other.value instanceof ArucasMap that)) {
 			return false;
 		}
-		
+
 		if (this == that) {
 			return true;
 		}
-		
-		// If we always synchronize on DEADLOCK_HANDLE when locking on parameters
-		// we will never let two threads lock on each other without waiting for
-		// the other thread to release their lock on DEADLOCK_HANDLE.
-		// This prevents any deadlocks from happening.
-		synchronized (DEADLOCK_HANDLE) {
-			synchronized (this) {
-				synchronized (that) {
-					if (this.size != that.size) {
-						return false;
+
+		AtomicBoolean returnBoolean = new AtomicBoolean(false);
+		this.deadlockSafe(that, map -> {
+			if (this.size != map.size) {
+				return;
+			}
+
+			for (Node thatNode : map.nodeSet()) {
+				for (; thatNode != null; thatNode = thatNode.next) {
+					// Check if keys are equal
+					Node thisNode = this.getNode(context, thatNode.key);
+
+					// Check if the nodes are equal
+					if (thisNode == null || !thisNode.isEquals(context, thatNode)) {
+						return;
 					}
-					
-					for (int i = 0, len = that.table.length; i < len; i++) {
-						Node thatNode = that.table[i];
-						
-						while (thatNode != null) {
-							// Check if keys are equal
-							Node thisNode = this.getNode(context, thatNode.key);
-							
-							// Check if the nodes are equal
-							if (thisNode == null || !thisNode.isEquals(context, thatNode)) {
-								return false;
+				}
+			}
+
+			returnBoolean.set(true);
+		});
+		return returnBoolean.get();
+	}
+
+	static int hash(Context context, Value<?> key) throws CodeError {
+		int hash = key.getHashCode(context);
+		return hash ^ hash >>> 16;
+	}
+
+	static int tableSizeFor(int cap) {
+		int n = -1 >>> Integer.numberOfLeadingZeros(cap - 1);
+		return n < 0 ? 1 : (n >= MAX_CAPACITY) ? MAX_CAPACITY : n + 1;
+	}
+
+	public static class Node implements ValueIdentifier {
+		// final Object LOCK = new Object();
+		final int hash;
+		final Value<?> key;
+		Value<?> value;
+		Node next;
+
+		Node(int hash, Value<?> key, Value<?> value, Node next) {
+			Objects.requireNonNull(key);
+			Objects.requireNonNull(value);
+			this.hash = hash;
+			this.key = key;
+			this.value = value;
+			this.next = next;
+		}
+
+		@SuppressWarnings("unused")
+		public Value<?> getKey() {
+			return this.key;
+		}
+
+		public Value<?> getValue() {
+			return this.value;
+		}
+
+		public boolean isEquals(Context context, Node otherNode) throws CodeError {
+			if (this == otherNode) {
+				return true;
+			}
+			return this.key.isEquals(context, otherNode.key) && this.value.isEquals(context, otherNode.value);
+		}
+
+		@Override
+		public String getAsString(Context context) throws CodeError {
+			return this.key.getAsString(context) + "=" + this.value.getAsString(context);
+		}
+
+		@Override
+		public int getHashCode(Context context) throws CodeError {
+			return this.key.getHashCode(context) ^ this.value.getHashCode(context);
+		}
+
+		@Deprecated
+		@Override
+		public boolean isEquals(Context context, Value<?> other) {
+			return false;
+		}
+
+		@Deprecated
+		@Override
+		public boolean equals(Object obj) {
+			return super.equals(obj);
+		}
+
+		@Deprecated
+		@Override
+		public int hashCode() {
+			return super.hashCode();
+		}
+
+		@Deprecated
+		@Override
+		public String toString() {
+			return super.toString();
+		}
+	}
+
+	private static class TreeNode extends Node {
+		TreeNode parent;
+		TreeNode left;
+		TreeNode right;
+		TreeNode previous;
+		boolean red;
+
+		TreeNode(int hash, Value<?> key, Value<?> value, Node next) {
+			super(hash, key, value, next);
+		}
+
+		TreeNode root() {
+			TreeNode current = this, parent;
+			while (true) {
+				parent = current.parent;
+				if (parent == null) {
+					return current;
+				}
+				current = parent;
+			}
+		}
+
+		static void moveRootToFront(Node[] table, TreeNode root) {
+			int size;
+			if (root != null && table != null && (size = table.length) > 0) {
+				int index = (size - 1) & root.hash;
+				TreeNode first = (TreeNode) table[index];
+				if (root != first) {
+					table[index] = root;
+					TreeNode next = (TreeNode) root.next;
+					TreeNode previous = root.previous;
+					if (next != null) {
+						next.previous = previous;
+					}
+					if (previous != null) {
+						previous.next = next;
+					}
+					if (first != null) {
+						first.previous = root;
+					}
+					root.next = first;
+					root.previous = null;
+				}
+			}
+		}
+
+		TreeNode find(Context context, int hash, Value<?> key) throws CodeError {
+			TreeNode current = this;
+			do {
+				int currentHash;
+				Value<?> currentKey;
+				TreeNode pl = current.left, pr = current.right, q;
+				if ((currentHash = current.hash) > hash) {
+					current = pl;
+				}
+				else if (currentHash < hash) {
+					current = pr;
+				}
+				else if ((currentKey = current.key) == key || key.isEquals(context, currentKey)) {
+					return current;
+				}
+				else if (pl == null) {
+					current = pr;
+				}
+				else if (pr == null) {
+					current = pl;
+				}
+				else if ((q = pr.find(context, hash, key)) != null) {
+					return q;
+				}
+				else {
+					current = pl;
+				}
+			}
+			while (current != null);
+			return null;
+		}
+
+		TreeNode getTreeNode(Context context, int hash, Value<?> key) throws CodeError {
+			return ((this.parent != null) ? this.root() : this).find(context, hash, key);
+		}
+
+		static int tieBreakOrder(Value<?> a, Value<?> b) {
+			int d;
+			if (a == null || b == null || (d = a.getClass().getName().compareTo(b.getClass().getName())) == 0) {
+				d = System.identityHashCode(a) <= System.identityHashCode(b) ? -1 : 1;
+			}
+			return d;
+		}
+
+		void treeify(Node[] table) {
+			TreeNode root = null;
+			for (TreeNode x = this, next; x != null; x = next) {
+				next = (TreeNode) x.next;
+				x.left = x.right = null;
+				if (root == null) {
+					x.parent = null;
+					x.red = false;
+					root = x;
+					continue;
+				}
+				int h = x.hash;
+				TreeNode p = root;
+				while (true) {
+					int dir, ph = p.hash;
+					Value<?> pk = p.key;
+					dir = ph > h ? -1 : ph < h ? 1 : tieBreakOrder(x.key, pk);
+					TreeNode xp = p;
+					p = dir <= 0 ? p.left : p.right;
+					if (p == null) {
+						x.parent = xp;
+						if (dir <= 0) {
+							xp.left = x;
+						}
+						else {
+							xp.right = x;
+						}
+						root = balanceInsertion(root, x);
+						break;
+					}
+				}
+			}
+			moveRootToFront(table, root);
+		}
+
+		Node untreeify(ArucasMap map) {
+			Node returnNode = null, lastReplacement = null;
+			for (Node current = this; current != null; current = current.next) {
+				Node replacement = map.replacementNode(current, null);
+				if (lastReplacement == null) {
+					returnNode = replacement;
+				}
+				else {
+					lastReplacement.next = replacement;
+				}
+				lastReplacement = replacement;
+			}
+			return returnNode;
+		}
+
+		TreeNode putTreeVal(Context context, ArucasMap map, Node[] table, int h, Value<?> k, Value<?> v) throws CodeError {
+			boolean searched = false;
+			TreeNode root = this.parent != null ? this.root() : this;
+			TreeNode p = root;
+			while (true) {
+				int dir, ph = p.hash;
+				Value<?> pk;
+				if (ph > h) {
+					dir = -1;
+				}
+				else if (ph < h) {
+					dir = 1;
+				}
+				else if ((pk = p.key) == k || (k.isEquals(context, pk))) {
+					return p;
+				}
+				else {
+					if (!searched) {
+						TreeNode q, ch = p.left == null ? p.right : p.left;
+						searched = true;
+						if (ch != null && (q = ch.find(context, h, k)) != null) {
+							return q;
+						}
+					}
+					dir = tieBreakOrder(k, pk);
+				}
+				TreeNode xp = p;
+				p = dir <= 0 ? p.left : p.right;
+				if (p == null) {
+					Node xpn = xp.next;
+					TreeNode x = map.newTreeNode(h, k, v, xpn);
+					if (dir <= 0) {
+						xp.left = x;
+					}
+					else {
+						xp.right = x;
+					}
+					if (xpn != null) {
+						((TreeNode) xpn).previous = x;
+					}
+					moveRootToFront(table, balanceInsertion(root, x));
+					return null;
+				}
+			}
+		}
+
+		void removeTreeNode(ArucasMap map, Node[] table, boolean movable) {
+			int size;
+			if (table == null || (size = table.length) == 0) {
+				return;
+			}
+			int index = (size - 1) & this.hash;
+			TreeNode first = (TreeNode) table[index], root = first, rootLeft;
+			TreeNode successor = (TreeNode) this.next, previous = this.previous;
+			if (previous == null) {
+				table[index] = first = successor;
+			}
+			else {
+				previous.next = successor;
+			}
+			if (successor != null) {
+				successor.previous = previous;
+			}
+			if (first == null) {
+				return;
+			}
+			if (root.parent != null) {
+				root = root.root();
+			}
+			if (movable && (root.right == null || (rootLeft = root.left) == null || rootLeft.left == null)) {
+				table[index] = first.untreeify(map);
+				return;
+			}
+			TreeNode current = this, currentLeft = this.left, currentRight = this.right, replacement;
+			if (currentLeft != null && currentRight != null) {
+				TreeNode next = currentRight, nextLeft;
+				while ((nextLeft = next.left) != null) {
+					next = nextLeft;
+				}
+				boolean nextRed = next.red;
+				next.red = current.red;
+				current.red = nextRed;
+				TreeNode nextRight = next.right, currentParent = current.parent;
+				if (next == currentRight) {
+					current.parent = next;
+					next.right = current;
+				}
+				else {
+					TreeNode nextParent = next.parent;
+					if ((current.parent = nextParent) != null) {
+						if (next == nextParent.left) {
+							nextParent.left = current;
+						}
+						else {
+							nextParent.right = current;
+						}
+					}
+					next.right = currentRight;
+					currentRight.parent = next;
+				}
+				current.left = null;
+				if ((current.right = nextRight) != null) {
+					nextRight.parent = current;
+				}
+				next.left = currentLeft;
+				currentLeft.parent = next;
+				if ((next.parent = currentParent) == null) {
+					root = next;
+				}
+				else if (current == currentParent.left) {
+					currentParent.left = next;
+				}
+				else {
+					currentParent.right = next;
+				}
+				replacement = nextRight == null ? current : nextRight;
+			}
+			else {
+				replacement = currentLeft != null ? currentLeft : Objects.requireNonNullElse(currentRight, current);
+			}
+			if (replacement != current) {
+				TreeNode pp = replacement.parent = current.parent;
+				if (pp == null) {
+					(root = replacement).red = false;
+				}
+				else if (current == pp.left) {
+					pp.left = replacement;
+				}
+				else {
+					pp.right = replacement;
+				}
+				current.left = current.right = current.parent = null;
+			}
+			TreeNode rootNode = current.red ? root : balanceDeletion(root, replacement);
+			if (replacement == current) {
+				TreeNode pp = current.parent;
+				current.parent = null;
+				if (pp != null) {
+					if (current == pp.left) {
+						pp.left = null;
+					}
+					else if (current == pp.right) {
+						pp.right = null;
+					}
+				}
+			}
+			if (movable) {
+				moveRootToFront(table, rootNode);
+			}
+		}
+
+		void split(ArucasMap map, Node[] table, int index, int bit) {
+			TreeNode treeNode = this;
+			TreeNode loHead = null, loTail = null;
+			TreeNode hiHead = null, hiTail = null;
+			int lc = 0, hc = 0;
+			for (TreeNode e = treeNode, next; e != null; e = next) {
+				next = (TreeNode) e.next;
+				e.next = null;
+				if ((e.hash & bit) == 0) {
+					if ((e.previous = loTail) == null) {
+						loHead = e;
+					}
+					else {
+						loTail.next = e;
+					}
+					loTail = e;
+					lc++;
+				}
+				else {
+					if ((e.previous = hiTail) == null) {
+						hiHead = e;
+					}
+					else {
+						hiTail.next = e;
+					}
+					hiTail = e;
+					hc++;
+				}
+			}
+
+			if (loHead != null) {
+				if (lc <= UNTREEIFY_THRESHOLD) {
+					table[index] = loHead.untreeify(map);
+				}
+				else {
+					table[index] = loHead;
+					if (hiHead != null) {
+						loHead.treeify(table);
+					}
+				}
+			}
+			if (hiHead != null) {
+				if (hc <= UNTREEIFY_THRESHOLD) {
+					table[index + bit] = hiHead.untreeify(map);
+				}
+				else {
+					table[index + bit] = hiHead;
+					if (loHead != null) {
+						hiHead.treeify(table);
+					}
+				}
+			}
+		}
+
+		static TreeNode rotateLeft(TreeNode root, TreeNode p) {
+			TreeNode r, pp, rl;
+			if (p != null && (r = p.right) != null) {
+				if ((rl = p.right = r.left) != null) {
+					rl.parent = p;
+				}
+				if ((pp = r.parent = p.parent) == null) {
+					(root = r).red = false;
+				}
+				else if (pp.left == p) {
+					pp.left = r;
+				}
+				else {
+					pp.right = r;
+				}
+				r.left = p;
+				p.parent = r;
+			}
+			return root;
+		}
+
+		static TreeNode rotateRight(TreeNode root, TreeNode p) {
+			TreeNode l, pp, lr;
+			if (p != null && (l = p.left) != null) {
+				if ((lr = p.left = l.right) != null) {
+					lr.parent = p;
+				}
+				if ((pp = l.parent = p.parent) == null) {
+					(root = l).red = false;
+				}
+				else if (pp.right == p) {
+					pp.right = l;
+				}
+				else {
+					pp.left = l;
+				}
+				l.right = p;
+				p.parent = l;
+			}
+			return root;
+		}
+
+		static TreeNode balanceInsertion(TreeNode root, TreeNode x) {
+			x.red = true;
+			TreeNode xp, xpp, xppl, xppr;
+			while (true) {
+				xp = x.parent;
+				if (xp == null) {
+					x.red = false;
+					return x;
+				}
+				if (!xp.red || (xpp = xp.parent) == null) {
+					return root;
+				}
+				if (xp == (xppl = xpp.left)) {
+					if ((xppr = xpp.right) != null && xppr.red) {
+						xppr.red = false;
+						xp.red = false;
+						xpp.red = true;
+						x = xpp;
+					}
+					else {
+						if (x == xp.right) {
+							root = rotateLeft(root, x = xp);
+							xpp = (xp = x.parent) == null ? null : xp.parent;
+						}
+						if (xp != null) {
+							xp.red = false;
+							if (xpp != null) {
+								xpp.red = true;
+								root = rotateRight(root, xpp);
 							}
-							
-							thatNode = thatNode.next;
+						}
+					}
+				}
+				else {
+					if (xppl != null && xppl.red) {
+						xppl.red = false;
+						xp.red = false;
+						xpp.red = true;
+						x = xpp;
+					}
+					else {
+						if (x == xp.left) {
+							root = rotateRight(root, x = xp);
+							xpp = (xp = x.parent) == null ? null : xp.parent;
+						}
+						if (xp != null) {
+							xp.red = false;
+							if (xpp != null) {
+								xpp.red = true;
+								root = rotateLeft(root, xpp);
+							}
 						}
 					}
 				}
 			}
 		}
-		
-		return true;
-	}
-	
-	@Deprecated
-	@Override
-	public final int hashCode() {
-		return super.hashCode();
-	}
-	
-	@Deprecated
-	@Override
-	public final boolean equals(Object obj) {
-		return super.equals(obj);
-	}
-	
-	@Deprecated
-	@Override
-	public final String toString() {
-		return super.toString();
-	}
-	
-	public static class Node {
-		private final Value<?> key;
-		private Value<?> value;
-		private Node next;
-		
-		Node(Value<?> key, Value<?> value) {
-			this.key = key;
-			this.value = value;
-		}
-		
-		public int getHashCode(Context context) throws CodeError {
-			return this.key.getHashCode(context) ^ this.value.getHashCode(context);
-		}
-		
-		public boolean isEquals(Context context, Node node) throws CodeError {
-			return this == node
-				|| (this.key.isEquals(context, node.key)
-				&& this.value.isEquals(context, node.value));
-		}
-		
-		public String getAsString(Context context) throws CodeError {
-			return this.key.getAsString(context) + " == " + this.value.getAsString(context);
-		}
-		
-		public Value<?> getKey() {
-			return this.key;
-		}
-		
-		public Value<?> getValue() {
-			return this.value;
-		}
-		
-		public Value<?> setValue(Value<?> value) {
-			Value<?> old = this.value;
-			this.value = value;
-			return old;
-		}
-		
-		@Deprecated
-		@Override
-		public final int hashCode() {
-			return super.hashCode();
-		}
-		
-		@Deprecated
-		@Override
-		public final boolean equals(Object obj) {
-			return super.equals(obj);
-		}
-		
-		@Deprecated
-		@Override
-		public final String toString() {
-			return super.toString();
-		}
-	}
-	
-	static class KeySet extends MapSet<Value<?>> {
-		KeySet(Value<?>[] array) {
-			super(array);
-		}
-	}
-	
-	public static class EntrySet extends MapSet<Node> {
-		EntrySet(Node[] array) {
-			super(array);
-		}
-	}
-	
-	private static class MapSet<T> implements Set<T> {
-		final T[] array;
-		final int length;
-		
-		protected MapSet(T[] array) {
-			this.array = array;
-			this.length = array.length;
-		}
-		
-		@Override
-		public int size() {
-			return this.length;
-		}
-		
-		@Override
-		public boolean isEmpty() {
-			return this.length == 0;
-		}
-		
-		@Override
-		public Object[] toArray() {
-			return this.array;
-		}
 
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <E> E[] toArray(E[] a) {
-			return (E[]) Arrays.copyOf(this.array, this.size(), a.getClass());
-		}
-		
-		@Override
-		public Iterator<T> iterator() {
-			return new Iterator<>() {
-				private int index;
-
-				@Override
-				public synchronized boolean hasNext() {
-					return this.index < MapSet.this.length;
+		static TreeNode balanceDeletion(TreeNode root, TreeNode x) {
+			for (TreeNode xp, xpl, xpr; ; ) {
+				if (x == null || x == root) {
+					return root;
 				}
-
-				@Override
-				public synchronized T next() {
-					if (this.index >= MapSet.this.length) {
-						return null;
+				if ((xp = x.parent) == null) {
+					x.red = false;
+					return x;
+				}
+				if (x.red) {
+					x.red = false;
+					return root;
+				}
+				if ((xpl = xp.left) == x) {
+					if ((xpr = xp.right) != null && xpr.red) {
+						xpr.red = false;
+						xp.red = true;
+						root = rotateLeft(root, xp);
+						xpr = (xp = x.parent) == null ? null : xp.right;
 					}
-
-					return MapSet.this.array[this.index++];
+					if (xpr == null) {
+						x = xp;
+					}
+					else {
+						TreeNode sl = xpr.left, sr = xpr.right;
+						if ((sr == null || !sr.red) && (sl == null || !sl.red)) {
+							xpr.red = true;
+							x = xp;
+						}
+						else {
+							if (sr == null || !sr.red) {
+								sl.red = false;
+								xpr.red = true;
+								root = rotateRight(root, xpr);
+								xpr = (xp = x.parent) == null ?
+									null : xp.right;
+							}
+							if (xpr != null) {
+								xpr.red = xp.red;
+								if ((sr = xpr.right) != null) {
+									sr.red = false;
+								}
+							}
+							if (xp != null) {
+								xp.red = false;
+								root = rotateLeft(root, xp);
+							}
+							x = root;
+						}
+					}
 				}
-			};
+				else {
+					if (xpl != null && xpl.red) {
+						xpl.red = false;
+						xp.red = true;
+						root = rotateRight(root, xp);
+						xpl = (xp = x.parent) == null ? null : xp.left;
+					}
+					if (xpl == null) {
+						x = xp;
+					}
+					else {
+						TreeNode sl = xpl.left, sr = xpl.right;
+						if ((sl == null || !sl.red) && (sr == null || !sr.red)) {
+							xpl.red = true;
+							x = xp;
+						}
+						else {
+							if (sl == null || !sl.red) {
+								sr.red = false;
+								xpl.red = true;
+								root = rotateLeft(root, xpl);
+								xpl = (xp = x.parent) == null ? null : xp.left;
+							}
+							if (xpl != null) {
+								xpl.red = xp.red;
+								if ((sl = xpl.left) != null) {
+									sl.red = false;
+								}
+							}
+							if (xp != null) {
+								xp.red = false;
+								root = rotateRight(root, xp);
+							}
+							x = root;
+						}
+					}
+				}
+			}
 		}
-		
-		@Override
-		public boolean add(T value) {
-			throw new UnsupportedOperationException();
-		}
-		
-		@Override
-		public boolean remove(Object o) {
-			throw new UnsupportedOperationException();
-		}
-		
-		@Override
-		public void clear() {
-			throw new UnsupportedOperationException();
-		}
-		
-		@Deprecated
-		@Override
-		public boolean addAll(Collection<? extends T> c) {
-			throw new UnsupportedOperationException();
-		}
-		
-		@Deprecated
-		@Override
-		public boolean retainAll(Collection<?> c) {
-			throw new UnsupportedOperationException();
-		}
-		
-		@Deprecated
-		@Override
-		public boolean removeAll(Collection<?> c) {
-			throw new UnsupportedOperationException();
-		}
-		
-		@Deprecated
-		@Override
-		public boolean contains(Object o) {
-			throw new UnsupportedOperationException();
-		}
-		
-		@Deprecated
-		@Override
-		public boolean containsAll(Collection<?> c) {
-			throw new UnsupportedOperationException();
-		}
+	}
+
+	@FunctionalInterface
+	interface MapConsumer {
+		void accept(ArucasMap map) throws CodeError;
 	}
 }

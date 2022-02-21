@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class ArucasMapTest {
+public class OldArucasMapTest {
 	@Test
 	public void testMapPutReference() {
 		assertEquals("[1, 2, 3, 4]", ArucasHelper.runSafeFull(

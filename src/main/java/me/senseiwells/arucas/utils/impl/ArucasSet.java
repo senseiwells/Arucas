@@ -14,10 +14,11 @@ import java.util.Iterator;
 public class ArucasSet implements ValueIdentifier {
 	// Empty object used as value.
 	static final Value<?> EMPTY = NullValue.NULL;
-	private final ArucasMap map;
+	// TODO: Redo ArucasSet
+	private final OldArucasMap map;
 	
 	public ArucasSet() {
-		this.map = new ArucasMap();
+		this.map = new OldArucasMap();
 	}
 	
 	/**

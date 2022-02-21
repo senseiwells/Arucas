@@ -5,8 +5,8 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.tokens.Token;
-import me.senseiwells.arucas.utils.impl.ArucasMap;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.impl.ArucasMap;
 import me.senseiwells.arucas.values.MapValue;
 import me.senseiwells.arucas.values.Value;
 
