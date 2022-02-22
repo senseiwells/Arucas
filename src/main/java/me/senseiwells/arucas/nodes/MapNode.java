@@ -26,10 +26,7 @@ public class MapNode extends Node {
 		for (Map.Entry<Node, Node> entry : this.mapNode.entrySet()) {
 			Value<?> key = entry.getKey().visit(context);
 			Value<?> value = entry.getValue().visit(context);
-			if (key.value == null || value.value == null) {
-				throw new RuntimeError("Cannot put null inside a map", this.syntaxPosition, context);
-			}
-			
+
 			valueMap.put(context, key, value);
 		}
 		return new MapValue(valueMap);

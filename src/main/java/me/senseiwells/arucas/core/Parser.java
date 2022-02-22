@@ -445,6 +445,7 @@ public class Parser {
 
 		do {
 			if (this.currentToken.type != Token.Type.IDENTIFIER) {
+				this.setTokenIndex(position);
 				return false;
 			}
 			Token baseIdentifier = this.currentToken;
@@ -453,6 +454,7 @@ public class Parser {
 			if (this.currentToken.type == Token.Type.DOT) {
 				this.advance();
 				if (this.currentToken.type != Token.Type.IDENTIFIER) {
+					this.setTokenIndex(position);
 					return false;
 				}
 				AbstractClassDefinition classDefinition = this.context.getClassDefinition(baseIdentifier.content);

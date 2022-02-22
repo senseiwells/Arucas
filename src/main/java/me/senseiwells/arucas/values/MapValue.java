@@ -68,9 +68,6 @@ public class MapValue extends Value<ArucasMap> {
 		private Value<?> mapGet(Context context, MemberFunction function) throws CodeError {
 			MapValue thisValue = function.getParameterValueOfType(context, MapValue.class, 0);
 			Value<?> key = function.getParameterValue(context, 1);
-			if (key.value == null) {
-				throw new RuntimeError("Cannot get null from a map", function.syntaxPosition, context);
-			}
 			Value<?> value = thisValue.value.get(context, key);
 			return value == null ? NullValue.NULL : value;
 		}
@@ -89,9 +86,6 @@ public class MapValue extends Value<ArucasMap> {
 			MapValue thisValue = function.getParameterValueOfType(context, MapValue.class, 0);
 			Value<?> key = function.getParameterValue(context, 1);
 			Value<?> value = function.getParameterValue(context, 2);
-			if (key.value == null || value.value == null) {
-				throw new RuntimeError("Cannot put null into a map", function.syntaxPosition, context);
-			}
 			Value<?> returnValue = thisValue.value.put(context, key, value);
 			return returnValue == null ? NullValue.NULL : returnValue;
 		}
@@ -100,9 +94,6 @@ public class MapValue extends Value<ArucasMap> {
 			MapValue thisValue = function.getParameterValueOfType(context, MapValue.class, 0);
 			Value<?> key = function.getParameterValue(context, 1);
 			Value<?> value = function.getParameterValue(context, 2);
-			if (key.value == null || value.value == null) {
-				throw new RuntimeError("Cannot put null into a map", function.syntaxPosition, context);
-			}
 			Value<?> returnValue = thisValue.value.putIfAbsent(context, key, value);
 			return returnValue == null ? NullValue.NULL : returnValue;
 		}
@@ -117,9 +108,6 @@ public class MapValue extends Value<ArucasMap> {
 		private Value<?> mapRemove(Context context, MemberFunction function) throws CodeError {
 			MapValue thisValue = function.getParameterValueOfType(context, MapValue.class, 0);
 			Value<?> key = function.getParameterValue(context, 1);
-			if (key.value == null) {
-				throw new RuntimeError("Cannot remove null from a map", function.syntaxPosition, context);
-			}
 			Value<?> removedValue = thisValue.value.remove(context, key);
 			return removedValue == null ? NullValue.NULL : removedValue;
 		}

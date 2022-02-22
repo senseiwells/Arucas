@@ -181,8 +181,6 @@ public class ArucasStatementTest {
 	@Test
 	public void testMapValue() {
 		assertEquals("1", ArucasHelper.runSafeFull("map = {'one' : 1}; X = map.get('one');", "X"));
-		assertThrows(RuntimeError.class, () -> ArucasHelper.runUnsafe("map = {}; map.get(null);"));
-		assertThrows(RuntimeError.class, () -> ArucasHelper.runUnsafe("Y = null; map = { Y : 20 };"));
 		assertEquals("one", ArucasHelper.runSafeFull(
 			"""
 			X = null;
