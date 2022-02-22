@@ -3,6 +3,7 @@ package me.senseiwells.arucas.utils.impl;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.StringUtils;
+import me.senseiwells.arucas.utils.ValuePair;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.ValueIdentifier;
 
@@ -61,9 +62,9 @@ public class ArucasMap implements ValueIdentifier {
 					}
 				}
 				this.deadlockSafe(otherMap, map -> {
-					for (Node node : map.nodeSet()) {
-						Value<?> key = node.key;
-						Value<?> value = node.value;
+					for (ValuePair valuePair : map.pairSet()) {
+						Value<?> key = valuePair.getKey();
+						Value<?> value = valuePair.getValue();
 						this.putVal(context, hash(context, key), key, value, false, evict);
 					}
 				});
@@ -419,18 +420,18 @@ public class ArucasMap implements ValueIdentifier {
 		}
 	}
 
-	public Set<Node> nodeSet() {
-		Set<Node> nodeSet = new HashSet<>();
+	public Set<ValuePair> pairSet() {
+		Set<ValuePair> pairSet = new HashSet<>();
 		synchronized (this.LOCK) {
 			Node[] table = this.table;
 			if (this.size > 0 && table != null) {
 				for (Node node : table) {
 					for (; node != null; node = node.next) {
-						nodeSet.add(node);
+						pairSet.add(new ValuePair(node.key, node.value));
 					}
 				}
 			}
-			return nodeSet;
+			return pairSet;
 		}
 	}
 
@@ -440,6 +441,8 @@ public class ArucasMap implements ValueIdentifier {
 		 * we will never let two threads lock on each other without waiting for
 		 * the other thread to release their lock on DEADLOCK_HANDLE.
 		 * This prevents any deadlocks from happening.
+		 * Anything that runs here will be slow since this method can only be
+		 * executed once at a time, including if you are running multiple scripts.
 		 */
 		synchronized (TOTAL_LOCK) {
 			synchronized (this.LOCK) {
@@ -469,6 +472,7 @@ public class ArucasMap implements ValueIdentifier {
 		return new TreeNode(node.hash, node.key, node.value, next);
 	}
 
+	// These are callbacks for LinkedHashMap...
 	@SuppressWarnings("unused")
 	void afterNodeAccess(Node p) { }
 	@SuppressWarnings("unused")
@@ -535,7 +539,7 @@ public class ArucasMap implements ValueIdentifier {
 				return;
 			}
 
-			for (Node thatNode : map.nodeSet()) {
+			for (Node thatNode : map.table) {
 				for (; thatNode != null; thatNode = thatNode.next) {
 					// Check if keys are equal
 					Node thisNode = this.getNode(context, thatNode.key);
@@ -562,8 +566,7 @@ public class ArucasMap implements ValueIdentifier {
 		return n < 0 ? 1 : (n >= MAX_CAPACITY) ? MAX_CAPACITY : n + 1;
 	}
 
-	public static class Node implements ValueIdentifier {
-		// final Object LOCK = new Object();
+	static class Node implements ValueIdentifier {
 		final int hash;
 		final Value<?> key;
 		Value<?> value;

@@ -5,6 +5,7 @@ public class ArucasThread extends Thread {
 
 	public ArucasThread(ThreadGroup threadGroup, Runnable runnable, String name) {
 		super(threadGroup, runnable, name);
+		this.setDaemon(true);
 	}
 
 	@Override

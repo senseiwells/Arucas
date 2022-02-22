@@ -1,19 +1,29 @@
 // run(getDirectory() + "/src/test/resources/code/test.arucas");
 
-class A {
+class Pos {
+    var x;
+    var y;
+    var z;
 
+    Pos(x, y, z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
+
+    fun unpack() {
+        return [this.x, this.y, this.z];
+    }
+
+    fun unpackReverse() {
+        return [this.z, this.y, this.x];
+    }
 }
 
-fun B() {
+pos = new Pos(1, 2, 3);
 
-}
+z, y, x = pos.unpackReverse();
 
-{
-    print("inside scope " + new A());
-}
-
-print(new A());
-
-t = run(File.getDirectory().getPath() + "/src/test/resources/code/test2.arucas");
-
-print(t);
+print(x);
+print(y);
+print(z);

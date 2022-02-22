@@ -29,16 +29,21 @@ public class Parser {
 		this.context = context.createChildContext("Parser Context");
 	}
 
-	private void advance() {
-		this.operatorTokenIndex++;
-		this.currentToken = this.operatorTokenIndex < this.tokens.size() ? this.tokens.get(this.operatorTokenIndex) : null;
+	private boolean advance() {
+		return this.setTokenIndex(++this.operatorTokenIndex);
 	}
 
-	private void recede() {
-		this.operatorTokenIndex--;
-		this.currentToken = this.operatorTokenIndex < this.tokens.size() ? this.tokens.get(this.operatorTokenIndex) : null;
+	@SuppressWarnings("UnusedReturnValue")
+	private boolean recede() {
+		return this.setTokenIndex(--this.operatorTokenIndex);
 	}
-	
+
+	private boolean setTokenIndex(int index) {
+		this.operatorTokenIndex = index;
+		this.currentToken = index < this.tokens.size() ? this.tokens.get(index) : null;
+		return this.currentToken != null;
+	}
+
 	private Token getPreviousToken() {
 		int index = this.operatorTokenIndex - 1;
 		return this.tokens.get(index < 0 ? 0 : (index >= this.tokens.size() ? this.tokens.size() - 1 : index));
@@ -170,7 +175,7 @@ public class Parser {
 		
 		this.throwIfNotType(Token.Type.IDENTIFIER, "Expected an identifier");
 		Token className = this.currentToken;
-		this.context.throwIfClassNameTaken(className.content, className.syntaxPosition);
+		this.context.throwIfStackNameTaken(className.content, className.syntaxPosition);
 		this.advance();
 		
 		this.throwIfNotType(Token.Type.LEFT_CURLY_BRACKET, "Expected '{'");
@@ -328,16 +333,14 @@ public class Parser {
 		this.context.setLocal("this", NullValue.NULL);
 
 		if (this.currentToken.type == Token.Type.IDENTIFIER) {
-			this.recede();
 			do {
-				this.advance();
 				this.throwIfNotType(Token.Type.IDENTIFIER, "Expected Identifier");
 
 				argumentNames.add(this.currentToken.content);
 				this.context.setLocal(this.currentToken.content, NullValue.NULL);
 				this.advance();
 			}
-			while (this.currentToken.type == Token.Type.COMMA);
+			while (this.currentToken.type == Token.Type.COMMA && this.advance());
 		}
 		this.throwIfNotType(Token.Type.RIGHT_BRACKET, "Expected ',' or ')'");
 		this.advance();
@@ -359,7 +362,6 @@ public class Parser {
 
 		List<String> argumentNames = new ArrayList<>();
 		if (this.currentToken.type == Token.Type.IDENTIFIER) {
-			this.recede();
 			do {
 				this.advance();
 				this.throwIfNotType(Token.Type.IDENTIFIER, "Expected Identifier");
@@ -368,7 +370,7 @@ public class Parser {
 				this.context.setLocal(this.currentToken.content, NullValue.NULL);
 				this.advance();
 			}
-			while (this.currentToken.type == Token.Type.COMMA);
+			while (this.currentToken.type == Token.Type.COMMA && this.advance());
 		}
 		this.throwIfNotType(Token.Type.RIGHT_BRACKET, "Expected ',' or ')'");
 		this.advance();
@@ -436,12 +438,94 @@ public class Parser {
 
 		return operatorMethod;
 	}
-	
+
+	// Checks whether the following code is unpacking code
+	private boolean isUnpacking() throws CodeError {
+		int position = this.operatorTokenIndex;
+
+		do {
+			if (this.currentToken.type != Token.Type.IDENTIFIER) {
+				return false;
+			}
+			Token baseIdentifier = this.currentToken;
+			int innerPosition = this.operatorTokenIndex;
+			this.advance();
+			if (this.currentToken.type == Token.Type.DOT) {
+				this.advance();
+				if (this.currentToken.type != Token.Type.IDENTIFIER) {
+					return false;
+				}
+				AbstractClassDefinition classDefinition = this.context.getClassDefinition(baseIdentifier.content);
+				if (classDefinition != null) {
+					this.advance();
+				}
+				else {
+					this.setTokenIndex(innerPosition);
+					this.unpackableMember(true);
+				}
+			}
+		}
+		while (this.currentToken.type == Token.Type.COMMA && this.advance());
+
+		boolean isPackable = this.currentToken.type == Token.Type.ASSIGN_OPERATOR;
+		this.setTokenIndex(position);
+
+		return isPackable;
+	}
+
+	private VariableAssignNode setUnpacking() throws CodeError {
+		return this.setUnpacking(null);
+	}
+
+	private VariableAssignNode setUnpacking(VariableAssignNode firstNode) throws CodeError {
+		List<VariableAssignNode> assignNodes = new ArrayList<>();
+		if (firstNode != null) {
+			assignNodes.add(firstNode);
+		}
+		Token start = this.currentToken;
+		Node dummyNode = new NullNode(start);
+		do {
+			this.throwIfNotType(Token.Type.IDENTIFIER, "Expected an identifier");
+			Token baseIdentifier = this.currentToken;
+			int position = this.operatorTokenIndex;
+			this.advance();
+			VariableAssignNode assignNode;
+			if (this.currentToken.type == Token.Type.DOT) {
+				this.advance();
+				this.throwIfNotType(Token.Type.IDENTIFIER, "Expected an identifier");
+				Token name = this.currentToken;
+				AbstractClassDefinition classDefinition = this.context.getClassDefinition(baseIdentifier.content);
+				if (classDefinition != null) {
+					assignNode = new StaticAssignNode(name, classDefinition, dummyNode);
+					this.advance();
+				}
+				else {
+					this.setTokenIndex(position);
+					assignNode = this.unpackableMember(false);
+				}
+			}
+			else {
+				assignNode = new VariableAssignNode(baseIdentifier, dummyNode);
+				this.context.throwIfStackNameTaken(baseIdentifier.content, baseIdentifier.syntaxPosition);
+				this.context.setVariable(baseIdentifier.content, NullValue.NULL);
+			}
+			assignNodes.add(assignNode);
+		}
+		while (this.currentToken.type == Token.Type.COMMA && this.advance());
+
+		this.throwIfNotType(Token.Type.ASSIGN_OPERATOR, "Expected an assignment operator");
+
+		this.advance();
+		Node expression = this.expression();
+
+		return new UnpackAssignNode(start, assignNodes, expression);
+	}
+
 	private VariableAssignNode setVariable() throws CodeError {
 		this.throwIfNotType(Token.Type.IDENTIFIER, "Expected an identifier");
 		Token variableName = this.currentToken;
 		this.context.throwIfStackNameTaken(variableName.content, variableName.syntaxPosition);
-		
+
 		this.advance();
 		this.throwIfNotType(Token.Type.ASSIGN_OPERATOR, "Expected an assignment operator");
 		this.advance();
@@ -557,16 +641,13 @@ public class Parser {
 		this.context.pushScope(this.currentToken.syntaxPosition);
 		
 		if (this.currentToken.type == Token.Type.IDENTIFIER) {
-			this.recede();
 			do {
-				this.advance();
 				this.throwIfNotType(Token.Type.IDENTIFIER, "Expected Identifier");
-				
 				argumentNameTokens.add(this.currentToken.content);
 				this.context.setLocal(this.currentToken.content, NullValue.NULL);
 				this.advance();
 			}
-			while (this.currentToken.type == Token.Type.COMMA);
+			while (this.currentToken.type == Token.Type.COMMA && this.advance());
 		}
 		this.throwIfNotType(Token.Type.RIGHT_BRACKET, "Expected ',' or ')'");
 		this.advance();
@@ -812,7 +893,6 @@ public class Parser {
 	}
 	
 	private Node expression() throws CodeError {
-		// If identifier is already a variable -> can assign value without 'var' keyword
 		if (this.currentToken.type == Token.Type.IDENTIFIER) {
 			this.advance();
 			switch (this.currentToken.type) {
@@ -820,12 +900,18 @@ public class Parser {
 					this.recede();
 					return this.setVariable();
 				}
+				case COMMA -> {
+					this.recede();
+					if (this.isUnpacking()) {
+						return this.setUnpacking();
+					}
+				}
 				case INCREMENT, DECREMENT -> {
 					this.recede();
 					return this.modifyVariable();
 				}
+				default -> this.recede();
 			}
-			this.recede();
 		}
 		
 		return this.sizeComparisonExpression();
@@ -854,16 +940,14 @@ public class Parser {
 		
 		this.advance();
 		if (this.currentToken.type != Token.Type.RIGHT_CURLY_BRACKET) {
-			this.recede();
 			do {
-				this.advance();
 				Node keyNode = this.expression();
 				this.throwIfNotType(Token.Type.COLON, "Expected a ':' between key and value");
 				this.advance();
 				Node valueNode = this.expression();
 				elementMap.put(keyNode, valueNode);
 			}
-			while (this.currentToken.type == Token.Type.COMMA);
+			while (this.currentToken.type == Token.Type.COMMA && this.advance());
 			this.throwIfNotType(Token.Type.RIGHT_CURLY_BRACKET, "Expected a '}'");
 		}
 		ISyntax endPos = this.currentToken.syntaxPosition;
@@ -969,6 +1053,13 @@ public class Parser {
 		
 		if (member instanceof FunctionAccessNode accessNode) {
 			FunctionValue functionValue = this.context.getBuiltInFunction(accessNode.token.content, argumentNodes.size());
+			if (functionValue == null) {
+				throw new CodeError(
+					CodeError.ErrorType.RUNTIME_ERROR,
+					"No such build-in function '%s' with %d parameters".formatted(accessNode.token.content, argumentNodes.size()),
+					this.currentToken.syntaxPosition
+				);
+			}
 			member = new DirectAccessNode(accessNode.token, functionValue);
 		}
 		
@@ -1012,11 +1103,66 @@ public class Parser {
 					Node valueNode = this.expression();
 					return new MemberAssignNode(left, right, valueNode);
 				}
+				case COMMA -> {
+					this.advance();
+					if (this.isUnpacking()) {
+						return this.setUnpacking(new MemberAssignNode(left, right, new NullNode(this.currentToken)));
+					}
+					this.recede();
+					left = new MemberAccessNode(left, right);
+				}
 				case INCREMENT, DECREMENT -> left = this.modifyMember(left, right);
 				default -> left = new MemberAccessNode(left, right);
 			}
 		}
 		return left;
+	}
+
+	private VariableAssignNode unpackableMember(boolean verifying) throws CodeError {
+		Node left = this.atom(false);
+		while (this.currentToken.type == Token.Type.DOT) {
+			this.advance();
+			Node right = this.atom(true);
+			switch (this.currentToken.type) {
+				case LEFT_BRACKET -> {
+					this.advance();
+					List<Node> argumentNodes = new ArrayList<>();
+					if (this.currentToken.type != Token.Type.RIGHT_BRACKET) {
+						argumentNodes.add(this.expression());
+						while (this.currentToken.type == Token.Type.COMMA) {
+							this.advance();
+							argumentNodes.add(this.expression());
+						}
+						this.throwIfNotType(Token.Type.RIGHT_BRACKET, "Expected a ')'");
+					}
+					this.advance();
+					if (!(right instanceof FunctionAccessNode)) {
+						throw new CodeError(
+							CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
+							"%s is not a valid member function name".formatted(right.token.content),
+							right.syntaxPosition
+						);
+					}
+					left = new MemberCallNode(left, right, argumentNodes);
+					continue;
+				}
+				case COMMA, ASSIGN_OPERATOR -> {
+					left = new MemberAssignNode(left, right, new NullNode(this.currentToken));
+				}
+				default -> {
+					left = new MemberAccessNode(left, right);
+					continue;
+				}
+			}
+			break;
+		}
+		if (!(left instanceof VariableAssignNode memberAssign)) {
+			if (verifying) {
+				return null;
+			}
+			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "Expected assignable values for unpacking", this.currentToken.syntaxPosition);
+		}
+		return memberAssign;
 	}
 
 	private Node staticMember(AbstractClassDefinition classDefinition) throws CodeError {
@@ -1043,6 +1189,14 @@ public class Parser {
 				}
 				this.advance();
 				yield new StaticCallNode(name, classDefinition, argumentNodes);
+			}
+			case COMMA -> {
+				this.advance();
+				if (this.isUnpacking()) {
+					yield this.setUnpacking(new StaticAssignNode(name, classDefinition, new NullNode(this.currentToken)));
+				}
+				this.recede();
+				yield new StaticAccessNode(name, classDefinition);
 			}
 			case INCREMENT, DECREMENT -> this.modifyStatic(name, classDefinition);
 			default -> new StaticAccessNode(name, classDefinition);

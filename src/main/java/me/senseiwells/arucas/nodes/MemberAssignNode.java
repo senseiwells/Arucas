@@ -8,16 +8,14 @@ import me.senseiwells.arucas.values.StringValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.ArucasClassValue;
 
-public class MemberAssignNode extends Node {
+public class MemberAssignNode extends VariableAssignNode {
 	private final Node leftNode;
 	private final Node memberNameNode;
-	private final Node valueNode;
 	
 	public MemberAssignNode(Node leftNode, Node memberName, Node valueNode) {
-		super(leftNode.token, leftNode.syntaxPosition, valueNode.syntaxPosition);
+		super(leftNode.token, leftNode.syntaxPosition, valueNode.syntaxPosition, valueNode);
 		this.leftNode = leftNode;
 		this.memberNameNode = memberName;
-		this.valueNode = valueNode;
 	}
 
 	@Override
@@ -32,7 +30,7 @@ public class MemberAssignNode extends Node {
 			throw new RuntimeError("You can only assign values to class member values", this.syntaxPosition, context);
 		}
 		
-		Value<?> newValue = this.valueNode.visit(context);
+		Value<?> newValue = this.getNewValue(context);
 		
 		if (!classValue.hasMember(memberName.value) || !classValue.setMember(memberName.value, newValue)) {
 			throw new RuntimeError(

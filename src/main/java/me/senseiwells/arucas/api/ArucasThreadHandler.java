@@ -101,7 +101,6 @@ public class ArucasThreadHandler {
 				this.stop();
 			}
 		}, "Arucas Main Thread");
-		thread.setDaemon(true);
 		thread.start();
 		return thread;
 	}
@@ -126,7 +125,6 @@ public class ArucasThreadHandler {
 				latch.countDown();
 			}
 		}, "Arucas Test Thread");
-		thread.setDaemon(true);
 		thread.start();
 
 		try {

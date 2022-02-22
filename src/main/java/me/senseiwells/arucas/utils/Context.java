@@ -211,9 +211,6 @@ public class Context {
 				syntaxPosition
 			);
 		}
-	}
-
-	public void throwIfClassNameTaken(String name, ISyntax syntaxPosition) throws CodeError {
 		if (this.isDefinedClass(name)) {
 			throw new CodeError(
 				CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,

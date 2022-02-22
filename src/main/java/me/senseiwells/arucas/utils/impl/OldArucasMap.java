@@ -11,7 +11,7 @@ import java.util.*;
 /**
  * This class cannot contain null values.
  */
-@Deprecated
+@Deprecated(forRemoval = true)
 public class OldArucasMap implements ValueIdentifier {
 	// This field is used to prevent deadlocks.
 	static final Object DEADLOCK_HANDLE = new Object();
