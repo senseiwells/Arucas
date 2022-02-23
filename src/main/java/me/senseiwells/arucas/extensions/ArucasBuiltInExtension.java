@@ -8,6 +8,8 @@ import me.senseiwells.arucas.throwables.ThrowStop;
 import me.senseiwells.arucas.utils.*;
 import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.utils.impl.ArucasThread;
+import me.senseiwells.arucas.utils.impl.IArucasCollection;
+import me.senseiwells.arucas.utils.impl.IArucasMap;
 import me.senseiwells.arucas.values.*;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
 import me.senseiwells.arucas.values.functions.FunctionValue;
@@ -47,6 +49,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		new BuiltInFunction("input", "prompt", this::input),
 		new BuiltInFunction("debug", "boolean", this::debug),
 		new BuiltInFunction("suppressDeprecated", "boolean", this::suppressDeprecated),
+		new BuiltInFunction("isMain", this::isMain),
 		new BuiltInFunction("random", "bound", this::random),
 		new BuiltInFunction("getTime", (context, function) -> StringValue.of(DateTimeFormatter.ofPattern("HH:mm:ss").format(LocalTime.now()))),
 		new BuiltInFunction("getNanoTime", (context, function) -> NumberValue.of(System.nanoTime())),
@@ -123,6 +126,10 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		return NullValue.NULL;
 	}
 
+	private Value<?> isMain(Context context, BuiltInFunction function) {
+		return BooleanValue.of(context.isMain());
+	}
+
 	private Value<?> random(Context context, BuiltInFunction function) throws CodeError {
 		NumberValue numValue = function.getParameterValueOfType(context, NumberValue.class, 0);
 		return NumberValue.of(this.random.nextInt(numValue.value.intValue()));
@@ -130,14 +137,14 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 
 	private Value<?> len(Context context, BuiltInFunction function) throws CodeError {
 		Value<?> value = function.getParameterValue(context, 0);
-		if (value instanceof ListValue listValue) {
-			return NumberValue.of(listValue.value.size());
-		}
 		if (value instanceof StringValue stringValue) {
 			return NumberValue.of(stringValue.value.length());
 		}
-		if (value instanceof MapValue mapValue) {
-			return NumberValue.of(mapValue.value.size());
+		if (value instanceof IArucasMap map) {
+			return NumberValue.of(map.size());
+		}
+		if (value instanceof IArucasCollection collection) {
+			return NumberValue.of(collection.size());
 		}
 		throw new RuntimeError("Cannot pass %s into len()".formatted(value), function.syntaxPosition, context);
 	}

@@ -7,10 +7,7 @@ import me.senseiwells.arucas.utils.ValuePair;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.ValueIdentifier;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -20,7 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * methods for Arucas support.
  * This map also cannot contain null values.
  */
-public class ArucasMap implements ValueIdentifier {
+public class ArucasMap implements IArucasMap, ValueIdentifier {
 	private static final Object TOTAL_LOCK = new Object();
 
 	private static final int INITIAL_CAPACITY = 16;
@@ -30,7 +27,7 @@ public class ArucasMap implements ValueIdentifier {
 	private static final int MIN_TREEIFY_CAPACITY = 64;
 	private static final float DEFAULT_LOAD_FACTOR = 0.75F;
 
-	private final Object LOCK = new Object();
+	protected final Object LOCK = new Object();
 	private Node[] table;
 	private int size;
 	private int threshold;
@@ -40,6 +37,7 @@ public class ArucasMap implements ValueIdentifier {
 		this.loadFactor = DEFAULT_LOAD_FACTOR;
 	}
 
+	@SuppressWarnings("unused")
 	public ArucasMap(Context context, ArucasMap map) throws CodeError {
 		this();
 		this.putMapEntries(context, map, false);
@@ -180,7 +178,7 @@ public class ArucasMap implements ValueIdentifier {
 			if (this.size++ > this.threshold) {
 				this.resize();
 			}
-			this.afterNodeInsertion(evict);
+			this.afterNodeInsertion(context, evict);
 			return null;
 		}
 	}
@@ -472,12 +470,11 @@ public class ArucasMap implements ValueIdentifier {
 		return new TreeNode(node.hash, node.key, node.value, next);
 	}
 
-	// These are callbacks for LinkedHashMap...
-	@SuppressWarnings("unused")
+	// These are callbacks for OrderedMap...
 	void afterNodeAccess(Node p) { }
-	@SuppressWarnings("unused")
-	void afterNodeInsertion(boolean evict) { }
-	@SuppressWarnings("unused")
+
+	void afterNodeInsertion(Context context, boolean evict) throws CodeError { }
+
 	void afterNodeRemoval(Node p) { }
 
 	@Override
@@ -499,28 +496,24 @@ public class ArucasMap implements ValueIdentifier {
 	}
 
 	@Override
-	public synchronized String getAsString(Context context) throws CodeError {
-		StringBuilder sb = new StringBuilder();
-		sb.append('{');
+	public String getAsString(Context context) throws CodeError {
+		synchronized (this.LOCK) {
+			StringBuilder sb = new StringBuilder();
+			sb.append('{');
 
-		final int size = this.size;
-		for (int i = 0, l = 0; l < size; i++) {
-			Node node = this.table[i];
-
-			while (node != null) {
-				sb.append(StringUtils.toPlainString(context, node.key)).append(": ")
-					.append(StringUtils.toPlainString(context, node.value));
-
-				if (++l >= this.size) {
-					break;
-				}
-
+			Set<ValuePair> pairSet = this.pairSet();
+			for (ValuePair valuePair : pairSet) {
+				sb.append(StringUtils.toPlainString(context, valuePair.getKey())).append(": ");
+				sb.append(StringUtils.toPlainString(context, valuePair.getValue()));
 				sb.append(", ");
-				node = node.next;
 			}
-		}
 
-		return sb.append('}').toString();
+			if (!pairSet.isEmpty()) {
+				sb.delete(sb.length() - 2, sb.length());
+			}
+
+			return sb.append('}').toString();
+		}
 	}
 
 	@Override
@@ -632,7 +625,7 @@ public class ArucasMap implements ValueIdentifier {
 		}
 	}
 
-	private static class TreeNode extends Node {
+	static class TreeNode extends ArucasOrderedMap.Entry {
 		TreeNode parent;
 		TreeNode left;
 		TreeNode right;

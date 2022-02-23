@@ -2,10 +2,10 @@ package me.senseiwells.arucas.values;
 
 import me.senseiwells.arucas.api.ArucasClassExtension;
 import me.senseiwells.arucas.throwables.CodeError;
-import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.impl.ArucasMap;
+import me.senseiwells.arucas.utils.impl.ArucasOrderedMap;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
 import java.util.List;
@@ -22,7 +22,7 @@ public class MapValue extends Value<ArucasMap> {
 
 	@Override
 	public MapValue newCopy(Context context) throws CodeError {
-		return new MapValue(new ArucasMap(context, this.value));
+		return new MapValue(new ArucasOrderedMap(context, this.value));
 	}
 	
 	@Override

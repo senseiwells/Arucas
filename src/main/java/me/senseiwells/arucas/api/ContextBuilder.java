@@ -69,6 +69,7 @@ public class ContextBuilder {
 			StringValue.ArucasStringClass::new,
 			BooleanValue.ArucasBooleanClass::new,
 			ListValue.ArucasListClass::new,
+			SetValue.ArucasSetClass::new,
 			MapValue.ArucasMapClass::new,
 			NullValue.ArucasNullClass::new,
 			NumberValue.ArucasNumberClass::new,
@@ -91,6 +92,12 @@ public class ContextBuilder {
 	
 	public ContextBuilder addWrapper(Supplier<IArucasWrappedClass> supplier) {
 		this.wrappers.add(supplier);
+		return this;
+	}
+
+	@SafeVarargs
+	public final ContextBuilder addWrappers(Supplier<IArucasWrappedClass>... suppliers) {
+		this.wrappers.addAll(List.of(suppliers));
 		return this;
 	}
 	

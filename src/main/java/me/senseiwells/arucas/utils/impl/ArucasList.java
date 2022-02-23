@@ -15,11 +15,11 @@ import java.util.*;
  * as it is easier to implement these
  * methods natively.
  */
-public class ArucasList implements List<Value<?>>, ValueIdentifier {
+public class ArucasList implements IArucasCollection, List<Value<?>>, ValueIdentifier {
 	private static final Object DEADLOCKED_HANDLER = new Object();
-	private static final Value<?>[] DEFAULT_DATA = {};
+	private static final Value<?>[] DEFAULT_DATA = { };
 	private static final int DEFAULT_CAPACITY = 10;
-	
+
 	private Value<?>[] valueData;
 	private int size;
 
@@ -53,13 +53,17 @@ public class ArucasList implements List<Value<?>>, ValueIdentifier {
 		return this.indexOf(context, value) >= 0;
 	}
 
-	public synchronized boolean containsAll(Context context, ArucasList valueList) throws CodeError {
-		if (this.size < valueList.size) {
+	public synchronized boolean containsAll(Context context, Collection<? extends Value<?>> valueList) throws CodeError {
+		if (this.size < valueList.size()) {
 			return false;
 		}
-		// TODO: This allocates another iterator.. Try make it faster
-		// This calls .toArray() because it may cause deadlocks
-		for (Value<?> value : valueList.toArray()) {
+
+		if (valueList instanceof ArucasList arucasList) {
+			// This calls .toArray() because it may cause deadlocks
+			valueList = Arrays.asList(arucasList.toArray());
+		}
+
+		for (Value<?> value : valueList) {
 			if (!this.contains(context, value)) {
 				return false;
 			}
@@ -98,7 +102,7 @@ public class ArucasList implements List<Value<?>>, ValueIdentifier {
 
 	private synchronized void add(Value<?> value, Value<?>[] valueData, int size) {
 		if (size == valueData.length) {
-			valueData = grow();
+			valueData = this.grow();
 		}
 		valueData[size] = value;
 		this.size = size + 1;
@@ -163,7 +167,7 @@ public class ArucasList implements List<Value<?>>, ValueIdentifier {
 	private boolean batchRemove(Collection<?> collection, final int to) {
 		final Value<?>[] valueData = this.valueData;
 		int i = 0;
-		for (;; i++) {
+		for (; ; i++) {
 			if (i == to) {
 				return false;
 			}
@@ -220,7 +224,7 @@ public class ArucasList implements List<Value<?>>, ValueIdentifier {
 		}
 	}
 
-	private synchronized void checkExistingIndex(int index)  {
+	private synchronized void checkExistingIndex(int index) {
 		if (index < 0 || index >= this.size) {
 			throw new IndexOutOfBoundsException();
 		}
@@ -242,11 +246,11 @@ public class ArucasList implements List<Value<?>>, ValueIdentifier {
 		if (!(other.value instanceof ArucasList that)) {
 			return false;
 		}
-		
+
 		if (this == that) {
 			return true;
 		}
-		
+
 		synchronized (DEADLOCKED_HANDLER) {
 			synchronized (this) {
 				synchronized (that) {
@@ -264,6 +268,12 @@ public class ArucasList implements List<Value<?>>, ValueIdentifier {
 		}
 
 		return true;
+	}
+
+
+	@Override
+	public Collection<? extends Value<?>> asCollection() {
+		return this;
 	}
 
 	@Override
@@ -341,18 +351,41 @@ public class ArucasList implements List<Value<?>>, ValueIdentifier {
 	 * These methods are unsupported.
 	 */
 
-	@Override public boolean addAll(int index, Collection<? extends Value<?>> c) { throw new UnsupportedOperationException(); }
-	@Override public boolean contains(Object o) { throw new UnsupportedOperationException(); }
-	@Override public boolean remove(Object o) { throw new UnsupportedOperationException(); }
-	@Override public boolean containsAll(Collection<?> c) { throw new UnsupportedOperationException(); }
-	@Override public boolean retainAll(Collection<?> c) { throw new UnsupportedOperationException(); }
-	@Override public <T> T[] toArray(T[] a) { throw new UnsupportedOperationException(); }
-	@Override public int indexOf(Object o) { throw new UnsupportedOperationException(); }
-	@Override public int lastIndexOf(Object o) { throw new UnsupportedOperationException(); }
-	@Override public ListIterator<Value<?>> listIterator() { throw new UnsupportedOperationException(); }
-	@Override public ListIterator<Value<?>> listIterator(int index) { throw new UnsupportedOperationException(); }
-	@Override public List<Value<?>> subList(int fromIndex, int toIndex) { throw new UnsupportedOperationException(); }
-	@Override public Value<?> set(int index, Value<?> element) { throw new UnsupportedOperationException(); }
+	@Override
+	public boolean addAll(int index, Collection<? extends Value<?>> c) { throw new UnsupportedOperationException(); }
+
+	@Override
+	public boolean contains(Object o) { throw new UnsupportedOperationException(); }
+
+	@Override
+	public boolean remove(Object o) { throw new UnsupportedOperationException(); }
+
+	@Override
+	public boolean containsAll(Collection<?> c) { throw new UnsupportedOperationException(); }
+
+	@Override
+	public boolean retainAll(Collection<?> c) { throw new UnsupportedOperationException(); }
+
+	@Override
+	public <T> T[] toArray(T[] a) { throw new UnsupportedOperationException(); }
+
+	@Override
+	public int indexOf(Object o) { throw new UnsupportedOperationException(); }
+
+	@Override
+	public int lastIndexOf(Object o) { throw new UnsupportedOperationException(); }
+
+	@Override
+	public ListIterator<Value<?>> listIterator() { throw new UnsupportedOperationException(); }
+
+	@Override
+	public ListIterator<Value<?>> listIterator(int index) { throw new UnsupportedOperationException(); }
+
+	@Override
+	public List<Value<?>> subList(int fromIndex, int toIndex) { throw new UnsupportedOperationException(); }
+
+	@Override
+	public Value<?> set(int index, Value<?> element) { throw new UnsupportedOperationException(); }
 
 
 	public static final int MAX_ARRAY_LENGTH = Integer.MAX_VALUE - 8;

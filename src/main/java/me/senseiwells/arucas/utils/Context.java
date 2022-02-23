@@ -34,7 +34,8 @@ public class Context {
 	private StackTable stackTable;
 	private boolean isDebug;
 	private boolean suppressDeprecated;
-	
+	private boolean isMain;
+
 	private final ThrowValue.Continue continueThrowable = new ThrowValue.Continue();
 	private final ThrowValue.Break breakThrowable = new ThrowValue.Break();
 	private final ThrowValue.Return returnThrowable = new ThrowValue.Return(NullValue.NULL);
@@ -47,6 +48,7 @@ public class Context {
 		this.displayName = displayName;
 		this.parentContext = parentContext;
 		this.suppressDeprecated = parentContext != null && parentContext.suppressDeprecated;
+		this.isMain = true;
 		this.stackTable = new StackTable();
 		
 		// Initialize the class definitions map by inserting the previous table values
@@ -66,6 +68,7 @@ public class Context {
 		this.extensions = branch.extensions;
 		this.parentContext = branch.parentContext;
 		this.suppressDeprecated = branch.suppressDeprecated;
+		this.isMain = branch.isMain;
 	}
 
 	@SuppressWarnings("unused")
@@ -87,7 +90,9 @@ public class Context {
 	}
 	
 	public Context createChildContext(String displayName) {
-		return new Context(displayName, this, this.extensions, this.stackTable.getRoot().classDefinitions, this.threadHandler, this.arucasOutput);
+		Context context = new Context(displayName, this, this.extensions, this.stackTable.getRoot().classDefinitions, this.threadHandler, this.arucasOutput);
+		context.isMain = false;
+		return context;
 	}
 	
 	public ThrowValue.Continue getContinueThrowable() {
@@ -193,6 +198,10 @@ public class Context {
 
 	public boolean isSuppressDeprecated() {
 		return this.suppressDeprecated;
+	}
+
+	public boolean isMain() {
+		return this.isMain;
 	}
 
 	public boolean isBuiltInFunction(String name) {

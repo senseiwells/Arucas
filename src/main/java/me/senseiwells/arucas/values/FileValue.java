@@ -54,6 +54,11 @@ public class FileValue extends Value<File> {
 		}
 
 		@Override
+		public Class<?> getValueClass() {
+			return FileValue.class;
+		}
+
+		@Override
 		public ArucasFunctionMap<ConstructorFunction> getDefinedConstructors() {
 			return ArucasFunctionMap.of(
 				new ConstructorFunction("path", this::newFile)
@@ -219,11 +224,6 @@ public class FileValue extends Value<File> {
 				);
 			}
 			return NullValue.NULL;
-		}
-
-		@Override
-		public Class<?> getValueClass() {
-			return FileValue.class;
 		}
 	}
 }

@@ -12,7 +12,7 @@ sourceCompatibility = JavaVersion.VERSION_16
 targetCompatibility = JavaVersion.VERSION_16
 
 group 'me.senseiwells'
-version '1.1.3'
+version '1.2.0'
 
 sourceSets {
     main {
@@ -22,6 +22,10 @@ sourceSets {
     test {
         java.srcDirs 'src/test/java'
         resources.setSrcDirs(['src/test/resources'])
+    }
+    jmh {
+        compileClasspath += sourceSets.test.runtimeClasspath
+        runtimeClasspath += sourceSets.test.runtimeClasspath
     }
 }
 
@@ -37,10 +41,26 @@ configurations {
 dependencies {
     implementation 'junit:junit:4.13.2'
     testImplementation 'junit:junit:4.13.2'
+    testImplementation "org.openjdk.jmh:jmh-core:1.34"
+    testAnnotationProcessor "org.openjdk.jmh:jmh-generator-annprocess:1.34"
 }
 
 tasks.withType(JavaCompile).configureEach {
     it.options.encoding = 'UTF-8'
+}
+
+task jmh(type: JavaExec, description: 'Executing JMH benchmarks') {
+    classpath = sourceSets.jmh.runtimeClasspath
+    main = 'org.openjdk.jmh.Main'
+
+    def include = project.properties.get('include', '');
+    def format = project.properties.get('format', 'json');
+    def resultFile = file("build/reports/jmh/result.${format}")
+    resultFile.parentFile.mkdirs()
+
+    args include
+    args '-rf', format
+    args '-rff', resultFile
 }
 
 test {

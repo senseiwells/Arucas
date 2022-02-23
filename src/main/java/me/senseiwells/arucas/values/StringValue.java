@@ -64,13 +64,14 @@ public class StringValue extends Value<String> {
 				new MemberFunction("uppercase", this::stringUppercase),
 				new MemberFunction("lowercase", this::stringLowercase),
 				new MemberFunction("toNumber", this::stringToNumber),
-				new MemberFunction("formatted", "values", this::stringFormatted),
+				new MemberFunction("formatted", "values", this::stringFormatted, "Use '<String>.format(...)'"),
 				new MemberFunction("containsString", List.of("otherString"), this::stringContainsString, "Use '<String>.contains(otherString)'"),
 				new MemberFunction("contains", "otherString", this::stringContainsString),
 				new MemberFunction("strip", this::strip),
 				new MemberFunction("capitalise", this::capitalise),
 				new MemberFunction("split", "delimiter", this::split),
-				new MemberFunction("subString", List.of("from", "to"), this::subString)
+				new MemberFunction("subString", List.of("from", "to"), this::subString),
+				new MemberFunction.Arbitrary("format", this::stringFormatted)
 			);
 		}
 

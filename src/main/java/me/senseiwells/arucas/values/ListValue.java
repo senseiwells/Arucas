@@ -6,6 +6,7 @@ import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.impl.ArucasList;
+import me.senseiwells.arucas.utils.impl.IArucasCollection;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
 import java.util.List;
@@ -60,6 +61,7 @@ public class ListValue extends Value<ArucasList> {
 				new MemberFunction("remove", "index", this::removeListIndex),
 				new MemberFunction("append", "value", this::appendList),
 				new MemberFunction("insert", List.of("value", "index"), this::insertList),
+				new MemberFunction("addAll", "collection", this::addAll),
 				new MemberFunction("concat", "otherList", this::concatList),
 				new MemberFunction("contains", "value", this::listContains),
 				new MemberFunction("containsAll", "otherList", this::containsAll),
@@ -107,6 +109,16 @@ public class ListValue extends Value<ArucasList> {
 			return thisValue;
 		}
 
+		private synchronized Value<?> addAll(Context context, MemberFunction function) throws CodeError {
+			ListValue thisValue = function.getThis(context, ListValue.class);
+			Value<?> value = function.getParameterValue(context, 1);
+			if (value.value instanceof IArucasCollection collection) {
+				thisValue.value.addAll(collection.asCollection());
+				return thisValue;
+			}
+			throw new RuntimeError("'%s' is not a collection".formatted(value.getAsString(context)), function.syntaxPosition, context);
+		}
+
 		private synchronized Value<?> concatList(Context context, MemberFunction function) throws CodeError {
 			ListValue thisValue = function.getThis(context, ListValue.class);
 			ListValue list2 = function.getParameterValueOfType(context, ListValue.class, 1);
@@ -122,8 +134,11 @@ public class ListValue extends Value<ArucasList> {
 
 		private synchronized BooleanValue containsAll(Context context, MemberFunction function) throws CodeError {
 			ListValue thisValue = function.getThis(context, ListValue.class);
-			ListValue otherList = function.getParameterValueOfType(context, ListValue.class, 1);
-			return BooleanValue.of(thisValue.value.containsAll(context, otherList.value));
+			Value<?> value = function.getParameterValue(context, 1);
+			if (value.value instanceof IArucasCollection collection) {
+				return BooleanValue.of(thisValue.value.containsAll(context, collection.asCollection()));
+			}
+			throw new RuntimeError("'%s' is not a collection".formatted(value.getAsString(context)), function.syntaxPosition, context);
 		}
 
 		private synchronized BooleanValue isEmpty(Context context, MemberFunction function) throws CodeError {

@@ -3,6 +3,7 @@ package me.senseiwells.benchmark;
 import me.senseiwells.arucas.api.ContextBuilder;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.impl.ArucasMap;
+import me.senseiwells.arucas.utils.impl.ArucasOrderedMap;
 import me.senseiwells.arucas.values.NumberValue;
 import me.senseiwells.arucas.values.StringValue;
 import me.senseiwells.impl.wrappers.ArucasTestWrapper;
@@ -67,7 +68,7 @@ public class BenchmarkArucasMap {
 
 		// Warmup
 		start = System.nanoTime();
-		ArucasMap arucas_map = new ArucasMap();
+		ArucasMap arucas_map = new ArucasOrderedMap();
 		for (int i = 0; i < WARMUP; i++) {
 			int v = random.nextInt(MAX_VALUE);
 			arucas_map.put(context, N_CACHE[v], S_CACHE[v]);

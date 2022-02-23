@@ -24,9 +24,9 @@ public class Parser {
 
 	public Parser(List<Token> tokens, Context context) {
 		this.tokens = tokens;
+		this.context = context.createChildContext("Parser Context");
 		this.operatorTokenIndex = -1;
 		this.advance();
-		this.context = context.createChildContext("Parser Context");
 	}
 
 	private boolean advance() {

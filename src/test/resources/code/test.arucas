@@ -20,10 +20,8 @@ class Pos {
     }
 }
 
-pos = new Pos(1, 2, 3);
+print(isMain());
 
-z, y, x = pos.unpackReverse();
+s = Set.of(1, 2, 3);
 
-print(x);
-print(y);
-print(z);
+print(s);

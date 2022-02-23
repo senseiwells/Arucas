@@ -30,7 +30,7 @@ public class StaticCallNode extends Node {
 		FunctionValue method = this.classDefinition.getMember(this.token.content, arguments);
 
 		if (method == null) {
-			String parameters = (arguments == 0) ? "":" with %d parameter%s".formatted(arguments, arguments == 1 ? "":"s");
+			String parameters = (arguments == 0) ? "" : " with %d parameter%s".formatted(arguments, arguments == 1 ? "" : "s");
 			throw new RuntimeError("Member function '%s'%s was not defined for the type '%s'".formatted(
 				this.token.content,
 				parameters,

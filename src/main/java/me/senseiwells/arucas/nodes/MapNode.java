@@ -7,6 +7,7 @@ import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.impl.ArucasMap;
+import me.senseiwells.arucas.utils.impl.ArucasOrderedMap;
 import me.senseiwells.arucas.values.MapValue;
 import me.senseiwells.arucas.values.Value;
 
@@ -22,7 +23,7 @@ public class MapNode extends Node {
 
 	@Override
 	public Value<?> visit(Context context) throws CodeError, ThrowValue {
-		ArucasMap valueMap = new ArucasMap();
+		ArucasMap valueMap = new ArucasOrderedMap();
 		for (Map.Entry<Node, Node> entry : this.mapNode.entrySet()) {
 			Value<?> key = entry.getKey().visit(context);
 			Value<?> value = entry.getValue().visit(context);

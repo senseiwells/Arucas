@@ -84,7 +84,12 @@ public class ArucasFunctionMap<T extends FunctionValue> implements Iterable<T> {
 	 */
 	public T get(String name, int parameters) {
 		Map<Integer, T> map = this.map.get(name);
-		return map != null ? map.get(parameters) : null;
+		if (map == null) {
+			return null;
+		}
+		// This tries to return an arbitrary function if none are present
+		T function = map.get(parameters);
+		return function != null ? function : map.get(-1);
 	}
 	
 	/**

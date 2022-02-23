@@ -49,6 +49,7 @@ public class Token {
 		STRING,
 		NULL,
 		LIST,
+		SET,
 		MAP,
 		SCOPE,
 		
