@@ -12,7 +12,7 @@ public class ArucasFunctionTest {
 		assertEquals("0", ArucasHelper.runSafeFull("fun test(A, B, C) {} Q = '0';", "Q"));
 		assertEquals("1", ArucasHelper.runSafeFull("Q = fun() { return '1'; }();", "Q"));
 	}
-	
+
 	@Test
 	public void testFunctionCallScope() {
 		assertEquals("valid", ArucasHelper.runSafeFull(
@@ -34,7 +34,7 @@ public class ArucasFunctionTest {
 			""", "X"
 		));
 	}
-	
+
 	@Test
 	public void testFunctionStatementScope() {
 		assertEquals("0", ArucasHelper.runSafeFull(
@@ -71,6 +71,19 @@ public class ArucasFunctionTest {
 			"""
 			Q = (((fun() { return (fun() { return (fun() { X = '3'; return X; }); }); })())())();
 			""", "Q"
+		));
+	}
+
+	@Test
+	public void testFunctionParameters() {
+		assertEquals("45", ArucasHelper.runSafe(
+			"""
+			lambda = fun(s, t) {
+				return s + t;
+			};
+			a = lambda((a = 12) + 1, b = 10) + a + b;
+			return a;
+			"""
 		));
 	}
 }

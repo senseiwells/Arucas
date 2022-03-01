@@ -101,84 +101,41 @@ public class TestOrderValues {
 		}
 	}
 
-	public static class CValue extends BValue {
-		@Override
-		public CValue copy(Context context) {
-			return this;
-		}
-
-		@Override
-		public String getAsString(Context context) {
-			return this.getClass().toString();
-		}
-
-		@Override
-		public boolean isEquals(Context context, Value<?> other) {
-			return false;
-		}
-
-		@Override
-		public int getHashCode(Context context) {
-			return 0;
-		}
-
-		public static class ClassExt extends ArucasClassExtension {
-			public ClassExt() {
-				super("C");
-			}
-
-			@Override
-			public Class<?> getValueClass() {
-				return CValue.class;
-			}
-
-			@Override
-			public ArucasFunctionMap<ConstructorFunction> getDefinedConstructors() {
-				return ArucasFunctionMap.of(new ConstructorFunction((a, b) -> new CValue()));
-			}
-
-//			@Override
-//			public ArucasFunctionMap<MemberFunction> getDefinedMethods() {
-//				return ArucasFunctionMap.of(new MemberFunction("test", (a, b) -> StringValue.of("(C)")));
-//			}
-		}
-	}
-	
 	public static class CoolExtensionClassThatShouldBeAllowed extends BValue {
-	
+
 	}
-	
+
 	public static class DValue extends CoolExtensionClassThatShouldBeAllowed {
 		@Override
 		public DValue copy(Context context) {
 			return this;
 		}
-		
+
 		@Override
 		public String getAsString(Context context) {
 			return this.getClass().toString();
 		}
-		
+
 		@Override
 		public boolean isEquals(Context context, Value<?> other) {
 			return false;
 		}
-		
+
 		@Override
 		public int getHashCode(Context context) {
 			return 0;
 		}
-		
+
 		public static class ClassExt extends ArucasClassExtension {
 			public ClassExt() {
 				super("D");
 			}
-			
+
 			@Override
 			public Class<?> getValueClass() {
 				return DValue.class;
 			}
-			
+
 			@Override
 			public ArucasFunctionMap<ConstructorFunction> getDefinedConstructors() {
 				return ArucasFunctionMap.of(new ConstructorFunction((a, b) -> new DValue()));

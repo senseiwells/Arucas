@@ -19,22 +19,22 @@ public class ArucasClassValue extends Value<AbstractClassDefinition> implements 
 	private final ArucasFunctionMap<ClassMemberFunction> methods;
 	private final Map<String, Value<?>> members;
 	private final ArucasOperatorMap<ClassMemberFunction> operatorMap;
-	
+
 	public ArucasClassValue(AbstractClassDefinition arucasClass) {
 		super(arucasClass);
 		this.methods = new ArucasFunctionMap<>();
 		this.members = new HashMap<>();
 		this.operatorMap = new ArucasOperatorMap<>();
 	}
-	
+
 	public String getName() {
 		return this.value.getName();
 	}
-	
+
 	protected void addMethod(ClassMemberFunction method) {
 		this.methods.add(method);
 	}
-	
+
 	public void addMemberVariable(String name, Value<?> value) {
 		this.members.put(name, value);
 	}
@@ -66,14 +66,14 @@ public class ArucasClassValue extends Value<AbstractClassDefinition> implements 
 		this.members.put(name, value);
 		return true;
 	}
-	
+
 	@Override
 	public Value<?> getMember(String name) {
 		Value<?> member = this.members.get(name);
 		if (member != null) {
 			return member;
 		}
-		
+
 		return this.methods.get(name);
 	}
 
@@ -86,7 +86,7 @@ public class ArucasClassValue extends Value<AbstractClassDefinition> implements 
 	public ArucasClassValue copy(Context context) {
 		return this;
 	}
-	
+
 	@Override
 	public int getHashCode(Context context) throws CodeError {
 		// If 'hashCode' is overridden we should use that here
@@ -101,7 +101,7 @@ public class ArucasClassValue extends Value<AbstractClassDefinition> implements 
 
 		return Objects.hashCode(this);
 	}
-	
+
 	@Override
 	public String getAsString(Context context) throws CodeError {
 		// If 'toString' is overridden we should use that here
@@ -109,10 +109,10 @@ public class ArucasClassValue extends Value<AbstractClassDefinition> implements 
 		if (memberFunction != null) {
 			return memberFunction.call(context, new ArrayList<>()).getAsString(context);
 		}
-		
+
 		return "<class " + this.getName() + "@" + Integer.toHexString(this.getHashCode(context)) + ">";
 	}
-	
+
 	@Override
 	public boolean isEquals(Context context, Value<?> other) throws CodeError {
 		// If 'equals' is overridden we should use that here

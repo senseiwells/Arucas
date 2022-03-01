@@ -7,7 +7,9 @@ import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.MutableSyntaxImpl;
 import me.senseiwells.arucas.utils.StringUtils;
-import me.senseiwells.arucas.values.*;
+import me.senseiwells.arucas.values.NullValue;
+import me.senseiwells.arucas.values.StringValue;
+import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.values.classes.ArucasClassDefinition;
 import me.senseiwells.arucas.values.functions.ClassMemberFunction;
@@ -19,12 +21,14 @@ import java.util.*;
 public class Parser {
 	private final List<Token> tokens;
 	private final Context context;
+	private final Stack<StackType> parseStack;
 	private int operatorTokenIndex;
 	private Token currentToken;
 
 	public Parser(List<Token> tokens, Context context) {
 		this.tokens = tokens;
 		this.context = context.createChildContext("Parser Context");
+		this.parseStack = new Stack<>();
 		this.operatorTokenIndex = -1;
 		this.advance();
 	}
@@ -52,46 +56,46 @@ public class Parser {
 	public Node parse() throws CodeError {
 		List<Node> statements = new ArrayList<>();
 		ISyntax startPos = this.currentToken.syntaxPosition;
-		
+
 		// The initial program contains only special statements
 		while (this.currentToken.type != Token.Type.FINISH) {
 			// Remove all semicolons
 			while (this.currentToken.type == Token.Type.SEMICOLON) {
 				this.advance();
 			}
-			
+
 			statements.add(this.statement());
 		}
-		
+
 		return new ListNode(statements, startPos, this.currentToken.syntaxPosition);
 	}
 
 	private Node statements() throws CodeError {
 		List<Node> statements = new ArrayList<>();
 		ISyntax startPos = this.currentToken.syntaxPosition;
-		
+
 		this.context.pushScope(this.currentToken.syntaxPosition);
-		
+
 		switch (this.currentToken.type) {
 			case FINISH, SEMICOLON -> {
 				this.advance();
 				this.context.popScope();
 				return new NullNode(this.currentToken);
 			}
-			
+
 			case LEFT_CURLY_BRACKET -> {
 				this.advance();
-				
+
 				if (this.currentToken.type == Token.Type.RIGHT_CURLY_BRACKET) {
 					this.advance();
 					this.context.popScope();
 					return new NullNode(this.currentToken);
 				}
-	
+
 				while (this.currentToken.type == Token.Type.SEMICOLON) {
 					this.advance();
 				}
-	
+
 				do {
 					statements.add(this.statement());
 					while (this.currentToken.type == Token.Type.SEMICOLON) {
@@ -105,7 +109,7 @@ public class Parser {
 			}
 			default -> statements.add(this.statement());
 		}
-		
+
 		this.context.popScope();
 		return new ScopeNode(statements, startPos, this.currentToken.syntaxPosition);
 	}
@@ -141,7 +145,7 @@ public class Parser {
 				return this.switchStatement();
 			}
 		}
-		
+
 		ISyntax startPos = this.currentToken.syntaxPosition;
 		Node node = switch (this.currentToken.type) {
 			case RETURN -> {
@@ -149,7 +153,7 @@ public class Parser {
 				if (this.currentToken.type == Token.Type.SEMICOLON) {
 					yield new ReturnNode(new NullNode(this.currentToken), startPos, startPos);
 				}
-				
+
 				Node expression = this.sizeComparisonExpression();
 				yield new ReturnNode(expression, startPos, this.currentToken.syntaxPosition);
 			}
@@ -163,21 +167,21 @@ public class Parser {
 			}
 			default -> this.expression();
 		};
-		
+
 		this.throwIfNotType(Token.Type.SEMICOLON, "Expected ; at end of line");
 		this.advance();
 		return node;
 	}
-	
+
 	private ArucasClassNode classStatement() throws CodeError {
 		ISyntax startPos = this.currentToken.syntaxPosition;
 		this.advance();
-		
+
 		this.throwIfNotType(Token.Type.IDENTIFIER, "Expected an identifier");
 		Token className = this.currentToken;
 		this.context.throwIfStackNameTaken(className.content, className.syntaxPosition);
 		this.advance();
-		
+
 		this.throwIfNotType(Token.Type.LEFT_CURLY_BRACKET, "Expected '{'");
 		this.advance();
 
@@ -193,7 +197,7 @@ public class Parser {
 			if (isStatic) {
 				this.advance();
 			}
-			
+
 			switch (this.currentToken.type) {
 				case VAR -> {
 					this.advance();
@@ -217,7 +221,7 @@ public class Parser {
 				case IDENTIFIER -> {
 					Token token = this.currentToken;
 					this.advance();
-	
+
 					if (this.currentToken.type == Token.Type.LEFT_BRACKET) {
 						if (!token.content.equals(definition.getName())) {
 							throw new CodeError(
@@ -263,7 +267,7 @@ public class Parser {
 				);
 			}
 		}
-		
+
 		this.context.popScope();
 		this.throwIfNotType(Token.Type.RIGHT_CURLY_BRACKET, "Expected '}'");
 		ISyntax endPos = this.currentToken.syntaxPosition;
@@ -298,32 +302,32 @@ public class Parser {
 
 		return classConstructor;
 	}
-	
+
 	private ClassMemberFunction classMethod() throws CodeError {
 		ISyntax startPos = this.currentToken.syntaxPosition;
 		this.advance();
-		
+
 		this.throwIfNotType(Token.Type.IDENTIFIER, "Expected method name");
 		Token variableNameToken = this.currentToken;
 		this.advance();
-		
+
 		this.throwIfNotType(Token.Type.LEFT_BRACKET, "Expected '('");
 		this.advance();
-		
+
 		this.context.pushScope(this.currentToken.syntaxPosition);
-		
+
 		List<String> argumentNames = this.getClassMemberArguments();
-		
+
 		MutableSyntaxImpl syntaxPosition = new MutableSyntaxImpl(startPos.getStartPos(), null);
 		ClassMemberFunction classMethod = new ClassMemberFunction(variableNameToken.content, argumentNames, syntaxPosition);
 		this.context.setLocal(variableNameToken.content, classMethod);
-		
+
 		Node statements = this.statements();
 		this.context.popScope();
-		
+
 		classMethod.complete(statements);
 		syntaxPosition.end = statements.syntaxPosition.getEndPos();
-		
+
 		return classMethod;
 	}
 
@@ -440,34 +444,20 @@ public class Parser {
 	}
 
 	// Checks whether the following code is unpacking code
-	private boolean isUnpacking() throws CodeError {
+	private boolean isUnpackable() throws CodeError {
 		int position = this.operatorTokenIndex;
-
+		this.parseStack.add(StackType.UNPACKING);
 		do {
-			if (this.currentToken.type != Token.Type.IDENTIFIER) {
+			Node node = this.expression();
+
+			if (!(node instanceof VariableAssignNode)) {
+				this.parseStack.pop();
 				this.setTokenIndex(position);
 				return false;
 			}
-			Token baseIdentifier = this.currentToken;
-			int innerPosition = this.operatorTokenIndex;
-			this.advance();
-			if (this.currentToken.type == Token.Type.DOT) {
-				this.advance();
-				if (this.currentToken.type != Token.Type.IDENTIFIER) {
-					this.setTokenIndex(position);
-					return false;
-				}
-				AbstractClassDefinition classDefinition = this.context.getClassDefinition(baseIdentifier.content);
-				if (classDefinition != null) {
-					this.advance();
-				}
-				else {
-					this.setTokenIndex(innerPosition);
-					this.unpackableMember(true);
-				}
-			}
 		}
 		while (this.currentToken.type == Token.Type.COMMA && this.advance());
+		this.parseStack.pop();
 
 		boolean isPackable = this.currentToken.type == Token.Type.ASSIGN_OPERATOR;
 		this.setTokenIndex(position);
@@ -480,40 +470,21 @@ public class Parser {
 	}
 
 	private VariableAssignNode setUnpacking(VariableAssignNode firstNode) throws CodeError {
+		this.parseStack.add(StackType.UNPACKING);
 		List<VariableAssignNode> assignNodes = new ArrayList<>();
 		if (firstNode != null) {
 			assignNodes.add(firstNode);
 		}
 		Token start = this.currentToken;
-		Node dummyNode = new NullNode(start);
 		do {
-			this.throwIfNotType(Token.Type.IDENTIFIER, "Expected an identifier");
-			Token baseIdentifier = this.currentToken;
-			int position = this.operatorTokenIndex;
-			this.advance();
-			VariableAssignNode assignNode;
-			if (this.currentToken.type == Token.Type.DOT) {
-				this.advance();
-				this.throwIfNotType(Token.Type.IDENTIFIER, "Expected an identifier");
-				Token name = this.currentToken;
-				AbstractClassDefinition classDefinition = this.context.getClassDefinition(baseIdentifier.content);
-				if (classDefinition != null) {
-					assignNode = new StaticAssignNode(name, classDefinition, dummyNode);
-					this.advance();
-				}
-				else {
-					this.setTokenIndex(position);
-					assignNode = this.unpackableMember(false);
-				}
-			}
-			else {
-				assignNode = new VariableAssignNode(baseIdentifier, dummyNode);
-				this.context.throwIfStackNameTaken(baseIdentifier.content, baseIdentifier.syntaxPosition);
-				this.context.setVariable(baseIdentifier.content, NullValue.NULL);
+			Node node = this.expression();
+			if (!(node instanceof VariableAssignNode assignNode)) {
+				throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "Expected assignable values when unpacking", this.currentToken.syntaxPosition);
 			}
 			assignNodes.add(assignNode);
 		}
 		while (this.currentToken.type == Token.Type.COMMA && this.advance());
+		this.parseStack.pop();
 
 		this.throwIfNotType(Token.Type.ASSIGN_OPERATOR, "Expected an assignment operator");
 
@@ -529,10 +500,15 @@ public class Parser {
 		this.context.throwIfStackNameTaken(variableName.content, variableName.syntaxPosition);
 
 		this.advance();
+		if (this.isStackType(StackType.UNPACKING)) {
+			this.context.setVariable(variableName.content, NullValue.NULL);
+			return new VariableAssignNode(variableName, new NullNode(this.currentToken));
+		}
+
 		this.throwIfNotType(Token.Type.ASSIGN_OPERATOR, "Expected an assignment operator");
 		this.advance();
 		Node expression = this.expression();
-		
+
 		this.context.setVariable(variableName.content, NullValue.NULL);
 		return new VariableAssignNode(variableName, expression);
 	}
@@ -541,7 +517,7 @@ public class Parser {
 		this.throwIfNotType(Token.Type.IDENTIFIER, "Expected an identifier");
 		Token variableName = this.currentToken;
 		this.context.throwIfStackNameTaken(variableName.content, variableName.syntaxPosition);
-		
+
 		Node member = this.member();
 		Token operatorToken = this.currentToken;
 		Token.Type operatorType = switch (this.currentToken.type) {
@@ -549,10 +525,10 @@ public class Parser {
 			case DECREMENT -> Token.Type.MINUS;
 			default -> throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Unknown unary memory operator", operatorToken.syntaxPosition);
 		};
-		
+
 		this.advance();
 		Node numberNode = new NumberNode(new Token(Token.Type.NUMBER, "1", operatorToken.syntaxPosition));
-		
+
 		this.context.setVariable(variableName.content, NullValue.NULL);
 		return new VariableAssignNode(variableName,
 			new BinaryOperatorNode(member, new Token(operatorType, operatorToken.syntaxPosition), numberNode)
@@ -596,14 +572,14 @@ public class Parser {
 		this.throwIfNotType(Token.Type.LEFT_BRACKET, "Expected 'if (...)'");
 		Node condition = this.expression();
 		Node statement = this.statements();
-		
+
 		if (this.currentToken.type == Token.Type.ELSE) {
 			this.advance();
-			
+
 			Node elseStatement = this.statements();
 			return new IfNode(condition, statement, elseStatement);
 		}
-		
+
 		NullNode nullNode = new NullNode(this.currentToken);
 		return new IfNode(condition, statement, nullNode);
 	}
@@ -615,14 +591,15 @@ public class Parser {
 		Node statement = this.statements();
 		return new WhileNode(condition, statement);
 	}
-	
+
 	private static int functionLambdaIndex = 1;
+
 	private Node functionDefinition(boolean isLambda) throws CodeError {
 		Token functionStartToken = this.currentToken;
 		this.advance();
 		List<String> argumentNameTokens = new ArrayList<>();
 		Token variableNameToken;
-		
+
 		if (isLambda) {
 			variableNameToken = new Token(
 				Token.Type.IDENTIFIER, "%d$lambda".formatted(functionLambdaIndex++),
@@ -639,9 +616,9 @@ public class Parser {
 		}
 		this.throwIfNotType(Token.Type.LEFT_BRACKET, "Expected 'fun (...)'");
 		this.advance();
-		
+
 		this.context.pushScope(this.currentToken.syntaxPosition);
-		
+
 		if (this.currentToken.type == Token.Type.IDENTIFIER) {
 			do {
 				this.throwIfNotType(Token.Type.IDENTIFIER, "Expected Identifier");
@@ -653,29 +630,29 @@ public class Parser {
 		}
 		this.throwIfNotType(Token.Type.RIGHT_BRACKET, "Expected ',' or ')'");
 		this.advance();
-		
+
 		FunctionNode functionNode = new FunctionNode(functionStartToken, variableNameToken, argumentNameTokens);
 		this.context.setLocal(variableNameToken.content, functionNode.getFunctionValue());
-		
+
 		Node statements = this.statements();
 		this.context.popScope();
-		
+
 		functionNode.complete(statements);
 		this.context.setVariable(variableNameToken.content, functionNode.getFunctionValue());
 		return functionNode;
 	}
-	
+
 	private Node newDefinition() throws CodeError {
 		ISyntax startPos = this.currentToken.syntaxPosition;
 		this.advance();
-		
+
 		this.throwIfNotType(Token.Type.IDENTIFIER, "Expected Identifier");
 		Token className = this.currentToken;
 		this.advance();
-		
+
 		this.throwIfNotType(Token.Type.LEFT_BRACKET, "Expected '(...)'");
 		this.advance();
-		
+
 		List<Node> arguments = new ArrayList<>();
 		if (this.currentToken.type != Token.Type.RIGHT_BRACKET) {
 			arguments.add(this.expression());
@@ -684,9 +661,9 @@ public class Parser {
 				arguments.add(this.expression());
 			}
 		}
-		
+
 		this.throwIfNotType(Token.Type.RIGHT_BRACKET, "Expected ')' or ','");
-		
+
 		ISyntax endPos = this.currentToken.syntaxPosition;
 		this.advance();
 		return new NewNode(className, arguments, startPos, endPos);
@@ -772,18 +749,18 @@ public class Parser {
 	private Node switchStatement() throws CodeError {
 		ISyntax startPos = this.currentToken.syntaxPosition;
 		this.advance();
-		
+
 		this.throwIfNotType(Token.Type.LEFT_BRACKET, "Expected '(...)'");
 		this.advance();
-		
+
 		Node valueNode = this.expression();
-		
+
 		this.throwIfNotType(Token.Type.RIGHT_BRACKET, "Expected ')'");
 		this.advance();
-		
+
 		this.throwIfNotType(Token.Type.LEFT_CURLY_BRACKET, "Expected '{'");
 		this.advance();
-		
+
 		List<Set<Object>> valueList = new ArrayList<>();
 		List<Node> caseList = new ArrayList<>();
 		Set<Object> allValues = new HashSet<>();
@@ -797,18 +774,18 @@ public class Parser {
 						this.currentToken.syntaxPosition
 					);
 				}
-				
+
 				this.advance();
 				this.throwIfNotType(Token.Type.POINTER, "Expected '->' but got '%s'".formatted(this.currentToken.content));
 				this.advance();
-				
+
 				defaultCase = this.statements();
 				continue;
 			}
-			
+
 			this.throwIfNotType(Token.Type.CASE, "Expected 'case'");
 			this.advance();
-			
+
 			if (valueType == null) {
 				if (this.currentToken.type == Token.Type.MINUS) {
 					valueType = Token.Type.NUMBER;
@@ -823,14 +800,14 @@ public class Parser {
 					);
 				}
 			}
-			
+
 			Set<Object> values = new HashSet<>();
 			while (true) {
 				boolean isNegative = false;
 				if (this.currentToken.type == Token.Type.MINUS) {
 					isNegative = true;
 					this.advance();
-					
+
 					if (this.currentToken.type != Token.Type.NUMBER || this.currentToken.type != valueType) {
 						throw new CodeError(
 							CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected a value of '%s' but got '%s'".formatted(valueType, this.currentToken.type),
@@ -838,11 +815,11 @@ public class Parser {
 						);
 					}
 				}
-				
+
 				Token token = this.currentToken;
 				this.throwIfNotType(valueType, "Expected a value of type '%s' but got '%s'".formatted(valueType, token.type));
 				this.advance();
-				
+
 				Object value;
 				switch (valueType) {
 					case NUMBER -> {
@@ -863,7 +840,7 @@ public class Parser {
 						);
 					}
 				}
-				
+
 				if (!allValues.add(value)) {
 					// We do not allow multiple cases to have the same condition
 					throw new CodeError(
@@ -871,29 +848,29 @@ public class Parser {
 						token.syntaxPosition
 					);
 				}
-				
+
 				values.add(value);
 				if (this.currentToken.type == Token.Type.COMMA) {
 					this.advance();
 					continue;
 				}
-				
+
 				this.throwIfNotType(Token.Type.POINTER, "Expected '->' but got '%s'".formatted(this.currentToken.content));
 				this.advance();
 				break;
 			}
-			
+
 			valueList.add(values);
 			caseList.add(this.statements());
 		}
-		
+
 		this.throwIfNotType(Token.Type.RIGHT_CURLY_BRACKET, "Expected '}'");
 		ISyntax endPos = this.currentToken.syntaxPosition;
 		this.advance();
-		
+
 		return new SwitchNode(valueNode, defaultCase, valueList, caseList, startPos, endPos);
 	}
-	
+
 	private Node expression() throws CodeError {
 		if (this.currentToken.type == Token.Type.IDENTIFIER) {
 			this.advance();
@@ -904,8 +881,11 @@ public class Parser {
 				}
 				case COMMA -> {
 					this.recede();
-					if (this.isUnpacking()) {
+					if (!this.isStackType(StackType.UNPACKING) && this.isUnpackable()) {
 						return this.setUnpacking();
+					}
+					if (this.isStackType(StackType.UNPACKING)) {
+						return this.setVariable();
 					}
 				}
 				case INCREMENT, DECREMENT -> {
@@ -915,7 +895,7 @@ public class Parser {
 				default -> this.recede();
 			}
 		}
-		
+
 		return this.sizeComparisonExpression();
 	}
 
@@ -939,7 +919,7 @@ public class Parser {
 	private Node mapExpression() throws CodeError {
 		Map<Node, Node> elementMap = new HashMap<>();
 		ISyntax startPos = this.currentToken.syntaxPosition;
-		
+
 		this.advance();
 		if (this.currentToken.type != Token.Type.RIGHT_CURLY_BRACKET) {
 			do {
@@ -956,7 +936,7 @@ public class Parser {
 		this.advance();
 		return new MapNode(elementMap, startPos, endPos);
 	}
-	
+
 	private Node sizeComparisonExpression() throws CodeError {
 		Node left = this.comparisonExpression();
 		while (this.currentToken.type == Token.Type.AND || this.currentToken.type == Token.Type.OR) {
@@ -967,7 +947,7 @@ public class Parser {
 		}
 		return left;
 	}
-	
+
 	private Node comparisonExpression() throws CodeError {
 		if (this.currentToken.type == Token.Type.NOT) {
 			Token token = this.currentToken;
@@ -984,7 +964,7 @@ public class Parser {
 		}
 		return left;
 	}
-	
+
 	private Node arithmeticExpression() throws CodeError {
 		Node left = this.term();
 		while (this.currentToken.type == Token.Type.PLUS || this.currentToken.type == Token.Type.MINUS) {
@@ -995,7 +975,7 @@ public class Parser {
 		}
 		return left;
 	}
-	
+
 	private Node term() throws CodeError {
 		Node left = this.factor();
 		while (this.currentToken.type == Token.Type.MULTIPLY || this.currentToken.type == Token.Type.DIVIDE) {
@@ -1006,7 +986,7 @@ public class Parser {
 		}
 		return left;
 	}
-	
+
 	private Node factor() throws CodeError {
 		Token token = this.currentToken;
 		if (token.type == Token.Type.PLUS || token.type == Token.Type.MINUS) {
@@ -1016,7 +996,7 @@ public class Parser {
 		}
 		return this.power();
 	}
-	
+
 	private Node power() throws CodeError {
 		Node left = this.call();
 		while (this.currentToken.type == Token.Type.POWER) {
@@ -1027,14 +1007,14 @@ public class Parser {
 		}
 		return left;
 	}
-	
+
 	private Node call() throws CodeError {
 		List<Node> argumentNodes = new ArrayList<>();
 		Node member = this.member();
 		if (this.currentToken.type != Token.Type.LEFT_BRACKET) {
 			return member;
 		}
-		
+
 		if (member instanceof StringNode) {
 			throw new CodeError(
 				CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
@@ -1042,7 +1022,7 @@ public class Parser {
 				this.currentToken.syntaxPosition
 			);
 		}
-		
+
 		this.advance();
 		if (this.currentToken.type != Token.Type.RIGHT_BRACKET) {
 			argumentNodes.add(this.expression());
@@ -1052,7 +1032,7 @@ public class Parser {
 			}
 			this.throwIfNotType(Token.Type.RIGHT_BRACKET, "Expected a ')'");
 		}
-		
+
 		if (member instanceof FunctionAccessNode accessNode) {
 			FunctionValue functionValue = this.context.getBuiltInFunction(accessNode.token.content, argumentNodes.size());
 			if (functionValue == null) {
@@ -1064,20 +1044,22 @@ public class Parser {
 			}
 			member = new DirectAccessNode(accessNode.token, functionValue);
 		}
-		
+
 		this.advance();
 		return this.member(new CallNode(member, argumentNodes));
 	}
 
 	private Node member() throws CodeError {
-		Node left = this.atom(false);
+		Node left = this.atom();
 		return this.member(left);
 	}
 
 	private Node member(Node left) throws CodeError {
 		while (this.currentToken.type == Token.Type.DOT) {
 			this.advance();
-			Node right = this.atom(true);
+			this.parseStack.add(StackType.MEMBER);
+			Node right = this.atom();
+			this.parseStack.pop();
 			switch (this.currentToken.type) {
 				case LEFT_BRACKET -> {
 					this.advance();
@@ -1101,17 +1083,23 @@ public class Parser {
 					left = new MemberCallNode(left, right, argumentNodes);
 				}
 				case ASSIGN_OPERATOR -> {
+					if (this.isStackType(StackType.UNPACKING)) {
+						return new MemberAssignNode(left, right, new NullNode(this.currentToken));
+					}
 					this.advance();
 					Node valueNode = this.expression();
 					return new MemberAssignNode(left, right, valueNode);
 				}
 				case COMMA -> {
 					this.advance();
-					if (this.isUnpacking()) {
-						return this.setUnpacking(new MemberAssignNode(left, right, new NullNode(this.currentToken)));
+					VariableAssignNode assignNode = new MemberAssignNode(left, right, new NullNode(this.currentToken));
+					if (!this.isStackType(StackType.UNPACKING) && this.isUnpackable()) {
+						return this.setUnpacking(assignNode);
 					}
-					this.recede();
-					left = new MemberAccessNode(left, right);
+					if (this.isStackType(StackType.UNPACKING)) {
+						this.recede();
+					}
+					return assignNode;
 				}
 				case INCREMENT, DECREMENT -> left = this.modifyMember(left, right);
 				default -> left = new MemberAccessNode(left, right);
@@ -1120,64 +1108,12 @@ public class Parser {
 		return left;
 	}
 
-	private VariableAssignNode unpackableMember(boolean verifying) throws CodeError {
-		Node left = this.atom(false);
-		while (this.currentToken.type == Token.Type.DOT) {
-			this.advance();
-			Node right = this.atom(true);
-			switch (this.currentToken.type) {
-				case LEFT_BRACKET -> {
-					this.advance();
-					List<Node> argumentNodes = new ArrayList<>();
-					if (this.currentToken.type != Token.Type.RIGHT_BRACKET) {
-						argumentNodes.add(this.expression());
-						while (this.currentToken.type == Token.Type.COMMA) {
-							this.advance();
-							argumentNodes.add(this.expression());
-						}
-						this.throwIfNotType(Token.Type.RIGHT_BRACKET, "Expected a ')'");
-					}
-					this.advance();
-					if (!(right instanceof FunctionAccessNode)) {
-						throw new CodeError(
-							CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
-							"%s is not a valid member function name".formatted(right.token.content),
-							right.syntaxPosition
-						);
-					}
-					left = new MemberCallNode(left, right, argumentNodes);
-					continue;
-				}
-				case COMMA, ASSIGN_OPERATOR -> {
-					left = new MemberAssignNode(left, right, new NullNode(this.currentToken));
-				}
-				default -> {
-					left = new MemberAccessNode(left, right);
-					continue;
-				}
-			}
-			break;
-		}
-		if (!(left instanceof VariableAssignNode memberAssign)) {
-			if (verifying) {
-				return null;
-			}
-			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "Expected assignable values for unpacking", this.currentToken.syntaxPosition);
-		}
-		return memberAssign;
-	}
-
 	private Node staticMember(AbstractClassDefinition classDefinition) throws CodeError {
 		this.advance();
 		Token name = this.currentToken;
 		this.throwIfNotType(Token.Type.IDENTIFIER, "Expected '%s.member'".formatted(classDefinition.getName()));
 		this.advance();
 		return switch (this.currentToken.type) {
-			case ASSIGN_OPERATOR -> {
-				this.advance();
-				Node valueNode = this.expression();
-				yield new StaticAssignNode(name, classDefinition, valueNode);
-			}
 			case LEFT_BRACKET -> {
 				this.advance();
 				List<Node> argumentNodes = new ArrayList<>();
@@ -1192,25 +1128,36 @@ public class Parser {
 				this.advance();
 				yield new StaticCallNode(name, classDefinition, argumentNodes);
 			}
+			case ASSIGN_OPERATOR -> {
+				if (this.isStackType(StackType.UNPACKING)) {
+					yield new StaticAssignNode(name, classDefinition, new NullNode(this.currentToken));
+				}
+				this.advance();
+				Node valueNode = this.expression();
+				yield new StaticAssignNode(name, classDefinition, valueNode);
+			}
 			case COMMA -> {
 				this.advance();
-				if (this.isUnpacking()) {
-					yield this.setUnpacking(new StaticAssignNode(name, classDefinition, new NullNode(this.currentToken)));
+				VariableAssignNode assignNode = new StaticAssignNode(name, classDefinition, new NullNode(this.currentToken));
+				if (!this.isStackType(StackType.UNPACKING) && this.isUnpackable()) {
+					yield this.setUnpacking(assignNode);
 				}
-				this.recede();
-				yield new StaticAccessNode(name, classDefinition);
+				if (this.isStackType(StackType.UNPACKING)) {
+					this.recede();
+				}
+				yield assignNode;
 			}
 			case INCREMENT, DECREMENT -> this.modifyStatic(name, classDefinition);
 			default -> new StaticAccessNode(name, classDefinition);
 		};
 	}
 
-	private Node atom(boolean isMember) throws CodeError {
+	private Node atom() throws CodeError {
 		Token token = this.currentToken;
 		switch (token.type) {
 			case IDENTIFIER -> {
 				this.advance();
-				if (isMember || this.context.isBuiltInFunction(token.content)) {
+				if (this.isStackType(StackType.MEMBER) || this.context.isBuiltInFunction(token.content)) {
 					/*
 					 * Because we are calling a member function there is no way to know the
 					 * type of the value we are calling from.
@@ -1231,11 +1178,11 @@ public class Parser {
 				if (value == null) {
 					throw new CodeError(CodeError.ErrorType.UNKNOWN_IDENTIFIER, "Could not find '%s'".formatted(token.content), token.syntaxPosition);
 				}
-				
+
 				if (value instanceof FunctionValue) {
 					return new DirectAccessNode(token, value);
 				}
-				
+
 				return new VariableAccessNode(token);
 			}
 			case THIS -> {
@@ -1264,23 +1211,34 @@ public class Parser {
 				return new NullNode(token);
 			}
 			case LEFT_BRACKET -> {
+				this.parseStack.add(StackType.PARENTHESIS);
 				this.advance();
 				Node expression = this.expression();
 				this.throwIfNotType(Token.Type.RIGHT_BRACKET, "Expected ')'");
 				this.advance();
+				this.parseStack.pop();
 				return expression;
 			}
 			case LEFT_SQUARE_BRACKET -> {
-				return this.listExpression();
+				this.parseStack.add(StackType.LIST);
+				Node node = this.listExpression();
+				this.parseStack.pop();
+				return node;
 			}
 			case FUN -> {
-				return this.functionDefinition(true);
+				this.parseStack.add(StackType.FUN);
+				Node node = this.functionDefinition(true);
+				this.parseStack.pop();
+				return node;
 			}
 			case NEW -> {
 				return this.newDefinition();
 			}
 			case LEFT_CURLY_BRACKET -> {
-				return this.mapExpression();
+				this.parseStack.add(StackType.MAP);
+				Node node = this.mapExpression();
+				this.parseStack.pop();
+				return node;
 			}
 		}
 		throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Unexpected Token: %s".formatted(token), this.currentToken.syntaxPosition);
@@ -1300,5 +1258,18 @@ public class Parser {
 			ISyntax lastTokenPosition = ISyntax.lastOf(lastToken.syntaxPosition);
 			throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, errorMessage, lastTokenPosition);
 		}
+	}
+
+	private boolean isStackType(StackType type) {
+		return !this.parseStack.empty() && this.parseStack.peek() == type;
+	}
+
+	enum StackType {
+		UNPACKING,
+		PARENTHESIS,
+		MEMBER,
+		LIST,
+		MAP,
+		FUN,
 	}
 }

@@ -40,7 +40,7 @@ public class ArucasSet implements IArucasCollection, ValueIdentifier {
 	 * value it may not be the 'exact' value.
 	 */
 	public synchronized Value<?> get(Context context, Value<?> value) throws CodeError {
-		Value<?> returnValue = this.map.get(context, value);
+		Value<?> returnValue = this.map.getKey(context, value);
 		return returnValue == null ? NullValue.NULL : returnValue;
 	}
 	

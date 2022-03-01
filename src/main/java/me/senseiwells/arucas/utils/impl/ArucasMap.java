@@ -120,6 +120,11 @@ public class ArucasMap implements IArucasMap, ValueIdentifier {
 		return this.getNode(context, key) != null;
 	}
 
+	public Value<?> getKey(Context context, Value<?> key) throws CodeError {
+		Node node = this.getNode(context, key);
+		return node == null ? null : node.key;
+	}
+
 	public Value<?> put(Context context, Value<?> key, Value<?> value) throws CodeError {
 		return this.putVal(context, hash(context, key), key, value, false, true);
 	}
