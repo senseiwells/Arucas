@@ -11,6 +11,7 @@ import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.StringValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
+import me.senseiwells.arucas.values.classes.ArcuasEnumDefinition;
 import me.senseiwells.arucas.values.classes.ArucasClassDefinition;
 import me.senseiwells.arucas.values.functions.ClassMemberFunction;
 import me.senseiwells.arucas.values.functions.FunctionValue;
@@ -129,6 +130,9 @@ public class Parser {
 			case CLASS -> {
 				return this.classStatement();
 			}
+			case ENUM -> {
+				return this.enumStatement();
+			}
 			case FUN -> {
 				return this.functionDefinition(false);
 			}
@@ -188,7 +192,65 @@ public class Parser {
 		// Push the stack definition so that we can detect it from identifiers
 		ArucasClassDefinition definition = new ArucasClassDefinition(className.content);
 		this.context.addClassDefinition(definition);
+		return this.internalClassStatements(definition, startPos);
+	}
 
+	private ArucasClassNode enumStatement() throws CodeError {
+		ISyntax startPos = this.currentToken.syntaxPosition;
+		this.advance();
+
+		this.throwIfNotType(Token.Type.IDENTIFIER, "Expected an identifier");
+		Token enumName = this.currentToken;
+		this.context.throwIfStackNameTaken(enumName.content, enumName.syntaxPosition);
+		this.advance();
+
+		this.throwIfNotType(Token.Type.LEFT_CURLY_BRACKET, "Expected '{'");
+		this.advance();
+
+		ArcuasEnumDefinition definition = new ArcuasEnumDefinition(enumName.content);
+		this.context.addClassDefinition(definition);
+		this.context.pushScope(startPos);
+
+		while (this.currentToken.type == Token.Type.IDENTIFIER) {
+			Token identifier = this.currentToken;
+			this.advance();
+			List<Node> parameters = new ArrayList<>();
+
+			if (this.currentToken.type == Token.Type.LEFT_BRACKET) {
+				this.advance();
+				if (this.currentToken.type != Token.Type.RIGHT_BRACKET) {
+					parameters.add(this.expression());
+					while (this.currentToken.type == Token.Type.COMMA) {
+						this.advance();
+						parameters.add(this.expression());
+					}
+				}
+				this.throwIfNotType(Token.Type.RIGHT_BRACKET, "Expected ')'");
+				this.advance();
+			}
+			definition.addEnum(identifier.content, new ListNode(parameters, identifier.syntaxPosition, this.currentToken.syntaxPosition));
+
+			if (this.currentToken.type != Token.Type.COMMA) {
+				break;
+			}
+
+			this.advance();
+		}
+
+		this.context.popScope();
+
+		if (this.currentToken.type == Token.Type.SEMICOLON) {
+			this.advance();
+			return this.internalClassStatements(definition, startPos);
+		}
+
+		this.throwIfNotType(Token.Type.RIGHT_CURLY_BRACKET, "Expected '}'");
+		ISyntax endPos = this.currentToken.syntaxPosition;
+		this.advance();
+		return new ArucasClassNode(definition, startPos, endPos);
+	}
+
+	private ArucasClassNode internalClassStatements(ArucasClassDefinition definition, ISyntax startPos) throws CodeError {
 		// Push scopes to declare class body
 		this.context.pushScope(startPos);
 

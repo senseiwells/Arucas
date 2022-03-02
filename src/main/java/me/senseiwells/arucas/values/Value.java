@@ -4,6 +4,8 @@ import me.senseiwells.arucas.api.ArucasClassExtension;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
+import me.senseiwells.arucas.values.classes.ArucasClassDefinition;
 import me.senseiwells.arucas.values.classes.ArucasClassValue;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
@@ -52,24 +54,16 @@ public abstract class Value<T> extends BaseValue {
 		private Value<?> instanceOf(Context context, MemberFunction function) throws CodeError {
 			Value<?> thisValue = function.getParameterValue(context, 0);
 			StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 1);
-			if (stringValue.value.isEmpty()) {
+
+			AbstractClassDefinition classDefinition = context.getClassDefinition(stringValue.value);
+			if (classDefinition == null) {
 				return BooleanValue.FALSE;
 			}
-
 			if (thisValue instanceof ArucasClassValue classValue) {
-				return BooleanValue.of(classValue.getName().equals(stringValue.value));
+				return BooleanValue.of(classValue.value == classDefinition);
 			}
 
-			Class<?> clazz = thisValue.getClass();
-			while (clazz != null && clazz != Object.class) {
-				if (clazz.getSimpleName().replaceFirst("Value$", "").equals(stringValue.value)) {
-					return BooleanValue.TRUE;
-				}
-
-				clazz = clazz.getSuperclass();
-			}
-
-			return BooleanValue.FALSE;
+			return BooleanValue.of(classDefinition.getValueClass().isAssignableFrom(thisValue.getClass()));
 		}
 
 		private Value<?> getValueType(Context context, MemberFunction function) {

@@ -28,6 +28,7 @@ public class Context {
 	private final ArucasThreadHandler threadHandler;
 	private final ArucasFunctionMap<AbstractBuiltInFunction<?>> extensions;
 	private final IArucasOutput arucasOutput;
+	private final UUID contextId;
 	
 	private final String displayName;
 	private final Context parentContext;
@@ -44,6 +45,7 @@ public class Context {
 		this.extensions = extensions;
 		this.arucasOutput = arucasOutput;
 		this.threadHandler = threadHandler;
+		this.contextId = parentContext != null ? parentContext.contextId : UUID.randomUUID();
 		
 		this.displayName = displayName;
 		this.parentContext = parentContext;
@@ -69,6 +71,7 @@ public class Context {
 		this.parentContext = branch.parentContext;
 		this.suppressDeprecated = branch.suppressDeprecated;
 		this.isMain = branch.isMain;
+		this.contextId = branch.contextId;
 	}
 
 	@SuppressWarnings("unused")
@@ -114,12 +117,20 @@ public class Context {
 	public ArucasThreadHandler getThreadHandler() {
 		return this.threadHandler;
 	}
-	
+
 	/**
 	 * Returns this contexts output object.
 	 */
 	public IArucasOutput getOutput() {
 		return this.arucasOutput;
+	}
+
+	/**
+	 * Returns the contexts UUID
+	 */
+	@SuppressWarnings("unused")
+	public UUID getContextId() {
+		return this.contextId;
 	}
 	
 	public String getDisplayName() {

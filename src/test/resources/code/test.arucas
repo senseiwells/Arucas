@@ -1,27 +1,25 @@
 // run(getDirectory() + "/src/test/resources/code/test.arucas");
 
-class Pos {
-    var x;
-    var y;
-    var z;
+enum Colour {
+    RED("Red"),
+    GREEN("Green"),
+    BLUE("Blue"),
+    NONE;
 
-    Pos(x, y, z) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+    var prettyName;
+
+    Colour(prettyName) {
+        this.prettyName = prettyName;
     }
 
-    fun unpack() {
-        return [this.x, this.y, this.z];
+    Colour() {
+        this.prettyName = "None";
     }
 
-    fun unpackReverse() {
-        return [this.z, this.y, this.x];
+    fun toString() {
+        return this.prettyName;
     }
 }
 
-print(isMain());
+new Colour();
 
-s = Set.of(1, 2, 3);
-
-print(s);

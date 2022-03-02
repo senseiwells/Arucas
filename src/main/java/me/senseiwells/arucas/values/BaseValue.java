@@ -35,119 +35,119 @@ public abstract class BaseValue implements ValueIdentifier {
 	 * This gets called when the binary operator <code>&&</code>
 	 * is used in Arucas
 	 *
-	 * @param context The current context
-	 * @param other The other Value you are comparing
+	 * @param context        The current context
+	 * @param other          The other Value you are comparing
 	 * @param syntaxPosition The current position
 	 * @return Whether the two values are both true
 	 * @throws CodeError If the two values cannot use this operator
 	 */
 	public BooleanValue isAnd(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
-		throw cannotApplyError(context, "AND", other, syntaxPosition);
+		throw this.cannotApplyError(context, "AND", other, syntaxPosition);
 	}
 
 	/**
 	 * This gets called when the binary operator <code>||</code>
 	 * is used in Arucas
 	 *
-	 * @param context The current context
-	 * @param other The other Value you are comparing
+	 * @param context        The current context
+	 * @param other          The other Value you are comparing
 	 * @param syntaxPosition The current position
 	 * @return Whether at least one of the two values is true
 	 * @throws CodeError If the two values cannot use this operator
 	 */
 	public BooleanValue isOr(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
-		throw cannotApplyError(context, "OR", other, syntaxPosition);
+		throw this.cannotApplyError(context, "OR", other, syntaxPosition);
 	}
 
 	/**
 	 * This gets called when the binary operator <code>+</code>
 	 * is used in Arucas
 	 *
-	 * @param context The current context
-	 * @param other The other Value you are comparing
+	 * @param context        The current context
+	 * @param other          The other Value you are comparing
 	 * @param syntaxPosition The current position
 	 * @return The value plus another
 	 * @throws CodeError If the two values cannot use this operator
 	 */
 	public Value<?> addTo(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
-		throw cannotApplyError(context, "ADD", other, syntaxPosition);
+		throw this.cannotApplyError(context, "ADD", other, syntaxPosition);
 	}
 
 	/**
 	 * This gets called when the binary operator <code>-</code>
 	 * is used in Arucas
 	 *
-	 * @param context The current context
-	 * @param other The other Value you are comparing
+	 * @param context        The current context
+	 * @param other          The other Value you are comparing
 	 * @param syntaxPosition The current position
 	 * @return The value subtracted by another
 	 * @throws CodeError If the two values cannot use this operator
 	 */
 	public Value<?> subtractBy(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
-		throw cannotApplyError(context, "SUBTRACT", other, syntaxPosition);
+		throw this.cannotApplyError(context, "SUBTRACT", other, syntaxPosition);
 	}
 
 	/**
 	 * This gets called when the binary operator <code>*</code>
 	 * is used in Arucas
 	 *
-	 * @param context The current context
-	 * @param other The other Value you are comparing
+	 * @param context        The current context
+	 * @param other          The other Value you are comparing
 	 * @param syntaxPosition The current position
 	 * @return The value multiplied by another
 	 * @throws CodeError If the two values cannot use this operator
 	 */
 	public Value<?> multiplyBy(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
-		throw cannotApplyError(context, "MULTIPLY", other, syntaxPosition);
+		throw this.cannotApplyError(context, "MULTIPLY", other, syntaxPosition);
 	}
 
 	/**
 	 * This gets called when the binary operator <code>/</code>
 	 * is used in Arucas
 	 *
-	 * @param context The current context
-	 * @param other The other Value you are comparing
+	 * @param context        The current context
+	 * @param other          The other Value you are comparing
 	 * @param syntaxPosition The current position
 	 * @return The value divided by another
 	 * @throws CodeError If the two values cannot use this operator
 	 */
 	public Value<?> divideBy(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
-		throw cannotApplyError(context, "DIVIDE", other, syntaxPosition);
+		throw this.cannotApplyError(context, "DIVIDE", other, syntaxPosition);
 	}
 
 	/**
 	 * This gets called when the binary operator <code>^</code>
 	 * is used in Arucas
 	 *
-	 * @param context The current context
-	 * @param other The other Value you are comparing
+	 * @param context        The current context
+	 * @param other          The other Value you are comparing
 	 * @param syntaxPosition The current position
 	 * @return The value to the exponent of another
 	 * @throws CodeError If the two values cannot use this operator
 	 */
 	public Value<?> powerBy(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
-		throw cannotApplyError(context, "POWER", other, syntaxPosition);
+		throw this.cannotApplyError(context, "POWER", other, syntaxPosition);
 	}
 
 	/**
 	 * This gets called when binary operators <code>>, >=, <, <=</code>
 	 * is used in Arucas
 	 *
-	 * @param context The current context
-	 * @param other The other Value you are comparing
+	 * @param context        The current context
+	 * @param other          The other Value you are comparing
 	 * @param syntaxPosition The current position
 	 * @return Whether the comparison between the values is true
 	 * @throws CodeError If the two values cannot use this operator
 	 */
 	public BooleanValue compareNumber(Context context, Value<?> other, Token.Type type, ISyntax syntaxPosition) throws CodeError {
-		throw cannotApplyError(context, type.toString(), other, syntaxPosition);
+		throw this.cannotApplyError(context, type.toString(), other, syntaxPosition);
 	}
 
 	/**
 	 * This gets called when the unary operator <code>!</code>
 	 * is used in Arucas
 	 *
-	 * @param context The current context
+	 * @param context        The current context
 	 * @param syntaxPosition The current position
 	 * @return The inverted value
 	 * @throws CodeError If the value cannot use this operator

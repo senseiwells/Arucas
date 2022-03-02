@@ -57,7 +57,7 @@ public class ArucasListTest {
 		));
 		assertThrows(CodeError.class, () -> ArucasHelper.compile(
 			"""
-			class E { };
+			class E { }
 			E, a = [1, 2];
 			"""
 		));

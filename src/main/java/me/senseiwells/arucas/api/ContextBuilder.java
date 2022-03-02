@@ -28,9 +28,9 @@ public class ContextBuilder {
 	private Consumer<String> outputHandler = System.out::print;
 	private boolean suppressDeprecated;
 	private String displayName = "";
-	
+
 	public ContextBuilder() { }
-	
+
 	public ContextBuilder setDisplayName(String displayName) {
 		this.displayName = Objects.requireNonNull(displayName);
 		return this;
@@ -51,7 +51,7 @@ public class ContextBuilder {
 			ArucasBuiltInExtension::new
 		));
 	}
-	
+
 	public ContextBuilder addExtensions(List<Supplier<IArucasExtension>> extensions) {
 		this.extensions.addAll(extensions);
 		return this;
@@ -62,10 +62,11 @@ public class ContextBuilder {
 		this.extensions.addAll(List.of(extensions));
 		return this;
 	}
-	
+
 	public ContextBuilder addDefaultClasses() {
 		return this.addClasses(
 			Value.ArucasBaseClass::new,
+			EnumValue.ArucasEnumClass::new,
 			StringValue.ArucasStringClass::new,
 			BooleanValue.ArucasBooleanClass::new,
 			ListValue.ArucasListClass::new,
@@ -78,18 +79,18 @@ public class ContextBuilder {
 			ArucasMathClass::new
 		);
 	}
-	
+
 	public ContextBuilder addClasses(List<Supplier<ArucasClassExtension>> extensions) {
 		this.classes.addAll(extensions);
 		return this;
 	}
-	
+
 	@SafeVarargs
 	public final ContextBuilder addClasses(Supplier<ArucasClassExtension>... extensions) {
 		this.classes.addAll(List.of(extensions));
 		return this;
 	}
-	
+
 	public ContextBuilder addWrapper(Supplier<IArucasWrappedClass> supplier) {
 		this.wrappers.add(supplier);
 		return this;
@@ -100,7 +101,7 @@ public class ContextBuilder {
 		this.wrappers.addAll(List.of(suppliers));
 		return this;
 	}
-	
+
 	/**
 	 * Make sure to define extensions before calling this method.
 	 * This method will override all functions defined after this
@@ -110,7 +111,7 @@ public class ContextBuilder {
 		return this.addDefaultExtensions()
 			.addDefaultClasses();
 	}
-	
+
 	public Context build() {
 		ArucasFunctionMap<AbstractBuiltInFunction<?>> extensionList = new ArucasFunctionMap<>();
 		ArucasClassDefinitionMap classDefinitions = new ArucasClassDefinitionMap();
@@ -122,18 +123,18 @@ public class ContextBuilder {
 		for (Supplier<ArucasClassExtension> supplier : this.classes) {
 			classDefinitions.add(supplier.get());
 		}
-		
+
 		for (Supplier<IArucasWrappedClass> supplier : this.wrappers) {
 			classDefinitions.add(ArucasWrapperExtension.createWrapper(supplier));
 		}
 
 		classDefinitions.merge();
-		
+
 		ArucasOutput arucasOutput = new ArucasOutput();
 		arucasOutput.setOutputHandler(this.outputHandler);
-		
+
 		ArucasThreadHandler threadHandler = new ArucasThreadHandler();
-		
+
 		Context context = new Context(this.displayName, extensionList, classDefinitions, threadHandler, arucasOutput);
 		context.setSuppressDeprecated(this.suppressDeprecated);
 		return context;

@@ -12,23 +12,26 @@ import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.functions.ClassMemberFunction;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ArucasClassDefinition extends AbstractClassDefinition {
 	private final ArucasFunctionMap<ClassMemberFunction> methods;
-	private final ArucasFunctionMap<ClassMemberFunction> constructors;
-	private final Map<String, Node> memberVariables;
 	private final Map<String, Node> staticMemberVariableNodes;
 	private final List<Node> staticInitializers;
-	private final ArucasOperatorMap<ClassMemberFunction> operatorMap;
-	
+	protected final ArucasFunctionMap<ClassMemberFunction> constructors;
+	protected final Map<String, Node> memberVariables;
+	protected final ArucasOperatorMap<ClassMemberFunction> operatorMap;
+
 	public ArucasClassDefinition(String name) {
 		super(name);
 		this.methods = new ArucasFunctionMap<>();
-		this.constructors = new ArucasFunctionMap<>();
-		this.memberVariables = new HashMap<>();
 		this.staticMemberVariableNodes = new HashMap<>();
 		this.staticInitializers = new ArrayList<>();
+		this.constructors = new ArucasFunctionMap<>();
+		this.memberVariables = new HashMap<>();
 		this.operatorMap = new ArucasOperatorMap<>();
 	}
 
@@ -48,6 +51,11 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 		this.operatorMap.add(tokenType, method);
 	}
 
+	@SuppressWarnings("UnusedReturnValue")
+	public Node addMemberVariableNode(boolean isStatic, String name, Node value) {
+		return isStatic ? this.staticMemberVariableNodes.put(name, value) : this.memberVariables.put(name, value);
+	}
+
 	@Override
 	public ArucasFunctionMap<ClassMemberFunction> getMethods() {
 		return this.methods;
@@ -58,15 +66,10 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 		for (Map.Entry<String, Node> entry : this.staticMemberVariableNodes.entrySet()) {
 			this.getStaticMemberVariables().put(entry.getKey(), entry.getValue().visit(context));
 		}
-		
+
 		for (Node staticNode : this.staticInitializers) {
 			staticNode.visit(context);
 		}
-	}
-
-	@SuppressWarnings("UnusedReturnValue")
-	public Node addMemberVariableNode(boolean isStatic, String name, Node value) {
-		return isStatic ? this.staticMemberVariableNodes.put(name, value) : this.memberVariables.put(name, value);
 	}
 
 	@Override
@@ -88,12 +91,12 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 		if (this.constructors.isEmpty() && parameterCount == 1) {
 			return thisValue;
 		}
-		
+
 		ClassMemberFunction constructor = this.constructors.get(this.getName(), parameterCount);
 		if (constructor == null) {
 			throw new RuntimeError("No such constructor for %s".formatted(this.getName()), syntaxPosition, context);
 		}
-		
+
 		constructor.copy(thisValue).call(context, parameters, false);
 		return thisValue;
 	}

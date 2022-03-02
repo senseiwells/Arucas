@@ -70,7 +70,7 @@ public class ArucasClassDefinitionMap implements Iterable<AbstractClassDefinitio
 					List<AbstractClassDefinition> childList = this.classMap.get(key);
 
 					if (childList != null) {
-						int classIndex = getClassIndex(baseClazz, childList);
+						int classIndex = this.getClassIndex(baseClazz, childList);
 						childList.add(classIndex, value);
 					}
 				}
@@ -136,6 +136,12 @@ public class ArucasClassDefinitionMap implements Iterable<AbstractClassDefinitio
 	 */
 	public FunctionValue getFunctionForClass(Class<?> clazz, String name, int parameters) {
 		MergedClassMethods mergedMethods = this.mergedClassMap.get(clazz);
+
+		while (mergedMethods == null && clazz != Object.class) {
+			clazz = clazz.getSuperclass();
+			mergedMethods = this.mergedClassMap.get(clazz);
+		}
+
 		if (mergedMethods != null) {
 			return mergedMethods.getMethod(name, parameters);
 		}

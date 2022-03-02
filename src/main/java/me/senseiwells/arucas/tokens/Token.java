@@ -3,37 +3,36 @@ package me.senseiwells.arucas.tokens;
 import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.utils.Position;
 
-import java.util.Map;
 import java.util.Set;
 
 public class Token {
 	public final Type type;
 	public final String content;
 	public final ISyntax syntaxPosition;
-	
+
 	public Token(Type type, String content, Position startPos, Position endPos) {
 		this.type = type;
 		this.content = content;
 		this.syntaxPosition = ISyntax.of(startPos, endPos);
 	}
-	
+
 	public Token(Type type, String content, ISyntax syntaxPosition) {
 		this(type, content, syntaxPosition.getStartPos(), syntaxPosition.getEndPos());
 	}
-	
+
 	public Token(Type type, ISyntax startPos, ISyntax endPos) {
 		this(type, "", startPos.getStartPos(), endPos.getEndPos());
 	}
-	
+
 	public Token(Type type, ISyntax syntaxPosition) {
 		this(type, "", syntaxPosition.getStartPos(), syntaxPosition.getEndPos());
 	}
-	
+
 	@Override
 	public String toString() {
 		return "Token{type=%s, content='%s'}".formatted(this.type, this.content);
 	}
-	
+
 	public enum Type {
 		// Delimiters
 		WHITESPACE,
@@ -42,7 +41,7 @@ public class Token {
 		IDENTIFIER,
 		COMMA,
 		FINISH,
-		
+
 		// Atoms
 		NUMBER,
 		BOOLEAN,
@@ -52,19 +51,19 @@ public class Token {
 		SET,
 		MAP,
 		SCOPE,
-		
+
 		// Arithmetics
 		PLUS,
 		MINUS,
 		MULTIPLY,
 		DIVIDE,
 		POWER,
-		
+
 		// Boolean operators
 		NOT,
 		AND,
 		OR,
-		
+
 		// Brackets
 		LEFT_BRACKET,
 		RIGHT_BRACKET,
@@ -72,12 +71,12 @@ public class Token {
 		RIGHT_SQUARE_BRACKET,
 		LEFT_CURLY_BRACKET,
 		RIGHT_CURLY_BRACKET,
-		
+
 		// Memory Operator
 		ASSIGN_OPERATOR,
 		INCREMENT,
 		DECREMENT,
-		
+
 		// Comparisons
 		EQUALS,
 		NOT_EQUALS,
@@ -85,7 +84,7 @@ public class Token {
 		MORE_THAN,
 		LESS_THAN_EQUAL,
 		MORE_THAN_EQUAL,
-		
+
 		// Statements
 		IF,
 		WHILE,
@@ -103,6 +102,7 @@ public class Token {
 		CASE,
 		DEFAULT,
 		CLASS,
+		ENUM,
 		THIS,
 		NEW,
 		STATIC,
@@ -110,8 +110,7 @@ public class Token {
 
 		// Dot
 		DOT,
-		POINTER
-		;
+		POINTER;
 
 		public static final Set<Type> COMPARISON_TOKEN_TYPES = Set.of(
 			EQUALS,
@@ -140,5 +139,9 @@ public class Token {
 			EQUALS,
 			NOT_EQUALS
 		);
+	}
+
+	enum Thing {
+		
 	}
 }
