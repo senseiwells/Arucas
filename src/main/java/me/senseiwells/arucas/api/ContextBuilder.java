@@ -10,6 +10,7 @@ import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.*;
 import me.senseiwells.arucas.values.functions.AbstractBuiltInFunction;
+import me.senseiwells.arucas.values.functions.FunctionValue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,6 +68,7 @@ public class ContextBuilder {
 		return this.addClasses(
 			Value.ArucasBaseClass::new,
 			EnumValue.ArucasEnumClass::new,
+			FunctionValue.ArucasFunctionClass::new,
 			StringValue.ArucasStringClass::new,
 			BooleanValue.ArucasBooleanClass::new,
 			ListValue.ArucasListClass::new,

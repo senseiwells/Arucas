@@ -1,10 +1,12 @@
 package me.senseiwells.arucas.values.functions;
 
+import me.senseiwells.arucas.api.ArucasClassExtension;
 import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.values.BooleanValue;
 import me.senseiwells.arucas.values.Value;
 
 import java.util.List;
@@ -134,5 +136,17 @@ public abstract class FunctionValue extends Value<String> {
 		// If this function was a delegate of a class, and then we compared it to a delegate
 		// of the same class but another instance it should always return false.
 		return this == other;
+	}
+
+	// This class is just so you can check whether a function is of type Function
+	public static class ArucasFunctionClass extends ArucasClassExtension {
+		public ArucasFunctionClass() {
+			super("Function");
+		}
+
+		@Override
+		public Class<?> getValueClass() {
+			return FunctionValue.class;
+		}
 	}
 }

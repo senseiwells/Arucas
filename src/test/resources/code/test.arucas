@@ -1,25 +1,3 @@
 // run(getDirectory() + "/src/test/resources/code/test.arucas");
 
-enum Colour {
-    RED("Red"),
-    GREEN("Green"),
-    BLUE("Blue"),
-    NONE;
-
-    var prettyName;
-
-    Colour(prettyName) {
-        this.prettyName = prettyName;
-    }
-
-    Colour() {
-        this.prettyName = "None";
-    }
-
-    fun toString() {
-        return this.prettyName;
-    }
-}
-
-new Colour();
-
+print(print);
