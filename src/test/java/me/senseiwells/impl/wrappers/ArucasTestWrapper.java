@@ -41,7 +41,7 @@ public class ArucasTestWrapper implements IArucasWrappedClass {
 
 	@ArucasFunction
 	public ArucasTestWrapper awesomeTestMethod(Context context, ListValue list) {
-		System.out.println(memberValue);
+		System.out.println(this.memberValue);
 		System.out.println("I got called OMG :D 1");
 		System.out.printf("0: %s\n", this);
 		System.out.printf("1: %s\n", list);

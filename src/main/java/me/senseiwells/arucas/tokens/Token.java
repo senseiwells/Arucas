@@ -123,6 +123,7 @@ public class Token {
 
 		public static final Set<Type> OVERRIDABLE_UNARY_OPERATORS = Set.of(
 			NOT,
+			PLUS,
 			MINUS
 		);
 
@@ -139,9 +140,5 @@ public class Token {
 			EQUALS,
 			NOT_EQUALS
 		);
-	}
-
-	enum Thing {
-		
 	}
 }

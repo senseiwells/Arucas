@@ -153,7 +153,33 @@ public abstract class BaseValue implements ValueIdentifier {
 	 * @throws CodeError If the value cannot use this operator
 	 */
 	public BooleanValue not(Context context, ISyntax syntaxPosition) throws CodeError {
-		throw new RuntimeError("The operation 'NOT' cannot be applied to %s".formatted(this.getAsString(context)), syntaxPosition, context);
+		throw this.cannotApplyError(context, "NOT", syntaxPosition);
+	}
+
+	/**
+	 * This gets called when the unary operator <code>+</code>
+	 * is used in Arucas
+	 *
+	 * @param context        The current context
+	 * @param syntaxPosition The current position
+	 * @return The unary positive of the value
+	 * @throws CodeError If the value cannot use this operator
+	 */
+	public Value<?> unaryPlus(Context context, ISyntax syntaxPosition) throws CodeError {
+		throw this.cannotApplyError(context, "POSITIVE", syntaxPosition);
+	}
+
+	/**
+	 * This gets called when the unary operator <code>-</code>
+	 * is used in Arucas
+	 *
+	 * @param context        The current context
+	 * @param syntaxPosition The current position
+	 * @return The unary negative of the value
+	 * @throws CodeError If the value cannot use this operator
+	 */
+	public Value<?> unaryMinus(Context context, ISyntax syntaxPosition) throws CodeError {
+		throw this.cannotApplyError(context, "NEGATIVE", syntaxPosition);
 	}
 
 	/**
@@ -176,6 +202,15 @@ public abstract class BaseValue implements ValueIdentifier {
 	 */
 	public BooleanValue isNotEqualTo(Value<?> other) {
 		return this.isEqualTo(other).not();
+	}
+
+	private RuntimeError cannotApplyError(Context context, String operation, ISyntax syntaxPosition) throws CodeError {
+		return new RuntimeError("The operation '%s' cannot be applied to %s".formatted(
+			operation,
+			this.getAsString(context)),
+			syntaxPosition,
+			context
+		);
 	}
 
 	private RuntimeError cannotApplyError(Context context, String operation, Value<?> other, ISyntax syntaxPosition) throws CodeError {

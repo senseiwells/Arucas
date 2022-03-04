@@ -89,8 +89,7 @@ public class ArucasStatementTest {
 	public void testScopeStatementScope() {
 		assertEquals("1", ArucasHelper.runSafe("X='0'; { X='1'; } return X;"));
 		assertThrows(CodeError.class, () -> ArucasHelper.compile("{ X='1'; } return X;"));
-		assertEquals("0", ArucasHelper.runSafe("X='0'; { (fun(){X='1';})(); } return X;"));
-
+		assertEquals("1", ArucasHelper.runSafe("X='0'; { (fun(){X='1';})(); } return X;"));
 	}
 
 	@Test(timeout = 1000)

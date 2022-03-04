@@ -12,6 +12,7 @@ import java.util.List;
 
 public class UserDefinedFunction extends FunctionValue {
 	protected Node bodyNode;
+	protected Context localContext;
 
 	public UserDefinedFunction(String name, List<String> argumentNames, ISyntax syntaxPosition) {
 		super(name, syntaxPosition, argumentNames, null);
@@ -21,7 +22,14 @@ public class UserDefinedFunction extends FunctionValue {
 		this.bodyNode = bodyNode;
 	}
 
+	public void setLocalContext(Context context) {
+		this.localContext = context;
+	}
+
 	protected Value<?> execute(Context context, List<Value<?>> arguments) throws CodeError, ThrowValue {
+		if (this.localContext != null) {
+			context = this.localContext;
+		}
 		this.checkAndPopulateArguments(context, arguments, this.argumentNames);
 		this.bodyNode.visit(context);
 		return NullValue.NULL;

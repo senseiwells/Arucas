@@ -34,7 +34,8 @@ public class FunctionNode extends Node {
 	public Value<?> visit(Context context) throws CodeError {
 		String functionName = this.variableNameToken.content;
 		context.throwIfStackNameTaken(null, this.syntaxPosition);
-		
+
+		this.functionValue.setLocalContext(context.createBranch());
 		context.setVariable(functionName, this.functionValue);
 		return this.functionValue;
 	}

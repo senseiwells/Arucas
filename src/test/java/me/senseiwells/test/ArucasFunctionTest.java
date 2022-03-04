@@ -26,7 +26,7 @@ public class ArucasFunctionTest {
 			X = A();
 			""", "X"
 		));
-		assertEquals("1", ArucasHelper.runSafeFull(
+		assertEquals("100", ArucasHelper.runSafeFull(
 			"""
 			X = '1';
 			fun test(X) {}
@@ -37,7 +37,7 @@ public class ArucasFunctionTest {
 
 	@Test
 	public void testFunctionStatementScope() {
-		assertEquals("0", ArucasHelper.runSafeFull(
+		assertEquals("1", ArucasHelper.runSafeFull(
 			"""
 			X = fun() {
 				Y = '0';

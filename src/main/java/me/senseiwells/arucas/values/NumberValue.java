@@ -79,6 +79,16 @@ public class NumberValue extends Value<Double> {
 	}
 
 	@Override
+	public Value<?> unaryPlus(Context context, ISyntax syntaxPosition) {
+		return this;
+	}
+
+	@Override
+	public Value<?> unaryMinus(Context context, ISyntax syntaxPosition) {
+		return new NumberValue(-this.value);
+	}
+
+	@Override
 	public NumberValue copy(Context context) {
 		return this;
 	}

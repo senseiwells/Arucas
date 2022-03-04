@@ -26,7 +26,8 @@ public class UnaryOperatorNode extends DirectAccessNode<Value<?>> {
 		}
 		switch (this.token.type) {
 			case NOT -> value = value.not(context, this.syntaxPosition);
-			case MINUS -> value = value.multiplyBy(context, NumberValue.of(-1), this.syntaxPosition);
+			case MINUS -> value = value.unaryMinus(context, this.syntaxPosition);
+			case PLUS -> value = value.unaryPlus(context, this.syntaxPosition);
 		}
 		return value;
 	}
@@ -38,6 +39,7 @@ public class UnaryOperatorNode extends DirectAccessNode<Value<?>> {
 
 	@Override
 	public Value<?> getValue() {
+		// Technically we could also return booleans here, but why would you write !false instead of true?
 		if (this.node instanceof NumberNode numberNode) {
 			NumberValue number = numberNode.getValue();
 			return this.token.type == Token.Type.MINUS ? NumberValue.of(number.value * -1) : number;

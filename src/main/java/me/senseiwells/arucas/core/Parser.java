@@ -658,6 +658,7 @@ public class Parser {
 	private static int functionLambdaIndex = 1;
 
 	private Node functionDefinition(boolean isLambda) throws CodeError {
+		this.parseStack.add(StackType.FUN);
 		Token functionStartToken = this.currentToken;
 		this.advance();
 		List<String> argumentNameTokens = new ArrayList<>();
@@ -702,6 +703,7 @@ public class Parser {
 
 		functionNode.complete(statements);
 		this.context.setVariable(variableNameToken.content, functionNode.getFunctionValue());
+		this.parseStack.pop();
 		return functionNode;
 	}
 
@@ -889,131 +891,6 @@ public class Parser {
 		return new SwitchNode(valueNode, defaultCase, casesList, rawCasesList, caseStatementsList, startPos, endPos);
 	}
 
-	private Node oldSwitchStatement() throws CodeError {
-		ISyntax startPos = this.currentToken.syntaxPosition;
-		this.advance();
-
-		this.throwIfNotType(Token.Type.LEFT_BRACKET, "Expected '(...)'");
-		this.advance();
-
-		Node valueNode = this.expression();
-
-		this.throwIfNotType(Token.Type.RIGHT_BRACKET, "Expected ')'");
-		this.advance();
-
-		this.throwIfNotType(Token.Type.LEFT_CURLY_BRACKET, "Expected '{'");
-		this.advance();
-
-		List<Set<Object>> valueList = new ArrayList<>();
-		List<Node> caseList = new ArrayList<>();
-		Set<Object> allValues = new HashSet<>();
-		Node defaultCase = null;
-		Token.Type valueType = null;
-		while (this.currentToken.type != Token.Type.RIGHT_CURLY_BRACKET) {
-			if (this.currentToken.type == Token.Type.DEFAULT) {
-				if (defaultCase != null) {
-					throw new CodeError(
-						CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Switch statements can only contain one default statement",
-						this.currentToken.syntaxPosition
-					);
-				}
-
-				this.advance();
-				this.throwIfNotType(Token.Type.POINTER, "Expected '->' but got '%s'".formatted(this.currentToken.content));
-				this.advance();
-
-				defaultCase = this.statements();
-				continue;
-			}
-
-			this.throwIfNotType(Token.Type.CASE, "Expected 'case'");
-			this.advance();
-
-			if (valueType == null) {
-				if (this.currentToken.type == Token.Type.MINUS) {
-					valueType = Token.Type.NUMBER;
-				}
-				else if (this.currentToken.type == Token.Type.STRING || this.currentToken.type == Token.Type.NUMBER) {
-					valueType = this.currentToken.type;
-				}
-				else {
-					throw new CodeError(
-						CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Switch statements can only contain numbers and strings",
-						this.currentToken.syntaxPosition
-					);
-				}
-			}
-
-			Set<Object> values = new HashSet<>();
-			while (true) {
-				boolean isNegative = false;
-				if (this.currentToken.type == Token.Type.MINUS) {
-					isNegative = true;
-					this.advance();
-
-					if (this.currentToken.type != Token.Type.NUMBER || this.currentToken.type != valueType) {
-						throw new CodeError(
-							CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected a value of '%s' but got '%s'".formatted(valueType, this.currentToken.type),
-							this.currentToken.syntaxPosition
-						);
-					}
-				}
-
-				Token token = this.currentToken;
-				this.throwIfNotType(valueType, "Expected a value of type '%s' but got '%s'".formatted(valueType, token.type));
-				this.advance();
-
-				Object value;
-				switch (valueType) {
-					case NUMBER -> {
-						value = Double.parseDouble(token.content) * (isNegative ? -1.0D : 1.0D);
-					}
-					case STRING -> {
-						try {
-							value = StringUtils.unescapeString(token.content.substring(1, token.content.length() - 1));
-						}
-						catch (RuntimeException e) {
-							throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, e.getMessage(), token.syntaxPosition);
-						}
-					}
-					default -> {
-						throw new CodeError(
-							CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Switch statements can only contain numbers and strings",
-							this.currentToken.syntaxPosition
-						);
-					}
-				}
-
-				if (!allValues.add(value)) {
-					// We do not allow multiple cases to have the same condition
-					throw new CodeError(
-						CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Switch statements can not contain duplicate conditions. '%s'".formatted(token.content),
-						token.syntaxPosition
-					);
-				}
-
-				values.add(value);
-				if (this.currentToken.type == Token.Type.COMMA) {
-					this.advance();
-					continue;
-				}
-
-				this.throwIfNotType(Token.Type.POINTER, "Expected '->' but got '%s'".formatted(this.currentToken.content));
-				this.advance();
-				break;
-			}
-
-			valueList.add(values);
-			caseList.add(this.statements());
-		}
-
-		this.throwIfNotType(Token.Type.RIGHT_CURLY_BRACKET, "Expected '}'");
-		ISyntax endPos = this.currentToken.syntaxPosition;
-		this.advance();
-
-		return new OldSwitchNode(valueNode, defaultCase, valueList, caseList, startPos, endPos);
-	}
-
 	private Node expression() throws CodeError {
 		if (this.currentToken.type == Token.Type.IDENTIFIER) {
 			this.advance();
@@ -1043,6 +920,7 @@ public class Parser {
 	}
 
 	private Node listExpression() throws CodeError {
+		this.parseStack.add(StackType.LIST);
 		List<Node> elementList = new ArrayList<>();
 		ISyntax startPos = this.currentToken.syntaxPosition;
 		this.advance();
@@ -1056,10 +934,12 @@ public class Parser {
 		}
 		ISyntax endPos = this.currentToken.syntaxPosition;
 		this.advance();
+		this.parseStack.pop();
 		return new ListNode(elementList, startPos, endPos);
 	}
 
 	private Node mapExpression() throws CodeError {
+		this.parseStack.add(StackType.MAP);
 		Map<Node, Node> elementMap = new HashMap<>();
 		ISyntax startPos = this.currentToken.syntaxPosition;
 
@@ -1077,6 +957,7 @@ public class Parser {
 		}
 		ISyntax endPos = this.currentToken.syntaxPosition;
 		this.advance();
+		this.parseStack.pop();
 		return new MapNode(elementMap, startPos, endPos);
 	}
 
@@ -1363,25 +1244,16 @@ public class Parser {
 				return expression;
 			}
 			case LEFT_SQUARE_BRACKET -> {
-				this.parseStack.add(StackType.LIST);
-				Node node = this.listExpression();
-				this.parseStack.pop();
-				return node;
+				return this.listExpression();
 			}
 			case FUN -> {
-				this.parseStack.add(StackType.FUN);
-				Node node = this.functionDefinition(true);
-				this.parseStack.pop();
-				return node;
+				return this.functionDefinition(true);
 			}
 			case NEW -> {
 				return this.newDefinition();
 			}
 			case LEFT_CURLY_BRACKET -> {
-				this.parseStack.add(StackType.MAP);
-				Node node = this.mapExpression();
-				this.parseStack.pop();
-				return node;
+				return this.mapExpression();
 			}
 		}
 		throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Unexpected Token: %s".formatted(token), this.currentToken.syntaxPosition);

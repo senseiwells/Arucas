@@ -34,19 +34,14 @@ public class SwitchNode extends Node {
 		Value<?> value = this.valueNode.visit(context);
 
 		try {
-			// int firstMatch = -1;
-			for (int i = 0; i < this.valueCases.size(); i++) {
+			for (int i = 0; i < this.nodeCases.size(); i++) {
 				ArucasSet set = this.valueCases.get(i);
 				if (set != null && set.contains(context, value)) {
-					// firstMatch = i; break;
 					this.statements.get(i).visit(context);
 					context.popScope();
 					return NullValue.NULL;
 				}
-			}
 
-			for (int i = 0; i < this.nodeCases.size(); i++) {
-				// if (i != -1 && i >= firstMatch) break;
 				Set<Node> nodes = this.nodeCases.get(i);
 				if (nodes == null) {
 					continue;
@@ -56,16 +51,12 @@ public class SwitchNode extends Node {
 					if (!value.isEquals(context, nodeValue)) {
 						continue;
 					}
-					// firstMatch = i; break;
 					this.statements.get(i).visit(context);
 					context.popScope();
 					return NullValue.NULL;
 				}
 			}
 
-			// if (firstMatch != -1) this.statements.get(i).visit(context);
-
-			/*else*/
 			if (this.defaultNode != null) {
 				this.defaultNode.visit(context);
 			}
