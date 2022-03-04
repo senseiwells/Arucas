@@ -10,11 +10,11 @@ import me.senseiwells.arucas.values.classes.ArucasClassValue;
 
 import java.util.ArrayList;
 
-public class UnaryOperatorNode extends Node {
+public class UnaryOperatorNode extends DirectAccessNode<Value<?>> {
 	private final Node node;
 
 	public UnaryOperatorNode(Token token, Node node) {
-		super(token);
+		super(token, null);
 		this.node = node;
 	}
 
@@ -34,5 +34,20 @@ public class UnaryOperatorNode extends Node {
 	@Override
 	public String toString() {
 		return "(%s, %s)".formatted(this.token, this.node);
+	}
+
+	@Override
+	public Value<?> getValue() {
+		if (this.node instanceof NumberNode numberNode) {
+			NumberValue number = numberNode.getValue();
+			return this.token.type == Token.Type.MINUS ? NumberValue.of(number.value * -1) : number;
+		}
+		if (this.node instanceof UnaryOperatorNode unaryNode) {
+			Value<?> value = unaryNode.getValue();
+			if (value instanceof NumberValue number) {
+				return this.token.type == Token.Type.MINUS ? NumberValue.of(number.value * -1) : number;
+			}
+		}
+		return null;
 	}
 }

@@ -7,6 +7,7 @@ import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.MutableSyntaxImpl;
 import me.senseiwells.arucas.utils.StringUtils;
+import me.senseiwells.arucas.utils.impl.ArucasSet;
 import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.StringValue;
 import me.senseiwells.arucas.values.Value;
@@ -823,6 +824,86 @@ public class Parser {
 		this.throwIfNotType(Token.Type.LEFT_CURLY_BRACKET, "Expected '{'");
 		this.advance();
 
+		List<Set<Node>> casesList = new ArrayList<>();
+		List<ArucasSet> rawCasesList = new ArrayList<>();
+		List<Node> caseStatementsList = new ArrayList<>();
+		ArucasSet allRawCases = new ArucasSet();
+		Node defaultCase = null;
+
+		while (this.currentToken.type != Token.Type.RIGHT_CURLY_BRACKET) {
+			if (this.currentToken.type == Token.Type.DEFAULT) {
+				if (defaultCase != null) {
+					throw new CodeError(
+						CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Switch statements can only contain one default statement",
+						this.currentToken.syntaxPosition
+					);
+				}
+
+				this.advance();
+				this.throwIfNotType(Token.Type.POINTER, "Expected '->' but got '%s'".formatted(this.currentToken.content));
+				this.advance();
+
+				defaultCase = this.statements();
+				continue;
+			}
+
+			this.throwIfNotType(Token.Type.CASE, "Expected 'case'");
+
+			Set<Node> cases = new LinkedHashSet<>();
+			ArucasSet rawCases = new ArucasSet();
+
+			do {
+				this.advance();
+				Node expression = this.expression();
+
+				Value<?> value;
+				if (expression instanceof DirectAccessNode direct && (value = direct.getValue()) != null) {
+					if (allRawCases.contains(this.context, value)) {
+						throw new CodeError(
+							CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR,
+							"Switch statements can not contain duplicate conditions. '%s'".formatted(value.getAsString(this.context)),
+							this.currentToken.syntaxPosition
+						);
+					}
+					allRawCases.add(this.context, value);
+					rawCases.add(this.context, value);
+					continue;
+				}
+
+				cases.add(expression);
+			}
+			while (this.currentToken.type == Token.Type.COMMA);
+
+			this.throwIfNotType(Token.Type.POINTER, "Expected '->' but got '%s'".formatted(this.currentToken.content));
+			this.advance();
+
+			casesList.add(cases.isEmpty() ? null : cases);
+			rawCasesList.add(rawCases.isEmpty() ? null : rawCases);
+			caseStatementsList.add(this.statements());
+		}
+
+		this.throwIfNotType(Token.Type.RIGHT_CURLY_BRACKET, "Expected '}'");
+		ISyntax endPos = this.currentToken.syntaxPosition;
+		this.advance();
+
+		return new SwitchNode(valueNode, defaultCase, casesList, rawCasesList, caseStatementsList, startPos, endPos);
+	}
+
+	private Node oldSwitchStatement() throws CodeError {
+		ISyntax startPos = this.currentToken.syntaxPosition;
+		this.advance();
+
+		this.throwIfNotType(Token.Type.LEFT_BRACKET, "Expected '(...)'");
+		this.advance();
+
+		Node valueNode = this.expression();
+
+		this.throwIfNotType(Token.Type.RIGHT_BRACKET, "Expected ')'");
+		this.advance();
+
+		this.throwIfNotType(Token.Type.LEFT_CURLY_BRACKET, "Expected '{'");
+		this.advance();
+
 		List<Set<Object>> valueList = new ArrayList<>();
 		List<Node> caseList = new ArrayList<>();
 		Set<Object> allValues = new HashSet<>();
@@ -930,7 +1011,7 @@ public class Parser {
 		ISyntax endPos = this.currentToken.syntaxPosition;
 		this.advance();
 
-		return new SwitchNode(valueNode, defaultCase, valueList, caseList, startPos, endPos);
+		return new OldSwitchNode(valueNode, defaultCase, valueList, caseList, startPos, endPos);
 	}
 
 	private Node expression() throws CodeError {
@@ -1104,7 +1185,7 @@ public class Parser {
 					this.currentToken.syntaxPosition
 				);
 			}
-			member = new DirectAccessNode(accessNode.token, functionValue);
+			member = new DirectAccessNode<>(accessNode.token, functionValue);
 		}
 
 		this.advance();
@@ -1242,7 +1323,7 @@ public class Parser {
 				}
 
 				if (value instanceof FunctionValue) {
-					return new DirectAccessNode(token, value);
+					return new DirectAccessNode<>(token, value);
 				}
 
 				return new VariableAccessNode(token);

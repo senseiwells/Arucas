@@ -1,3 +1,19 @@
 // run(getDirectory() + "/src/test/resources/code/test.arucas");
 
-print(print);
+str = "random";
+obj = 10;
+
+switch (10) {
+    case null -> {
+        print("we are u");
+    }
+    case obj -> {
+        print("this will never get called");
+    }
+    case 10 -> {
+        print("ten");
+    }
+    case str, true -> {
+        print("mgm");
+    }
+}

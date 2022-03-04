@@ -3,8 +3,8 @@ package me.senseiwells.test;
 import me.senseiwells.arucas.throwables.CodeError;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 public class ArucasSwitchTest {
 	@Test
@@ -36,22 +36,7 @@ public class ArucasSwitchTest {
 			""", "X"
 		));
 	}
-	
-	@Test
-	public void testSwitchStatementWrongType() {
-		assertThrows(CodeError.class, () -> ArucasHelper.compile("switch (1) { case 1, '2' -> break; }"));
-		assertThrows(CodeError.class, () -> ArucasHelper.compile("switch (1) { case 1 -> break; case '2' -> break; }"));
-		assertThrows(CodeError.class, () -> ArucasHelper.compile("switch (1) { case 1 -> break; case 1 -> break; }"));
-		assertThrows(CodeError.class, () -> ArucasHelper.compile("switch (1) { case [] -> break; }"));
-		assertThrows(CodeError.class, () -> ArucasHelper.compile("switch (1) { case {} -> break; }"));
-	}
-	
-	@Test
-	public void testSwitchStatementMinus() {
-		assertThrows(CodeError.class, () -> ArucasHelper.compile("switch (1) { case -1, -'2' -> break; }"));
-		assertThrows(CodeError.class, () -> ArucasHelper.compile("switch (1) { case -'1', -'2' -> break; }"));
-	}
-	
+
 	@Test
 	public void testSwitchDuplicateCase() {
 		assertThrows(CodeError.class, () -> ArucasHelper.compile("switch (1) { default -> break; default -> break; }"));
@@ -62,14 +47,14 @@ public class ArucasSwitchTest {
 		assertThrows(CodeError.class, () -> ArucasHelper.compile("switch (1) { case -2 -> break; case -2 -> break; }"));
 		assertThrows(CodeError.class, () -> ArucasHelper.compile("switch (1) { case 1 -> break; case 1 -> break; }"));
 	}
-	
+
 	@Test
 	public void testSwitchStatementSyntax() {
 		assertThrows(CodeError.class, () -> ArucasHelper.compile("switch (1) { case -> break; }"));
 		assertThrows(CodeError.class, () -> ArucasHelper.compile("switch (1) { case 1 -> { } { } }"));
 		assertEquals("null", ArucasHelper.runSafe("switch (1) { }"));
 	}
-	
+
 	@Test
 	public void testSwitchStatementDefault() {
 		assertEquals("three", ArucasHelper.runSafeFull(
