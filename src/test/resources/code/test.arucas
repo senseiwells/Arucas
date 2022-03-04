@@ -1,11 +1,13 @@
 // run(File.getDirectory().getPath() + "/src/test/resources/code/test.arucas");
 
-b = 100;
+t = Thread.runThreaded(fun() {
+    print(Thread.getCurrentThread());
+    sleep(1000);
+});
 
-eSupplier = run(File.getDirectory().getPath() + "/src/test/resources/code/test2.arucas");
+t.stop();
 
-e = eSupplier();
+sleep(2000);
 
-print(e);
+print("post thread stop!");
 
-print(b);

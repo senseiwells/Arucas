@@ -178,6 +178,9 @@ public class ArucasThreadHandler {
 			catch (Throwable t) {
 				this.fatalErrorHandler.accept(context, t, "");
 			}
+			if (Thread.currentThread() instanceof ArucasThread arucasThread && arucasThread.isStopControlled()) {
+				return;
+			}
 			// If an exception happens in a thread it stops the program
 			this.stop();
 		}, name);

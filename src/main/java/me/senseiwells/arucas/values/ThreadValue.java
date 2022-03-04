@@ -121,7 +121,7 @@ public class ThreadValue extends Value<ArucasThread> {
 			if (!thisValue.value.isAlive()) {
 				throw new RuntimeError("Thread is not alive", function.syntaxPosition, context);
 			}
-			thisValue.value.interrupt();
+			thisValue.value.controlledStop();
 			return NullValue.NULL;
 		}
 	}
