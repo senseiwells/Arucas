@@ -13,6 +13,7 @@ import me.senseiwells.arucas.values.classes.ArucasWrapperClassValue;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 public class WrapperClassMemberFunction extends ClassMemberFunction {
 	private final IArucasWrappedClass classValue;
@@ -37,7 +38,7 @@ public class WrapperClassMemberFunction extends ClassMemberFunction {
 	}
 	
 	@Deprecated
-	public WrapperClassMemberFunction copy(ArucasClassValue value) {
+	public WrapperClassMemberFunction complete(ArucasClassValue value) {
 		throw new UnsupportedOperationException();
 	}
 	
@@ -71,4 +72,7 @@ public class WrapperClassMemberFunction extends ClassMemberFunction {
 	public String getAsString(Context context) throws CodeError {
 		return "<class " + this.thisValue.getName() + "::" + this.getName() + "@" + Integer.toHexString(Objects.hashCode(this)) + ">";
 	}
+
+	@Override
+	public void setCallingMember(Supplier<Value<?>> supplier) { }
 }

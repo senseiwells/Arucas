@@ -6,11 +6,15 @@ import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.values.ListValue;
 import me.senseiwells.arucas.values.Value;
+import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
-public class MemberFunction extends AbstractBuiltInFunction<MemberFunction> {
+public class MemberFunction extends AbstractBuiltInFunction<MemberFunction> implements EmbeddableFunction {
+	private Supplier<Value<?>> thisSupplier;
+
 	public MemberFunction(String name, List<String> argumentNames, FunctionDefinition<MemberFunction> function, String isDeprecated) {
 		super(name, addThis(argumentNames), function, isDeprecated);
 	}
@@ -42,6 +46,11 @@ public class MemberFunction extends AbstractBuiltInFunction<MemberFunction> {
 	@Override
 	protected Value<?> execute(Context context, List<Value<?>> arguments) throws CodeError {
 		this.checkDeprecated(context);
+
+		if (this.thisSupplier != null) {
+			arguments.add(0, this.thisSupplier.get());
+		}
+
 		this.checkAndPopulateArguments(context, arguments, this.argumentNames);
 		return this.function.execute(context, this);
 	}
@@ -64,6 +73,16 @@ public class MemberFunction extends AbstractBuiltInFunction<MemberFunction> {
 		}
 		return stringList;
 	}
+
+	@Override
+	public void setCallingMember(Supplier<Value<?>> supplier) {
+		if (this.thisSupplier == null) {
+			this.thisSupplier = supplier;
+		}
+	}
+
+	@Override
+	public void setDefinition(AbstractClassDefinition definition) { }
 
 	/**
 	 * Arbitrary functions allow any number of parameters to be passed

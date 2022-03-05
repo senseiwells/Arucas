@@ -2,7 +2,6 @@ package me.senseiwells.arucas.values.classes;
 
 import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.nodes.ListNode;
-import me.senseiwells.arucas.nodes.Node;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
@@ -57,21 +56,8 @@ public class ArcuasEnumDefinition extends ArucasClassDefinition {
 		Context context = this.getLocalContext(ctx);
 
 		EnumValue thisValue = new EnumValue(this, enumName, this.enumValues.size());
-		for (ClassMemberFunction function : this.getMethods()) {
-			function = function.copy(thisValue);
-			function.setLocalContext(context);
-			thisValue.addMethod(function);
-		}
 
-		for (Map.Entry<String, Node> entry : this.memberVariables.entrySet()) {
-			thisValue.addMemberVariable(entry.getKey(), entry.getValue().visit(context));
-		}
-
-		this.operatorMap.forEach((type, function) -> {
-			function = function.copy(thisValue);
-			function.setLocalContext(context);
-			thisValue.addOperatorMethod(type, function);
-		});
+		this.addClassProperties(thisValue, context);
 
 		int parameterCount = parameters.size() + 1;
 		if (this.constructors.isEmpty() && parameterCount == 1) {
@@ -83,7 +69,7 @@ public class ArcuasEnumDefinition extends ArucasClassDefinition {
 			throw new RuntimeError("No such constructor for %s".formatted(this.getName()), syntaxPosition, context);
 		}
 
-		constructor.copy(thisValue).call(context, parameters, false);
+		constructor.complete(thisValue).call(context, parameters, false);
 
 		return thisValue;
 	}

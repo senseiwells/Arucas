@@ -92,6 +92,8 @@ public class Lexer {
 			.addRule(Type.NEW, i -> i.addString("new"))
 			.addRule(Type.STATIC, i -> i.addString("static"))
 			.addRule(Type.OPERATOR, i -> i.addString("operator"))
+			.addRule(Type.EMBED, i -> i.addString("embed"))
+			.addRule(Type.AS, i -> i.addString("as"))
 
 			// Dot operator
 			.addRule(Type.DOT, i -> i.addString("."))

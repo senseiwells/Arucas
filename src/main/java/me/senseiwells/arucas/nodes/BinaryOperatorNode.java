@@ -50,7 +50,7 @@ public class BinaryOperatorNode extends Node {
 		if (left instanceof ArucasClassValue classValue && classValue.hasOperatorMethod(this.token.type, 2)) {
 			List<Value<?>> parameters = new ArrayList<>();
 			parameters.add(right);
-			return classValue.getOperatorMethod(this.token.type, 2).copy(classValue).call(context, parameters);
+			return classValue.getOperatorMethod(this.token.type, 2).complete(classValue).call(context, parameters);
 		}
 
 		switch (this.token.type) {

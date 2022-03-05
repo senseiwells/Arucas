@@ -16,7 +16,7 @@ import me.senseiwells.arucas.values.functions.MemberOperations;
 import java.util.*;
 
 public class ArucasClassValue extends Value<AbstractClassDefinition> implements MemberOperations {
-	private final ArucasFunctionMap<ClassMemberFunction> methods;
+	private final ArucasFunctionMap<FunctionValue> methods;
 	private final Map<String, Value<?>> members;
 	private final ArucasOperatorMap<ClassMemberFunction> operatorMap;
 
@@ -31,7 +31,7 @@ public class ArucasClassValue extends Value<AbstractClassDefinition> implements 
 		return this.value.getName();
 	}
 
-	protected void addMethod(ClassMemberFunction method) {
+	protected void addMethod(FunctionValue method) {
 		this.methods.add(method);
 	}
 

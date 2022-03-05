@@ -18,7 +18,7 @@ public class CodeError extends Exception {
 	
 	@Override
 	public String toString() {
-		return toString(null);
+		return this.toString(null);
 	}
 	
 	public String toString(Context context) {

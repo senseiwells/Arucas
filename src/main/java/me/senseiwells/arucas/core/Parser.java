@@ -279,6 +279,9 @@ public class Parser {
 							definition.addMemberVariableNode(isStatic, token.content, new NullNode(this.currentToken));
 							this.advance();
 						}
+						default -> {
+							throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected ';' or assignment", token.syntaxPosition);
+						}
 					}
 				}
 				case IDENTIFIER -> {
@@ -322,6 +325,9 @@ public class Parser {
 				}
 				case LEFT_CURLY_BRACKET -> {
 					definition.addStaticInitializer(this.statements());
+				}
+				case EMBED -> {
+					this.embedClass(definition, isStatic);
 				}
 				default -> throw new CodeError(
 					CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR,
@@ -504,6 +510,55 @@ public class Parser {
 		syntaxPosition.end = statements.syntaxPosition.getEndPos();
 
 		return operatorMethod;
+	}
+
+	private void embedClass(ArucasClassDefinition classDefinition, boolean isStatic) throws CodeError {
+		ISyntax startPos = this.currentToken.syntaxPosition;
+		if (isStatic) {
+			throw new CodeError(
+				CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
+				"Cannot have a static operator method",
+				startPos
+			);
+		}
+
+		this.throwIfNotType(Token.Type.EMBED, "Expected 'embed'");
+		this.advance();
+
+		this.throwIfNotType(Token.Type.IDENTIFIER, "Expected identifier");
+		Token identifier = this.currentToken;
+		this.advance();
+
+		AbstractClassDefinition embededClass = this.context.getClassDefinition(identifier.content);
+		if (embededClass == null) {
+			throw new CodeError(CodeError.ErrorType.UNKNOWN_IDENTIFIER, "Class '%s' could not be found".formatted(identifier.content), startPos);
+		}
+		if (embededClass == classDefinition) {
+			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "Cannot embed own class", startPos);
+		}
+
+		this.throwIfNotType(Token.Type.AS, "Expected 'as'");
+		this.advance();
+
+		this.throwIfNotType(Token.Type.IDENTIFIER, "Expected an identifier");
+		Token token = this.currentToken;
+		this.advance();
+
+		switch (this.currentToken.type) {
+			case ASSIGN_OPERATOR -> {
+				this.advance();
+				classDefinition.addEmbededMemberVariableNode(embededClass, token.content, this.sizeComparisonExpression());
+				this.throwIfNotType(Token.Type.SEMICOLON, "Expected ';'");
+				this.advance();
+			}
+			case SEMICOLON -> {
+				classDefinition.addEmbededMemberVariableNode(embededClass, token.content, new NullNode(this.currentToken));
+				this.advance();
+			}
+			default -> {
+				throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected ';' or assignment", token.syntaxPosition);
+			}
+		}
 	}
 
 	// Checks whether the following code is unpacking code
@@ -1097,14 +1152,14 @@ public class Parser {
 						this.throwIfNotType(Token.Type.RIGHT_BRACKET, "Expected a ')'");
 					}
 					this.advance();
-					if (!(right instanceof FunctionAccessNode)) {
+					if (!(right instanceof FunctionAccessNode accessNode)) {
 						throw new CodeError(
 							CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
 							"%s is not a valid member function name".formatted(right.token.content),
 							right.syntaxPosition
 						);
 					}
-					left = new MemberCallNode(left, right, argumentNodes);
+					left = new MemberCallNode(left, accessNode, argumentNodes);
 				}
 				case ASSIGN_OPERATOR -> {
 					if (this.isStackType(StackType.UNPACKING)) {
@@ -1181,7 +1236,7 @@ public class Parser {
 		switch (token.type) {
 			case IDENTIFIER -> {
 				this.advance();
-				if (this.isStackType(StackType.MEMBER) || this.context.isBuiltInFunction(token.content)) {
+				if (this.isStackType(StackType.MEMBER)/* || this.context.isBuiltInFunction(token.content)*/) {
 					/*
 					 * Because we are calling a member function there is no way to know the
 					 * type of the value we are calling from.

@@ -1,17 +1,13 @@
 // run(File.getDirectory().getPath() + "/src/test/resources/code/test.arucas");
 
-a = null;
-
-{
-    scopeVar = "A";
-
-    class A {
-        fun print() {
-            print(scopeVar);
-        }
+class A {
+    fun do() {
+        print("called");
     }
-
-    a = new A();
 }
 
-a.print();
+func = print;
+
+func("hmm");
+
+print(func);
