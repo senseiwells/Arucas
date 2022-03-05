@@ -21,7 +21,7 @@ public class ArucasClassNode extends Node {
 	public Value<?> visit(Context context) throws CodeError, ThrowValue {
 		// Class definition must come before statics
 		context.addClassDefinition(this.definition);
-		this.definition.initialiseStatics(context);
+		this.definition.init(context);
 		return NullValue.NULL;
 	}
 }

@@ -62,7 +62,7 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 	}
 
 	@Override
-	public void initialiseStatics(Context context) throws CodeError, ThrowValue {
+	protected void initialiseStatics(Context context) throws CodeError, ThrowValue {
 		for (Map.Entry<String, Node> entry : this.staticMemberVariableNodes.entrySet()) {
 			this.getStaticMemberVariables().put(entry.getKey(), entry.getValue().visit(context));
 		}
@@ -73,11 +73,15 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 	}
 
 	@Override
-	public ArucasClassValue createNewDefinition(Context context, List<Value<?>> parameters, ISyntax syntaxPosition) throws CodeError, ThrowValue {
+	public ArucasClassValue createNewDefinition(Context ctx, List<Value<?>> parameters, ISyntax syntaxPosition) throws CodeError, ThrowValue {
+		Context context = this.getLocalContext(ctx);
+
 		ArucasClassValue thisValue = new ArucasClassValue(this);
 		// Add methods
 		for (ClassMemberFunction function : this.getMethods()) {
-			thisValue.addMethod(function.copy(thisValue));
+			function = function.copy(thisValue);
+			function.setLocalContext(context);
+			thisValue.addMethod(function);
 		}
 
 		// Add member variables
@@ -85,7 +89,11 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 			thisValue.addMemberVariable(entry.getKey(), entry.getValue().visit(context));
 		}
 
-		this.operatorMap.forEach((type, function) -> thisValue.addOperatorMethod(type, function.copy(thisValue)));
+		this.operatorMap.forEach((type, function) -> {
+			function = function.copy(thisValue);
+			function.setLocalContext(context);
+			thisValue.addOperatorMethod(type, function);
+		});
 
 		int parameterCount = parameters.size() + 1;
 		if (this.constructors.isEmpty() && parameterCount == 1) {

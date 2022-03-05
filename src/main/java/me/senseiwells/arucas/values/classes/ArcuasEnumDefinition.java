@@ -53,17 +53,25 @@ public class ArcuasEnumDefinition extends ArucasClassDefinition {
 		return NullValue.NULL;
 	}
 
-	private EnumValue createEnumValue(String enumName, Context context, List<Value<?>> parameters, ISyntax syntaxPosition) throws CodeError, ThrowValue {
+	private EnumValue createEnumValue(String enumName, Context ctx, List<Value<?>> parameters, ISyntax syntaxPosition) throws CodeError, ThrowValue {
+		Context context = this.getLocalContext(ctx);
+
 		EnumValue thisValue = new EnumValue(this, enumName, this.enumValues.size());
 		for (ClassMemberFunction function : this.getMethods()) {
-			thisValue.addMethod(function.copy(thisValue));
+			function = function.copy(thisValue);
+			function.setLocalContext(context);
+			thisValue.addMethod(function);
 		}
 
 		for (Map.Entry<String, Node> entry : this.memberVariables.entrySet()) {
 			thisValue.addMemberVariable(entry.getKey(), entry.getValue().visit(context));
 		}
 
-		this.operatorMap.forEach((type, function) -> thisValue.addOperatorMethod(type, function.copy(thisValue)));
+		this.operatorMap.forEach((type, function) -> {
+			function = function.copy(thisValue);
+			function.setLocalContext(context);
+			thisValue.addOperatorMethod(type, function);
+		});
 
 		int parameterCount = parameters.size() + 1;
 		if (this.constructors.isEmpty() && parameterCount == 1) {
@@ -81,7 +89,7 @@ public class ArcuasEnumDefinition extends ArucasClassDefinition {
 	}
 
 	@Override
-	public void initialiseStatics(Context context) throws CodeError, ThrowValue {
+	protected void initialiseStatics(Context context) throws CodeError, ThrowValue {
 		Map<String, Value<?>> staticMap = this.getStaticMemberVariables();
 		for (Map.Entry<String, ListNode> entry : this.enumInitializerMap.entrySet()) {
 			String name = entry.getKey();

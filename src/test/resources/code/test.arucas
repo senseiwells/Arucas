@@ -1,13 +1,17 @@
 // run(File.getDirectory().getPath() + "/src/test/resources/code/test.arucas");
 
-t = Thread.runThreaded(fun() {
-    print(Thread.getCurrentThread());
-    sleep(1000);
-});
+a = null;
 
-t.stop();
+{
+    scopeVar = "A";
 
-sleep(2000);
+    class A {
+        fun print() {
+            print(scopeVar);
+        }
+    }
 
-print("post thread stop!");
+    a = new A();
+}
 
+a.print();

@@ -74,6 +74,7 @@ public abstract class ArucasClassExtension extends AbstractClassDefinition {
 	 */
 	@Override
 	public Value<?> createNewDefinition(Context context, List<Value<?>> parameters, ISyntax syntaxPosition) throws CodeError {
+		// We don't need to get local context because this isn't user defined
 		if (this.constructors.isEmpty()) {
 			throw new RuntimeError("%s cannot be constructed".formatted(this.getName()), syntaxPosition, context);
 		}

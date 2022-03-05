@@ -41,7 +41,7 @@ public class BinaryOperatorNode extends Node {
 				}
 				result = leftBoolean.value ? BooleanValue.TRUE : leftBoolean.isOr(context, (right = this.rightNode.visit(context)), this.syntaxPosition);
 			}
-			// AND, OR has a special property that the right hand side is not evaluated
+			// AND, OR has a special property that the right-hand side is not evaluated
 			// unless the value we read is either true or false. This means that we need
 			// to specify this value after we have checked for AND, OR
 			default -> right = this.rightNode.visit(context);

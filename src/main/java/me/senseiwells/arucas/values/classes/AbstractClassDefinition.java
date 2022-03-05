@@ -15,6 +15,7 @@ public abstract class AbstractClassDefinition implements MemberOperations {
 	private final String name;
 	private final ArucasFunctionMap<FunctionValue> staticMethods;
 	private final Map<String, Value<?>> staticMemberVariables;
+	private Context localContext;
 	
 	public AbstractClassDefinition(String name) {
 		this.name = name;
@@ -39,6 +40,15 @@ public abstract class AbstractClassDefinition implements MemberOperations {
 	public final void addStaticMethod(FunctionValue method) {
 		this.staticMethods.add(method);
 	}
+
+	public final void init(Context context) throws ThrowValue, CodeError {
+		this.localContext = context;
+		this.initialiseStatics(context);
+	}
+
+	public final Context getLocalContext(Context fallback) {
+		return this.localContext == null ? fallback : this.localContext;
+	}
 	
 	/**
 	 * Returns the value type of this class.
@@ -48,7 +58,7 @@ public abstract class AbstractClassDefinition implements MemberOperations {
 	/**
 	 * This gets called when the class is initialised.
 	 */
-	public abstract void initialiseStatics(Context context) throws CodeError, ThrowValue;
+	protected abstract void initialiseStatics(Context context) throws CodeError, ThrowValue;
 	
 	/**
 	 * This gets called when a new instance of this object is created.
