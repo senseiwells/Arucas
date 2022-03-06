@@ -21,16 +21,17 @@ public class ClassMemberFunction extends UserDefinedFunction implements Embeddab
 	public ClassMemberFunction(ArucasClassValue thisValue, String name, List<String> argumentNames, ISyntax syntaxPosition) {
 		super(name, argumentNames, syntaxPosition);
 		this.thisValue = thisValue;
+		this.definition = this.thisValue == null ? null : this.thisValue.value;
 	}
 	
 	public ClassMemberFunction(String name, List<String> argumentNames, ISyntax syntaxPosition) {
 		this(null, name, argumentNames, syntaxPosition);
 	}
 	
-	public ClassMemberFunction complete(ArucasClassValue value) {
-		this.thisValue = value;
-		this.definition = value.value;
-		return this;
+	public ClassMemberFunction copy(ArucasClassValue value) {
+		ClassMemberFunction memberFunction = new ClassMemberFunction(value, this.getName(), this.argumentNames, this.syntaxPosition);
+		memberFunction.complete(this.bodyNode);
+		return memberFunction;
 	}
 	
 	@Override

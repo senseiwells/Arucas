@@ -1091,6 +1091,13 @@ public class Parser {
 		List<Node> argumentNodes = new ArrayList<>();
 		Node member = this.member();
 		if (this.currentToken.type != Token.Type.LEFT_BRACKET) {
+			if (member instanceof FunctionAccessNode) {
+				throw new CodeError(
+					CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
+					"Build-in functions cannot be delegated",
+					this.currentToken.syntaxPosition
+				);
+			}
 			return member;
 		}
 
@@ -1236,7 +1243,7 @@ public class Parser {
 		switch (token.type) {
 			case IDENTIFIER -> {
 				this.advance();
-				if (this.isStackType(StackType.MEMBER)/* || this.context.isBuiltInFunction(token.content)*/) {
+				if (this.isStackType(StackType.MEMBER) || this.context.isBuiltInFunction(token.content)) {
 					/*
 					 * Because we are calling a member function there is no way to know the
 					 * type of the value we are calling from.

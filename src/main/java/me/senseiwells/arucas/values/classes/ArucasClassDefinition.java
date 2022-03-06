@@ -65,7 +65,7 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 	protected void addClassProperties(ArucasClassValue thisValue, Context context) throws ThrowValue, CodeError {
 		// Add methods
 		for (ClassMemberFunction function : this.getMethods()) {
-			function = function.complete(thisValue);
+			function = function.copy(thisValue);
 			function.setLocalContext(context);
 			thisValue.addMethod(function);
 		}
@@ -95,7 +95,7 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 		}
 
 		this.operatorMap.forEach((type, function) -> {
-			function = function.complete(thisValue);
+			function = function.copy(thisValue);
 			function.setLocalContext(context);
 			thisValue.addOperatorMethod(type, function);
 		});
@@ -135,7 +135,7 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 			throw new RuntimeError("No such constructor for %s".formatted(this.getName()), syntaxPosition, context);
 		}
 
-		constructor.complete(thisValue).call(context, parameters, false);
+		constructor.copy(thisValue).call(context, parameters, false);
 		return thisValue;
 	}
 

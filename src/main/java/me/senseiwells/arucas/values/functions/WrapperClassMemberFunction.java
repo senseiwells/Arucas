@@ -38,7 +38,7 @@ public class WrapperClassMemberFunction extends ClassMemberFunction {
 	}
 	
 	@Deprecated
-	public WrapperClassMemberFunction complete(ArucasClassValue value) {
+	public WrapperClassMemberFunction copy(ArucasClassValue value) {
 		throw new UnsupportedOperationException();
 	}
 	

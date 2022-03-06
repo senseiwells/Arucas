@@ -1,13 +1,24 @@
 // run(File.getDirectory().getPath() + "/src/test/resources/code/test.arucas");
 
-class A {
-    fun do() {
-        print("called");
+enum Direction {
+    NORTH,
+    SOUTH,
+    EAST,
+    WEST,
+    UP,
+    DOWN;
+
+    Direction() {
+
+    }
+
+    fun print() {
+        print(this);
+        print(this.getName().lowercase());
     }
 }
 
-func = print;
-
-func("hmm");
-
-print(func);
+foreach (direction : Direction.values()) {
+    print(direction);
+    direction.print();
+}

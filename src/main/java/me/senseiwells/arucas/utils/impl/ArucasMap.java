@@ -487,6 +487,10 @@ public class ArucasMap implements IArucasMap, ValueIdentifier {
 		synchronized (this.LOCK) {
 			int h = 0;
 
+			if (this.table == null) {
+				return 0;
+			}
+
 			for (Node value : this.table) {
 				Node node = value;
 

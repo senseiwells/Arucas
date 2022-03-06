@@ -170,7 +170,7 @@ public class Context {
 	}
 	
 	public void pushFunctionScope(ISyntax syntaxPosition) {
-		this.stackTable = new FunctionStackTable(this.stackTable, syntaxPosition);
+		this.stackTable = new StackTable(this.stackTable, syntaxPosition, false, false, true);
 	}
 	
 	public void popScope() {
