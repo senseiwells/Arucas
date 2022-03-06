@@ -4,6 +4,7 @@ import me.senseiwells.arucas.api.wrappers.*;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.*;
+import me.senseiwells.arucas.values.classes.ArucasWrapperClassValue;
 
 @ArucasWrapper(name="Test")
 public class ArucasTestWrapper implements IArucasWrappedClass {
@@ -46,6 +47,12 @@ public class ArucasTestWrapper implements IArucasWrappedClass {
 		System.out.printf("0: %s\n", this);
 		System.out.printf("1: %s\n", list);
 		return this;
+	}
+
+	@ArucasFunction
+	public void cool(Context context, ArucasWrapperClassValue classValue) {
+		ArucasTestWrapper instance = classValue.getWrapper(ArucasTestWrapper.class);
+		System.out.println(instance.memberValue);
 	}
 	
 	@ArucasFunction

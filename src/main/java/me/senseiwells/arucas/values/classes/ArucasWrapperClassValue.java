@@ -1,7 +1,11 @@
 package me.senseiwells.arucas.values.classes;
 
+import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.api.wrappers.ArucasMemberHandle;
+import me.senseiwells.arucas.api.wrappers.ArucasWrapperExtension;
 import me.senseiwells.arucas.api.wrappers.IArucasWrappedClass;
+import me.senseiwells.arucas.throwables.RuntimeError;
+import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.Value;
 
 public class ArucasWrapperClassValue extends ArucasClassValue {
@@ -10,6 +14,24 @@ public class ArucasWrapperClassValue extends ArucasClassValue {
 	public ArucasWrapperClassValue(WrapperArucasClassDefinition arucasClass, IArucasWrappedClass wrapperClass) {
 		super(arucasClass);
 		this.wrapperClass = wrapperClass;
+	}
+
+	public <T extends IArucasWrappedClass> T getWrapper(Class<T> clazz) {
+		if (!clazz.isInstance(this.wrapperClass)) {
+			String wrapperName = ArucasWrapperExtension.getWrapperName(clazz);
+			String thisWrapperName = ArucasWrapperExtension.getWrapperName(this.wrapperClass.getClass());
+			throw new RuntimeException("Expected %s found %s".formatted(wrapperName, thisWrapperName));
+		}
+		return clazz.cast(this.wrapperClass);
+	}
+
+	public <T extends IArucasWrappedClass> T getWrapper(Class<T> clazz, ISyntax syntaxPosition, Context context) throws RuntimeError {
+		if (!clazz.isInstance(this.wrapperClass)) {
+			String wrapperName = ArucasWrapperExtension.getWrapperName(clazz);
+			String thisWrapperName = ArucasWrapperExtension.getWrapperName(this.wrapperClass.getClass());
+			throw new RuntimeError("Expected %s found %s".formatted(wrapperName, thisWrapperName), syntaxPosition, context);
+		}
+		return clazz.cast(this.wrapperClass);
 	}
 
 	@Override
