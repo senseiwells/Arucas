@@ -5,6 +5,7 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
+import me.senseiwells.arucas.values.classes.ArucasClassDefinition;
 import me.senseiwells.arucas.values.classes.ArucasClassValue;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
@@ -42,6 +43,7 @@ public abstract class Value<T> extends BaseValue {
 		public ArucasFunctionMap<MemberFunction> getDefinedMethods() {
 			return ArucasFunctionMap.of(
 				new MemberFunction("instanceOf", "class", this::instanceOf),
+				new MemberFunction("hasEmbed", "class", this::hasEmbed),
 				new MemberFunction("getValueType", this::getValueType),
 				new MemberFunction("copy", this::newCopy),
 				new MemberFunction("hashCode", this::hashCode),
@@ -63,6 +65,20 @@ public abstract class Value<T> extends BaseValue {
 			}
 
 			return BooleanValue.of(classDefinition.getValueClass().isAssignableFrom(thisValue.getClass()));
+		}
+
+		private Value<?> hasEmbed(Context context, MemberFunction function) throws CodeError {
+			Value<?> thisValue = function.getParameterValue(context, 0);
+			StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 1);
+
+			AbstractClassDefinition classDefinition = context.getClassDefinition(stringValue.value);
+			if (classDefinition == null) {
+				return BooleanValue.FALSE;
+			}
+			if (thisValue.value instanceof ArucasClassDefinition definition) {
+				return BooleanValue.of(definition.hasEmbeddedClass(classDefinition));
+			}
+			return BooleanValue.FALSE;
 		}
 
 		private Value<?> getValueType(Context context, MemberFunction function) {

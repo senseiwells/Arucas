@@ -8,17 +8,17 @@ enum Direction {
     UP,
     DOWN;
 
+    embed String as s;
+
     Direction() {
-
+        this.s = this.getName();
     }
 
-    fun print() {
-        print(this);
-        print(this.getName().lowercase());
+    fun doThing(string) {
+        print(this.s + string);
     }
-}
 
-foreach (direction : Direction.values()) {
-    print(direction);
-    direction.print();
+    operator + (other) {
+        return this.s + other;
+    }
 }

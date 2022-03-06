@@ -11,14 +11,12 @@ import me.senseiwells.arucas.values.*;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
 import me.senseiwells.arucas.values.functions.ClassMemberFunction;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ArcuasEnumDefinition extends ArucasClassDefinition {
 	private final Map<String, ListNode> enumInitializerMap;
 	private final List<EnumValue> enumValues;
+	private Set<String> enumNames;
 
 	public ArcuasEnumDefinition(String name) {
 		super(name);
@@ -90,7 +88,14 @@ public class ArcuasEnumDefinition extends ArucasClassDefinition {
 			this.enumValues.add(enumValue);
 			this.getStaticMemberVariables().put(name, enumValue);
 		}
+		this.enumNames = Set.of(this.enumInitializerMap.keySet().toArray(String[]::new));
+		this.enumInitializerMap.clear();
 		super.initialiseStatics(context);
+	}
+
+	@Override
+	public boolean isAssignable(String name) {
+		return this.enumNames != null && !this.enumNames.contains(name) && super.isAssignable(name);
 	}
 
 	@Override

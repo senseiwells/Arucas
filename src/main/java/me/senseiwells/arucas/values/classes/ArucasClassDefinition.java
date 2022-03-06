@@ -20,8 +20,8 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 	private final ArucasFunctionMap<ClassMemberFunction> methods;
 	private final Map<String, Node> staticMemberVariableNodes;
 	private final List<Node> staticInitializers;
+	private final Map<String, EmbeddedNode> memberVariables;
 	protected final ArucasFunctionMap<ClassMemberFunction> constructors;
-	protected final Map<String, EmbededNode> memberVariables;
 	protected final ArucasOperatorMap<ClassMemberFunction> operatorMap;
 
 	public ArucasClassDefinition(String name) {
@@ -29,8 +29,8 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 		this.methods = new ArucasFunctionMap<>();
 		this.staticMemberVariableNodes = new HashMap<>();
 		this.staticInitializers = new ArrayList<>();
-		this.constructors = new ArucasFunctionMap<>();
 		this.memberVariables = new LinkedHashMap<>();
+		this.constructors = new ArucasFunctionMap<>();
 		this.operatorMap = new ArucasOperatorMap<>();
 	}
 
@@ -55,11 +55,22 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 			this.staticMemberVariableNodes.put(name, value);
 			return;
 		}
-		this.memberVariables.put(name, new EmbededNode(value, null));
+		this.memberVariables.put(name, new EmbeddedNode(value, null));
 	}
 
-	public void addEmbededMemberVariableNode(AbstractClassDefinition definition, String name, Node value) {
-		this.memberVariables.put(name, new EmbededNode(value, definition));
+	public void addEmbeddedMemberVariableNode(AbstractClassDefinition definition, String name, Node value) {
+		this.memberVariables.put(name, new EmbeddedNode(value, definition));
+	}
+
+	public boolean hasEmbeddedClass(AbstractClassDefinition definition) {
+		// Prevent threading issues...
+		EmbeddedNode[] embeddedNodes = this.memberVariables.values().toArray(EmbeddedNode[]::new);
+		for (EmbeddedNode embeddedNode : embeddedNodes) {
+			if (embeddedNode.definition == definition) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	protected void addClassProperties(ArucasClassValue thisValue, Context context) throws ThrowValue, CodeError {
@@ -71,24 +82,25 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 		}
 
 		// Add member variables
-		for (Map.Entry<String, EmbededNode> entry : this.memberVariables.entrySet()) {
+		for (Map.Entry<String, EmbeddedNode> entry : this.memberVariables.entrySet()) {
 			String name = entry.getKey();
-			EmbededNode embededNode = entry.getValue();
+			EmbeddedNode embeddedNode = entry.getValue();
 
-			Value<?> value = embededNode.node.visit(context);
+			Value<?> value = embeddedNode.node.visit(context);
 			thisValue.addMemberVariable(name, value);
 
-			if (embededNode.definition == null) {
+			// We do not inherit embedded Value methods since we already have them
+			if (embeddedNode.definition == null || embeddedNode.definition.getValueClass() == Value.class) {
 				continue;
 			}
 
-			for (FunctionValue function : embededNode.definition.getMethods()) {
+			for (FunctionValue function : embeddedNode.definition.getMethods()) {
 				if (thisValue.hasMember(function.getName(), function.getParameterCount())) {
 					continue;
 				}
 				if (function instanceof EmbeddableFunction embeddableFunction) {
 					embeddableFunction.setCallingMember(() -> thisValue.getMember(name));
-					embeddableFunction.setDefinition(embededNode.definition);
+					embeddableFunction.setDefinition(embeddedNode.definition);
 					thisValue.addMethod(function);
 				}
 			}
@@ -111,10 +123,12 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 		for (Map.Entry<String, Node> entry : this.staticMemberVariableNodes.entrySet()) {
 			this.getStaticMemberVariables().put(entry.getKey(), entry.getValue().visit(context));
 		}
+		this.staticMemberVariableNodes.clear();
 
 		for (Node staticNode : this.staticInitializers) {
 			staticNode.visit(context);
 		}
+		this.staticInitializers.clear();
 	}
 
 	@Override
@@ -144,5 +158,5 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 		return ArucasClassValue.class;
 	}
 
-	protected record EmbededNode(Node node, AbstractClassDefinition definition) { }
+	protected record EmbeddedNode(Node node, AbstractClassDefinition definition) { }
 }

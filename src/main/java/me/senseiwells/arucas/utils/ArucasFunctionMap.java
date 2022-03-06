@@ -83,6 +83,11 @@ public class ArucasFunctionMap<T extends FunctionValue> implements Iterable<T> {
 	 * Returns the function value with the specified amount of parameters.
 	 */
 	public T get(String name, int parameters) {
+		// If parameters are less than 2 we return function without overload
+		if (parameters <= -2) {
+			return this.get(name);
+		}
+
 		Map<Integer, T> map = this.map.get(name);
 		if (map == null) {
 			return null;

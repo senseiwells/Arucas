@@ -547,12 +547,12 @@ public class Parser {
 		switch (this.currentToken.type) {
 			case ASSIGN_OPERATOR -> {
 				this.advance();
-				classDefinition.addEmbededMemberVariableNode(embededClass, token.content, this.sizeComparisonExpression());
+				classDefinition.addEmbeddedMemberVariableNode(embededClass, token.content, this.sizeComparisonExpression());
 				this.throwIfNotType(Token.Type.SEMICOLON, "Expected ';'");
 				this.advance();
 			}
 			case SEMICOLON -> {
-				classDefinition.addEmbededMemberVariableNode(embededClass, token.content, new NullNode(this.currentToken));
+				classDefinition.addEmbeddedMemberVariableNode(embededClass, token.content, new NullNode(this.currentToken));
 				this.advance();
 			}
 			default -> {
@@ -1182,10 +1182,8 @@ public class Parser {
 					if (!this.isStackType(StackType.UNPACKING) && this.isUnpackable()) {
 						return this.setUnpacking(assignNode);
 					}
-					if (this.isStackType(StackType.UNPACKING)) {
-						this.recede();
-					}
-					return assignNode;
+					this.recede();
+					return this.isStackType(StackType.UNPACKING) ? assignNode : new MemberAccessNode(left, right);
 				}
 				case INCREMENT, DECREMENT -> left = this.modifyMember(left, right);
 				default -> left = new MemberAccessNode(left, right);
@@ -1228,10 +1226,8 @@ public class Parser {
 				if (!this.isStackType(StackType.UNPACKING) && this.isUnpackable()) {
 					yield this.setUnpacking(assignNode);
 				}
-				if (this.isStackType(StackType.UNPACKING)) {
-					this.recede();
-				}
-				yield assignNode;
+				this.recede();
+				yield this.isStackType(StackType.UNPACKING) ? assignNode : new StaticAccessNode(name, classDefinition);
 			}
 			case INCREMENT, DECREMENT -> this.modifyStatic(name, classDefinition);
 			default -> new StaticAccessNode(name, classDefinition);

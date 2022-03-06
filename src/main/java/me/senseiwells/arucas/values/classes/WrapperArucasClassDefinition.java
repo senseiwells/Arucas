@@ -121,6 +121,6 @@ public class WrapperArucasClassDefinition extends AbstractClassDefinition {
 
 	@Override
 	public Class<?> getValueClass() {
-		return ArucasClassValue.class;
+		return ArucasWrapperClassValue.class;
 	}
 }

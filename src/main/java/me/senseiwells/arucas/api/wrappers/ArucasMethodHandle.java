@@ -47,7 +47,9 @@ public class ArucasMethodHandle {
 			throw new RuntimeError(this.formatCastException(e.getMessage()), syntaxPosition, context);
 		}
 		catch (Throwable t) {
-			throw new RuntimeError(t.getMessage().strip(), syntaxPosition, context);
+			String message = t.getMessage();
+			message = message == null ? "" : message.strip();
+			throw new RuntimeError(message, syntaxPosition, context);
 		}
 	}
 

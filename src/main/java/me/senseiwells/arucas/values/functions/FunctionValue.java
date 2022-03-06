@@ -108,7 +108,7 @@ public abstract class FunctionValue extends Value<String> {
 	}
 	
 	public final Value<?> call(Context context, List<Value<?>> arguments) throws CodeError {
-		return this.callOverride(context, arguments, true);
+		return this.call(context, arguments, true);
 	}
 
 	public final Value<?> call(Context context, List<Value<?>> arguments, boolean returnable) throws CodeError {
