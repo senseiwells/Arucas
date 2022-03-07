@@ -19,6 +19,8 @@ public class ArucasClassTest {
 		assertThrows(CodeError.class, () -> ArucasHelper.compile("class Test() { }"));
 		assertThrows(CodeError.class, () -> ArucasHelper.compile("classValue = class Test { }"));
 		assertThrows(CodeError.class, () -> ArucasHelper.compile("class String { }"));
+		assertThrows(CodeError.class, () -> ArucasHelper.compile("class Test { var e; var e; }"));
+		assertThrows(CodeError.class, () -> ArucasHelper.compile("class Test { static var e; static var e; }"));
 		assertEquals("null", ArucasHelper.runSafe(
 			"""
 			class Test {
@@ -117,13 +119,13 @@ public class ArucasClassTest {
 	@Test
 	public void testClassFunction() {
 		assertEquals("true", ArucasHelper.runSafeFull(
-				"""
-				class Test {
-					
-				}
-				test = new Test();
-				X = test.equals(test);
-				""", "X"
+			"""
+			class Test {
+				
+			}
+			test = new Test();
+			X = test.equals(test);
+			""", "X"
 		));
 		assertEquals("test", ArucasHelper.runSafeFull(
 			"""
@@ -268,6 +270,123 @@ public class ArucasClassTest {
 			
 			}
 			Test.test = 10;
+			"""
+		));
+	}
+
+	@Test
+	public void testClassMethodDelegating() {
+		assertEquals("10", ArucasHelper.runSafe(
+			"""
+			class E {
+				var func = fun() {
+					return 10;
+				};
+			}
+			return new E().func();
+			"""
+		));
+		assertEquals("10", ArucasHelper.runSafe(
+			"""
+			class E {
+				fun get10() {
+					return 10;
+				}
+			}
+			del = new E().get10;
+			return del();
+			"""
+		));
+		assertEquals("12", ArucasHelper.runSafe(
+			"""
+			class E {
+				var e;
+				fun getVal() {
+					return this.e;
+				}
+			}
+			e = new E();
+			e.e = 11;
+			del = e.getVal;
+			e.e = 12;
+			return del();
+			"""
+		));
+		assertEquals("E", ArucasHelper.runSafe(
+			"""
+			class E {
+			
+			}
+			del = new E().getValueType;
+			return del();
+			"""
+		));
+		assertEquals("10", ArucasHelper.runSafe(
+			"""
+			class E {
+				static fun get10() {
+					return 10;
+				}
+			}
+			del = E.get10;
+			return del();
+			"""
+		));
+	}
+
+	@Test
+	public void testEmbedding() {
+		assertThrows(CodeError.class, () -> ArucasHelper.compile("class E { embed E as e; }"));
+		assertThrows(CodeError.class, () -> ArucasHelper.compile("class E { embed Object as obj; embed Object as obj; }"));
+		assertThrows(CodeError.class, () -> ArucasHelper.compile("class E { embed Object; }"));
+		assertThrows(CodeError.class, () -> ArucasHelper.compile("class E { embed Object as; }"));
+		assertThrows(CodeError.class, () -> ArucasHelper.compile("class E { embed var a; }"));
+		assertThrows(RuntimeError.class, () -> ArucasHelper.runUnsafe(
+			"""
+			class E {
+				embed String as s;
+			}
+			new E().lowercase();
+			"""
+		));
+		assertEquals("E", ArucasHelper.runSafe(
+		"""
+			class E {
+				embed Object as obj;
+			}
+			return new E().getValueType();
+			"""
+		));
+		assertEquals("e test", ArucasHelper.runSafe(
+		"""
+			class E {
+				embed String as s = "E tEsT";
+			}
+			return new E().lowercase();
+			"""
+		));
+		assertEquals("99", ArucasHelper.runSafe(
+		"""
+			class E {
+				embed Map as m = { "E" : 99 };
+			}
+			return new E().get("E");
+			"""
+		));
+		assertEquals("true", ArucasHelper.runSafe(
+		"""
+			class E {
+				embed Map as m = { "E" : 99 };
+			}
+			return new E().hasEmbed("Map");
+			"""
+		));
+		assertEquals("false", ArucasHelper.runSafe(
+		"""
+			class E {
+				embed Map as m = { "E" : 99 };
+			}
+			return new E().hasEmbed("Object");
 			"""
 		));
 	}

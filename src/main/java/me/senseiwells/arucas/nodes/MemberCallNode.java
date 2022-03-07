@@ -42,7 +42,14 @@ public class MemberCallNode extends CallNode {
 			if (function == null) {
 				// If we had a class value, but we didn't find the member we should search its built in members
 				function = context.getMemberFunction(classValue.getClass(), memberFunctionName.value, this.argumentNodes.size() + 1);
-				argumentValues.add(classValue);
+
+				// As a last resort we check members
+				if (function == null && classValue.getMember(memberFunctionName.value) instanceof FunctionValue functionValue) {
+					function = functionValue;
+				}
+				else {
+					argumentValues.add(classValue);
+				}
 			}
 		}
 		else {

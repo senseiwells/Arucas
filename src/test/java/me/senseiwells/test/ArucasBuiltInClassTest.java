@@ -12,7 +12,7 @@ public class ArucasBuiltInClassTest {
 		assertEquals("FOOBAR", ArucasHelper.runSafe("return 'foObAr'.uppercase();"));
 		assertEquals("foobar", ArucasHelper.runSafe("return 'foObAr'.lowercase();"));
 		assertEquals("90.1", ArucasHelper.runSafe("return '90.1'.toNumber();"));
-		assertEquals("foobarbaz", ArucasHelper.runSafe("return '%sbar%s'.formatted(['foo', 'baz']);"));
+		assertEquals("foobarbaz", ArucasHelper.runSafe("return '%sbar%s'.format('foo', 'baz');"));
 		assertEquals("true", ArucasHelper.runSafe("return 'foobarbaz'.contains('bar');"));
 		assertEquals("false", ArucasHelper.runSafe("return 'foobarbaz'.contains('far');"));
 		assertEquals("foo bar baz", ArucasHelper.runSafe("return '   foo bar baz    '.strip();"));

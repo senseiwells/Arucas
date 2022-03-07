@@ -30,6 +30,10 @@ public class ArcuasEnumDefinition extends ArucasClassDefinition {
 		this.enumInitializerMap.put(enumName, node);
 	}
 
+	public boolean hasEnum(String enumName) {
+		return this.enumNames != null ? this.enumNames.contains(enumName) : this.enumInitializerMap.containsKey(enumName);
+	}
+
 	public Value<?> fromString(Context context, BuiltInFunction function) throws CodeError {
 		StringValue stringValue = function.getFirstParameter(context, StringValue.class);
 		return this.getEnumValue(stringValue.value);

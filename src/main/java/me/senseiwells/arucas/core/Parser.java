@@ -214,7 +214,16 @@ public class Parser {
 
 		while (this.currentToken.type == Token.Type.IDENTIFIER) {
 			Token identifier = this.currentToken;
+
+			if (definition.hasEnum(identifier.content)) {
+				throw new CodeError(
+					CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
+					"Cannot have duplicate enum constants",
+					identifier.syntaxPosition
+				);
+			}
 			this.advance();
+
 			List<Node> parameters = new ArrayList<>();
 
 			if (this.currentToken.type == Token.Type.LEFT_BRACKET) {
@@ -266,6 +275,14 @@ public class Parser {
 					this.advance();
 					this.throwIfNotType(Token.Type.IDENTIFIER, "Expected an identifier");
 					Token token = this.currentToken;
+
+					if (definition.hasMemberVariable(isStatic, token.content)) {
+						throw new CodeError(
+							CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
+							"Cannot have duplicate members",
+							token.syntaxPosition
+						);
+					}
 					this.advance();
 
 					switch (this.currentToken.type) {
@@ -536,12 +553,27 @@ public class Parser {
 		if (embededClass == classDefinition) {
 			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "Cannot embed own class", startPos);
 		}
+		if (classDefinition.hasEmbeddedClass(embededClass)) {
+			throw new CodeError(
+				CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
+				"Cannot embed '%s', duplicate type".formatted(embededClass.getName()),
+				identifier.syntaxPosition
+			);
+		}
 
 		this.throwIfNotType(Token.Type.AS, "Expected 'as'");
 		this.advance();
 
 		this.throwIfNotType(Token.Type.IDENTIFIER, "Expected an identifier");
 		Token token = this.currentToken;
+
+		if (classDefinition.hasMemberVariable(false, token.content)) {
+			throw new CodeError(
+				CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
+				"Cannot have duplicate members",
+				token.syntaxPosition
+			);
+		}
 		this.advance();
 
 		switch (this.currentToken.type) {

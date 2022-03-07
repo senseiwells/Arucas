@@ -33,6 +33,47 @@ public class ArucasFunctionTest {
 			test(100);
 			""", "X"
 		));
+		assertEquals("10", ArucasHelper.runSafe(
+			"""
+			del = null;
+			{
+				a = 10;
+				del = fun() {
+					return a;
+				};
+			}
+			return del();
+			"""
+		));
+		assertEquals("99", ArucasHelper.runSafe(
+			"""
+			del = null;
+			{
+				a = 99;
+				del = fun() {
+					return a;
+				};
+			}
+			{
+				a = 100;
+				return del();
+			}
+			"""
+		));
+		assertEquals("2", ArucasHelper.runSafe(
+			"""
+			del = null;
+			{
+				a = 0;
+				del = fun() {
+					a++;
+					return a;
+				};
+			}
+			del();
+			return del();
+			"""
+		));
 	}
 
 	@Test

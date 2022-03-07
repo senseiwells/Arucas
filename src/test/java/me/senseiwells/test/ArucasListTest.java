@@ -1,6 +1,7 @@
 package me.senseiwells.test;
 
 import me.senseiwells.arucas.throwables.CodeError;
+import me.senseiwells.arucas.throwables.RuntimeError;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -61,6 +62,8 @@ public class ArucasListTest {
 			E, a = [1, 2];
 			"""
 		));
+		assertThrows(RuntimeError.class, () -> ArucasHelper.runUnsafe("a, b, c, d = [1, 2, 3];"));
+		assertThrows(RuntimeError.class, () -> ArucasHelper.runUnsafe("a, b = [1];"));
 		assertEquals("[\"a\", \"b\"]", ArucasHelper.runSafe(
 			"""
 			a = 'a';

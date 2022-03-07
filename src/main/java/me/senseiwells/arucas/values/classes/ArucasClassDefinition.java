@@ -58,6 +58,10 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 		this.memberVariables.put(name, new EmbeddedNode(value, null));
 	}
 
+	public boolean hasMemberVariable(boolean isStatic, String name) {
+		return isStatic ? this.staticMemberVariableNodes.containsKey(name) : this.memberVariables.containsKey(name);
+	}
+
 	public void addEmbeddedMemberVariableNode(AbstractClassDefinition definition, String name, Node value) {
 		this.memberVariables.put(name, new EmbeddedNode(value, definition));
 	}
@@ -90,11 +94,12 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 			thisValue.addMemberVariable(name, value);
 
 			// We do not inherit embedded Value methods since we already have them
-			if (embeddedNode.definition == null || embeddedNode.definition.getValueClass() == Value.class) {
+			AbstractClassDefinition definition = embeddedNode.definition;
+			if (definition == null || definition.getValueClass() == Value.class) {
 				continue;
 			}
 
-			for (FunctionValue function : embeddedNode.definition.getMethods()) {
+			for (FunctionValue function : definition.getMethods()) {
 				if (thisValue.hasMember(function.getName(), function.getParameterCount())) {
 					continue;
 				}

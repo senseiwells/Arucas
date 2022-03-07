@@ -1,24 +1,22 @@
 // run(File.getDirectory().getPath() + "/src/test/resources/code/test.arucas");
 
-enum Direction {
-    NORTH,
-    SOUTH,
-    EAST,
-    WEST,
-    UP,
-    DOWN;
+// compile
 
-    embed String as s;
+// safe
 
-    Direction() {
-        this.s = this.getName();
-    }
+// runtime
 
-    fun doThing(string) {
-        print(this.s + string);
-    }
 
-    operator + (other) {
-        return this.s + other;
-    }
+
+class E {
+    embed String as s = "E tEsT";
 }
+return new E().lowercase();
+
+class E {
+    embed Object as obj;
+}
+return new E().toString();
+
+class E { embed var a; }
+
