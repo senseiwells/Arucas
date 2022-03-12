@@ -5,6 +5,7 @@ import me.senseiwells.arucas.api.wrappers.ArucasWrapperExtension;
 import me.senseiwells.arucas.api.wrappers.IArucasWrappedClass;
 import me.senseiwells.arucas.extensions.ArucasBuiltInExtension;
 import me.senseiwells.arucas.extensions.ArucasMathClass;
+import me.senseiwells.arucas.extensions.ArucasNetworkClass;
 import me.senseiwells.arucas.utils.ArucasClassDefinitionMap;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
@@ -78,7 +79,8 @@ public class ContextBuilder {
 			NumberValue.ArucasNumberClass::new,
 			ThreadValue.ArucasThreadClass::new,
 			FileValue.ArucasFileClass::new,
-			ArucasMathClass::new
+			ArucasMathClass::new,
+			ArucasNetworkClass::new
 		);
 	}
 

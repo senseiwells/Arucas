@@ -36,6 +36,7 @@ public class SwitchNode extends Node {
 		try {
 			for (int i = 0; i < this.nodeCases.size(); i++) {
 				ArucasSet set = this.valueCases.get(i);
+				// We check literals before other cases
 				if (set != null && set.contains(context, value)) {
 					this.statements.get(i).visit(context);
 					context.popScope();

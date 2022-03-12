@@ -25,7 +25,7 @@ public class RuntimeError extends CodeError {
 		Position startPos = this.syntaxPosition.getStartPos();
 		
 		// Add the error call.
-		result.append("File: %s, Line: %d, Column: %d, In: %s\n\n".formatted(
+		result.append("File: %s, Line: %d, Column: %d, In: %s\n--------------------\n".formatted(
 			startPos.fileName, startPos.line + 1, startPos.column + 1, context.getDisplayName()
 		));
 		
