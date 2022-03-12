@@ -7,7 +7,7 @@ import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
-import me.senseiwells.arucas.values.classes.ArucasWrapperClassValue;
+import me.senseiwells.arucas.values.classes.WrapperClassValue;
 
 import java.util.List;
 
@@ -38,7 +38,7 @@ public abstract class AbstractBuiltInFunction<T extends AbstractBuiltInFunction<
 	}
 
 	public <E extends IArucasWrappedClass> E getWrapperParameter(Context context, Class<E> clazz, int index) throws CodeError {
-		ArucasWrapperClassValue wrapperClassValue = this.getParameterValueOfType(context, ArucasWrapperClassValue.class, index);
+		WrapperClassValue wrapperClassValue = this.getParameterValueOfType(context, WrapperClassValue.class, index);
 		return wrapperClassValue.getWrapper(clazz, this.syntaxPosition, context);
 	}
 

@@ -2,8 +2,9 @@ package me.senseiwells.arucas.api.wrappers;
 
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.ExceptionUtils;
 import me.senseiwells.arucas.values.Value;
-import me.senseiwells.arucas.values.classes.WrapperArucasClassDefinition;
+import me.senseiwells.arucas.values.classes.WrapperClassDefinition;
 import me.senseiwells.arucas.values.functions.WrapperClassMemberFunction;
 
 import java.lang.invoke.MethodHandle;
@@ -15,14 +16,17 @@ import java.lang.reflect.Modifier;
 import java.util.function.Supplier;
 
 public class ArucasWrapperExtension {
-	private final WrapperArucasClassDefinition classDefinition;
+	private final WrapperClassDefinition classDefinition;
 	private final Class<? extends IArucasWrappedClass> clazz;
 	
 	private ArucasWrapperExtension(Supplier<IArucasWrappedClass> supplier) {
 		IArucasWrappedClass value = supplier.get();
 		this.clazz = value.getClass();
-		this.classDefinition = new WrapperArucasClassDefinition(getWrapperName(this.clazz), supplier);
-		
+		this.classDefinition = new WrapperClassDefinition(getWrapperName(this.clazz), supplier);
+		this.init();
+	}
+
+	private void init() {
 		for (Method method : this.clazz.getMethods()) {
 			ArucasFunction functionAnnotation = method.getAnnotation(ArucasFunction.class);
 			if (functionAnnotation != null) {
@@ -31,7 +35,7 @@ public class ArucasWrapperExtension {
 				}
 				continue;
 			}
-			
+
 			ArucasConstructor constructorAnnotation = method.getAnnotation(ArucasConstructor.class);
 			if (constructorAnnotation != null) {
 				if (!this.addConstructor(method)) {
@@ -39,7 +43,7 @@ public class ArucasWrapperExtension {
 				}
 				continue;
 			}
-			
+
 			ArucasOperator operatorAnnotation = method.getAnnotation(ArucasOperator.class);
 			if (operatorAnnotation != null) {
 				if (!this.addOperator(method, operatorAnnotation)) {
@@ -48,11 +52,32 @@ public class ArucasWrapperExtension {
 			}
 		}
 
+		boolean hasDefinition = false;
 		for (Field field : this.clazz.getFields()) {
 			ArucasMember memberAnnotation = field.getAnnotation(ArucasMember.class);
 			if (memberAnnotation != null) {
 				if (!this.addMemberVariable(field, memberAnnotation)) {
 					throw invalidWrapperField(this.clazz, field, "Invalid field signature");
+				}
+				continue;
+			}
+
+
+			ArucasDefinition definitionAnnotation = field.getAnnotation(ArucasDefinition.class);
+			if (definitionAnnotation != null) {
+				if (hasDefinition) {
+					throw invalidWrapperField(this.clazz, field, "Already have definition reference");
+				}
+				int mods = field.getModifiers();
+				if (!Modifier.isStatic(mods) || Modifier.isFinal(mods)) {
+					throw invalidWrapperField(this.clazz, field, "Definition reference must be static and not final");
+				}
+				if (field.getType() != WrapperClassDefinition.class) {
+					throw invalidWrapperField(this.clazz, field, "Definition must be of type 'WrapperClassDefinition'");
+				}
+
+				if (ExceptionUtils.runSafe(() -> field.set(null, this.classDefinition))) {
+					hasDefinition = true;
 				}
 			}
 		}
@@ -99,9 +124,7 @@ public class ArucasWrapperExtension {
 			if (isStatic) {
 				return lookup.findStatic(clazz, method.getName(), methodType);
 			}
-			else {
-				return lookup.findVirtual(clazz, method.getName(), methodType);
-			}
+			return lookup.findVirtual(clazz, method.getName(), methodType);
 		}
 		catch (NoSuchMethodException | IllegalAccessException ignored) {
 			throw invalidWrapperMethod(clazz, method, "Failed to get method handle");
@@ -275,11 +298,11 @@ public class ArucasWrapperExtension {
 		return true;
 	}
 	
-	private WrapperArucasClassDefinition getClassDefinition() {
+	private WrapperClassDefinition getClassDefinition() {
 		return this.classDefinition;
 	}
 	
-	public static WrapperArucasClassDefinition createWrapper(Supplier<IArucasWrappedClass> value) {
+	public static WrapperClassDefinition createWrapper(Supplier<IArucasWrappedClass> value) {
 		ArucasWrapperExtension wrapper = new ArucasWrapperExtension(value);
 		return wrapper.getClassDefinition();
 	}

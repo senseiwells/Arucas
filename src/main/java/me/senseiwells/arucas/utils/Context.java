@@ -12,7 +12,7 @@ import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.values.classes.ArucasClassValue;
-import me.senseiwells.arucas.values.classes.WrapperArucasClassDefinition;
+import me.senseiwells.arucas.values.classes.WrapperClassDefinition;
 import me.senseiwells.arucas.values.functions.AbstractBuiltInFunction;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 
@@ -267,7 +267,7 @@ public class Context {
 		}
 		
 		AbstractClassDefinition classDefinition = this.getClassDefinition(wrapperName);
-		if (classDefinition instanceof WrapperArucasClassDefinition wrappedClassDefinition) {
+		if (classDefinition instanceof WrapperClassDefinition wrappedClassDefinition) {
 			return wrappedClassDefinition.createNewDefinition(this, parameters, syntaxPosition);
 		}
 		throw new RuntimeError("No such wrapper class exists", syntaxPosition, this);

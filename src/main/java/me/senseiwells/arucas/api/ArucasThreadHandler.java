@@ -9,27 +9,34 @@ import me.senseiwells.arucas.utils.impl.ArucasThread;
 import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 @SuppressWarnings({"UnusedReturnValue", "unused"})
 public class ArucasThreadHandler {
-	private final ThreadGroup arucasThreadGroup = new ThreadGroup("Arucas Thread Group");
+	private final ThreadGroup arucasThreadGroup;
+	private final List<Runnable> shutdownEvents;
 
 	private Consumer<String> stopErrorHandler;
 	private Consumer<String> errorHandler;
 	private TriConsumer<Context, Throwable, String> fatalErrorHandler;
 	private Runnable finalHandler;
 
+	private boolean isRunning;
 	private boolean hasError;
 	
 	// This class can only be instantiated from this package
 	protected ArucasThreadHandler() {
+		this.arucasThreadGroup = new ThreadGroup("Arucas Thread Group");
+		this.shutdownEvents = new ArrayList<>();
 		this.stopErrorHandler = this.errorHandler;
 		this.errorHandler = System.out::println;
 		this.fatalErrorHandler = (c, t, s) -> t.printStackTrace();
 		this.finalHandler = () -> { };
+		this.isRunning = false;
 		this.hasError = false;
 	}
 
@@ -53,15 +60,23 @@ public class ArucasThreadHandler {
 		return this;
 	}
 
+	public synchronized void addShutdownEvent(Runnable runnable) {
+		this.shutdownEvents.add(runnable);
+	}
+
 	public synchronized void stop() {
 		if (this.isRunning()) {
+			this.isRunning = false;
+			this.shutdownEvents.forEach(Runnable::run);
+			this.shutdownEvents.clear();
+
 			this.arucasThreadGroup.interrupt();
 			this.finalHandler.run();
 		}
 	}
 
 	public boolean isRunning() {
-		return this.arucasThreadGroup.activeCount() > 0;
+		return this.isRunning;
 	}
 
 	/**
@@ -81,6 +96,7 @@ public class ArucasThreadHandler {
 		}
 		
 		this.hasError = false;
+		this.isRunning = true;
 		ArucasThread thread = new ArucasThread(this.arucasThreadGroup, () -> {
 			try {
 				Run.run(context, fileName, fileContent);
@@ -95,10 +111,10 @@ public class ArucasThreadHandler {
 				this.fatalErrorHandler.accept(context, t, fileContent);
 			}
 			finally {
+				this.stop();
 				if (latch != null) {
 					latch.countDown();
 				}
-				this.stop();
 			}
 		}, "Arucas Main Thread");
 		thread.start();

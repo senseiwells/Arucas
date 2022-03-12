@@ -8,7 +8,7 @@ import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.ArucasClassValue;
-import me.senseiwells.arucas.values.classes.ArucasWrapperClassValue;
+import me.senseiwells.arucas.values.classes.WrapperClassValue;
 
 import java.util.Collections;
 import java.util.List;
@@ -21,7 +21,7 @@ public class WrapperClassMemberFunction extends ClassMemberFunction {
 	private final boolean isStatic;
 	private final int parameters;
 	
-	private WrapperClassMemberFunction(ArucasWrapperClassValue thisValue, IArucasWrappedClass classValue, String name, int parameters, boolean isStatic, ArucasMethodHandle methodHandle) {
+	private WrapperClassMemberFunction(WrapperClassValue thisValue, IArucasWrappedClass classValue, String name, int parameters, boolean isStatic, ArucasMethodHandle methodHandle) {
 		super(thisValue, name, createParameters(parameters), ISyntax.empty());
 		this.classValue = classValue;
 		this.methodHandle = methodHandle;
@@ -42,7 +42,7 @@ public class WrapperClassMemberFunction extends ClassMemberFunction {
 		throw new UnsupportedOperationException();
 	}
 	
-	public WrapperClassMemberFunction copy(ArucasWrapperClassValue thisValue, IArucasWrappedClass wrappedClass) {
+	public WrapperClassMemberFunction copy(WrapperClassValue thisValue, IArucasWrappedClass wrappedClass) {
 		return new WrapperClassMemberFunction(thisValue, wrappedClass, this.getName(), this.parameters, this.isStatic, this.methodHandle);
 	}
 	

@@ -1,14 +1,22 @@
 package me.senseiwells.impl.wrappers;
 
+import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.api.wrappers.*;
+import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.*;
-import me.senseiwells.arucas.values.classes.ArucasWrapperClassValue;
+import me.senseiwells.arucas.values.classes.WrapperClassValue;
+import me.senseiwells.arucas.values.classes.WrapperClassDefinition;
+
+import java.util.List;
 
 @ArucasWrapper(name="Test")
 public class ArucasTestWrapper implements IArucasWrappedClass {
-	
+
+	@ArucasDefinition
+	public static WrapperClassDefinition DEFINITION;
+
 	@ArucasMember(assignable = false)
 	public static final Value<?> memberStaticValue = StringValue.of("Static MEMBER!");
 	
@@ -16,8 +24,8 @@ public class ArucasTestWrapper implements IArucasWrappedClass {
 	public Value<?> memberValue = StringValue.of("Normal MEMBER!");
 	
 	@ArucasFunction
-	public Value<?> getName(Context context, ListValue list, MapValue map, StringValue string) {
-		return null;
+	public Value<?> getName(Context context, ListValue list, MapValue map, StringValue string) throws CodeError {
+		return DEFINITION.createNewDefinition(context, List.of(), ISyntax.EMPTY);
 	}
 
 	@ArucasConstructor
@@ -50,7 +58,7 @@ public class ArucasTestWrapper implements IArucasWrappedClass {
 	}
 
 	@ArucasFunction
-	public void cool(Context context, ArucasWrapperClassValue classValue) {
+	public void cool(Context context, WrapperClassValue classValue) {
 		ArucasTestWrapper instance = classValue.getWrapper(ArucasTestWrapper.class);
 		System.out.println(instance.memberValue);
 	}

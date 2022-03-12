@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
-public class WrapperArucasClassDefinition extends AbstractClassDefinition {
+public class WrapperClassDefinition extends AbstractClassDefinition {
 	private final Supplier<IArucasWrappedClass> supplier;
 	private final Map<String, ArucasMemberHandle> fieldMap;
 	private final Map<String, ArucasMemberHandle> staticFieldMap;
@@ -26,7 +26,7 @@ public class WrapperArucasClassDefinition extends AbstractClassDefinition {
 	private final ArucasFunctionMap<WrapperClassMemberFunction> constructors;
 	private final ArucasOperatorMap<WrapperClassMemberFunction> operatorMap;
 	
-	public WrapperArucasClassDefinition(String name, Supplier<IArucasWrappedClass> supplier) {
+	public WrapperClassDefinition(String name, Supplier<IArucasWrappedClass> supplier) {
 		super(name);
 		this.supplier = supplier;
 		this.fieldMap = new HashMap<>();
@@ -69,12 +69,19 @@ public class WrapperArucasClassDefinition extends AbstractClassDefinition {
 	public void initialiseStatics(Context context) { }
 
 	@Override
-	public ArucasClassValue createNewDefinition(Context context, List<Value<?>> parameters, ISyntax syntaxPosition) throws CodeError {
-		return this.createNewDefinition(this.supplier.get(), context, parameters, syntaxPosition);
+	public WrapperClassValue createNewDefinition(Context context, List<Value<?>> parameters, ISyntax syntaxPosition) throws CodeError {
+		return this.createDefinition(this.supplier.get(), context, parameters, syntaxPosition);
 	}
-	
-	private ArucasClassValue createNewDefinition(IArucasWrappedClass wrappedClass, Context context, List<Value<?>> parameters, ISyntax syntaxPosition) throws CodeError {
-		ArucasWrapperClassValue thisValue = new ArucasWrapperClassValue(this, wrappedClass);
+
+	public WrapperClassValue createNewDefinition(IArucasWrappedClass wrappedClass, Context context, List<Value<?>> parameters) throws CodeError {
+		if (this.supplier.get().getClass() != wrappedClass.getClass()) {
+			throw new RuntimeException("Wrong wrapper class passed in");
+		}
+		return this.createDefinition(wrappedClass, context, parameters, null);
+	}
+
+	private WrapperClassValue createDefinition(IArucasWrappedClass wrappedClass, Context context, List<Value<?>> parameters, ISyntax syntaxPosition) throws CodeError {
+		WrapperClassValue thisValue = new WrapperClassValue(this, wrappedClass);
 
 		for (WrapperClassMemberFunction function : this.methods) {
 			thisValue.addMethod(function.copy(thisValue, wrappedClass));
@@ -89,6 +96,9 @@ public class WrapperArucasClassDefinition extends AbstractClassDefinition {
 
 		WrapperClassMemberFunction constructor = this.constructors.get("", parameterCount);
 		if (constructor == null) {
+			if (syntaxPosition == null) {
+				throw new RuntimeException("No such constructor for %s".formatted(this.getName()));
+			}
 			throw new RuntimeError("No such constructor for %s".formatted(this.getName()), syntaxPosition, context);
 		}
 
@@ -121,6 +131,6 @@ public class WrapperArucasClassDefinition extends AbstractClassDefinition {
 
 	@Override
 	public Class<?> getValueClass() {
-		return ArucasWrapperClassValue.class;
+		return WrapperClassValue.class;
 	}
 }

@@ -10,4 +10,19 @@ public class ExceptionUtils {
 		throwable.printStackTrace(printWriter);
 		return stringWriter.getBuffer().toString();
 	}
+
+	public static boolean runSafe(ThrowableRunnable runnable) {
+		try {
+			runnable.run();
+			return true;
+		}
+		catch (Throwable throwable) {
+			return false;
+		}
+	}
+
+	@FunctionalInterface
+	public interface ThrowableRunnable {
+		void run() throws Throwable;
+	}
 }

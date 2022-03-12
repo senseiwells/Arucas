@@ -1,22 +1,27 @@
 // run(File.getDirectory().getPath() + "/src/test/resources/code/test.arucas");
 
-// compile
+discordBot = new DiscordBot("");
+discordBot.setActivity("playing", "Arucas!");
 
-// safe
+disCommand = {
+    "name": "testcommand",
+    "description": "This is a test command",
+    "command": fun(event) {
+        print("no parameters!");
+    },
 
-// runtime
+    "next": {
+        "name": "sub",
+        "option": "String",
+        "description": "extra secret",
+        "command": fun(event, p1) {
+            event.reply(p1);
+        }
+    }
+};
 
+discordBot.addCommand(disCommand);
 
-
-class E {
-    embed String as s = "E tEsT";
+while (true) {
+    sleep(100000);
 }
-return new E().lowercase();
-
-class E {
-    embed Object as obj;
-}
-return new E().toString();
-
-class E { embed var a; }
-

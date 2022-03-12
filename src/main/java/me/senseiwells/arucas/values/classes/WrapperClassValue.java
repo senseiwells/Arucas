@@ -8,10 +8,10 @@ import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.Value;
 
-public class ArucasWrapperClassValue extends ArucasClassValue {
+public class WrapperClassValue extends ArucasClassValue {
 	private final IArucasWrappedClass wrapperClass;
 
-	public ArucasWrapperClassValue(WrapperArucasClassDefinition arucasClass, IArucasWrappedClass wrapperClass) {
+	public WrapperClassValue(WrapperClassDefinition arucasClass, IArucasWrappedClass wrapperClass) {
 		super(arucasClass);
 		this.wrapperClass = wrapperClass;
 	}
@@ -60,6 +60,6 @@ public class ArucasWrapperClassValue extends ArucasClassValue {
 	}
 
 	private ArucasMemberHandle getHandle(String name) {
-		return ((WrapperArucasClassDefinition) this.value).getMemberHandle(name);
+		return ((WrapperClassDefinition) this.value).getMemberHandle(name);
 	}
 }
