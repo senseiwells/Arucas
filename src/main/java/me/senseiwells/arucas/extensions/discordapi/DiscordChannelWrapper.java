@@ -14,6 +14,7 @@ import me.senseiwells.arucas.values.functions.FunctionValue;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 
+import java.sql.Wrapper;
 import java.util.List;
 
 @ArucasWrapper(name = "DiscordChannel")
@@ -40,37 +41,24 @@ public class DiscordChannelWrapper implements IArucasWrappedClass {
 
 	@ArucasFunction
 	public void markTyping(Context context) {
-		this.channel.sendTyping().queue();
+		this.channel.sendTyping().complete();
 	}
 
 	@ArucasFunction
-	public void sendMessage(Context context, StringValue message) {
-		this.channel.sendMessage(message.value).queue();
+	public WrapperClassValue sendMessage(Context context, StringValue message) throws CodeError {
+		return DiscordMessageWrapper.createNewMessageWrapper(this.channel.sendMessage(message.value).complete(), context);
+	}
+
+
+	@ArucasFunction
+	public WrapperClassValue sendEmbed(Context context, MapValue embed) throws CodeError {
+		Message message = this.channel.sendMessageEmbeds(DiscordUtils.parseMapAsEmbed(context, embed)).complete();
+		return DiscordMessageWrapper.createNewMessageWrapper(message, context);
 	}
 
 	@ArucasFunction
-	public void sendMessage(Context context, StringValue message, FunctionValue then) {
-		this.channel.sendMessage(message.value).queue(DiscordMessageWrapper.getMessageCallback(context, then));
-	}
-
-	@ArucasFunction
-	public void sendEmbed(Context context, MapValue embed) throws CodeError {
-		this.channel.sendMessageEmbeds(DiscordUtils.parseMapAsEmbed(context, embed)).queue();
-	}
-
-	@ArucasFunction
-	public void sendEmbed(Context context, MapValue embed, FunctionValue then) throws CodeError {
-		this.channel.sendMessageEmbeds(DiscordUtils.parseMapAsEmbed(context, embed)).queue(DiscordMessageWrapper.getMessageCallback(context, then));
-	}
-
-	@ArucasFunction
-	public void sendFile(Context context, FileValue fileValue) {
-		this.channel.sendFile(fileValue.value).queue();
-	}
-
-	@ArucasFunction
-	public void sendFile(Context context, FileValue fileValue, FunctionValue then) {
-		this.channel.sendFile(fileValue.value).queue(DiscordMessageWrapper.getMessageCallback(context, then));
+	public WrapperClassValue sendFile(Context context, FileValue fileValue) throws CodeError {
+		return DiscordMessageWrapper.createNewMessageWrapper(this.channel.sendFile(fileValue.value).complete(), context);
 	}
 
 	public static WrapperClassValue createNewChannelWrapper(MessageChannel channel, Context context) throws CodeError {

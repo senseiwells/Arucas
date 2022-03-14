@@ -35,6 +35,11 @@ public class DiscordEventWrapper implements IArucasWrappedClass {
 	private GenericEvent event;
 
 	@ArucasFunction
+	public StringValue getEventName(Context context) {
+		return StringValue.of(this.event.getClass().getSimpleName());
+	}
+
+	@ArucasFunction
 	public WrapperClassValue getMessage(Context context) throws CodeError {
 		return DiscordMessageWrapper.createNewMessageWrapper(this.getMessage(), context);
 	}
@@ -56,17 +61,17 @@ public class DiscordEventWrapper implements IArucasWrappedClass {
 
 	@ArucasFunction
 	public void reply(Context context, StringValue message) {
-		this.getReplyCallback().reply(message.value).queue();
+		this.getReplyCallback().reply(message.value).complete();
 	}
 
 	@ArucasFunction
 	public void replyWithEmbed(Context context, MapValue mapValue) throws CodeError {
-		this.getReplyCallback().replyEmbeds(DiscordUtils.parseMapAsEmbed(context, mapValue)).queue();
+		this.getReplyCallback().replyEmbeds(DiscordUtils.parseMapAsEmbed(context, mapValue)).complete();
 	}
 
 	@ArucasFunction
 	public void replyWithFile(Context context, FileValue fileValue) {
-		this.getReplyCallback().replyFile(fileValue.value).queue();
+		this.getReplyCallback().replyFile(fileValue.value).complete();
 	}
 
 	private RuntimeException invalidEvent(String details) {

@@ -24,13 +24,13 @@ public class DiscordServerWrapper implements IArucasWrappedClass {
 	@ArucasFunction
 	public void ban(Context context, WrapperClassValue wrapperClassValue, StringValue reason) {
 		DiscordUserWrapper userWrapper = wrapperClassValue.getWrapper(DiscordUserWrapper.class);
-		this.guild.ban(userWrapper.getUser(), 0, reason.value).queue();
+		this.guild.ban(userWrapper.getUser(), 0, reason.value).complete();
 	}
 
 	@ArucasFunction
 	public void ban(Context context, WrapperClassValue wrapperClassValue) {
 		DiscordUserWrapper userWrapper = wrapperClassValue.getWrapper(DiscordUserWrapper.class);
-		this.guild.ban(userWrapper.getUser(), 0).queue();
+		this.guild.ban(userWrapper.getUser(), 0).complete();
 	}
 
 	@ArucasFunction
@@ -40,13 +40,13 @@ public class DiscordServerWrapper implements IArucasWrappedClass {
 		if (member == null) {
 			throw new RuntimeException("Member was null");
 		}
-		this.guild.kick(member).queue();
+		this.guild.kick(member).complete();
 	}
 
 	@ArucasFunction
 	public void unban(Context context, WrapperClassValue wrapperClassValue) {
 		DiscordUserWrapper userWrapper = wrapperClassValue.getWrapper(DiscordUserWrapper.class);
-		this.guild.unban(userWrapper.getUser()).queue();
+		this.guild.unban(userWrapper.getUser()).complete();
 	}
 
 	@ArucasFunction

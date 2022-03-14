@@ -40,6 +40,7 @@ configurations {
 
 dependencies {
     packImplementation 'net.dv8tion:JDA:5.0.0-alpha.9'
+    packImplementation 'ch.qos.logback:logback-classic:1.2.11'
     implementation 'junit:junit:4.13.2'
     testImplementation 'junit:junit:4.13.2'
     testImplementation "org.openjdk.jmh:jmh-core:1.34"

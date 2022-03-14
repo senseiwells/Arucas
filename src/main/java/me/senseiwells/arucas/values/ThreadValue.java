@@ -60,7 +60,8 @@ public class ThreadValue extends Value<ArucasThread> {
 			return ArucasFunctionMap.of(
 				new BuiltInFunction("getCurrentThread", this::getCurrentThread),
 				new BuiltInFunction("runThreaded", List.of("function"), this::runThreaded1),
-				new BuiltInFunction("runThreaded", List.of("name", "function"), this::runThreaded2)
+				new BuiltInFunction("runThreaded", List.of("name", "function"), this::runThreaded2),
+				new BuiltInFunction("freeze", this::freeze)
 			);
 		}
 
@@ -89,6 +90,20 @@ public class ThreadValue extends Value<ArucasThread> {
 				stringValue.value
 			);
 			return ThreadValue.of(thread);
+		}
+
+		private Value<?> freeze(Context context, BuiltInFunction function) throws CodeError {
+			Thread currentThread = Thread.currentThread();
+			if (!(currentThread instanceof ArucasThread)) {
+				throw new RuntimeError("Thread is not safe to freeze", function.syntaxPosition, context);
+			}
+			try {
+				Thread.sleep(Long.MAX_VALUE);
+				return NullValue.NULL;
+			}
+			catch (InterruptedException e) {
+				throw new CodeError(CodeError.ErrorType.INTERRUPTED_ERROR, "", function.syntaxPosition);
+			}
 		}
 
 		@Override

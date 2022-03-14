@@ -95,7 +95,13 @@ public class DiscordBotWrapper implements IArucasWrappedClass, EventListener {
 	@ArucasFunction
 	public void addCommand(Context context, MapValue commandMap) throws CodeError {
 		SlashCommandData commandData = DiscordUtils.parseMapAsCommand(context, this.commandMap, commandMap.value);
-		this.jda.upsertCommand(commandData).queue();
+		this.jda.upsertCommand(commandData).complete();
+	}
+
+	@ArucasFunction
+	public void removeCommand(Context context, StringValue commandName) {
+		this.commandMap.remove(commandName.value);
+		this.jda.deleteCommandById(commandName.value).complete();
 	}
 
 	@ArucasFunction
@@ -131,7 +137,7 @@ public class DiscordBotWrapper implements IArucasWrappedClass, EventListener {
 			}
 			FunctionContext functionContext = commands.get(parameterSize);
 			if (functionContext == null) {
-				commandEvent.reply("Invalid number of parameters").queue();
+				commandEvent.reply("Invalid number of parameters").complete();
 				return;
 			}
 			Context context = functionContext.context();

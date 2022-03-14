@@ -25,7 +25,7 @@ import java.util.Map;
 public class DiscordUtils {
 	private static final StringValue
 		NEXT = StringValue.of("next"),
-		OPTION = StringValue.of("option"),
+		TYPE = StringValue.of("type"),
 		REQUIRED = StringValue.of("required"),
 		COMMAND = StringValue.of("command"),
 		NAME = StringValue.of("name"),
@@ -120,7 +120,7 @@ public class DiscordUtils {
 
 		value = map.get(context, StringValue.of("permissions"));
 		if (!(value instanceof ListValue listValue)) {
-			roleAction.queue();
+			roleAction.complete();
 			return;
 		}
 
@@ -138,7 +138,7 @@ public class DiscordUtils {
 				roleAction = roleAction.setPermissions(listedPermission);
 			}
 		}
-		roleAction.queue();
+		roleAction.complete();
 	}
 
 	public static SlashCommandData parseMapAsCommand(Context context, Map<String, List<FunctionContext>> commandMap, ArucasMap arucasMap) throws CodeError {
@@ -152,9 +152,7 @@ public class DiscordUtils {
 		List<FunctionContext> functions = new ArrayList<>();
 		commandMap.put(commandName, functions);
 		Value<?> command = arucasMap.get(context, COMMAND);
-		if (command instanceof FunctionValue functionValue) {
-			functions.add(0, new FunctionContext(context, functionValue));
-		}
+		functions.add(0, command instanceof FunctionValue functionValue ? new FunctionContext(context, functionValue) : null);
 		Value<?> nextOption = arucasMap.get(context, NEXT);
 		if (nextOption instanceof MapValue mapValue) {
 			slashCommandData = commandOption(Commands.slash(name.getAsString(context), description.getAsString(context)), functions, context, mapValue.value, 1);
@@ -166,7 +164,7 @@ public class DiscordUtils {
 		if (depth > 25) {
 			throw new RuntimeException("Slash command went too deep");
 		}
-		Value<?> option = arucasMap.get(context, OPTION);
+		Value<?> option = arucasMap.get(context, TYPE);
 		if (option == null) {
 			throw new RuntimeException("Command must include option type");
 		}
@@ -189,9 +187,7 @@ public class DiscordUtils {
 		boolean req = required instanceof BooleanValue booleanValue && booleanValue.value;
 		slashCommandData = slashCommandData.addOption(optionType, name.getAsString(context), description.getAsString(context), req);
 		Value<?> command = arucasMap.get(context, COMMAND);
-		if (command instanceof FunctionValue functionValue) {
-			commandList.add(depth, new FunctionContext(context, functionValue));
-		}
+		commandList.add(depth, command instanceof FunctionValue functionValue ? new FunctionContext(context, functionValue) : null);
 		Value<?> nextOption = arucasMap.get(context, NEXT);
 		if (nextOption instanceof MapValue mapValue) {
 			depth++;

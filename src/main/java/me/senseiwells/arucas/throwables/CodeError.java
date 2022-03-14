@@ -1,5 +1,6 @@
 package me.senseiwells.arucas.throwables;
 
+import me.senseiwells.arucas.api.IArucasOutput;
 import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.Position;
@@ -7,6 +8,7 @@ import me.senseiwells.arucas.utils.Position;
 import java.util.Objects;
 
 public class CodeError extends Exception {
+
 	public final ErrorType errorType;
 	public final ISyntax syntaxPosition;
 	
@@ -23,9 +25,11 @@ public class CodeError extends Exception {
 	
 	public String toString(Context context) {
 		Position startPos = this.syntaxPosition.getStartPos();
-		
-		return "%s - '%s'\nFile: %s, Line: %d, Column: %d".formatted(
+		IArucasOutput output = context == null ? null : context.getOutput();
+		return "%s%s - '%s'\n%s> File: %s, Line: %d, Column: %d".formatted(
+			output == null ? "" : output.getErrorFormattingBold(),
 			this.errorType.stringName, this.getMessage(),
+			output == null ? "" : output.getErrorFormatting(),
 			startPos.fileName, startPos.line + 1, startPos.column + 1
 		);
 	}

@@ -3,25 +3,36 @@
 discordBot = new DiscordBot("");
 discordBot.setActivity("playing", "Arucas!");
 
-disCommand = {
-    "name": "testcommand",
-    "description": "This is a test command",
+discordBot.addCommand({
+    "name": "stop",
+    "description": "This shuts down the bot",
     "command": fun(event) {
-        print("no parameters!");
-    },
+        event.reply("Shutting down...");
+        stop();
+    }
+});
 
+discordBot.addCommand({
+    "name": "save",
+    "description": "Saves a file to Sensei's computer...",
     "next": {
-        "name": "sub",
-        "option": "String",
-        "description": "extra secret",
-        "command": fun(event, p1) {
-            event.reply(p1);
+        "name": "file",
+        "description": "The file you want to save",
+        "type": "Attachment",
+        "command": fun(event, attachment) {
+            file = new File(attachment.getFileName() + attachment.getFileExtension());
+            attachment.saveToFile(file);
+            event.reply("Successfully saved!");
         }
     }
-};
+});
 
-discordBot.addCommand(disCommand);
+discordBot.registerEvent("MessageReceivedEvent", fun(event) {
+    message = event.getMessage();
+    print(message.getRaw());
+    if (message.getRaw() == "ping") {
+        message.reply("pong!");
+    }
+});
 
-while (true) {
-    sleep(100000);
-}
+Thread.freeze();

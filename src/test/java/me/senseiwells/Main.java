@@ -4,6 +4,7 @@ import me.senseiwells.arucas.api.ContextBuilder;
 import me.senseiwells.arucas.extensions.discordapi.DiscordBotWrapper;
 import me.senseiwells.arucas.extensions.discordapi.DiscordEventWrapper;
 import me.senseiwells.arucas.utils.Context;
+import org.w3c.dom.DOMConfiguration;
 
 import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
@@ -14,11 +15,6 @@ public class Main {
 			.setDisplayName("System.in")
 			.addDefault()
 			.build();
-		
-		context.getThreadHandler()
-			.setStopErrorHandler(System.out::println)
-			.setErrorHandler(System.out::println)
-			.setFatalErrorHandler((c, t, s) -> t.printStackTrace());
 		
 		while (true) {
 			Scanner scanner = new Scanner(System.in);

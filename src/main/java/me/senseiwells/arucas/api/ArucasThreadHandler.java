@@ -20,8 +20,8 @@ public class ArucasThreadHandler {
 	private final ThreadGroup arucasThreadGroup;
 	private final List<Runnable> shutdownEvents;
 
-	private Consumer<String> stopErrorHandler;
 	private Consumer<String> errorHandler;
+	private Consumer<String> stopErrorHandler;
 	private TriConsumer<Context, Throwable, String> fatalErrorHandler;
 	private Runnable finalHandler;
 
@@ -32,8 +32,8 @@ public class ArucasThreadHandler {
 	protected ArucasThreadHandler() {
 		this.arucasThreadGroup = new ThreadGroup("Arucas Thread Group");
 		this.shutdownEvents = new ArrayList<>();
-		this.stopErrorHandler = this.errorHandler;
 		this.errorHandler = System.out::println;
+		this.stopErrorHandler = this.errorHandler;
 		this.fatalErrorHandler = (c, t, s) -> t.printStackTrace();
 		this.finalHandler = () -> { };
 		this.isRunning = false;

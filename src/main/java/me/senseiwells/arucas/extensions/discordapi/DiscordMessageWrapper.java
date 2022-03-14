@@ -10,13 +10,10 @@ import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.values.*;
 import me.senseiwells.arucas.values.classes.WrapperClassDefinition;
 import me.senseiwells.arucas.values.classes.WrapperClassValue;
-import me.senseiwells.arucas.values.functions.FunctionValue;
 import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.entities.Message;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 @ArucasWrapper(name = "DiscordMessage")
 public class DiscordMessageWrapper implements IArucasWrappedClass {
@@ -70,31 +67,31 @@ public class DiscordMessageWrapper implements IArucasWrappedClass {
 		if (emote == null) {
 			throw new RuntimeException("'%s' is not a valid emote id".formatted(emoteId.value));
 		}
-		this.message.addReaction(emote).queue();
+		this.message.addReaction(emote).complete();
 	}
 
 	@ArucasFunction
 	public void addReactionUnicode(Context context, StringValue unicode) {
-		this.message.addReaction(unicode.value).queue();
+		this.message.addReaction(unicode.value).complete();
 	}
 
 	@ArucasFunction
 	public void removeAllReactions(Context context) {
-		this.message.clearReactions().queue();
+		this.message.clearReactions().complete();
 	}
 
 	@ArucasFunction
 	public void delete(Context context) {
-		this.message.delete().queue();
+		this.message.delete().complete();
 	}
 
 	@ArucasFunction
 	public void pin(Context context, BooleanValue booleanValue) {
 		if (booleanValue.value) {
-			this.message.pin().queue();
+			this.message.pin().complete();
 			return;
 		}
-		this.message.unpin().queue();
+		this.message.unpin().complete();
 	}
 
 	@ArucasFunction
@@ -107,49 +104,27 @@ public class DiscordMessageWrapper implements IArucasWrappedClass {
 		return BooleanValue.of(this.message.isEdited());
 	}
 
+
 	@ArucasFunction
-	public void reply(Context context, StringValue message, FunctionValue then) {
-		this.message.reply(message.value).queue(getMessageCallback(context, then));
+	public WrapperClassValue reply(Context context, StringValue message) throws CodeError {
+		return createNewMessageWrapper(this.message.reply(message.value).complete(), context);
+	}
+
+
+	@ArucasFunction
+	public WrapperClassValue replyWithEmbed(Context context, MapValue mapValue) throws CodeError {
+		Message message = this.message.replyEmbeds(DiscordUtils.parseMapAsEmbed(context, mapValue)).complete();
+		return createNewMessageWrapper(message, context);
 	}
 
 	@ArucasFunction
-	public void reply(Context context, StringValue message) {
-		this.message.reply(message.value).queue();
-	}
-
-	@ArucasFunction
-	public void replyWithEmbed(Context context, MapValue mapValue, FunctionValue then) throws CodeError {
-		this.message.replyEmbeds(DiscordUtils.parseMapAsEmbed(context, mapValue)).queue(getMessageCallback(context, then));
-	}
-
-	@ArucasFunction
-	public void replyWithEmbed(Context context, MapValue mapValue) throws CodeError {
-		this.message.replyEmbeds(DiscordUtils.parseMapAsEmbed(context, mapValue)).queue();
-	}
-
-	@ArucasFunction
-	public void replyWithFile(Context context, FileValue fileValue, FunctionValue then) {
-		this.message.reply(fileValue.value).queue(getMessageCallback(context, then));
-	}
-
-	@ArucasFunction
-	public void replyWithFile(Context context, FileValue fileValue) {
-		this.message.reply(fileValue.value).queue();
+	public WrapperClassValue replyWithFile(Context context, FileValue fileValue) throws CodeError {
+		return createNewMessageWrapper(this.message.reply(fileValue.value).complete(), context);
 	}
 
 	public static WrapperClassValue createNewMessageWrapper(Message message, Context context) throws CodeError {
 		DiscordMessageWrapper channelWrapper = new DiscordMessageWrapper();
 		channelWrapper.message = message;
 		return DEFINITION.createNewDefinition(channelWrapper, context, List.of());
-	}
-
-	public static Consumer<Message> getMessageCallback(Context context, FunctionValue then) {
-		return msg -> {
-			context.getThreadHandler().runAsyncFunctionInContext(context.createBranch(), branchContext -> {
-				List<Value<?>> parameters = new ArrayList<>();
-				parameters.add(createNewMessageWrapper(msg, context));
-				then.call(context, parameters);
-			});
-		};
 	}
 }

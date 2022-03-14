@@ -11,6 +11,6 @@ public class ThrowStop extends CodeError {
 	
 	@Override
 	public String toString(Context context) {
-		return "Program has stopped";
+		return context.getOutput().getErrorFormattingBold() + "Program has stopped";
 	}
 }
