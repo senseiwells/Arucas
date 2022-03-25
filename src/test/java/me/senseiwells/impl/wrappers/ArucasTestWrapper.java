@@ -6,12 +6,12 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.*;
-import me.senseiwells.arucas.values.classes.WrapperClassValue;
 import me.senseiwells.arucas.values.classes.WrapperClassDefinition;
+import me.senseiwells.arucas.values.classes.WrapperClassValue;
 
 import java.util.List;
 
-@ArucasWrapper(name="Test")
+@ArucasClass(name = "Test")
 public class ArucasTestWrapper implements IArucasWrappedClass {
 
 	@ArucasDefinition
@@ -19,10 +19,10 @@ public class ArucasTestWrapper implements IArucasWrappedClass {
 
 	@ArucasMember(assignable = false)
 	public static final Value<?> memberStaticValue = StringValue.of("Static MEMBER!");
-	
+
 	@ArucasMember
 	public Value<?> memberValue = StringValue.of("Normal MEMBER!");
-	
+
 	@ArucasFunction
 	public Value<?> getName(Context context, ListValue list, MapValue map, StringValue string) throws CodeError {
 		return DEFINITION.createNewDefinition(context, List.of(), ISyntax.EMPTY);
@@ -62,7 +62,7 @@ public class ArucasTestWrapper implements IArucasWrappedClass {
 		ArucasTestWrapper instance = classValue.getWrapper(ArucasTestWrapper.class);
 		System.out.println(instance.memberValue);
 	}
-	
+
 	@ArucasFunction
 	public Value<?> testing(Context context, ListValue list, MapValue map, StringValue string) {
 		System.out.printf("0: %s\n", this);
@@ -71,7 +71,7 @@ public class ArucasTestWrapper implements IArucasWrappedClass {
 		System.out.printf("3: %s\n", string);
 		return StringValue.of("This is awesome 2222222");
 	}
-	
+
 	@ArucasFunction
 	public static Value<?> benchmark(Context context, ListValue list, MapValue map, StringValue string) {
 		System.out.printf("0: %s\n", list);
@@ -79,17 +79,17 @@ public class ArucasTestWrapper implements IArucasWrappedClass {
 		System.out.printf("2: %s\n", string);
 		return NullValue.NULL;
 	}
-	
+
 	@ArucasFunction
 	public Value<?> toList(Context context) {
 		return NullValue.NULL;
 	}
-	
+
 	@ArucasFunction
 	public static Value<?> staticMethod(Context context) {
 		return NullValue.NULL;
 	}
-	
+
 	@ArucasFunction
 	public Value<?> toString(Context context) {
 		return StringValue.of("Testing string");

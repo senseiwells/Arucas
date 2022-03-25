@@ -6,6 +6,7 @@ import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.NetworkUtils;
+import me.senseiwells.arucas.values.BaseValue;
 import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.StringValue;
 import me.senseiwells.arucas.values.Value;
@@ -42,7 +43,7 @@ public class ArucasNetworkClass extends ArucasClassExtension {
 	}
 
 	@Override
-	public Class<?> getValueClass() {
+	public Class<? extends BaseValue> getValueClass() {
 		return null;
 	}
 }

@@ -1,10 +1,16 @@
 // run(File.getDirectory().getPath() + "/src/test/resources/code/test2.arucas");
 
-class E {
+class Example {
+    embed String as s;
 
+    Example() {
+        this.s = "hi/there";
+    }
 }
 
-return fun() {
-    b = 1000;
-    return new E();
-};
+f = Function.getMethod(new Example(), "split", 1);
+
+print(Type.of(f));
+print(Type.of(new Example()));
+
+print(f("/"));

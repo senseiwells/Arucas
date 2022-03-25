@@ -12,7 +12,6 @@ import me.senseiwells.arucas.values.functions.MemberFunction;
 import java.util.List;
 
 public class ListValue extends Value<ArucasList> {
-
 	public ListValue(ArucasList value) {
 		super(value);
 	}
@@ -26,22 +25,27 @@ public class ListValue extends Value<ArucasList> {
 	public ListValue newCopy(Context context) {
 		return new ListValue(new ArucasList(this.value));
 	}
-	
+
 	@Override
 	public int getHashCode(Context context) throws CodeError {
 		return this.value.getHashCode(context);
 	}
-	
+
 	@Override
 	public String getAsString(Context context) throws CodeError {
 		return this.value.getAsString(context);
 	}
-	
+
 	@Override
 	public boolean isEquals(Context context, Value<?> other) throws CodeError {
 		return this.value.isEquals(context, other);
 	}
-	
+
+	@Override
+	public String getTypeName() {
+		return "List";
+	}
+
 	public static class ArucasListClass extends ArucasClassExtension {
 		public ArucasListClass() {
 			super("List");

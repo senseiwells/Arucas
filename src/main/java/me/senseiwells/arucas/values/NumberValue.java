@@ -14,15 +14,15 @@ import java.util.Locale;
 
 public class NumberValue extends Value<Double> {
 	private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.############", DecimalFormatSymbols.getInstance(Locale.US));
-	
+
 	private NumberValue(double value) {
 		super(value);
 	}
-	
+
 	public static NumberValue of(double value) {
 		return new NumberValue(value);
 	}
-	
+
 	@Override
 	public Value<?> addTo(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
 		if (other instanceof NumberValue otherValue) {
@@ -92,12 +92,12 @@ public class NumberValue extends Value<Double> {
 	public NumberValue copy(Context context) {
 		return this;
 	}
-	
+
 	@Override
 	public int getHashCode(Context context) {
 		return Double.hashCode(this.value);
 	}
-	
+
 	@Override
 	public String getAsString(Context context) {
 		return NumberValue.DECIMAL_FORMAT.format(this.value);
@@ -105,7 +105,12 @@ public class NumberValue extends Value<Double> {
 
 	@Override
 	public boolean isEquals(Context context, Value<?> other) {
-		return this.isEqualTo(other).value;
+		return other instanceof NumberValue numberValue && this.value.equals(numberValue.value);
+	}
+
+	@Override
+	public String getTypeName() {
+		return "Number";
 	}
 
 	public static class ArucasNumberClass extends ArucasClassExtension {
@@ -114,7 +119,7 @@ public class NumberValue extends Value<Double> {
 		}
 
 		@Override
-		public Class<?> getValueClass() {
+		public Class<NumberValue> getValueClass() {
 			return NumberValue.class;
 		}
 
@@ -160,6 +165,7 @@ public class NumberValue extends Value<Double> {
 			NumberValue thisValue = function.getParameterValueOfType(context, NumberValue.class, 0);
 			return new NumberValue(Math.abs(thisValue.value));
 		}
+
 		@Deprecated
 		private NumberValue toRadians(Context context, MemberFunction function) throws CodeError {
 			NumberValue thisValue = function.getParameterValueOfType(context, NumberValue.class, 0);

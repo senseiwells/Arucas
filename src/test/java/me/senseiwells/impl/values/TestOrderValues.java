@@ -30,6 +30,11 @@ public class TestOrderValues {
 		}
 
 		@Override
+		public String getTypeName() {
+			return "A";
+		}
+
+		@Override
 		public int getHashCode(Context context) {
 			return 0;
 		}
@@ -40,7 +45,7 @@ public class TestOrderValues {
 			}
 
 			@Override
-			public Class<?> getValueClass() {
+			public Class<AValue> getValueClass() {
 				return AValue.class;
 			}
 
@@ -77,13 +82,18 @@ public class TestOrderValues {
 			return 0;
 		}
 
+		@Override
+		public String getTypeName() {
+			return "B";
+		}
+
 		public static class ClassExt extends ArucasClassExtension {
 			public ClassExt() {
 				super("B");
 			}
 
 			@Override
-			public Class<?> getValueClass() {
+			public Class<BValue> getValueClass() {
 				return BValue.class;
 			}
 
@@ -126,13 +136,18 @@ public class TestOrderValues {
 			return 0;
 		}
 
+		@Override
+		public String getTypeName() {
+			return "D";
+		}
+
 		public static class ClassExt extends ArucasClassExtension {
 			public ClassExt() {
 				super("D");
 			}
 
 			@Override
-			public Class<?> getValueClass() {
+			public Class<DValue> getValueClass() {
 				return DValue.class;
 			}
 

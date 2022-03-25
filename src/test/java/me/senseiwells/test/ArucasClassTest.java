@@ -378,7 +378,7 @@ public class ArucasClassTest {
 			class E {
 				embed Map as m = { "E" : 99 };
 			}
-			return new E().hasEmbed("Map");
+			return Type.of(new E()).hasEmbed(Map.type);
 			"""
 		));
 		assertEquals("false", ArucasHelper.runSafe(
@@ -386,7 +386,7 @@ public class ArucasClassTest {
 			class E {
 				embed Map as m = { "E" : 99 };
 			}
-			return new E().hasEmbed("Object");
+			return Type.of(new E()).hasEmbed(Object.type);
 			"""
 		));
 	}

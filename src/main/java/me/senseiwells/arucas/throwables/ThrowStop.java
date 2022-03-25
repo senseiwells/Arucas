@@ -8,9 +8,9 @@ public class ThrowStop extends CodeError {
 	public ThrowStop() {
 		super(ErrorType.STOP, "Program has stopped", ISyntax.empty());
 	}
-	
+
 	@Override
 	public String toString(Context context) {
-		return context.getOutput().getErrorFormattingBold() + "Program has stopped";
+		return context.getOutput().addErrorFormattingBold("Program has stopped");
 	}
 }

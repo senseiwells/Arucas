@@ -4,6 +4,7 @@ import me.senseiwells.arucas.api.ArucasClassExtension;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.values.BaseValue;
 import me.senseiwells.arucas.values.NumberValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
@@ -176,7 +177,7 @@ public class ArucasMathClass extends ArucasClassExtension {
 	}
 
 	@Override
-	public Class<?> getValueClass() {
+	public Class<? extends BaseValue> getValueClass() {
 		return null;
 	}
 }

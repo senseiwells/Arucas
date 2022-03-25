@@ -1,8 +1,8 @@
 package me.senseiwells.arucas.extensions.discordapi;
 
+import me.senseiwells.arucas.api.wrappers.ArucasClass;
 import me.senseiwells.arucas.api.wrappers.ArucasConstructor;
 import me.senseiwells.arucas.api.wrappers.ArucasFunction;
-import me.senseiwells.arucas.api.wrappers.ArucasWrapper;
 import me.senseiwells.arucas.api.wrappers.IArucasWrappedClass;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.utils.Context;
@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@ArucasWrapper(name = "DiscordBot")
+@ArucasClass(name = "DiscordBot")
 public class DiscordBotWrapper implements IArucasWrappedClass, EventListener {
 	private Map<String, List<FunctionContext>> commandMap;
 	private Map<String, List<FunctionContext>> eventMap;

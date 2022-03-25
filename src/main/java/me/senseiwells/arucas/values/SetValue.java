@@ -5,8 +5,8 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.utils.impl.IArucasCollection;
 import me.senseiwells.arucas.utils.impl.ArucasSet;
+import me.senseiwells.arucas.utils.impl.IArucasCollection;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
@@ -41,6 +41,11 @@ public class SetValue extends Value<ArucasSet> {
 		return this.value.isEquals(context, other);
 	}
 
+	@Override
+	public String getTypeName() {
+		return "Set";
+	}
+
 	public static class ArucasSetClass extends ArucasClassExtension {
 		public ArucasSetClass() {
 			super("Set");
@@ -57,7 +62,6 @@ public class SetValue extends Value<ArucasSet> {
 				new BuiltInFunction.Arbitrary("of", this::of)
 			);
 		}
-
 
 		private Value<?> of(Context context, BuiltInFunction function) throws CodeError {
 			ListValue arguments = function.getFirstParameter(context, ListValue.class);

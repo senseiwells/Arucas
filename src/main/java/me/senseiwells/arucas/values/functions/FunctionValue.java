@@ -5,9 +5,15 @@ import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
+import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.values.BooleanValue;
+import me.senseiwells.arucas.utils.impl.ArucasList;
+import me.senseiwells.arucas.values.ListValue;
+import me.senseiwells.arucas.values.NumberValue;
+import me.senseiwells.arucas.values.StringValue;
 import me.senseiwells.arucas.values.Value;
+import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
+import me.senseiwells.arucas.values.classes.ArucasClassValue;
 
 import java.util.List;
 import java.util.Objects;
@@ -16,22 +22,22 @@ public abstract class FunctionValue extends Value<String> {
 	public final List<String> argumentNames;
 	public final ISyntax syntaxPosition;
 	public final String deprecatedMessage;
-	
+
 	public FunctionValue(String name, ISyntax syntaxPosition, List<String> argumentNames, String deprecatedMessage) {
 		super(name);
 		this.syntaxPosition = syntaxPosition;
 		this.argumentNames = argumentNames;
 		this.deprecatedMessage = deprecatedMessage;
 	}
-	
+
 	public String getName() {
 		return this.value;
 	}
-	
+
 	public int getParameterCount() {
 		return this.argumentNames.size();
 	}
-	
+
 	private void checkArguments(Context context, List<Value<?>> arguments, List<String> argumentNames) throws CodeError {
 		int argumentSize = arguments == null ? 0 : arguments.size();
 		if (argumentSize > argumentNames.size()) {
@@ -68,7 +74,7 @@ public abstract class FunctionValue extends Value<String> {
 	}
 
 	protected abstract Value<?> execute(Context context, List<Value<?>> arguments) throws CodeError, ThrowValue;
-	
+
 	/**
 	 * API overridable method.
 	 */
@@ -106,7 +112,7 @@ public abstract class FunctionValue extends Value<String> {
 			);
 		}
 	}
-	
+
 	public final Value<?> call(Context context, List<Value<?>> arguments) throws CodeError {
 		return this.call(context, arguments, true);
 	}
@@ -114,22 +120,22 @@ public abstract class FunctionValue extends Value<String> {
 	public final Value<?> call(Context context, List<Value<?>> arguments, boolean returnable) throws CodeError {
 		return this.callOverride(context, arguments, returnable);
 	}
-	
+
 	@Override
 	public final FunctionValue copy(Context context) {
 		return this;
 	}
-	
+
 	@Override
 	public int getHashCode(Context context) throws CodeError {
 		return Objects.hash(this.value, this.getParameterCount());
 	}
-	
+
 	@Override
 	public String getAsString(Context context) throws CodeError {
 		return "<function " + this.value + ">";
 	}
-	
+
 	@Override
 	public boolean isEquals(Context context, Value<?> other) {
 		// The problem here is that it is not enough to check the parameter count and name
@@ -138,14 +144,79 @@ public abstract class FunctionValue extends Value<String> {
 		return this == other;
 	}
 
-	// This class is just so you can check whether a function is of type Function
+	@Override
+	public String getTypeName() {
+		return "Function";
+	}
+
 	public static class ArucasFunctionClass extends ArucasClassExtension {
 		public ArucasFunctionClass() {
 			super("Function");
 		}
 
 		@Override
-		public Class<?> getValueClass() {
+		public ArucasFunctionMap<BuiltInFunction> getDefinedStaticMethods() {
+			return ArucasFunctionMap.of(
+				new BuiltInFunction("getBuiltIn", List.of("functionName", "parameters"), this::getBuiltInDelegate),
+				new BuiltInFunction("getMethod", List.of("object", "methodname", "parameters"), this::getMethodDelegate),
+				new BuiltInFunction("callWithList", List.of("delegate", "parameters"), this::callDelegateWithList),
+				new BuiltInFunction.Arbitrary("call", this::callDelegate)
+			);
+		}
+
+		private Value<?> getBuiltInDelegate(Context context, BuiltInFunction function) throws CodeError {
+			StringValue functionName = function.getParameterValueOfType(context, StringValue.class, 0);
+			NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 1);
+			FunctionValue functionValue = context.getBuiltInFunction(functionName.value, numberValue.value.intValue());
+			if (functionValue == null) {
+				throw new RuntimeError(
+					"No such built in function '%s' with %d parameters".formatted(functionName.value, numberValue.value.intValue()),
+					function.syntaxPosition,
+					context
+				);
+			}
+			return functionValue;
+		}
+
+		private Value<?> getMethodDelegate(Context context, BuiltInFunction function) throws CodeError {
+			Value<?> callingValue = function.getParameterValue(context, 0);
+			StringValue methodNameValue = function.getParameterValueOfType(context, StringValue.class, 1);
+			NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 2);
+
+			FunctionValue delegate = null;
+			if (callingValue instanceof ArucasClassValue classValue) {
+				delegate = classValue.getMember(methodNameValue.value, numberValue.value.intValue() + 1);
+			}
+			if (delegate == null) {
+				delegate = context.getMemberFunction(callingValue.getClass(), methodNameValue.value, numberValue.value.intValue() + 1);
+			}
+			if (delegate == null) {
+				throw new RuntimeError(
+					"No such method '%s' with %d parameters".formatted(methodNameValue.value, numberValue.value.intValue()),
+					function.syntaxPosition,
+					context
+				);
+			}
+			return delegate;
+		}
+
+		private Value<?> callDelegate(Context context, BuiltInFunction function) throws CodeError {
+			ListValue arguments = function.getParameterValueOfType(context, ListValue.class, 0);
+			ArucasList list = arguments.value;
+			if (list.size() < 1 || !(list.remove(0) instanceof FunctionValue functionValue)) {
+				throw new RuntimeError("First parameter must be of function value", function.syntaxPosition, context);
+			}
+			return functionValue.call(context, list);
+		}
+
+		private Value<?> callDelegateWithList(Context context, BuiltInFunction function) throws CodeError {
+			FunctionValue delegate = function.getParameterValueOfType(context, FunctionValue.class, 0);
+			ListValue listValue = function.getParameterValueOfType(context, ListValue.class, 1);
+			return delegate.call(context, listValue.value);
+		}
+
+		@Override
+		public Class<FunctionValue> getValueClass() {
 			return FunctionValue.class;
 		}
 	}

@@ -14,25 +14,25 @@ public class NullValue extends Value<Object> {
 	public NullValue copy(Context context) {
 		return this;
 	}
-	
+
 	@Override
 	public int getHashCode(Context context) {
 		return 0;
 	}
-	
+
 	@Override
 	public String getAsString(Context context) {
 		return "null";
 	}
-	
+
 	@Override
 	public boolean isEquals(Context context, Value<?> other) {
 		return other == NULL;
 	}
 
 	@Override
-	public BooleanValue isEqualTo(Value<?> other) {
-		return BooleanValue.of(other == NULL);
+	public String getTypeName() {
+		return "Null";
 	}
 
 	public static class ArucasNullClass extends ArucasClassExtension {
@@ -41,7 +41,7 @@ public class NullValue extends Value<Object> {
 		}
 
 		@Override
-		public Class<?> getValueClass() {
+		public Class<NullValue> getValueClass() {
 			return NullValue.class;
 		}
 	}

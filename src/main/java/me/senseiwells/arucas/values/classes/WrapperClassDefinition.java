@@ -25,7 +25,7 @@ public class WrapperClassDefinition extends AbstractClassDefinition {
 	private final ArucasFunctionMap<WrapperClassMemberFunction> methods;
 	private final ArucasFunctionMap<WrapperClassMemberFunction> constructors;
 	private final ArucasOperatorMap<WrapperClassMemberFunction> operatorMap;
-	
+
 	public WrapperClassDefinition(String name, Supplier<IArucasWrappedClass> supplier) {
 		super(name);
 		this.supplier = supplier;
@@ -66,7 +66,13 @@ public class WrapperClassDefinition extends AbstractClassDefinition {
 	}
 
 	@Override
-	public void initialiseStatics(Context context) { }
+	public ArucasFunctionMap<? extends FunctionValue> getConstructors() {
+		return this.constructors;
+	}
+
+	@Override
+	public void initialiseStatics(Context context) {
+	}
 
 	@Override
 	public WrapperClassValue createNewDefinition(Context context, List<Value<?>> parameters, ISyntax syntaxPosition) throws CodeError {
@@ -117,12 +123,15 @@ public class WrapperClassDefinition extends AbstractClassDefinition {
 		if (this.staticFieldMap.containsKey(name)) {
 			return this.staticFieldMap.get(name).set(null, value);
 		}
-		
+
 		return false;
 	}
 
 	@Override
 	public Value<?> getMember(String name) {
+		if (name.equals("type")) {
+			return this.getType();
+		}
 		if (this.staticFieldMap.containsKey(name)) {
 			return this.staticFieldMap.get(name).get(null);
 		}
@@ -130,7 +139,7 @@ public class WrapperClassDefinition extends AbstractClassDefinition {
 	}
 
 	@Override
-	public Class<?> getValueClass() {
+	public Class<WrapperClassValue> getValueClass() {
 		return WrapperClassValue.class;
 	}
 }

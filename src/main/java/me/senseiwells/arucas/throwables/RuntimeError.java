@@ -9,7 +9,7 @@ import java.util.Iterator;
 
 public class RuntimeError extends CodeError {
 	private final Context context;
-	
+
 	public RuntimeError(String details, ISyntax syntaxHolder, Context context) {
 		super(ErrorType.RUNTIME_ERROR, details, syntaxHolder);
 		this.context = context;
@@ -21,15 +21,15 @@ public class RuntimeError extends CodeError {
 
 	private String generateTraceback(Context context) {
 		StringBuilder result = new StringBuilder();
-		
+
 		Position startPos = this.syntaxPosition.getStartPos();
-		
+
 		// Add the error call.
 		result.append("File: %s, Line: %d, Column: %d, In: %s\n%s".formatted(
 			startPos.fileName, startPos.line + 1, startPos.column + 1,
 			context.getDisplayName(), context.getOutput().getErrorFormatting()
 		));
-		
+
 		// Iterate through all branches before this point
 		Iterator<StackTable> iterator = context.getStackTable().iterator();
 		while (iterator.hasNext()) {
@@ -39,21 +39,22 @@ public class RuntimeError extends CodeError {
 				pos.fileName, pos.line + 1, pos.column + 1, context.getDisplayName()
 			));
 		}
-		
+
 		return "%sTraceback (most recent call first): '%s'\n%s".formatted(
 			context.getOutput().getErrorFormattingBold(),
 			this.getMessage(), result
 		);
 	}
-	
+
 	@Override
 	public String toString(Context context) {
 		// If this context is not null use that instead
 		context = this.context != null ? this.context : context;
-		return context != null ? "%s%s%s - '%s'".formatted(
+		return context != null ? "%s%s%s - '%s'%s".formatted(
 			this.generateTraceback(context),
 			context.getOutput().getErrorFormattingBold(),
-			this.errorType.stringName, this.getMessage()
+			this.errorType.stringName, this.getMessage(),
+			context.getOutput().getResetFormatting()
 		) : super.toString();
 	}
 }

@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * methods for Arucas support.
  * This map also cannot contain null values.
  */
-public class ArucasMap implements IArucasMap, ValueIdentifier {
+public class ArucasMap implements IArucasCollection, ValueIdentifier {
 	private static final Object TOTAL_LOCK = new Object();
 
 	private static final int INITIAL_CAPACITY = 16;
@@ -70,6 +70,7 @@ public class ArucasMap implements IArucasMap, ValueIdentifier {
 		}
 	}
 
+	@Override
 	public int size() {
 		return this.size;
 	}
@@ -391,6 +392,11 @@ public class ArucasMap implements IArucasMap, ValueIdentifier {
 			}
 			return false;
 		}
+	}
+
+	@Override
+	public Collection<? extends Value<?>> asCollection() {
+		return this.keys();
 	}
 
 	public ArucasList keys() {

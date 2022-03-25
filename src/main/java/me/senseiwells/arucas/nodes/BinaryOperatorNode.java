@@ -59,8 +59,8 @@ public class BinaryOperatorNode extends Node {
 			case MULTIPLY -> result = left.multiplyBy(context, right, this.syntaxPosition);
 			case DIVIDE -> result = left.divideBy(context, right, this.syntaxPosition);
 			case POWER -> result = left.powerBy(context, right, this.syntaxPosition);
-			case EQUALS -> result = left.isEqualTo(right);
-			case NOT_EQUALS -> result = left.isNotEqualTo(right);
+			case EQUALS -> result = BooleanValue.of(left.isEquals(context, right));
+			case NOT_EQUALS -> result = BooleanValue.of(left.isNotEquals(context, right));
 			case LESS_THAN, LESS_THAN_EQUAL, MORE_THAN, MORE_THAN_EQUAL -> result = left.compareNumber(context, right, this.token.type, this.syntaxPosition);
 		}
 

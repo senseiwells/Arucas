@@ -48,13 +48,18 @@ public class FileValue extends Value<File> {
 		return (other instanceof FileValue that) && this.value.equals(that.value);
 	}
 
+	@Override
+	public String getTypeName() {
+		return "File";
+	}
+
 	public static class ArucasFileClass extends ArucasClassExtension {
 		public ArucasFileClass() {
 			super("File");
 		}
 
 		@Override
-		public Class<?> getValueClass() {
+		public Class<FileValue> getValueClass() {
 			return FileValue.class;
 		}
 

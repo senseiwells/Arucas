@@ -5,11 +5,12 @@ import me.senseiwells.arucas.core.Run;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowStop;
-import me.senseiwells.arucas.utils.*;
+import me.senseiwells.arucas.utils.ArucasFunctionMap;
+import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.ExceptionUtils;
 import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.utils.impl.ArucasThread;
 import me.senseiwells.arucas.utils.impl.IArucasCollection;
-import me.senseiwells.arucas.utils.impl.IArucasMap;
 import me.senseiwells.arucas.values.*;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
 import me.senseiwells.arucas.values.functions.FunctionValue;
@@ -30,12 +31,12 @@ import java.util.Scanner;
 public class ArucasBuiltInExtension implements IArucasExtension {
 	private final Scanner scanner = new Scanner(System.in);
 	private final Random random = new Random();
-	
+
 	@Override
 	public String getName() {
 		return "BuiltInExtension";
 	}
-	
+
 	@Override
 	public ArucasFunctionMap<BuiltInFunction> getDefinedFunctions() {
 		return this.builtInFunctions;
@@ -46,6 +47,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		new BuiltInFunction("stop", this::stop),
 		new BuiltInFunction("sleep", "milliseconds", this::sleep),
 		new BuiltInFunction("print", "printValue", this::print),
+		new BuiltInFunction.Arbitrary("print", this::fullPrint),
 		new BuiltInFunction("input", "prompt", this::input),
 		new BuiltInFunction("debug", "boolean", this::debug),
 		new BuiltInFunction("suppressDeprecated", "boolean", this::suppressDeprecated),
@@ -53,28 +55,10 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		new BuiltInFunction("random", "bound", this::random),
 		new BuiltInFunction("getTime", (context, function) -> StringValue.of(DateTimeFormatter.ofPattern("HH:mm:ss").format(LocalTime.now()))),
 		new BuiltInFunction("getNanoTime", (context, function) -> NumberValue.of(System.nanoTime())),
-		new BuiltInFunction("getDirectory", (context, function) -> StringValue.of(System.getProperty("user.dir")), "Use 'File.getDirectory()'"),
 		new BuiltInFunction("len", "value", this::len),
-		new BuiltInFunction("runThreaded", List.of("function", "parameters"), this::runThreaded$2, "Used 'Thread.runThreaded(name, function)'"),
-		new BuiltInFunction("readFile", "path", this::readFile, "Use '<File>.read()'"),
-		new BuiltInFunction("writeFile", List.of("path", "string"), this::writeFile, "Use '<File>.write(str)'"),
-		new BuiltInFunction("createDirectory", "path", this::createDirectory, "Use '<File>.createDirectory()'"),
-		new BuiltInFunction("doesFileExist", "path", this::doesFileExist, "Use '<File>.exists()'"),
-		new BuiltInFunction("getFileList", "path", this::getFileList, "Use '<File>.getSubFiles()'"),
 		new BuiltInFunction("throwRuntimeError", "message", this::throwRuntimeError),
-		new BuiltInFunction("callFunctionWithList", List.of("function", "argList"), this::callFunctionWithList),
-		new BuiltInFunction("runFromString", "string", this::runFromString),
-
-		// Math functions
-		new BuiltInFunction("sin", "value", this::sin, "Use 'Math.sin(num)'"),
-		new BuiltInFunction("cos", "value", this::cos, "Use 'Math.cos(num)'"),
-		new BuiltInFunction("tan", "value", this::tan, "Use 'Math.tan(num)'"),
-		new BuiltInFunction("arcsin", "value", this::arcsin, "Use 'Math.arcsin(num)'"),
-		new BuiltInFunction("arccos", "value", this::arccos, "Use 'Math.arccos(num)'"),
-		new BuiltInFunction("arctan", "value", this::arctan, "Use 'Math.arctan(num)'"),
-		new BuiltInFunction("cosec", "value", this::cosec, "Use 'Math.cosec(num)'"),
-		new BuiltInFunction("sec", "value", this::sec, "Use 'Math.sec(num)'"),
-		new BuiltInFunction("cot", "value", this::cot, "Use 'Math.cot(num)'")
+		new BuiltInFunction("callFunctionWithList", List.of("function", "argList"), this::callFunctionWithList, "Use 'Function.callDelegateWithList()'"),
+		new BuiltInFunction("runFromString", "string", this::runFromString)
 	);
 
 	private Value<?> run(Context context, BuiltInFunction function) throws CodeError {
@@ -110,6 +94,14 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		return NullValue.NULL;
 	}
 
+	private Value<?> fullPrint(Context context, BuiltInFunction function) throws CodeError {
+		ListValue listValue = function.getParameterValueOfType(context, ListValue.class, 0);
+		for (Value<?> value : listValue.value) {
+			context.getOutput().print(value.getAsString(context));
+		}
+		return NullValue.NULL;
+	}
+
 	private synchronized Value<?> input(Context context, BuiltInFunction function) throws CodeError {
 		StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
 		context.getOutput().println(stringValue.value);
@@ -140,99 +132,10 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		if (value instanceof StringValue stringValue) {
 			return NumberValue.of(stringValue.value.length());
 		}
-		if (value instanceof IArucasMap map) {
-			return NumberValue.of(map.size());
-		}
-		if (value instanceof IArucasCollection collection) {
+		if (value.value instanceof IArucasCollection collection) {
 			return NumberValue.of(collection.size());
 		}
 		throw new RuntimeError("Cannot pass %s into len()".formatted(value), function.syntaxPosition, context);
-	}
-
-	@Deprecated
-	private Value<?> runThreaded$2(Context context, BuiltInFunction function) throws CodeError {
-		FunctionValue functionValue = function.getParameterValueOfType(context, FunctionValue.class, 0);
-		ArucasList list = function.getParameterValueOfType(context, ListValue.class, 1).value;
-		ArucasThread thread = context.getThreadHandler().runAsyncFunctionInContext(context.createBranch(), (branchContext) -> functionValue.call(branchContext, list));
-		return ThreadValue.of(thread);
-	}
-
-	private Value<?> readFile(Context context, BuiltInFunction function) throws CodeError {
-		StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
-
-		try {
-			String fileContent = Files.readString(Path.of(stringValue.value));
-			return StringValue.of(fileContent);
-		}
-		catch (OutOfMemoryError e) {
-			throw new RuntimeError("Out of Memory - The file you are trying to read is too large", function.syntaxPosition, context);
-		}
-		catch (InvalidPathException e) {
-			throw new RuntimeError(e.getMessage(), function.syntaxPosition, context);
-		}
-		catch (IOException e) {
-			throw new RuntimeError(
-				"There was an error reading the file: \"%s\"\n%s".formatted(stringValue.value, ExceptionUtils.getStackTrace(e)),
-				function.syntaxPosition,
-				context
-			);
-		}
-	}
-
-	private Value<?> writeFile(Context context, BuiltInFunction function) throws CodeError {
-		StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
-		StringValue writeValue = function.getParameterValueOfType(context, StringValue.class, 1);
-		String filePath = stringValue.value;
-
-		try (PrintWriter printWriter = new PrintWriter(filePath)) {
-			printWriter.println(writeValue.value);
-			return NullValue.NULL;
-		}
-		catch (FileNotFoundException e) {
-			throw new RuntimeError(
-				"There was an error writing the file: \"%s\"\n%s".formatted(stringValue.value, ExceptionUtils.getStackTrace(e)),
-				function.syntaxPosition,
-				context
-			);
-		}
-	}
-
-	private Value<?> createDirectory(Context context, BuiltInFunction function) throws CodeError {
-		StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
-		try {
-			return BooleanValue.of(Path.of(stringValue.value).toFile().mkdirs());
-		}
-		catch (InvalidPathException e) {
-			throw new RuntimeError(e.getMessage(), function.syntaxPosition, context);
-		}
-	}
-
-	private Value<?> doesFileExist(Context context, BuiltInFunction function) throws CodeError {
-		StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
-		try {
-			return BooleanValue.of(Path.of(stringValue.value).toFile().exists());
-		}
-		catch (InvalidPathException e) {
-			throw new RuntimeError(e.getMessage(), function.syntaxPosition, context);
-		}
-	}
-
-	private Value<?> getFileList(Context context, BuiltInFunction function) throws CodeError {
-		StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
-		try {
-			File[] files = Path.of(stringValue.value).toFile().listFiles();
-			if (files == null) {
-				throw new RuntimeError("Could not find any files", function.syntaxPosition, context);
-			}
-			ArucasList fileList = new ArucasList();
-			for (File file : files) {
-				fileList.add(StringValue.of(file.getName()));
-			}
-			return new ListValue(fileList);
-		}
-		catch (InvalidPathException e) {
-			throw new RuntimeError(e.getMessage(), function.syntaxPosition, context);
-		}
 	}
 
 	private Value<?> throwRuntimeError(Context context, BuiltInFunction function) throws CodeError {
@@ -249,59 +152,5 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 	private Value<?> runFromString(Context context, BuiltInFunction function) throws CodeError {
 		StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
 		return Run.run(context, "string-run", stringValue.value);
-	}
-
-	@Deprecated
-	private Value<?> sin(Context context, BuiltInFunction function) throws CodeError {
-		NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 0);
-		return NumberValue.of(Math.sin(numberValue.value));
-	}
-
-	@Deprecated
-	private Value<?> cos(Context context, BuiltInFunction function) throws CodeError {
-		NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 0);
-		return NumberValue.of(Math.cos(numberValue.value));
-	}
-
-	@Deprecated
-	private Value<?> tan(Context context, BuiltInFunction function) throws CodeError {
-		NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 0);
-		return NumberValue.of(Math.tan(numberValue.value));
-	}
-
-	@Deprecated
-	private Value<?> arcsin(Context context, BuiltInFunction function) throws CodeError {
-		NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 0);
-		return NumberValue.of(Math.asin(numberValue.value));
-	}
-
-	@Deprecated
-	private Value<?> arccos(Context context, BuiltInFunction function) throws CodeError {
-		NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 0);
-		return NumberValue.of(Math.acos(numberValue.value));
-	}
-
-	@Deprecated
-	private Value<?> arctan(Context context, BuiltInFunction function) throws CodeError {
-		NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 0);
-		return NumberValue.of(Math.atan(numberValue.value));
-	}
-
-	@Deprecated
-	private Value<?> cosec(Context context, BuiltInFunction function) throws CodeError {
-		NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 0);
-		return NumberValue.of(1 / Math.sin(numberValue.value));
-	}
-
-	@Deprecated
-	private Value<?> sec(Context context, BuiltInFunction function) throws CodeError {
-		NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 0);
-		return NumberValue.of(1 / Math.cos(numberValue.value));
-	}
-
-	@Deprecated
-	private Value<?> cot(Context context, BuiltInFunction function) throws CodeError {
-		NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 0);
-		return NumberValue.of(1 / Math.tan(numberValue.value));
 	}
 }

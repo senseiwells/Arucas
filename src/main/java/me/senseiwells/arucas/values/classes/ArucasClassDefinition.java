@@ -124,6 +124,11 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 	}
 
 	@Override
+	public ArucasFunctionMap<ClassMemberFunction> getConstructors() {
+		return this.constructors;
+	}
+
+	@Override
 	protected void initialiseStatics(Context context) throws CodeError, ThrowValue {
 		for (Map.Entry<String, Node> entry : this.staticMemberVariableNodes.entrySet()) {
 			this.getStaticMemberVariables().put(entry.getKey(), entry.getValue().visit(context));
@@ -163,5 +168,6 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 		return ArucasClassValue.class;
 	}
 
-	protected record EmbeddedNode(Node node, AbstractClassDefinition definition) { }
+	protected record EmbeddedNode(Node node, AbstractClassDefinition definition) {
+	}
 }

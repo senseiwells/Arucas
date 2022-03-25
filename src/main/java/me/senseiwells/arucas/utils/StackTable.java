@@ -4,34 +4,32 @@ import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.functions.FunctionValue;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
 public class StackTable {
-	// Lazy generated
-	protected Map<String, Value<?>> symbolMap;
-	protected ArucasClassDefinitionMap classDefinitions;
 	private final StackTable parentTable;
 	private final ISyntax syntaxPosition;
 	private final StackTable rootTable;
-	private final StackTable globalRootTable;
+
+	// Lazy generated
+	@Nullable
+	protected Map<String, Value<?>> symbolMap;
+	@Nullable
+	protected ArucasClassDefinitionMap classDefinitions;
 	
 	protected final boolean canContinue;
 	protected final boolean canBreak;
 	protected final boolean canReturn;
 
-	StackTable(StackTable parent, StackTable globalRootTable, ISyntax syntaxPosition, boolean canBreak, boolean canContinue, boolean canReturn) {
+	public StackTable(StackTable parent, ISyntax syntaxPosition, boolean canBreak, boolean canContinue, boolean canReturn) {
 		this.parentTable = parent;
 		this.syntaxPosition = syntaxPosition;
 		this.canContinue = canContinue;
 		this.canReturn = canReturn;
 		this.canBreak = canBreak;
 		this.rootTable = parent == null ? this : parent.rootTable;
-		this.globalRootTable = globalRootTable == null ? this : globalRootTable;
-	}
-
-	public StackTable(StackTable parent, ISyntax syntaxPosition, boolean canBreak, boolean canContinue, boolean canReturn) {
-		this(parent, parent == null ? null : parent.globalRootTable, syntaxPosition, canBreak, canContinue, canReturn);
 	}
 
 	public StackTable() {
@@ -68,7 +66,7 @@ public class StackTable {
 	 */
 	public void set(String name, Value<?> value) {
 		StackTable parentTable = this.getParent(name);
-		if (parentTable != null) {
+		if (parentTable != null && parentTable.symbolMap != null) {
 			// If a parentTable was found then symbolMap is not null
 			parentTable.symbolMap.put(name, value);
 		}
@@ -93,8 +91,7 @@ public class StackTable {
 	 */
 	public StackTable getParent(String name) {
 		if (this.parentTable != null) {
-			if (this.parentTable.symbolMap == null
-			|| this.parentTable.symbolMap.get(name) == null) {
+			if (this.parentTable.symbolMap == null || this.parentTable.symbolMap.get(name) == null) {
 				return this.parentTable.getParent(name);
 			}
 			
@@ -148,10 +145,6 @@ public class StackTable {
 	 */
 	public StackTable getRoot() {
 		return this.rootTable;
-	}
-
-	public StackTable getGlobalRoot() {
-		return this.globalRootTable;
 	}
 
 	public StackTable getParentTable() {

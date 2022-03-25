@@ -130,6 +130,8 @@ public class ArucasThreadHandler {
 		final AtomicReference<CodeError> atomicError = new AtomicReference<>(null);
 		final AtomicReference<Value<?>> atomicValue = new AtomicReference<>(NullValue.NULL);
 
+		this.hasError = false;
+		this.isRunning = true;
 		ArucasThread thread = new ArucasThread(this.arucasThreadGroup, () -> {
 			try {
 				atomicValue.set(Run.run(context, fileName, fileContent));
@@ -138,6 +140,7 @@ public class ArucasThreadHandler {
 				atomicError.set(thrownCodeError);
 			}
 			finally {
+				this.stop();
 				latch.countDown();
 			}
 		}, "Arucas Test Thread");

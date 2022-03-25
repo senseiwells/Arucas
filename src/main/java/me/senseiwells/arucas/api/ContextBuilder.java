@@ -6,7 +6,6 @@ import me.senseiwells.arucas.api.wrappers.IArucasWrappedClass;
 import me.senseiwells.arucas.extensions.ArucasBuiltInExtension;
 import me.senseiwells.arucas.extensions.ArucasMathClass;
 import me.senseiwells.arucas.extensions.ArucasNetworkClass;
-import me.senseiwells.arucas.extensions.discordapi.DiscordBotWrapper;
 import me.senseiwells.arucas.extensions.discordapi.*;
 import me.senseiwells.arucas.utils.ArucasClassDefinitionMap;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
@@ -33,7 +32,8 @@ public class ContextBuilder {
 	private boolean suppressDeprecated;
 	private String displayName = "";
 
-	public ContextBuilder() { }
+	public ContextBuilder() {
+	}
 
 	public ContextBuilder setDisplayName(String displayName) {
 		this.displayName = Objects.requireNonNull(displayName);
@@ -70,6 +70,7 @@ public class ContextBuilder {
 	public ContextBuilder addDefaultClasses() {
 		return this.addClasses(
 			Value.ArucasBaseClass::new,
+			TypeValue.ArucasTypeClass::new,
 			EnumValue.ArucasEnumClass::new,
 			FunctionValue.ArucasFunctionClass::new,
 			StringValue.ArucasStringClass::new,

@@ -2,7 +2,7 @@ package me.senseiwells.arucas.extensions.discordapi;
 
 import me.senseiwells.arucas.api.wrappers.ArucasDefinition;
 import me.senseiwells.arucas.api.wrappers.ArucasFunction;
-import me.senseiwells.arucas.api.wrappers.ArucasWrapper;
+import me.senseiwells.arucas.api.wrappers.ArucasClass;
 import me.senseiwells.arucas.api.wrappers.IArucasWrappedClass;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.utils.Context;
@@ -14,7 +14,7 @@ import net.dv8tion.jda.api.entities.Member;
 
 import java.util.List;
 
-@ArucasWrapper(name = "DiscordServer")
+@ArucasClass(name = "DiscordServer")
 public class DiscordServerWrapper implements IArucasWrappedClass {
 	@ArucasDefinition
 	public static WrapperClassDefinition DEFINITION;

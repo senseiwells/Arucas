@@ -17,7 +17,16 @@ public interface IArucasOutput {
 	void println(Object object);
 
 	// Declare methods that provide additional formatting
-	void setErrorFormatting(String error, String boldError);
+	void setFormatting(String error, String boldError, String reset);
 	String getErrorFormatting();
 	String getErrorFormattingBold();
+	String getResetFormatting();
+
+	default String addErrorFormatting(String string) {
+		return this.getErrorFormatting() + string + this.getResetFormatting();
+	}
+
+	default String addErrorFormattingBold(String string) {
+		return this.getErrorFormattingBold() + string + this.getResetFormatting();
+	}
 }

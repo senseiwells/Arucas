@@ -24,20 +24,25 @@ public class MapValue extends Value<ArucasMap> {
 	public MapValue newCopy(Context context) throws CodeError {
 		return new MapValue(new ArucasOrderedMap(context, this.value));
 	}
-	
+
 	@Override
 	public int getHashCode(Context context) throws CodeError {
 		return this.value.getHashCode(context);
 	}
-	
+
 	@Override
 	public String getAsString(Context context) throws CodeError {
 		return this.value.getAsString(context);
 	}
-	
+
 	@Override
 	public boolean isEquals(Context context, Value<?> other) throws CodeError {
 		return this.value.isEquals(context, other);
+	}
+
+	@Override
+	public String getTypeName() {
+		return "Map";
 	}
 
 	public static class ArucasMapClass extends ArucasClassExtension {
@@ -46,7 +51,7 @@ public class MapValue extends Value<ArucasMap> {
 		}
 
 		@Override
-		public Class<?> getValueClass() {
+		public Class<MapValue> getValueClass() {
 			return MapValue.class;
 		}
 

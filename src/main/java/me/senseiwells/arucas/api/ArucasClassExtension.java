@@ -33,6 +33,11 @@ public abstract class ArucasClassExtension extends AbstractClassDefinition {
 		return this.methods;
 	}
 
+	@Override
+	public ArucasFunctionMap<ConstructorFunction> getConstructors() {
+		return this.constructors;
+	}
+
 	/**
 	 * No members are assignable by default.
 	 */
@@ -78,12 +83,12 @@ public abstract class ArucasClassExtension extends AbstractClassDefinition {
 		if (this.constructors.isEmpty()) {
 			throw new RuntimeError("%s cannot be constructed".formatted(this.getName()), syntaxPosition, context);
 		}
-		
+
 		ConstructorFunction constructor = this.constructors.get("", parameters.size());
 		if (constructor == null) {
 			throw new RuntimeError("No such constructor for %s".formatted(this.getName()), syntaxPosition, context);
 		}
-		
+
 		return constructor.call(context, parameters, false);
 	}
 }

@@ -2,6 +2,7 @@ package me.senseiwells.arucas.utils;
 
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.values.functions.FunctionValue;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +10,9 @@ import java.util.function.BiConsumer;
 
 public class ArucasOperatorMap<T extends FunctionValue> {
 	// Initialize these later to make sure we do not allocate empty memory
+	@Nullable
 	private Map<Token.Type, T> unaryOperatorMap;
+	@Nullable
 	private Map<Token.Type, T> binaryOperatorMap;
 
 	public void add(Token.Type type, T function) {

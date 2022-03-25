@@ -16,11 +16,11 @@ public class StringValue extends Value<String> {
 	private StringValue(String value) {
 		super(value);
 	}
-	
+
 	public static StringValue of(String value) {
 		return new StringValue(value);
 	}
-	
+
 	@Override
 	public StringValue addTo(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
 		return new StringValue(this.value + other.getAsString(context));
@@ -30,20 +30,25 @@ public class StringValue extends Value<String> {
 	public StringValue copy(Context context) {
 		return this;
 	}
-	
+
 	@Override
 	public int getHashCode(Context context) {
 		return this.value.hashCode();
 	}
-	
+
 	@Override
 	public String getAsString(Context context) {
 		return this.value;
 	}
-	
+
 	@Override
 	public boolean isEquals(Context context, Value<?> other) {
 		return (other instanceof StringValue that) && this.value.equals(that.value);
+	}
+
+	@Override
+	public String getTypeName() {
+		return "String";
 	}
 
 	public static class ArucasStringClass extends ArucasClassExtension {
@@ -52,7 +57,7 @@ public class StringValue extends Value<String> {
 		}
 
 		@Override
-		public Class<?> getValueClass() {
+		public Class<StringValue> getValueClass() {
 			return StringValue.class;
 		}
 

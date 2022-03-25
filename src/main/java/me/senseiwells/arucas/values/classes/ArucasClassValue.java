@@ -1,5 +1,6 @@
 package me.senseiwells.arucas.values.classes;
 
+import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.tokens.Token;
@@ -8,6 +9,7 @@ import me.senseiwells.arucas.utils.ArucasOperatorMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.BooleanValue;
 import me.senseiwells.arucas.values.NumberValue;
+import me.senseiwells.arucas.values.TypeValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.functions.ClassMemberFunction;
 import me.senseiwells.arucas.values.functions.FunctionValue;
@@ -116,17 +118,30 @@ public class ArucasClassValue extends Value<AbstractClassDefinition> implements 
 	@Override
 	public boolean isEquals(Context context, Value<?> other) throws CodeError {
 		// If 'equals' is overridden we should use that here
-		FunctionValue memberFunction = this.getMember("equals", 2);
-		if (memberFunction != null) {
+		FunctionValue equalsMethod = this.getOperatorMethod(Token.Type.EQUALS, 2);
+		if (equalsMethod == null) {
+			equalsMethod = this.getMember("equals", 2);
+		}
+		if (equalsMethod != null) {
 			List<Value<?>> parameters = new ArrayList<>();
 			parameters.add(other);
-			Value<?> value = memberFunction.call(context, parameters);
+			Value<?> value = equalsMethod.call(context, parameters);
 			if (!(value instanceof BooleanValue booleanValue)) {
-				throw new RuntimeError("equals() must return a boolean", memberFunction.syntaxPosition, context);
+				throw new RuntimeError("'equals()' or '==' must return a boolean", equalsMethod.syntaxPosition, context);
 			}
 			return booleanValue.value;
 		}
 
 		return this == other;
+	}
+
+	@Override
+	public String getTypeName() {
+		return this.getName();
+	}
+
+	@Override
+	public final TypeValue getType(Context context, ISyntax syntaxPosition) {
+		return this.value.getType();
 	}
 }

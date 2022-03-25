@@ -19,7 +19,7 @@ public class BooleanValue extends Value<Boolean> {
 	}
 
 	@Override
-	public BooleanValue isAnd(Context context,  Value<?> other, ISyntax syntaxPosition) throws CodeError {
+	public BooleanValue isAnd(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
 		if (other instanceof BooleanValue booleanValue) {
 			return BooleanValue.of(this.value && booleanValue.value);
 		}
@@ -42,34 +42,39 @@ public class BooleanValue extends Value<Boolean> {
 	public BooleanValue not() {
 		return BooleanValue.of(!this.value);
 	}
-	
+
 	@Override
 	public BooleanValue copy(Context context) {
 		return this;
 	}
-	
+
 	@Override
 	public int getHashCode(Context context) {
 		return Boolean.hashCode(this.value);
 	}
-	
+
 	@Override
 	public String getAsString(Context context) {
 		return this.value ? "true" : "false";
 	}
-	
+
 	@Override
 	public boolean isEquals(Context context, Value<?> other) {
 		return (other instanceof BooleanValue that) && this.value == that.value;
 	}
-	
+
+	@Override
+	public String getTypeName() {
+		return "Boolean";
+	}
+
 	public static class ArucasBooleanClass extends ArucasClassExtension {
 		public ArucasBooleanClass() {
 			super("Boolean");
 		}
 
 		@Override
-		public Class<?> getValueClass() {
+		public Class<BooleanValue> getValueClass() {
 			return BooleanValue.class;
 		}
 	}

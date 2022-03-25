@@ -425,7 +425,7 @@ public class Parser {
 		if (this.currentToken.type == Token.Type.IDENTIFIER) {
 			do {
 				this.throwIfNotType(Token.Type.IDENTIFIER, "Expected Identifier");
-
+				this.context.throwIfStackNameTaken(this.currentToken.content, this.currentToken.syntaxPosition);
 				argumentNames.add(this.currentToken.content);
 				this.context.setLocal(this.currentToken.content, NullValue.NULL);
 				this.advance();
@@ -455,7 +455,7 @@ public class Parser {
 			do {
 				this.advance();
 				this.throwIfNotType(Token.Type.IDENTIFIER, "Expected Identifier");
-
+				this.context.throwIfStackNameTaken(this.currentToken.content, this.currentToken.syntaxPosition);
 				argumentNames.add(this.currentToken.content);
 				this.context.setLocal(this.currentToken.content, NullValue.NULL);
 				this.advance();
@@ -773,6 +773,7 @@ public class Parser {
 		if (this.currentToken.type == Token.Type.IDENTIFIER) {
 			do {
 				this.throwIfNotType(Token.Type.IDENTIFIER, "Expected Identifier");
+				this.context.throwIfStackNameTaken(this.currentToken.content, this.currentToken.syntaxPosition);
 				argumentNameTokens.add(this.currentToken.content);
 				this.context.setLocal(this.currentToken.content, NullValue.NULL);
 				this.advance();
@@ -1027,7 +1028,7 @@ public class Parser {
 
 	private Node mapExpression() throws CodeError {
 		this.parseStack.add(StackType.MAP);
-		Map<Node, Node> elementMap = new HashMap<>();
+		Map<Node, Node> elementMap = new LinkedHashMap<>();
 		ISyntax startPos = this.currentToken.syntaxPosition;
 
 		this.advance();

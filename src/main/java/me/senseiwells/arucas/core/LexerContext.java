@@ -67,7 +67,7 @@ public class LexerContext {
 		
 		public LexerRule addStrings(String... values) {
 			for (String value : values) {
-				addString(value);
+				this.addString(value);
 			}
 			return this;
 		}
@@ -79,13 +79,13 @@ public class LexerContext {
 		
 		public LexerRule addRegexes(String... regexes) {
 			for (String regex : regexes) {
-				addRegex(regex);
+				this.addRegex(regex);
 			}
 			return this;
 		}
 		
 		public LexerRule addMultiline(String open, String close) {
-			return addMultiline(open, "", close);
+			return this.addMultiline(open, "", close);
 		}
 		
 		public LexerRule addMultiline(String open, String escape, String close) {

@@ -46,18 +46,13 @@ public class EnumValue extends ArucasClassValue {
 		return this == other;
 	}
 
-	@Override
-	public BooleanValue isEqualTo(Value<?> other) {
-		return BooleanValue.of(this == other);
-	}
-
 	public static class ArucasEnumClass extends ArucasClassExtension {
 		public ArucasEnumClass() {
 			super("Enum");
 		}
 
 		@Override
-		public Class<?> getValueClass() {
+		public Class<EnumValue> getValueClass() {
 			return EnumValue.class;
 		}
 

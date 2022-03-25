@@ -5,8 +5,7 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.Context;
-
-import java.util.Objects;
+import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 
 /**
  * This class should only be extended by {@link Value}.
@@ -189,9 +188,8 @@ public abstract class BaseValue implements ValueIdentifier {
 	 * @param other The other Value you are comparing
 	 * @return Whether the two values are equal
 	 */
-	public BooleanValue isEqualTo(Value<?> other) {
-		return BooleanValue.of(Objects.equals(this.getValue(), other.getValue()));
-	}
+	@Override
+	public abstract boolean isEquals(Context context, Value<?> other) throws CodeError;
 
 	/**
 	 * This gets called when the binary operator <code>!=</code>
@@ -200,8 +198,26 @@ public abstract class BaseValue implements ValueIdentifier {
 	 * @param other The other Value you are comparing
 	 * @return Whether the two values are not equal
 	 */
-	public BooleanValue isNotEqualTo(Value<?> other) {
-		return this.isEqualTo(other).not();
+	@Override
+	public boolean isNotEquals(Context context, Value<?> other) throws CodeError {
+		return ValueIdentifier.super.isNotEquals(context, other);
+	}
+
+	/**
+	 * This gets the name of the class, this is important to get the
+	 * class definition of the value to be able to get the {@link TypeValue}.
+	 * This should never be null
+	 *
+	 * @return The name of the type
+	 */
+	public abstract String getTypeName();
+
+	public TypeValue getType(Context context, ISyntax syntaxPosition) throws CodeError {
+		AbstractClassDefinition definition = context.getClassDefinition(this.getTypeName());
+		if (definition == null) {
+			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "Value has no type", syntaxPosition);
+		}
+		return definition.getType();
 	}
 
 	private RuntimeError cannotApplyError(Context context, String operation, ISyntax syntaxPosition) throws CodeError {

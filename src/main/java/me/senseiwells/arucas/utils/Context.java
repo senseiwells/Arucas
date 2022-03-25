@@ -32,6 +32,7 @@ public class Context {
 	
 	private final String displayName;
 	private final Context parentContext;
+
 	private StackTable stackTable;
 	private boolean isDebug;
 	private boolean suppressDeprecated;
@@ -158,7 +159,7 @@ public class Context {
 	}
 
 	public void pushRunScope() {
-		this.stackTable = new StackTable(this.stackTable, null, ISyntax.empty(), false, false, true);
+		this.stackTable = new StackTable(this.stackTable, ISyntax.empty(), false, false, true);
 	}
 	
 	public void pushLoopScope(ISyntax syntaxPosition) {
@@ -254,7 +255,7 @@ public class Context {
 
 	public void printDeprecated(String message) {
 		if (!this.suppressDeprecated) {
-			this.getOutput().println(message);
+			this.getOutput().println(this.arucasOutput.addErrorFormattingBold(message));
 		}
 	}
 
@@ -298,8 +299,11 @@ public class Context {
 		while (iter.hasNext()) {
 			sb.append(iter.next()).append("\n");
 		}
-		
-		this.stackTable.getRoot().classDefinitions.iterator().forEachRemaining(System.out::println);
+
+		ArucasClassDefinitionMap definitions = this.stackTable.getRoot().classDefinitions;
+		if (definitions != null) {
+			this.stackTable.getRoot().classDefinitions.iterator().forEachRemaining(System.out::println);
+		}
 		System.out.println(sb);
 	}
 }
