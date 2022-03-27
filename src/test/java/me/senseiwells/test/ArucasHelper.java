@@ -14,7 +14,6 @@ public class ArucasHelper {
 	public static Context createContext() {
 		ContextBuilder builder = new ContextBuilder()
 			.setDisplayName("root")
-			.setOutputHandler(System.out::print)
 			.addDefault();
 		return createContext(builder.build());
 	}

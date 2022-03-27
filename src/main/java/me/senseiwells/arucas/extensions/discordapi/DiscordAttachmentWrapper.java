@@ -58,7 +58,7 @@ public class DiscordAttachmentWrapper implements IArucasWrappedClass {
 		return NumberValue.of(this.attachment.getSize());
 	}
 
-	public static WrapperClassValue createNewDefinition(Message.Attachment attachment, Context context) throws CodeError {
+	public static WrapperClassValue newDiscordAttachment(Message.Attachment attachment, Context context) throws CodeError {
 		DiscordAttachmentWrapper attachmentWrapper = new DiscordAttachmentWrapper();
 		attachmentWrapper.attachment = attachment;
 		return DEFINITION.createNewDefinition(attachmentWrapper, context, List.of());

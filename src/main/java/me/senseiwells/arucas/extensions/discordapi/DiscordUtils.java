@@ -198,7 +198,7 @@ public class DiscordUtils {
 
 	public static List<Value<?>> getParameters(Context context, GenericCommandInteractionEvent commandEvent) throws CodeError {
 		List<Value<?>> parameters = new ArrayList<>();
-		parameters.add(DiscordEventWrapper.createNewEventWrapper(commandEvent, context));
+		parameters.add(DiscordEventWrapper.newDiscordEvent(commandEvent, context));
 		for (OptionMapping mapping : commandEvent.getOptions()) {
 			parameters.add(parseMapping(context, mapping));
 		}
@@ -209,9 +209,9 @@ public class DiscordUtils {
 		return switch (mapping.getType()) {
 			case INTEGER, NUMBER -> NumberValue.of(mapping.getAsDouble());
 			case BOOLEAN -> BooleanValue.of(mapping.getAsBoolean());
-			case USER -> DiscordUserWrapper.createNewDefinition(mapping.getAsUser(), context);
-			case CHANNEL -> DiscordChannelWrapper.createNewChannelWrapper(mapping.getAsMessageChannel(), context);
-			case ATTACHMENT -> DiscordAttachmentWrapper.createNewDefinition(mapping.getAsAttachment(), context);
+			case USER -> DiscordUserWrapper.newDiscordUser(mapping.getAsUser(), context);
+			case CHANNEL -> DiscordChannelWrapper.newDiscordChannel(mapping.getAsMessageChannel(), context);
+			case ATTACHMENT -> DiscordAttachmentWrapper.newDiscordAttachment(mapping.getAsAttachment(), context);
 			default -> StringValue.of(mapping.getAsString());
 		};
 	}

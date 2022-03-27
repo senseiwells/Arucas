@@ -55,6 +55,11 @@ public class Parser {
 		return this.tokens.get(index < 0 ? 0 : (index >= this.tokens.size() ? this.tokens.size() - 1 : index));
 	}
 
+	private Token peekNextToken() {
+		int index = this.operatorTokenIndex + 1;
+		return index < this.tokens.size() ? this.tokens.get(index) : this.currentToken;
+	}
+
 	public Node parse() throws CodeError {
 		List<Node> statements = new ArrayList<>();
 		ISyntax startPos = this.currentToken.syntaxPosition;
@@ -169,6 +174,11 @@ public class Parser {
 			case BREAK -> {
 				this.advance();
 				yield new BreakNode(startPos);
+			}
+			case THROW -> {
+				this.advance();
+				Node expression = this.sizeComparisonExpression();
+				yield new ThrowNode(expression, startPos, this.currentToken.syntaxPosition);
 			}
 			default -> this.expression();
 		};
@@ -453,7 +463,6 @@ public class Parser {
 		List<String> argumentNames = new ArrayList<>();
 		if (this.currentToken.type == Token.Type.IDENTIFIER) {
 			do {
-				this.advance();
 				this.throwIfNotType(Token.Type.IDENTIFIER, "Expected Identifier");
 				this.context.throwIfStackNameTaken(this.currentToken.content, this.currentToken.syntaxPosition);
 				argumentNames.add(this.currentToken.content);
@@ -677,7 +686,7 @@ public class Parser {
 		};
 
 		this.advance();
-		Node numberNode = new NumberNode(new Token(Token.Type.NUMBER, "1", operatorToken.syntaxPosition));
+		Node numberNode = new NumberNode(new Token(Token.Type.NUMBER, "1", operatorToken.syntaxPosition), 1.0D);
 
 		this.context.setVariable(variableName.content, NullValue.NULL);
 		return new VariableAssignNode(variableName,
@@ -694,7 +703,7 @@ public class Parser {
 		};
 
 		this.advance();
-		Node numberNode = new NumberNode(new Token(Token.Type.NUMBER, "1", operatorToken.syntaxPosition));
+		Node numberNode = new NumberNode(new Token(Token.Type.NUMBER, "1", operatorToken.syntaxPosition), 1.0D);
 
 		return new MemberAssignNode(left, right,
 			new BinaryOperatorNode(new MemberAccessNode(left, right), new Token(operatorType, operatorToken.syntaxPosition), numberNode)
@@ -710,7 +719,7 @@ public class Parser {
 		};
 
 		this.advance();
-		Node numberNode = new NumberNode(new Token(Token.Type.NUMBER, "1", operatorToken.syntaxPosition));
+		Node numberNode = new NumberNode(new Token(Token.Type.NUMBER, "1", operatorToken.syntaxPosition), 1.0D);
 
 		return new StaticAssignNode(nameToken, definition,
 			new BinaryOperatorNode(new StaticAccessNode(nameToken, definition), new Token(operatorType, operatorToken.syntaxPosition), numberNode)
@@ -981,14 +990,11 @@ public class Parser {
 
 	private Node expression() throws CodeError {
 		if (this.currentToken.type == Token.Type.IDENTIFIER) {
-			this.advance();
-			switch (this.currentToken.type) {
+			switch (this.peekNextToken().type) {
 				case ASSIGN_OPERATOR -> {
-					this.recede();
 					return this.setVariable();
 				}
 				case COMMA -> {
-					this.recede();
 					if (!this.isStackType(StackType.UNPACKING) && this.isUnpackable()) {
 						return this.setUnpacking();
 					}
@@ -997,13 +1003,30 @@ public class Parser {
 					}
 				}
 				case INCREMENT, DECREMENT -> {
-					this.recede();
 					return this.modifyVariable();
 				}
-				default -> this.recede();
 			}
 		}
 
+		if (this.currentToken.type == Token.Type.VAR) {
+			this.advance();
+			switch (this.peekNextToken().type) {
+				case ASSIGN_OPERATOR -> {
+					VariableAssignNode assignNode = this.setVariable();
+					assignNode.setLocal(true);
+					return assignNode;
+				}
+				// We do not allow for unpacking of local variables
+				// This is because variable could be member of a class
+				default -> {
+					throw new CodeError(
+						CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
+						"'var' keyword can only be used to assign local variables",
+						this.currentToken.syntaxPosition
+					);
+				}
+			}
+		}
 		return this.sizeComparisonExpression();
 	}
 
@@ -1290,9 +1313,11 @@ public class Parser {
 				}
 
 				Value<?> value = this.context.getVariable(token.content);
+				/* This can be checked at runtime
 				if (value == null) {
 					throw new CodeError(CodeError.ErrorType.UNKNOWN_IDENTIFIER, "Could not find '%s'".formatted(token.content), token.syntaxPosition);
 				}
+				*/
 
 				if (value instanceof FunctionValue) {
 					return new DirectAccessNode<>(token, value);

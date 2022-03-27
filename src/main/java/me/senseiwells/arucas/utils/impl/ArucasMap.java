@@ -421,7 +421,7 @@ public class ArucasMap implements IArucasCollection, ValueIdentifier {
 				sb.append(value).append(", ");
 			}
 
-			if (!pairSet().isEmpty()) {
+			if (!this.pairSet().isEmpty()) {
 				sb.delete(sb.length() - 2, sb.length());
 			}
 

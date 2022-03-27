@@ -81,7 +81,7 @@ public class ThreadValue extends Value<ArucasThread> {
 		private Value<?> runThreaded1(Context context, BuiltInFunction function) throws CodeError {
 			FunctionValue functionValue = function.getParameterValueOfType(context, FunctionValue.class, 0);
 			ArucasThread thread = context.getThreadHandler().runAsyncFunctionInContext(
-				context.createBranch(), (branchContext) -> functionValue.call(branchContext, new ArucasList()),
+				context.createBranch(), branchContext -> functionValue.call(branchContext, new ArucasList()),
 				"Unnamed Arucas Thread"
 			);
 			return ThreadValue.of(thread);
@@ -91,7 +91,7 @@ public class ThreadValue extends Value<ArucasThread> {
 			StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
 			FunctionValue functionValue = function.getParameterValueOfType(context, FunctionValue.class, 1);
 			ArucasThread thread = context.getThreadHandler().runAsyncFunctionInContext(
-				context.createBranch(), (branchContext) -> functionValue.call(branchContext, new ArucasList()),
+				context.createBranch(), branchContext -> functionValue.call(branchContext, new ArucasList()),
 				stringValue.value
 			);
 			return ThreadValue.of(thread);
@@ -141,7 +141,7 @@ public class ThreadValue extends Value<ArucasThread> {
 			if (!thisValue.value.isAlive()) {
 				throw new RuntimeError("Thread is not alive", function.syntaxPosition, context);
 			}
-			thisValue.value.controlledStop();
+			thisValue.value.controlledStop(context);
 			return NullValue.NULL;
 		}
 	}

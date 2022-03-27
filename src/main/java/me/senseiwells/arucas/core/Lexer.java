@@ -94,6 +94,7 @@ public class Lexer {
 			.addRule(Type.OPERATOR, i -> i.addString("operator"))
 			.addRule(Type.EMBED, i -> i.addString("embed"))
 			.addRule(Type.AS, i -> i.addString("as"))
+			.addRule(Type.THROW, i -> i.addString("throw"))
 
 			// Dot operator
 			.addRule(Type.DOT, i -> i.addString("."))

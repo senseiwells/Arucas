@@ -1,6 +1,7 @@
 package me.senseiwells.arucas.extensions;
 
 import me.senseiwells.arucas.api.IArucasExtension;
+import me.senseiwells.arucas.core.Arucas;
 import me.senseiwells.arucas.core.Run;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
@@ -46,13 +47,17 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		new BuiltInFunction.Arbitrary("print", this::fullPrint),
 		new BuiltInFunction("input", "prompt", this::input),
 		new BuiltInFunction("debug", "boolean", this::debug),
+		new BuiltInFunction("experimental", "boolean", this::experimental),
 		new BuiltInFunction("suppressDeprecated", "boolean", this::suppressDeprecated),
 		new BuiltInFunction("isMain", this::isMain),
+		new BuiltInFunction("getArucasVersion", ((context, function) -> StringValue.of(Arucas.VERSION))),
 		new BuiltInFunction("random", "bound", this::random),
 		new BuiltInFunction("getTime", (context, function) -> StringValue.of(DateTimeFormatter.ofPattern("HH:mm:ss").format(LocalTime.now()))),
 		new BuiltInFunction("getNanoTime", (context, function) -> NumberValue.of(System.nanoTime())),
+		new BuiltInFunction("getMilliTime", (context, function) -> NumberValue.of(System.currentTimeMillis())),
+		new BuiltInFunction("getUnixTime", (context, function) -> NumberValue.of(System.currentTimeMillis() / 1000.0F)),
 		new BuiltInFunction("len", "value", this::len),
-		new BuiltInFunction("throwRuntimeError", "message", this::throwRuntimeError),
+		new BuiltInFunction("throwRuntimeError", "message", this::throwRuntimeError, "Use 'throw new Error()'"),
 		new BuiltInFunction("callFunctionWithList", List.of("function", "argList"), this::callFunctionWithList, "Use 'Function.callDelegateWithList()'"),
 		new BuiltInFunction("runFromString", "string", this::runFromString)
 	);
@@ -92,6 +97,12 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 
 	private Value<?> fullPrint(Context context, BuiltInFunction function) throws CodeError {
 		ListValue listValue = function.getParameterValueOfType(context, ListValue.class, 0);
+
+		if (listValue.value.isEmpty()) {
+			context.getOutput().println();
+			return NullValue.NULL;
+		}
+
 		StringBuilder builder = new StringBuilder();
 		for (Value<?> value : listValue.value) {
 			builder.append(value.getAsString(context));
@@ -108,6 +119,11 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 
 	private Value<?> debug(Context context, BuiltInFunction function) throws CodeError {
 		context.setDebug(function.getParameterValueOfType(context, BooleanValue.class, 0).value);
+		return NullValue.NULL;
+	}
+
+	private Value<?> experimental(Context context, BuiltInFunction function) throws CodeError {
+		context.setExperimental(function.getParameterValueOfType(context, BooleanValue.class, 0).value);
 		return NullValue.NULL;
 	}
 
@@ -149,6 +165,6 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 
 	private Value<?> runFromString(Context context, BuiltInFunction function) throws CodeError {
 		StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
-		return Run.run(context, "string-run", stringValue.value);
+		return Run.run(context.createBranch(), "string-run", stringValue.value);
 	}
 }

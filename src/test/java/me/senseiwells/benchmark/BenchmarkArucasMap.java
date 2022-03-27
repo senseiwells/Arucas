@@ -17,13 +17,8 @@ public class BenchmarkArucasMap {
 		Context context = new ContextBuilder()
 			.setDisplayName("System.in")
 			.addDefault()
-			.addWrapper(ArucasTestWrapper::new)
+			.addWrappers(ArucasTestWrapper::new)
 			.build();
-
-		context.getThreadHandler()
-			.setStopErrorHandler(System.out::println)
-			.setErrorHandler(System.out::println)
-			.setFatalErrorHandler((c, t, s) -> t.printStackTrace());
 
 		final int STEPS = 1000000;
 		final int WARMUP = 100000;

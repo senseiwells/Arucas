@@ -13,50 +13,28 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 
 @SuppressWarnings({"UnusedReturnValue", "unused"})
-public class ArucasThreadHandler {
+public final class ArucasThreadHandler {
 	private final ThreadGroup arucasThreadGroup;
 	private final List<Runnable> shutdownEvents;
 
-	private Consumer<String> errorHandler;
-	private Consumer<String> stopErrorHandler;
 	private TriConsumer<Context, Throwable, String> fatalErrorHandler;
-	private Runnable finalHandler;
 
 	private boolean isRunning;
 	private boolean hasError;
 	
 	// This class can only be instantiated from this package
-	protected ArucasThreadHandler() {
+	ArucasThreadHandler() {
 		this.arucasThreadGroup = new ThreadGroup("Arucas Thread Group");
 		this.shutdownEvents = new ArrayList<>();
-		this.errorHandler = System.out::println;
-		this.stopErrorHandler = this.errorHandler;
 		this.fatalErrorHandler = (c, t, s) -> t.printStackTrace();
-		this.finalHandler = () -> { };
 		this.isRunning = false;
 		this.hasError = false;
 	}
 
-	public ArucasThreadHandler setStopErrorHandler(Consumer<String> consumer) {
-		this.stopErrorHandler = consumer;
-		return this;
-	}
-
-	public ArucasThreadHandler setErrorHandler(Consumer<String> consumer) {
-		this.errorHandler = consumer;
-		return this;
-	}
-
 	public ArucasThreadHandler setFatalErrorHandler(TriConsumer<Context, Throwable, String> triConsumer) {
 		this.fatalErrorHandler = triConsumer;
-		return this;
-	}
-
-	public ArucasThreadHandler setFinalHandler(Runnable runnable) {
-		this.finalHandler = runnable;
 		return this;
 	}
 
@@ -71,7 +49,6 @@ public class ArucasThreadHandler {
 			this.shutdownEvents.clear();
 
 			this.arucasThreadGroup.interrupt();
-			this.finalHandler.run();
 		}
 	}
 
@@ -102,7 +79,7 @@ public class ArucasThreadHandler {
 				Run.run(context, fileName, fileContent);
 			}
 			catch (ThrowStop stop) {
-				this.stopErrorHandler.accept(stop.toString(context));
+				context.getOutput().println(stop.toString(context));
 			}
 			catch (CodeError codeError) {
 				this.tryError(context, codeError);
@@ -117,8 +94,7 @@ public class ArucasThreadHandler {
 				}
 			}
 		}, "Arucas Main Thread");
-		thread.start();
-		return thread;
+		return thread.start(context);
 	}
 
 	public Value<?> runOnThreadReturnable(Context context, String fileName, String fileContent) throws CodeError {
@@ -132,7 +108,7 @@ public class ArucasThreadHandler {
 
 		this.hasError = false;
 		this.isRunning = true;
-		ArucasThread thread = new ArucasThread(this.arucasThreadGroup, () -> {
+		new ArucasThread(this.arucasThreadGroup, () -> {
 			try {
 				atomicValue.set(Run.run(context, fileName, fileContent));
 			}
@@ -143,8 +119,7 @@ public class ArucasThreadHandler {
 				this.stop();
 				latch.countDown();
 			}
-		}, "Arucas Test Thread");
-		thread.start();
+		}, "Arucas Test Thread").start(context);
 
 		try {
 			latch.await();
@@ -183,7 +158,7 @@ public class ArucasThreadHandler {
 			return null;
 		}
 
-		ArucasThread thread = new ArucasThread(this.arucasThreadGroup, () -> {
+		return new ArucasThread(this.arucasThreadGroup, () -> {
 			try {
 				consumer.accept(context);
 				return;
@@ -192,7 +167,7 @@ public class ArucasThreadHandler {
 				this.tryError(context, codeError);
 			}
 			catch (ThrowValue tv) {
-				this.tryError(tv);
+				this.tryError(context, tv);
 			}
 			catch (Throwable t) {
 				this.fatalErrorHandler.accept(context, t, "");
@@ -202,26 +177,21 @@ public class ArucasThreadHandler {
 			}
 			// If an exception happens in a thread it stops the program
 			this.stop();
-		}, name);
-		thread.setDaemon(true);
-		thread.start();
-		return thread;
+		}, name).start(context);
 	}
 
 	public synchronized void tryError(Context context, CodeError error) {
-		if (this.hasError || error.errorType == CodeError.ErrorType.INTERRUPTED_ERROR) {
-			return;
+		if (!this.hasError && error.errorType != CodeError.ErrorType.INTERRUPTED_ERROR) {
+			context.getOutput().println(error.toString(context));
+			this.hasError = true;
 		}
-		this.errorHandler.accept(error.toString(context));
-		this.hasError = true;
 	}
 
-	private synchronized void tryError(ThrowValue tv) {
-		if (this.hasError) {
-			return;
+	private synchronized void tryError(Context context, ThrowValue tv) {
+		if (!this.hasError) {
+			context.getOutput().println(tv.getMessage());
+			this.hasError = true;
 		}
-		this.errorHandler.accept(tv.getMessage());
-		this.hasError = true;
 	}
 	
 	@FunctionalInterface

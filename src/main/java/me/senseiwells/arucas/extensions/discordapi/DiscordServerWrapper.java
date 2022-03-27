@@ -62,7 +62,7 @@ public class DiscordServerWrapper implements IArucasWrappedClass {
 	@ArucasFunction
 	public Value<?> getUserFromId(Context context, StringValue stringValue) throws CodeError {
 		Member member = this.guild.retrieveMemberById(stringValue.value).complete();
-		return member == null ? NullValue.NULL : DiscordUserWrapper.createNewDefinition(member.getUser(), context);
+		return member == null ? NullValue.NULL : DiscordUserWrapper.newDiscordUser(member.getUser(), context);
 	}
 
 	@ArucasFunction
@@ -70,7 +70,7 @@ public class DiscordServerWrapper implements IArucasWrappedClass {
 		DiscordUtils.parseMapAsRole(context, this.guild.createRole(), mapValue);
 	}
 
-	public static WrapperClassValue createNewChannelWrapper(Guild guild, Context context) throws CodeError {
+	public static WrapperClassValue newDiscordServer(Guild guild, Context context) throws CodeError {
 		DiscordServerWrapper channelWrapper = new DiscordServerWrapper();
 		channelWrapper.guild = guild;
 		return DEFINITION.createNewDefinition(channelWrapper, context, List.of());

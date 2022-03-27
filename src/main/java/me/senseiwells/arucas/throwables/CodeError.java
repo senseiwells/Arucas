@@ -24,14 +24,18 @@ public class CodeError extends Exception {
 	}
 
 	public String toString(Context context) {
+		return this.toString(context, false);
+	}
+
+	public String toString(Context context, boolean raw) {
 		Position startPos = this.syntaxPosition.getStartPos();
-		IArucasOutput output = context == null ? null : context.getOutput();
+		IArucasOutput output = raw || context == null ? IArucasOutput.DUMMY : context.getOutput();
 		return "%s%s - '%s'\n%s> File: %s, Line: %d, Column: %d%s".formatted(
-			output == null ? "" : output.getErrorFormattingBold(),
+			output.getErrorFormattingBold(),
 			this.errorType.stringName, this.getMessage(),
-			output == null ? "" : output.getErrorFormatting(),
+			output.getErrorFormatting(),
 			startPos.fileName, startPos.line + 1, startPos.column + 1,
-			output == null ? "" : output.getResetFormatting()
+			output.getResetFormatting()
 		);
 	}
 

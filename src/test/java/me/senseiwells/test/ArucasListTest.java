@@ -25,14 +25,14 @@ public class ArucasListTest {
 			"""
 			listA = [ 'a', 'b', 'c', 'd', [ 1, 2, 3, 4, [ 5, 6, 7 ] ] ];
 			listB = [ 'a', 'b', 'c', 'd', [ 1, 2, 3, 4, [ 5, 6, 7 ] ] ];
-			X = listA.equals(listB);
+			X = listA == listB;
 			""", "X"
 		));
 		assertEquals("false", ArucasHelper.runSafeFull(
 			"""
 			listA = [ 'a', 'b', 'c', 'd', [ 1, 2, 3, 4, [ 5, 6, 7 ] ] ];
 			listB = [ 'a', 'b', 'c', '(different)', [ 1, 2, 3, 4, [ 5, 6, 7 ] ] ];
-			X = listA.equals(listB);
+			X = listA == listB;
 			""", "X"
 		));
 	}

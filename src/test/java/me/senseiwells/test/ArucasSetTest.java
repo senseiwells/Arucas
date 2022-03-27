@@ -41,7 +41,7 @@ public class ArucasSetTest {
 					return this.value;
 				}
 				
-				fun equals(other) {
+				operator == (other) {
 					return other.instanceOf("A") && other.value == this.value;
 				}
 				

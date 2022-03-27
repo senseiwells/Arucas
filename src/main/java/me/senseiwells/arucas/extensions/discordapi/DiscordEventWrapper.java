@@ -41,22 +41,22 @@ public class DiscordEventWrapper implements IArucasWrappedClass {
 
 	@ArucasFunction
 	public WrapperClassValue getMessage(Context context) throws CodeError {
-		return DiscordMessageWrapper.createNewMessageWrapper(this.getMessage(), context);
+		return DiscordMessageWrapper.newDiscordMessage(this.getMessage(), context);
 	}
 
 	@ArucasFunction
 	public WrapperClassValue getUser(Context context) throws CodeError {
-		return DiscordUserWrapper.createNewDefinition(this.getUser(), context);
+		return DiscordUserWrapper.newDiscordUser(this.getUser(), context);
 	}
 
 	@ArucasFunction
 	public WrapperClassValue getChannel(Context context) throws CodeError {
-		return DiscordChannelWrapper.createNewChannelWrapper(this.getChannel(), context);
+		return DiscordChannelWrapper.newDiscordChannel(this.getChannel(), context);
 	}
 
 	@ArucasFunction
 	public WrapperClassValue getServer(Context context) throws CodeError {
-		return DiscordServerWrapper.createNewChannelWrapper(this.getServer(), context);
+		return DiscordServerWrapper.newDiscordServer(this.getServer(), context);
 	}
 
 	@ArucasFunction
@@ -132,7 +132,7 @@ public class DiscordEventWrapper implements IArucasWrappedClass {
 		return this.getMessage("has no server").getGuild();
 	}
 
-	public static WrapperClassValue createNewEventWrapper(GenericEvent event, Context context) throws CodeError {
+	public static WrapperClassValue newDiscordEvent(GenericEvent event, Context context) throws CodeError {
 		DiscordEventWrapper eventWrapper = new DiscordEventWrapper();
 		eventWrapper.event = event;
 		return DEFINITION.createNewDefinition(eventWrapper, context, List.of());

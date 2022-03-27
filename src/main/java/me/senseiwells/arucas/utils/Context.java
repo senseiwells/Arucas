@@ -35,6 +35,7 @@ public class Context {
 
 	private StackTable stackTable;
 	private boolean isDebug;
+	private boolean isExperimental;
 	private boolean suppressDeprecated;
 	private boolean isMain;
 
@@ -70,6 +71,8 @@ public class Context {
 		this.arucasOutput = branch.arucasOutput;
 		this.extensions = branch.extensions;
 		this.parentContext = branch.parentContext;
+		this.isDebug = branch.isDebug;
+		this.isExperimental = branch.isExperimental;
 		this.suppressDeprecated = branch.suppressDeprecated;
 		this.isMain = branch.isMain;
 		this.contextId = branch.contextId;
@@ -201,11 +204,16 @@ public class Context {
 		return this.isDebug;
 	}
 
+	public void setExperimental(boolean experimental) {
+		this.isExperimental = experimental;
+	}
+
+	public boolean isExperimental() {
+		return this.isExperimental;
+	}
+
 	public void setSuppressDeprecated(boolean suppressed) {
 		this.suppressDeprecated = suppressed;
-		if (this.parentContext != null) {
-			this.parentContext.setSuppressDeprecated(suppressed);
-		}
 	}
 
 	public boolean isSuppressDeprecated() {

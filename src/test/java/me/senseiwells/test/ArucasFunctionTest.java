@@ -1,6 +1,6 @@
 package me.senseiwells.test;
 
-import me.senseiwells.arucas.throwables.CodeError;
+import me.senseiwells.arucas.throwables.RuntimeError;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -88,16 +88,6 @@ public class ArucasFunctionTest {
 			}();
 			""", "X"
 		));
-		assertThrows(CodeError.class, () -> ArucasHelper.runUnsafeFull(
-			"""
-			X = fun() {
-				A = fun() { return Y; };
-				Y = '0';
-				A();
-				return Y;
-			}();
-			""", "X"
-		));
 		assertEquals("2", ArucasHelper.runSafeFull(
 			"""
 			Q = '0';
@@ -124,6 +114,57 @@ public class ArucasFunctionTest {
 			};
 			a = lambda((a = 12) + 1, b = 10) + a + b;
 			return a;
+			"""
+		));
+	}
+
+	@Test
+	public void testFunctionDelegate() {
+		assertEquals("1", ArucasHelper.runSafe(
+			"""
+			f = fun() {
+			    return 1;
+			};
+			return f();
+			"""
+		));
+		assertEquals("d1", ArucasHelper.runSafe(
+			"""
+			class E {
+			    static fun d() {
+			        return "d1";
+			    }
+			}
+			del = E.d;
+			return del();
+			"""
+		));
+		assertThrows(RuntimeError.class, () -> ArucasHelper.runUnsafe(
+			"""
+			class E {
+			    static fun d() {
+			        return "d1";
+			    }
+			    static fun d(p) {
+			        return "d2";
+			    }
+			}
+			del = E.d;
+			return del();
+			"""
+		));
+		assertEquals("d2", ArucasHelper.runSafe(
+			"""
+			class E {
+			    static fun d() {
+			        return "d1";
+			    }
+			    static fun d(p) {
+			        return "d2";
+			    }
+			}
+			del = E.type.getStaticMethod("d", 1);
+			return del(null);
 			"""
 		));
 	}

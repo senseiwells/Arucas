@@ -34,7 +34,7 @@ public abstract class ArucasClassExtension extends AbstractClassDefinition {
 	}
 
 	@Override
-	public ArucasFunctionMap<ConstructorFunction> getConstructors() {
+	public final ArucasFunctionMap<ConstructorFunction> getConstructors() {
 		return this.constructors;
 	}
 

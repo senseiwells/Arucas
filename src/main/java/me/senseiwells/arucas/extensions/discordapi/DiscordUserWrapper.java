@@ -44,7 +44,7 @@ public class DiscordUserWrapper implements IArucasWrappedClass {
 		return this.user;
 	}
 
-	public static WrapperClassValue createNewDefinition(User user, Context context) throws CodeError {
+	public static WrapperClassValue newDiscordUser(User user, Context context) throws CodeError {
 		DiscordUserWrapper userWrapper = new DiscordUserWrapper();
 		userWrapper.user = user;
 		return DEFINITION.createNewDefinition(userWrapper, context, List.of());

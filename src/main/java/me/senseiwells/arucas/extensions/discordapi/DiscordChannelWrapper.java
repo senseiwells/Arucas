@@ -24,7 +24,7 @@ public class DiscordChannelWrapper implements IArucasWrappedClass {
 
 	@ArucasFunction
 	public WrapperClassValue getMessageFromId(Context context, StringValue messageId) throws CodeError {
-		return DiscordMessageWrapper.createNewMessageWrapper(this.channel.getHistory().getMessageById(messageId.value), context);
+		return DiscordMessageWrapper.newDiscordMessage(this.channel.getHistory().getMessageById(messageId.value), context);
 	}
 
 	@ArucasFunction
@@ -32,7 +32,7 @@ public class DiscordChannelWrapper implements IArucasWrappedClass {
 		List<Message> messages = this.channel.getHistory().retrievePast(amount.value.intValue()).complete();
 		ArucasList arucasList = new ArucasList();
 		for (Message message : messages) {
-			arucasList.add(DiscordMessageWrapper.createNewMessageWrapper(message, context));
+			arucasList.add(DiscordMessageWrapper.newDiscordMessage(message, context));
 		}
 		return new ListValue(arucasList);
 	}
@@ -44,22 +44,22 @@ public class DiscordChannelWrapper implements IArucasWrappedClass {
 
 	@ArucasFunction
 	public WrapperClassValue sendMessage(Context context, StringValue message) throws CodeError {
-		return DiscordMessageWrapper.createNewMessageWrapper(this.channel.sendMessage(message.value).complete(), context);
+		return DiscordMessageWrapper.newDiscordMessage(this.channel.sendMessage(message.value).complete(), context);
 	}
 
 
 	@ArucasFunction
 	public WrapperClassValue sendEmbed(Context context, MapValue embed) throws CodeError {
 		Message message = this.channel.sendMessageEmbeds(DiscordUtils.parseMapAsEmbed(context, embed)).complete();
-		return DiscordMessageWrapper.createNewMessageWrapper(message, context);
+		return DiscordMessageWrapper.newDiscordMessage(message, context);
 	}
 
 	@ArucasFunction
 	public WrapperClassValue sendFile(Context context, FileValue fileValue) throws CodeError {
-		return DiscordMessageWrapper.createNewMessageWrapper(this.channel.sendFile(fileValue.value).complete(), context);
+		return DiscordMessageWrapper.newDiscordMessage(this.channel.sendFile(fileValue.value).complete(), context);
 	}
 
-	public static WrapperClassValue createNewChannelWrapper(MessageChannel channel, Context context) throws CodeError {
+	public static WrapperClassValue newDiscordChannel(MessageChannel channel, Context context) throws CodeError {
 		DiscordChannelWrapper channelWrapper = new DiscordChannelWrapper();
 		channelWrapper.channel = channel;
 		return DEFINITION.createNewDefinition(channelWrapper, context, List.of());

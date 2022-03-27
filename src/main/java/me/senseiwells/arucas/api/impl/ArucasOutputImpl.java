@@ -1,18 +1,24 @@
 package me.senseiwells.arucas.api.impl;
 
 import me.senseiwells.arucas.api.IArucasOutput;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public class ArucasOutput implements IArucasOutput {
+public class ArucasOutputImpl implements IArucasOutput {
+	private static final Logger LOGGER = LoggerFactory.getLogger("Arucas");
+
 	private Consumer<String> outputHandler;
+	private Consumer<String> debugHandler;
 	private String boldError;
 	private String error;
 	private String reset;
 
-	public ArucasOutput() {
+	public ArucasOutputImpl() {
 		this.outputHandler = System.out::print;
+		this.debugHandler = LOGGER::debug;
 		this.boldError = "\033[1;31m";
 		this.error = "\033[0;31m";
 		this.reset = "\u001b[0m";
@@ -29,18 +35,13 @@ public class ArucasOutput implements IArucasOutput {
 	}
 
 	@Override
-	public void print(Object object) {
-		this.outputHandler.accept(String.valueOf(object));
+	public void setDebugHandler(Consumer<String> debugHandler) {
+		this.debugHandler = debugHandler;
 	}
 
 	@Override
-	public void println() {
-		this.print("\n");
-	}
-
-	@Override
-	public void println(Object object) {
-		this.print(object + "\n");
+	public Consumer<String> getDebugHandler() {
+		return this.debugHandler;
 	}
 
 	@Override

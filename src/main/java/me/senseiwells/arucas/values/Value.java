@@ -42,15 +42,14 @@ public abstract class Value<T> extends BaseValue {
 		public ArucasFunctionMap<MemberFunction> getDefinedMethods() {
 			return ArucasFunctionMap.of(
 				new MemberFunction("instanceOf", "class", this::instanceOf),
-				new MemberFunction("getValueType", this::getValueType, "Use 'type(<Value>).getName()'"),
+				new MemberFunction("getValueType", this::getValueType, "Use 'Type.of(<Value>).getName()'"),
 				new MemberFunction("copy", this::newCopy),
 				new MemberFunction("hashCode", this::hashCode),
-				new MemberFunction("equals", "other", this::equals, "You should use the '==' operator"),
+				new MemberFunction("equals", "other", this::equals, "Use the '==' operator"),
 				new MemberFunction("toString", this::toString)
 			);
 		}
 
-		@Deprecated
 		private Value<?> instanceOf(Context context, MemberFunction function) {
 			Value<?> thisValue = function.getParameterValue(context, 0);
 			Value<?> ofValue = function.getParameterValue(context, 1);

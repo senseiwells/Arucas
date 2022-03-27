@@ -14,12 +14,10 @@ public class Run {
 	public static Value<?> run(Context context, String fileName, String fileContent) throws CodeError {
 		List<Token> values = new Lexer(fileContent, fileName).createTokens();
 		Node nodeResult = new Parser(values, context).parse();
+		long startTime = System.nanoTime();
 		try {
 			context.pushRunScope();
-			Value<?> value = nodeResult.visit(context);
-			if (context.isDebug()) {
-				context.getOutput().println(value);
-			}
+			nodeResult.visit(context);
 			return NullValue.NULL;
 		}
 		catch (ThrowValue.Return tv) {
@@ -27,6 +25,11 @@ public class Run {
 		}
 		catch (ThrowValue tv) {
 			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, tv.getMessage(), nodeResult.syntaxPosition);
+		}
+		finally {
+			if (context.isDebug()) {
+				context.getOutput().log("Execution time: " + (System.nanoTime() - startTime) / 1000 + " microseconds for '" + fileName + "'");
+			}
 		}
 	}
 }

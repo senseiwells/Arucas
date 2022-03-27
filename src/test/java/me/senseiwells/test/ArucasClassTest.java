@@ -15,13 +15,13 @@ public class ArucasClassTest {
 		assertThrows(CodeError.class, () -> ArucasHelper.compile("class Test { Tests() { } }"));
 		assertThrows(CodeError.class, () -> ArucasHelper.compile("class Test { if (true) { } }"));
 		assertThrows(CodeError.class, () -> ArucasHelper.compile("class Test { } new Test;"));
-		assertThrows(CodeError.class, () -> ArucasHelper.compile("class Test { } Test();"));
 		assertThrows(CodeError.class, () -> ArucasHelper.compile("class Test() { }"));
 		assertThrows(CodeError.class, () -> ArucasHelper.compile("classValue = class Test { }"));
 		assertThrows(CodeError.class, () -> ArucasHelper.compile("class String { }"));
 		assertThrows(CodeError.class, () -> ArucasHelper.compile("class Test { var e; var e; }"));
 		assertThrows(CodeError.class, () -> ArucasHelper.compile("class Test { static var e; static var e; }"));
-		assertEquals("null", ArucasHelper.runSafe(
+		assertThrows(CodeError.class, () -> ArucasHelper.runUnsafe("class Test { } Test();"));
+		assertEquals("test", ArucasHelper.runSafe(
 			"""
 			class Test {
 				static var staticMember;
@@ -48,7 +48,12 @@ public class ArucasClassTest {
 				static fun getString() {
 					return 'test';
 				}
+				
+				static fun getString(param) { }
+				
+				static fun getString(param1, param2) { }
 			}
+			return Test.getString();
 			"""
 		));
 	}
@@ -312,13 +317,13 @@ public class ArucasClassTest {
 			return del();
 			"""
 		));
-		assertEquals("E", ArucasHelper.runSafe(
+		assertEquals("<class E", ArucasHelper.runSafe(
 			"""
 			class E {
-			
+				
 			}
-			del = new E().getValueType;
-			return del();
+			del = new E().toString;
+			return del().subString(0, 8);
 			"""
 		));
 		assertEquals("10", ArucasHelper.runSafe(
@@ -350,15 +355,15 @@ public class ArucasClassTest {
 			"""
 		));
 		assertEquals("E", ArucasHelper.runSafe(
-		"""
+			"""
 			class E {
 				embed Object as obj;
 			}
-			return new E().getValueType();
+			return Type.of(new E()).getName();
 			"""
 		));
 		assertEquals("e test", ArucasHelper.runSafe(
-		"""
+			"""
 			class E {
 				embed String as s = "E tEsT";
 			}
@@ -366,7 +371,7 @@ public class ArucasClassTest {
 			"""
 		));
 		assertEquals("99", ArucasHelper.runSafe(
-		"""
+			"""
 			class E {
 				embed Map as m = { "E" : 99 };
 			}
@@ -374,7 +379,7 @@ public class ArucasClassTest {
 			"""
 		));
 		assertEquals("true", ArucasHelper.runSafe(
-		"""
+			"""
 			class E {
 				embed Map as m = { "E" : 99 };
 			}
@@ -382,7 +387,7 @@ public class ArucasClassTest {
 			"""
 		));
 		assertEquals("false", ArucasHelper.runSafe(
-		"""
+			"""
 			class E {
 				embed Map as m = { "E" : 99 };
 			}

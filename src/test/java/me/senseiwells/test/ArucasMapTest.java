@@ -105,14 +105,14 @@ public class ArucasMapTest {
 			"""
 			mapA = { 'a': 1, 'b': 2, 'c': 3, 'd': [ 1, 2, 3, 4, [ 5, 6, 7 ] ] };
 			mapB = { 'c': 3, 'b': 2, 'a': 1, 'd': [ 1, 2, 3, 4, [ 5, 6, 7 ] ] };
-			X = mapA.equals(mapB);
+			X = mapA == mapB;
 			""", "X"
 		));
 		assertEquals("false", ArucasHelper.runSafeFull(
 			"""
 			mapA = { 'a': 1, 'b': (5), 'c': 3, 'd': [ 1, 2, 3, 4, [ 5, 6, 7 ] ] };
 			mapB = { 'c': 3, 'b': 2, 'a': 1, 'd': [ 1, 2, 3, 4, [ 5, 6, 7 ] ] };
-			X = mapA.equals(mapB);
+			X = mapA == mapB;
 			""", "X"
 		));
 	}
@@ -144,5 +144,7 @@ public class ArucasMapTest {
 		assertEquals("{\"a\": 123}", ArucasHelper.runSafe("return {'a': 123};"));
 		assertEquals("{321: \"b\"}", ArucasHelper.runSafe("return {321: 'b'};"));
 		assertEquals("{<list>: <map>}", ArucasHelper.runSafe("return {[]: {}};"));
+		assertEquals("{[]: {}}", ArucasHelper.runSafe("return {[]: {}}.toString();"));
+		assertEquals("{<1, 2, 3>: {[]: {[]: []}}}", ArucasHelper.runSafe("return {Set.of(1, 2, 3): {[]: {[]: []}}}.toString();"));
 	}
 }

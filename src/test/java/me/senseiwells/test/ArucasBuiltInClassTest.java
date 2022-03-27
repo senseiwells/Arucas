@@ -19,8 +19,8 @@ public class ArucasBuiltInClassTest {
 		assertEquals("FooBaz", ArucasHelper.runSafe("return 'fooBaz'.capitalise();"));
 		assertEquals("[\"h\", \"e\", \"ll\", \"o\"]", ArucasHelper.runSafe("return 'h:e:ll:o'.split(':');"));
 		assertEquals("rfo", ArucasHelper.runSafe("return 'barfoo'.subString(2, 5);"));
-		assertEquals("String", ArucasHelper.runSafe("return ''.getValueType();"));
-		assertEquals("true", ArucasHelper.runSafe("return ''.instanceOf('String');"));
+		assertEquals("String", ArucasHelper.runSafe("return Type.of('').getName();"));
+		assertEquals("true", ArucasHelper.runSafe("return ''.instanceOf(String.type);"));
 	}
 
 	@Test
@@ -32,8 +32,8 @@ public class ArucasBuiltInClassTest {
 		assertEquals("false", ArucasHelper.runSafe("return 1.isInfinite();"));
 		assertEquals("true", ArucasHelper.runSafe("return (0/0).isNaN();"));
 		assertEquals("false", ArucasHelper.runSafe("return 1.isNaN();"));
-		assertEquals("Number", ArucasHelper.runSafe("return 0.getValueType();"));
-		assertEquals("true", ArucasHelper.runSafe("return 0.instanceOf('Number');"));
+		assertEquals("Number", ArucasHelper.runSafe("return Type.of(0).getName();"));
+		assertEquals("true", ArucasHelper.runSafe("return 0.instanceOf(Number.type);"));
 	}
 
 	@Test
@@ -49,8 +49,8 @@ public class ArucasBuiltInClassTest {
 		assertEquals("true", ArucasHelper.runSafe("return [].isEmpty();"));
 		assertEquals("false", ArucasHelper.runSafe("return [0].isEmpty();"));
 		assertEquals("[]", ArucasHelper.runSafe("l = [1, 2, 3]; l.clear(); return l;"));
-		assertEquals("List", ArucasHelper.runSafe("return [].getValueType();"));
-		assertEquals("true", ArucasHelper.runSafe("return [].instanceOf('List');"));
+		assertEquals("List", ArucasHelper.runSafe("return Type.of([]).getName();"));
+		assertEquals("true", ArucasHelper.runSafe("return [].instanceOf(List.type);"));
 	}
 
 	@Test
@@ -64,8 +64,8 @@ public class ArucasBuiltInClassTest {
 		assertEquals("{\"a\": \"foo\"}", ArucasHelper.runSafe("m = {'a' : 'foo', 'b' : 'bar'}; m.remove('b'); return m;"));
 		assertEquals("{}", ArucasHelper.runSafe("m = {'a' : 'foo'}; m.clear(); return m;"));
 		assertEquals("true", ArucasHelper.runSafe("return {}.isEmpty();"));
-		assertEquals("Map", ArucasHelper.runSafe("return {}.getValueType();"));
-		assertEquals("true", ArucasHelper.runSafe("return {}.instanceOf('Map');"));
+		assertEquals("Map", ArucasHelper.runSafe("return Type.of({}).getName();"));
+		assertEquals("true", ArucasHelper.runSafe("return {}.instanceOf(Map.type);"));
 	}
 
 	@Test
@@ -97,7 +97,7 @@ public class ArucasBuiltInClassTest {
 		assertEquals("true", ArucasHelper.runSafe("return Thread.getCurrentThread().isAlive();"));
 		assertEquals("false", ArucasHelper.runSafe("t = Thread.runThreaded(fun() { }); sleep(100); return t.isAlive();"));
 		assertEquals("foo", ArucasHelper.runSafe("t = Thread.runThreaded('foo', fun() { }); return t.getName();"));
-		assertEquals("Thread", ArucasHelper.runSafe("return Thread.getCurrentThread().getValueType();"));
-		assertEquals("true", ArucasHelper.runSafe("return Thread.getCurrentThread().instanceOf('Thread');"));
+		assertEquals("Thread", ArucasHelper.runSafe("return Type.of(Thread.getCurrentThread()).getName();"));
+		assertEquals("true", ArucasHelper.runSafe("return Thread.getCurrentThread().instanceOf(Thread.type);"));
 	}
 }

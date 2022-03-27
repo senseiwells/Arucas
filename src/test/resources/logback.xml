@@ -3,7 +3,7 @@
     <logger name="net.dv8tion" level="OFF"/>
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%cyan([%d{HH:mm:ss}]) %highlight(%-7([%level])) %boldGreen(%-15.-15logger{0}) - %msg%n</pattern>
+            <pattern>%cyan([%d{HH:mm:ss}]) %highlight([%level]) %boldGreen(%logger{0}) - %msg%n</pattern>
         </encoder>
     </appender>
     <root level="info">

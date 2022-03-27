@@ -115,7 +115,7 @@ public class DiscordBotWrapper implements IArucasWrappedClass, EventListener {
 		if (messageChannel == null) {
 			throw new RuntimeException("Channel with id '%s' couldn't be found".formatted(channelId.value));
 		}
-		return DiscordChannelWrapper.createNewChannelWrapper(messageChannel, context);
+		return DiscordChannelWrapper.newDiscordChannel(messageChannel, context);
 	}
 
 	@ArucasFunction
@@ -124,7 +124,7 @@ public class DiscordBotWrapper implements IArucasWrappedClass, EventListener {
 		if (guild == null) {
 			throw new RuntimeException("Server with id '%s' couldn't be found".formatted(serverId.value));
 		}
-		return DiscordServerWrapper.createNewChannelWrapper(guild, context);
+		return DiscordServerWrapper.newDiscordServer(guild, context);
 	}
 
 	@Override
@@ -155,7 +155,7 @@ public class DiscordBotWrapper implements IArucasWrappedClass, EventListener {
 			Context context = functionContext.context();
 			context.getThreadHandler().runAsyncFunctionInContext(context.createBranch(), branchContext -> {
 				List<Value<?>> parameters = new ArrayList<>(1);
-				WrapperClassValue wrapperValue = DiscordEventWrapper.createNewEventWrapper(event, branchContext);
+				WrapperClassValue wrapperValue = DiscordEventWrapper.newDiscordEvent(event, branchContext);
 				parameters.add(wrapperValue);
 				functionContext.functionValue().call(branchContext, parameters);
 			});

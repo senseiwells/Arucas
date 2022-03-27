@@ -109,6 +109,7 @@ public class Token {
 		OPERATOR,
 		EMBED,
 		AS,
+		THROW,
 
 		// Dot
 		DOT,

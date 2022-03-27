@@ -119,15 +119,15 @@ public class ArucasClassValue extends Value<AbstractClassDefinition> implements 
 	public boolean isEquals(Context context, Value<?> other) throws CodeError {
 		// If 'equals' is overridden we should use that here
 		FunctionValue equalsMethod = this.getOperatorMethod(Token.Type.EQUALS, 2);
-		if (equalsMethod == null) {
+		/*if (equalsMethod == null) {
 			equalsMethod = this.getMember("equals", 2);
-		}
+		}*/
 		if (equalsMethod != null) {
 			List<Value<?>> parameters = new ArrayList<>();
 			parameters.add(other);
 			Value<?> value = equalsMethod.call(context, parameters);
 			if (!(value instanceof BooleanValue booleanValue)) {
-				throw new RuntimeError("'equals()' or '==' must return a boolean", equalsMethod.syntaxPosition, context);
+				throw new RuntimeError("operator '==' must return a boolean", equalsMethod.syntaxPosition, context);
 			}
 			return booleanValue.value;
 		}

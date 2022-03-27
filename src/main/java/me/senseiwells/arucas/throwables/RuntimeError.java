@@ -1,5 +1,6 @@
 package me.senseiwells.arucas.throwables;
 
+import me.senseiwells.arucas.api.IArucasOutput;
 import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.Position;
@@ -19,7 +20,7 @@ public class RuntimeError extends CodeError {
 		this(details, syntaxHolder, null);
 	}
 
-	private String generateTraceback(Context context) {
+	private String generateTraceback(Context context, IArucasOutput output) {
 		StringBuilder result = new StringBuilder();
 
 		Position startPos = this.syntaxPosition.getStartPos();
@@ -27,7 +28,7 @@ public class RuntimeError extends CodeError {
 		// Add the error call.
 		result.append("File: %s, Line: %d, Column: %d, In: %s\n%s".formatted(
 			startPos.fileName, startPos.line + 1, startPos.column + 1,
-			context.getDisplayName(), context.getOutput().getErrorFormatting()
+			context.getDisplayName(), output.getErrorFormatting()
 		));
 
 		// Iterate through all branches before this point
@@ -41,20 +42,25 @@ public class RuntimeError extends CodeError {
 		}
 
 		return "%sTraceback (most recent call first): '%s'\n%s".formatted(
-			context.getOutput().getErrorFormattingBold(),
+			output.getErrorFormattingBold(),
 			this.getMessage(), result
 		);
 	}
 
 	@Override
 	public String toString(Context context) {
-		// If this context is not null use that instead
+		return this.toString(context, false);
+	}
+
+	@Override
+	public String toString(Context context, boolean raw) {
 		context = this.context != null ? this.context : context;
+		IArucasOutput output = raw ? IArucasOutput.DUMMY : context.getOutput();
 		return context != null ? "%s%s%s - '%s'%s".formatted(
-			this.generateTraceback(context),
-			context.getOutput().getErrorFormattingBold(),
+			this.generateTraceback(context, output),
+			output.getErrorFormattingBold(),
 			this.errorType.stringName, this.getMessage(),
-			context.getOutput().getResetFormatting()
+			output.getResetFormatting()
 		) : super.toString();
 	}
 }

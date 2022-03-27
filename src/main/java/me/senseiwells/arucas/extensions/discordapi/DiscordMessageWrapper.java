@@ -39,24 +39,24 @@ public class DiscordMessageWrapper implements IArucasWrappedClass {
 
 	@ArucasFunction
 	public WrapperClassValue getChannel(Context context) throws CodeError {
-		return DiscordChannelWrapper.createNewChannelWrapper(this.message.getChannel(), context);
+		return DiscordChannelWrapper.newDiscordChannel(this.message.getChannel(), context);
 	}
 
 	@ArucasFunction
 	public WrapperClassValue getServer(Context context) throws CodeError {
-		return DiscordServerWrapper.createNewChannelWrapper(this.message.getGuild(), context);
+		return DiscordServerWrapper.newDiscordServer(this.message.getGuild(), context);
 	}
 
 	@ArucasFunction
 	public WrapperClassValue getAuthor(Context context) throws CodeError {
-		return DiscordUserWrapper.createNewDefinition(this.message.getAuthor(), context);
+		return DiscordUserWrapper.newDiscordUser(this.message.getAuthor(), context);
 	}
 
 	@ArucasFunction
 	public ListValue getAttachments(Context context) throws CodeError {
 		ArucasList arucasList = new ArucasList();
 		for (Message.Attachment attachment: this.message.getAttachments()) {
-			arucasList.add(DiscordAttachmentWrapper.createNewDefinition(attachment, context));
+			arucasList.add(DiscordAttachmentWrapper.newDiscordAttachment(attachment, context));
 		}
 		return new ListValue(arucasList);
 	}
@@ -107,22 +107,22 @@ public class DiscordMessageWrapper implements IArucasWrappedClass {
 
 	@ArucasFunction
 	public WrapperClassValue reply(Context context, StringValue message) throws CodeError {
-		return createNewMessageWrapper(this.message.reply(message.value).complete(), context);
+		return newDiscordMessage(this.message.reply(message.value).complete(), context);
 	}
 
 
 	@ArucasFunction
 	public WrapperClassValue replyWithEmbed(Context context, MapValue mapValue) throws CodeError {
 		Message message = this.message.replyEmbeds(DiscordUtils.parseMapAsEmbed(context, mapValue)).complete();
-		return createNewMessageWrapper(message, context);
+		return newDiscordMessage(message, context);
 	}
 
 	@ArucasFunction
 	public WrapperClassValue replyWithFile(Context context, FileValue fileValue) throws CodeError {
-		return createNewMessageWrapper(this.message.reply(fileValue.value).complete(), context);
+		return newDiscordMessage(this.message.reply(fileValue.value).complete(), context);
 	}
 
-	public static WrapperClassValue createNewMessageWrapper(Message message, Context context) throws CodeError {
+	public static WrapperClassValue newDiscordMessage(Message message, Context context) throws CodeError {
 		DiscordMessageWrapper channelWrapper = new DiscordMessageWrapper();
 		channelWrapper.message = message;
 		return DEFINITION.createNewDefinition(channelWrapper, context, List.of());
