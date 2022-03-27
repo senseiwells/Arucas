@@ -80,7 +80,8 @@ public class SetValue extends Value<ArucasSet> {
 				new MemberFunction("contains", "value", this::contains),
 				new MemberFunction("containsAll", "otherList", this::containsAll),
 				new MemberFunction("isEmpty", this::isEmpty),
-				new MemberFunction("clear", this::clear)
+				new MemberFunction("clear", this::clear),
+				new MemberFunction("toString", this::toString)
 			);
 		}
 
@@ -175,6 +176,15 @@ public class SetValue extends Value<ArucasSet> {
 			SetValue thisValue = function.getThis(context, SetValue.class);
 			thisValue.value.clear();
 			return NullValue.NULL;
+		}
+
+		/**
+		 * Description: this converts the set to a string and evaluating any collections inside it <p>
+		 * Returns - String: the string representation of the set
+		 */
+		private synchronized Value<?> toString(Context context, MemberFunction function) throws CodeError {
+			SetValue thisValue = function.getThis(context, SetValue.class);
+			return StringValue.of(thisValue.value.getAsStringUnsafe(context, function.syntaxPosition));
 		}
 	}
 }

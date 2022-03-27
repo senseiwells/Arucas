@@ -1,5 +1,6 @@
 package me.senseiwells.arucas.utils.impl;
 
+import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.StringUtils;
@@ -36,6 +37,11 @@ public class ArucasList implements IArucasCollection, List<Value<?>>, ValueIdent
 	@Override
 	public synchronized int size() {
 		return this.size;
+	}
+
+	@Override
+	public String getAsStringSafe() {
+		return "<list>";
 	}
 
 	@Override
@@ -270,6 +276,10 @@ public class ArucasList implements IArucasCollection, List<Value<?>>, ValueIdent
 		return true;
 	}
 
+	@Override
+	public String getAsStringUnsafe(Context context, ISyntax position) throws CodeError {
+		return "[" + IArucasCollection.super.getAsStringUnsafe(context, position) + "]";
+	}
 
 	@Override
 	public Collection<? extends Value<?>> asCollection() {

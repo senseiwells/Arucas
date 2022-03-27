@@ -70,7 +70,8 @@ public class ListValue extends Value<ArucasList> {
 				new MemberFunction("contains", "value", this::listContains),
 				new MemberFunction("containsAll", "otherList", this::containsAll),
 				new MemberFunction("isEmpty", this::isEmpty),
-				new MemberFunction("clear", this::clear)
+				new MemberFunction("clear", this::clear),
+				new MemberFunction("toString", this::toString)
 			);
 		}
 
@@ -154,6 +155,11 @@ public class ListValue extends Value<ArucasList> {
 			ListValue thisValue = function.getThis(context, ListValue.class);
 			thisValue.value.clear();
 			return NullValue.NULL;
+		}
+
+		private synchronized Value<?> toString(Context context, MemberFunction function) throws CodeError {
+			ListValue thisValue = function.getThis(context, ListValue.class);
+			return StringValue.of(thisValue.value.getAsStringUnsafe(context, function.syntaxPosition));
 		}
 	}
 }

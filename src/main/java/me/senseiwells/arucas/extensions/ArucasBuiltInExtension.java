@@ -7,18 +7,14 @@ import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowStop;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.utils.ExceptionUtils;
 import me.senseiwells.arucas.utils.impl.ArucasList;
-import me.senseiwells.arucas.utils.impl.ArucasThread;
 import me.senseiwells.arucas.utils.impl.IArucasCollection;
 import me.senseiwells.arucas.values.*;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -96,9 +92,11 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 
 	private Value<?> fullPrint(Context context, BuiltInFunction function) throws CodeError {
 		ListValue listValue = function.getParameterValueOfType(context, ListValue.class, 0);
+		StringBuilder builder = new StringBuilder();
 		for (Value<?> value : listValue.value) {
-			context.getOutput().print(value.getAsString(context));
+			builder.append(value.getAsString(context));
 		}
+		context.getOutput().print(builder.toString());
 		return NullValue.NULL;
 	}
 

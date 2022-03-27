@@ -1,5 +1,6 @@
 package me.senseiwells.arucas.utils.impl;
 
+import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.StringUtils;
@@ -73,6 +74,11 @@ public class ArucasMap implements IArucasCollection, ValueIdentifier {
 	@Override
 	public int size() {
 		return this.size;
+	}
+
+	@Override
+	public String getAsStringSafe() {
+		return "<map>";
 	}
 
 	public boolean isEmpty() {
@@ -399,6 +405,30 @@ public class ArucasMap implements IArucasCollection, ValueIdentifier {
 		return this.keys();
 	}
 
+	@Override
+	public String getAsStringUnsafe(Context context, ISyntax position) throws CodeError {
+		synchronized (this.LOCK) {
+			StringBuilder sb = new StringBuilder();
+			sb.append("{");
+
+			for (ValuePair pair : this.pairSet()) {
+				String key = pair.getKey().value instanceof IArucasCollection collection ?
+					collection.getAsStringUnsafe(context, position) : pair.getKey().getAsString(context);
+				sb.append(key).append(": ");
+
+				String value = pair.getValue().value instanceof IArucasCollection collection ?
+					collection.getAsStringUnsafe(context, position) : pair.getValue().getAsString(context);
+				sb.append(value).append(", ");
+			}
+
+			if (!pairSet().isEmpty()) {
+				sb.delete(sb.length() - 2, sb.length());
+			}
+
+			return sb.append("}").toString();
+		}
+	}
+
 	public ArucasList keys() {
 		ArucasList keyList = new ArucasList();
 		synchronized (this.LOCK) {
@@ -519,8 +549,7 @@ public class ArucasMap implements IArucasCollection, ValueIdentifier {
 			Set<ValuePair> pairSet = this.pairSet();
 			for (ValuePair valuePair : pairSet) {
 				sb.append(StringUtils.toPlainString(context, valuePair.getKey())).append(": ");
-				sb.append(StringUtils.toPlainString(context, valuePair.getValue()));
-				sb.append(", ");
+				sb.append(StringUtils.toPlainString(context, valuePair.getValue())).append(", ");
 			}
 
 			if (!pairSet.isEmpty()) {

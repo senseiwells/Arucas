@@ -66,7 +66,8 @@ public class MapValue extends Value<ArucasMap> {
 				new MemberFunction("putAll", "anotherMap", this::mapPutAll),
 				new MemberFunction("remove", "key", this::mapRemove),
 				new MemberFunction("clear", this::mapClear),
-				new MemberFunction("isEmpty", this::isEmpty)
+				new MemberFunction("isEmpty", this::isEmpty),
+				new MemberFunction("toString", this::toString)
 			);
 		}
 
@@ -126,6 +127,11 @@ public class MapValue extends Value<ArucasMap> {
 		private BooleanValue isEmpty(Context context, MemberFunction function) throws CodeError {
 			MapValue thisValue = function.getParameterValueOfType(context, MapValue.class, 0);
 			return BooleanValue.of(thisValue.value.isEmpty());
+		}
+
+		private Value<?> toString(Context context, MemberFunction function) throws CodeError {
+			MapValue thisValue = function.getParameterValueOfType(context, MapValue.class, 0);
+			return StringValue.of(thisValue.value.getAsStringUnsafe(context, function.syntaxPosition));
 		}
 	}
 }

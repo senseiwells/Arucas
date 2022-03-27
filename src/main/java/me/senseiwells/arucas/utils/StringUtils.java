@@ -1,6 +1,7 @@
 package me.senseiwells.arucas.utils;
 
 import me.senseiwells.arucas.throwables.CodeError;
+import me.senseiwells.arucas.utils.impl.IArucasCollection;
 import me.senseiwells.arucas.values.*;
 
 public class StringUtils {
@@ -247,17 +248,9 @@ public class StringUtils {
 		if (value instanceof StringValue) {
 			return "\"" + value.getAsString(context) + "\"";
 		}
-		else if (value instanceof NumberValue) {
-			return value.getAsString(context);
+		if (value.value instanceof IArucasCollection collection) {
+			return collection.getAsStringSafe();
 		}
-		else if (value instanceof ListValue) {
-			return "<list>";
-		}
-		else if (value instanceof MapValue) {
-			return "<map>";
-		}
-		else {
-			return value.getAsString(context);
-		}
+		return value.getAsString(context);
 	}
 }

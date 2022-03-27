@@ -16,3 +16,5 @@ print('%s ms'.formatted([millis() - start]));
 print(Test.staticMethod());
 print(test.memberValue);
 print(Test.memberStaticValue);
+
+

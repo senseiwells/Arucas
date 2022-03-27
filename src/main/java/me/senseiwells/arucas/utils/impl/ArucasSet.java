@@ -1,6 +1,7 @@
 package me.senseiwells.arucas.utils.impl;
 
 
+import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.StringUtils;
@@ -102,15 +103,25 @@ public class ArucasSet implements IArucasCollection, ValueIdentifier {
 	}
 
 	@Override
+	public String getAsStringSafe() {
+		return "<set>";
+	}
+
+	@Override
 	public Collection<? extends Value<?>> asCollection() {
 		return this.map.keys();
+	}
+
+	@Override
+	public String getAsStringUnsafe(Context context, ISyntax position) throws CodeError {
+		return "<" + IArucasCollection.super.getAsStringUnsafe(context, position) + ">";
 	}
 	
 	@Override
 	public int getHashCode(Context context) throws CodeError {
 		return this.map.getHashCode(context);
 	}
-	
+
 	@Override
 	public synchronized String getAsString(Context context) throws CodeError {
 		StringBuilder sb = new StringBuilder();
