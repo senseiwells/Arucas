@@ -1,16 +1,20 @@
 // run(File.getDirectory().getPath() + "/src/test/resources/code/test2.arucas");
 
-class Example {
-    embed String as s;
+class E {
+    var map = {};
 
-    Example() {
-        this.s = "hi/there";
+    operator ~ (str) {
+        return this.map.get(str);
+    }
+
+    operator + (lst) {
+        if (lst.instanceOf(List.type)) {
+            this.map.put(lst.get(0), lst.get(1));
+        }
     }
 }
 
-f = Function.getMethod(new Example(), "split", 1);
+e = new E();
 
-print(Type.of(f));
-print(Type.of(new Example()));
-
-print(f("/"));
+e + ["name", "sensei"];
+print(e ~ "name");

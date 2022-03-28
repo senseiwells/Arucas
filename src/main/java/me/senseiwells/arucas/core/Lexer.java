@@ -52,6 +52,11 @@ public class Lexer {
 			.addRule(Type.NOT, i -> i.addStrings("!"))
 			.addRule(Type.AND, i -> i.addStrings("&&"))
 			.addRule(Type.OR, i -> i.addStrings("||"))
+			.addRule(Type.XOR, i -> i.addString("~"))
+			.addRule(Type.SHIFT_LEFT, i -> i.addString("<<"))
+			.addRule(Type.SHIFT_RIGHT, i -> i.addString(">>"))
+			.addRule(Type.BIT_AND, i -> i.addString("&"))
+			.addRule(Type.BIT_OR, i -> i.addString("|"))
 
 			// Memory operations
 			.addRule(Type.ASSIGN_OPERATOR, i -> i.addString("="))

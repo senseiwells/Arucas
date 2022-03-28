@@ -63,6 +63,13 @@ public class Token {
 		NOT,
 		AND,
 		OR,
+		XOR,
+
+		// Bitwise
+		SHIFT_LEFT,
+		SHIFT_RIGHT,
+		BIT_AND,
+		BIT_OR,
 
 		// Brackets
 		LEFT_BRACKET,
@@ -121,7 +128,14 @@ public class Token {
 			LESS_THAN,
 			MORE_THAN,
 			LESS_THAN_EQUAL,
-			MORE_THAN_EQUAL
+			MORE_THAN_EQUAL,
+
+			// These don't technically belong here
+			// But in terms of order they go here
+			SHIFT_LEFT,
+			SHIFT_RIGHT,
+			BIT_AND,
+			BIT_OR
 		);
 
 		public static final Set<Type> OVERRIDABLE_UNARY_OPERATORS = Set.of(
@@ -141,7 +155,14 @@ public class Token {
 			MORE_THAN,
 			MORE_THAN_EQUAL,
 			EQUALS,
-			NOT_EQUALS
+			NOT_EQUALS,
+			AND,
+			OR,
+			XOR,
+			SHIFT_LEFT,
+			SHIFT_RIGHT,
+			BIT_AND,
+			BIT_OR
 		);
 	}
 }

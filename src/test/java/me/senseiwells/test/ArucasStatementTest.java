@@ -120,7 +120,7 @@ public class ArucasStatementTest {
 			X = '0';
 			try {
 				X = '1';
-				throwRuntimeError("Error");
+				throw null;
 				X = '2';
 			}
 			catch (error);
@@ -167,7 +167,7 @@ public class ArucasStatementTest {
 			try {
 				if (true) {
 					X = '1';
-					throwRuntimeError('error');
+					throw null;
 				}
 			}
 			catch (error) {
@@ -270,6 +270,49 @@ public class ArucasStatementTest {
 				d = z;
 			}
 			return z + d;
+			"""
+		));
+	}
+	
+	@Test
+	public void testBitwiseOperators() {
+		assertEquals("red: 77, green: 86, blue: 217", ArucasHelper.runSafe(
+			"""
+			c = 0x4d56d9;
+			return "red: " + (c >> 16 & 0xFF) + ", green: " + (c >> 8 & 0xFF) + ", blue: " + (c & 0xFF);
+			"""
+		));
+		assertEquals("10", ArucasHelper.runSafe(
+			"""
+			X = null;
+			fun do() {
+				X = 10;
+				return false;
+			}
+			if (true | do()) { }
+			return X;
+			"""
+		));
+		assertEquals("10", ArucasHelper.runSafe(
+			"""
+			X = null;
+			fun do() {
+				X = 10;
+				return true;
+			}
+			if (false & do()) { }
+			return X;
+			"""
+		));
+		assertEquals("10", ArucasHelper.runSafe(
+			"""
+			X = null;
+			fun do() {
+				X = 10;
+				return true;
+			}
+			if (false ~ do()) { }
+			return X;
 			"""
 		));
 	}

@@ -129,7 +129,7 @@ public class ArucasClassTest {
 				
 			}
 			test = new Test();
-			X = test.equals(test);
+			X = test == test;
 			""", "X"
 		));
 		assertEquals("test", ArucasHelper.runSafeFull(

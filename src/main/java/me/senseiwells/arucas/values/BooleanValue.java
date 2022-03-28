@@ -35,6 +35,24 @@ public class BooleanValue extends Value<Boolean> {
 	}
 
 	@Override
+	public Value<?> xor(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
+		if (other instanceof BooleanValue booleanValue) {
+			return BooleanValue.of(this.value ^ booleanValue.value);
+		}
+		return super.xor(context, other, syntaxPosition);
+	}
+
+	@Override
+	public Value<?> bitAnd(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
+		return this.isAnd(context, other, syntaxPosition);
+	}
+
+	@Override
+	public Value<?> bitOr(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
+		return this.isOr(context, other, syntaxPosition);
+	}
+
+	@Override
 	public BooleanValue not(Context context, ISyntax syntaxPosition) throws RuntimeError {
 		return this.not();
 	}

@@ -42,7 +42,7 @@ public class ArucasSetTest {
 				}
 				
 				operator == (other) {
-					return other.instanceOf("A") && other.value == this.value;
+					return other.instanceOf(A.type) && other.value == this.value;
 				}
 				
 				fun toString() {

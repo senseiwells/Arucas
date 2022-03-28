@@ -59,6 +59,19 @@ public abstract class BaseValue implements ValueIdentifier {
 	}
 
 	/**
+	 * This gets called when the binary operator <code>~</code>
+	 *
+	 * @param context        The current context
+	 * @param other          The other Value you are comparing
+	 * @param syntaxPosition The current position
+	 * @return Whether exclusively one of the two values is true
+	 * @throws CodeError If the two values cannot use this operator
+	 */
+	public Value<?> xor(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
+		throw this.cannotApplyError(context, "XOR", other, syntaxPosition);
+	}
+
+	/**
 	 * This gets called when the binary operator <code>+</code>
 	 * is used in Arucas
 	 *
@@ -138,8 +151,62 @@ public abstract class BaseValue implements ValueIdentifier {
 	 * @return Whether the comparison between the values is true
 	 * @throws CodeError If the two values cannot use this operator
 	 */
-	public BooleanValue compareNumber(Context context, Value<?> other, Token.Type type, ISyntax syntaxPosition) throws CodeError {
+	public Value<?> compareNumber(Context context, Value<?> other, Token.Type type, ISyntax syntaxPosition) throws CodeError {
 		throw this.cannotApplyError(context, type.toString(), other, syntaxPosition);
+	}
+
+	/**
+	 * This gets called when binary operator <code><<</code>
+	 * is used in Arucas
+	 *
+	 * @param context        The current context
+	 * @param other          How far you are shifting
+	 * @param syntaxPosition The current position
+	 * @return The shifted value
+	 * @throws CodeError If the two values cannot use this operator
+	 */
+	public Value<?> shiftLeft(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
+		throw this.cannotApplyError(context, "SHIFT_LEFT", other, syntaxPosition);
+	}
+
+	/**
+	 * This gets called when binary operator <code>>></code>
+	 * is used in Arucas
+	 *
+	 * @param context        The current context
+	 * @param other          How far you are shifting
+	 * @param syntaxPosition The current position
+	 * @return The shifted value
+	 * @throws CodeError If the two values cannot use this operator
+	 */
+	public Value<?> shiftRight(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
+		throw this.cannotApplyError(context, "SHIFT_RIGHT", other, syntaxPosition);
+	}
+
+	/**
+	 * This gets called when binary operator <code>&</code>
+	 *
+	 * @param context        The current context
+	 * @param other          The other Value you are comparing
+	 * @param syntaxPosition The current position
+	 * @throws CodeError If the two values cannot use this operator
+	 * @return The bitwise AND of the two values
+	 */
+	public Value<?> bitAnd(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
+		throw this.cannotApplyError(context, "BIT_AND", other, syntaxPosition);
+	}
+
+	/**
+	 * This gets called when binary operator <code>|</code>
+	 *
+	 * @param context        The current context
+	 * @param other          The other Value you are comparing
+	 * @param syntaxPosition The current position
+	 * @throws CodeError If the two values cannot use this operator
+	 * @return The bitwise OR of the two values
+	 */
+	public Value<?> bitOr(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
+		throw this.cannotApplyError(context, "BIT_OR", other, syntaxPosition);
 	}
 
 	/**
@@ -151,7 +218,7 @@ public abstract class BaseValue implements ValueIdentifier {
 	 * @return The inverted value
 	 * @throws CodeError If the value cannot use this operator
 	 */
-	public BooleanValue not(Context context, ISyntax syntaxPosition) throws CodeError {
+	public Value<?> not(Context context, ISyntax syntaxPosition) throws CodeError {
 		throw this.cannotApplyError(context, "NOT", syntaxPosition);
 	}
 

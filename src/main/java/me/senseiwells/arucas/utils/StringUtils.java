@@ -223,19 +223,8 @@ public class StringUtils {
 		
 		double result;
 		try {
-			if (string.startsWith("0x")) { // Hexadecimal
-				result = Long.parseLong(string.substring(2), 16);
-			}
-			else if (string.startsWith("0b")) { // Binary
-				result = Long.parseLong(string.substring(2), 2);
-			}
-			else if (string.startsWith("0")) { // Octodecimal
-				result = Long.parseLong(string.substring(1), 7);
-			}
-			else { // Decimal
-				result = Double.parseDouble(string);
-			}
-			
+			// Hexadecimal or denary
+			result = string.startsWith("0x") ? Long.parseLong(string.substring(2), 16) : Double.parseDouble(string);
 			return isNegative ? -result : result;
 		}
 		catch (NumberFormatException e) {

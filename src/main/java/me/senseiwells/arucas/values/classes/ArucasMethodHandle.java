@@ -1,4 +1,4 @@
-package me.senseiwells.arucas.api.wrappers;
+package me.senseiwells.arucas.values.classes;
 
 import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.throwables.CodeError;

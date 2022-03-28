@@ -2,7 +2,7 @@ package me.senseiwells.arucas.throwables;
 
 import me.senseiwells.arucas.values.Value;
 
-public abstract class ThrowValue extends Exception {
+public abstract class ThrowValue extends RuntimeException {
 	ThrowValue(String message) {
 		super(message);
 	}

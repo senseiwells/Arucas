@@ -1,7 +1,6 @@
 package me.senseiwells.arucas.values.classes;
 
 import me.senseiwells.arucas.api.ISyntax;
-import me.senseiwells.arucas.api.wrappers.ArucasMemberHandle;
 import me.senseiwells.arucas.api.wrappers.IArucasWrappedClass;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;

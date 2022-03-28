@@ -64,7 +64,7 @@ public class NumberValue extends Value<Double> {
 	}
 
 	@Override
-	public BooleanValue compareNumber(Context context, Value<?> other, Token.Type type, ISyntax syntaxPosition) throws CodeError {
+	public Value<?> compareNumber(Context context, Value<?> other, Token.Type type, ISyntax syntaxPosition) throws CodeError {
 		if (other instanceof NumberValue otherValue) {
 			boolean bool = switch (type) {
 				case LESS_THAN -> this.value < otherValue.value;
@@ -79,6 +79,43 @@ public class NumberValue extends Value<Double> {
 	}
 
 	@Override
+	public Value<?> shiftLeft(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
+		if (other instanceof NumberValue otherValue) {
+			return new NumberValue(this.value.longValue() << otherValue.value.longValue());
+		}
+		return super.shiftLeft(context, other, syntaxPosition);
+	}
+
+	@Override
+	public Value<?> shiftRight(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
+		if (other instanceof NumberValue otherValue) {
+			return new NumberValue(this.value.longValue() >> otherValue.value.longValue());
+		}
+		return super.shiftRight(context, other, syntaxPosition);
+	}
+
+	@Override
+	public Value<?> bitAnd(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
+		if (other instanceof NumberValue otherValue) {
+			return new NumberValue(this.value.longValue() & otherValue.value.longValue());
+		}
+		return super.bitAnd(context, other, syntaxPosition);
+	}
+
+	@Override
+	public Value<?> bitOr(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
+		if (other instanceof NumberValue otherValue) {
+			return new NumberValue(this.value.longValue() | otherValue.value.longValue());
+		}
+		return super.bitOr(context, other, syntaxPosition);
+	}
+
+	@Override
+	public NumberValue not(Context context, ISyntax syntaxPosition) throws CodeError {
+		return new NumberValue(~this.value.longValue());
+	}
+
+	@Override
 	public Value<?> unaryPlus(Context context, ISyntax syntaxPosition) {
 		return this;
 	}
@@ -89,7 +126,16 @@ public class NumberValue extends Value<Double> {
 	}
 
 	@Override
+	public Value<?> xor(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
+		if (other instanceof NumberValue otherValue) {
+			return NumberValue.of(this.value.longValue() ^ otherValue.value.longValue());
+		}
+		return super.xor(context, other, syntaxPosition);
+	}
+
+	@Override
 	public NumberValue copy(Context context) {
+		// Number values are immutable so we can just return this
 		return this;
 	}
 

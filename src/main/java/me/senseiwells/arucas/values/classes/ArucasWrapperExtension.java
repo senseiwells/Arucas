@@ -1,10 +1,10 @@
-package me.senseiwells.arucas.api.wrappers;
+package me.senseiwells.arucas.values.classes;
 
+import me.senseiwells.arucas.api.wrappers.*;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.ExceptionUtils;
 import me.senseiwells.arucas.values.Value;
-import me.senseiwells.arucas.values.classes.WrapperClassDefinition;
 import me.senseiwells.arucas.values.functions.WrapperClassMemberFunction;
 
 import java.lang.invoke.MethodHandle;

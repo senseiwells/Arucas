@@ -1074,7 +1074,7 @@ public class Parser {
 
 	private Node sizeComparisonExpression() throws CodeError {
 		Node left = this.comparisonExpression();
-		while (this.currentToken.type == Token.Type.AND || this.currentToken.type == Token.Type.OR) {
+		while (this.currentToken.type == Token.Type.AND || this.currentToken.type == Token.Type.OR || this.currentToken.type == Token.Type.XOR) {
 			Token operatorToken = this.currentToken;
 			this.advance();
 			Node right = this.comparisonExpression();

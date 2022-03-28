@@ -3,7 +3,7 @@ package me.senseiwells.arucas.utils;
 import me.senseiwells.arucas.api.ArucasThreadHandler;
 import me.senseiwells.arucas.api.IArucasOutput;
 import me.senseiwells.arucas.api.ISyntax;
-import me.senseiwells.arucas.api.wrappers.ArucasWrapperExtension;
+import me.senseiwells.arucas.values.classes.ArucasWrapperExtension;
 import me.senseiwells.arucas.api.wrappers.IArucasWrappedClass;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;

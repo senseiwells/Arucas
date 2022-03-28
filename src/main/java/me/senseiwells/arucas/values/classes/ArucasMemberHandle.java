@@ -1,5 +1,6 @@
-package me.senseiwells.arucas.api.wrappers;
+package me.senseiwells.arucas.values.classes;
 
+import me.senseiwells.arucas.api.wrappers.IArucasWrappedClass;
 import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
 

@@ -1,7 +1,7 @@
 package me.senseiwells.arucas.api;
 
 import me.senseiwells.arucas.api.impl.ArucasOutputImpl;
-import me.senseiwells.arucas.api.wrappers.ArucasWrapperExtension;
+import me.senseiwells.arucas.values.classes.ArucasWrapperExtension;
 import me.senseiwells.arucas.api.wrappers.IArucasWrappedClass;
 import me.senseiwells.arucas.extensions.ArucasBuiltInExtension;
 import me.senseiwells.arucas.extensions.ArucasMathClass;

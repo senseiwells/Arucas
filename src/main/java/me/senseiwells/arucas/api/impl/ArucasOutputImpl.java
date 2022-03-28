@@ -10,8 +10,8 @@ import java.util.function.Consumer;
 public class ArucasOutputImpl implements IArucasOutput {
 	private static final Logger LOGGER = LoggerFactory.getLogger("Arucas");
 
-	private Consumer<String> outputHandler;
-	private Consumer<String> debugHandler;
+	private final Consumer<String> outputHandler;
+	private final Consumer<String> debugHandler;
 	private String boldError;
 	private String error;
 	private String reset;
@@ -25,18 +25,8 @@ public class ArucasOutputImpl implements IArucasOutput {
 	}
 
 	@Override
-	public void setOutputHandler(Consumer<String> outputHandler) {
-		this.outputHandler = Objects.requireNonNull(outputHandler);
-	}
-
-	@Override
 	public Consumer<String> getOutputHandler() {
 		return this.outputHandler;
-	}
-
-	@Override
-	public void setDebugHandler(Consumer<String> debugHandler) {
-		this.debugHandler = debugHandler;
 	}
 
 	@Override

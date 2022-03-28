@@ -7,20 +7,11 @@ import java.util.function.Consumer;
  */
 @SuppressWarnings("unused")
 public interface IArucasOutput {
-	/**
-	 * Sets the current output handler
-	 */
-	void setOutputHandler(Consumer<String> outputHandler);
 
 	/**
 	 * Gets the current output handler
 	 */
 	Consumer<String> getOutputHandler();
-
-	/**
-	 * Sets the current debug handler
-	 */
-	void setDebugHandler(Consumer<String> debugHandler);
 
 	/**
 	 * Gets the current debug handler
@@ -68,15 +59,9 @@ public interface IArucasOutput {
 		private final Consumer<String> dummyConsumer = s -> { };
 
 		@Override
-		public void setOutputHandler(Consumer<String> outputHandler) { }
-
-		@Override
 		public Consumer<String> getOutputHandler() {
 			return this.dummyConsumer;
 		}
-
-		@Override
-		public void setDebugHandler(Consumer<String> debugHandler) { }
 
 		@Override
 		public Consumer<String> getDebugHandler() {
