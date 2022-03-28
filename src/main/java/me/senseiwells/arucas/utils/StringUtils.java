@@ -8,13 +8,16 @@ public class StringUtils {
 	/**
 	 * Joins all arguments using <code>StringBuilder</code>.
 	 */
+	@SuppressWarnings("unused")
 	public static String join(Object... args) {
 		final int length = args.length;
-		if (length == 0) return "";
+		if (length == 0) {
+			return "";
+		}
 		StringBuilder sb = new StringBuilder();
-		
-		for (int i = 0; i < length; i++) {
-			sb.append(args[i]);
+
+		for (Object arg : args) {
+			sb.append(arg);
 		}
 		
 		return sb.toString();
@@ -205,7 +208,6 @@ public class StringUtils {
 	 *     [0-9]+(\.[0-9]+)?
 	 * </pre>
 	 */
-	@SuppressWarnings("unused")
 	public static double parseNumber(String string) {
 		if (string == null || string.isBlank()) {
 			throw new IllegalArgumentException("The input string must not be null or empty");

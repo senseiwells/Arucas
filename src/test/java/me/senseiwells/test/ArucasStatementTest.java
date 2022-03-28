@@ -257,4 +257,20 @@ public class ArucasStatementTest {
 			""", "X"
 		));
 	}
+
+	@Test
+	public void testLocalVariableAssign() {
+		assertEquals("27", ArucasHelper.runSafe(
+			"""
+			experimental(true);
+			var z = 17;
+			d = 2005;
+			{
+				var z = 10;
+				d = z;
+			}
+			return z + d;
+			"""
+		));
+	}
 }
