@@ -1,19 +1,18 @@
 package me.senseiwells.arucas.values.functions;
 
 import me.senseiwells.arucas.api.ISyntax;
-import me.senseiwells.arucas.values.classes.ArucasMethodHandle;
 import me.senseiwells.arucas.api.wrappers.IArucasWrappedClass;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.ArucasClassValue;
+import me.senseiwells.arucas.values.classes.ArucasMethodHandle;
 import me.senseiwells.arucas.values.classes.WrapperClassValue;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Supplier;
 
 public class WrapperClassMemberFunction extends ClassMemberFunction {
 	private final IArucasWrappedClass classValue;
@@ -72,7 +71,4 @@ public class WrapperClassMemberFunction extends ClassMemberFunction {
 	public String getAsString(Context context) throws CodeError {
 		return "<class " + this.thisValue.getName() + "::" + this.getName() + "@" + Integer.toHexString(Objects.hashCode(this)) + ">";
 	}
-
-	@Override
-	public void setCallingMember(Supplier<Value<?>> supplier) { }
 }

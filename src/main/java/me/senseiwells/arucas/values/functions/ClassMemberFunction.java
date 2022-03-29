@@ -10,7 +10,7 @@ import me.senseiwells.arucas.values.classes.ArucasClassValue;
 import java.util.List;
 import java.util.Objects;
 
-public class ClassMemberFunction extends UserDefinedFunction {
+public class ClassMemberFunction extends UserDefinedFunction implements IMemberFunction {
 	protected ArucasClassValue thisValue;
 	
 	public ClassMemberFunction(ArucasClassValue thisValue, String name, List<String> argumentNames, ISyntax syntaxPosition) {
@@ -38,5 +38,13 @@ public class ClassMemberFunction extends UserDefinedFunction {
 	@Override
 	public String getAsString(Context context) throws CodeError {
 		return "<class " + this.thisValue.getName() + "::" + this.getName() + "@" + Integer.toHexString(Objects.hashCode(this)) + ">";
+	}
+
+	@Override
+	public FunctionValue setThisAndGet(Value<?> thisValue) {
+		if (thisValue instanceof ArucasClassValue classValue) {
+			return this.copy(classValue);
+		}
+		return null;
 	}
 }

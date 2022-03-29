@@ -10,7 +10,7 @@ import me.senseiwells.arucas.values.Value;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MemberFunction extends AbstractBuiltInFunction<MemberFunction> {
+public class MemberFunction extends AbstractBuiltInFunction<MemberFunction> implements IMemberFunction {
 	public MemberFunction(String name, List<String> argumentNames, FunctionDefinition<MemberFunction> function, String isDeprecated) {
 		super(name, addThis(argumentNames), function, isDeprecated);
 	}
@@ -66,6 +66,11 @@ public class MemberFunction extends AbstractBuiltInFunction<MemberFunction> {
 		return stringList;
 	}
 
+	@Override
+	public FunctionValue setThisAndGet(Value<?> thisValue) {
+		return new Delegatable(thisValue, this);
+	}
+
 	/**
 	 * Arbitrary functions allow any number of parameters to be passed
 	 * in and all values will be passed into the function as a list
@@ -99,6 +104,21 @@ public class MemberFunction extends AbstractBuiltInFunction<MemberFunction> {
 			}
 
 			context.setLocal("arbitrary", new ListValue(list));
+		}
+	}
+
+	private static class Delegatable extends MemberFunction {
+		private final Value<?> thisValue;
+
+		public Delegatable(Value<?> thisValue, MemberFunction function) {
+			super(function.getName(), function.argumentNames, function.function, function.deprecatedMessage);
+			this.thisValue = thisValue;
+		}
+
+		@Override
+		protected Value<?> execute(Context context, List<Value<?>> arguments) throws CodeError {
+			arguments.add(0, this.thisValue);
+			return super.execute(context, arguments);
 		}
 	}
 }
