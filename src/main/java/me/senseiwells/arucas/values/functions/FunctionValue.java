@@ -12,7 +12,6 @@ import me.senseiwells.arucas.values.ListValue;
 import me.senseiwells.arucas.values.NumberValue;
 import me.senseiwells.arucas.values.StringValue;
 import me.senseiwells.arucas.values.Value;
-import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.values.classes.ArucasClassValue;
 
 import java.util.List;
@@ -149,6 +148,11 @@ public abstract class FunctionValue extends Value<String> {
 		return "Function";
 	}
 
+	/**
+	 * Function class for Arucas. <br>
+	 * Fully Documented.
+	 * @author senseiwells
+	 */
 	public static class ArucasFunctionClass extends ArucasClassExtension {
 		public ArucasFunctionClass() {
 			super("Function");
@@ -164,6 +168,13 @@ public abstract class FunctionValue extends Value<String> {
 			);
 		}
 
+		/**
+		 * Name: <code>Function.getBuiltIn(functionName, parameterCount)</code> <br>
+		 * Description: Returns a built-in function delegate with the given name and parameter count. <br>
+		 * Parameters: String, Number: the name of the function, the parameter count of the function <br>
+		 * Returns - Function: the built-in function delegate <br>
+		 * Example: <code>Function.getBuiltIn("print", 1);</code>
+		 */
 		private Value<?> getBuiltInDelegate(Context context, BuiltInFunction function) throws CodeError {
 			StringValue functionName = function.getParameterValueOfType(context, StringValue.class, 0);
 			NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 1);
@@ -178,6 +189,13 @@ public abstract class FunctionValue extends Value<String> {
 			return functionValue;
 		}
 
+		/**
+		 * Name: <code>Function.getMethod(object, methodName, parameterCount)</code> <br>
+		 * Description: Returns a method delegate with the given name and parameter count. <br>
+		 * Parameters: Value, String, Number: the object to call the method on, the name of the method, the parameter count of the method <br>
+		 * Returns - Function: the method delegate <br>
+		 * Example: <code>Function.getMethod(this, "print", 1);</code>
+		 */
 		private Value<?> getMethodDelegate(Context context, BuiltInFunction function) throws CodeError {
 			Value<?> callingValue = function.getParameterValue(context, 0);
 			StringValue methodNameValue = function.getParameterValueOfType(context, StringValue.class, 1);
@@ -200,6 +218,26 @@ public abstract class FunctionValue extends Value<String> {
 			return delegate;
 		}
 
+		/**
+		 * Name: <code>Function.callWithList(delegate, parameters)</code> <br>
+		 * Description: Calls the given delegate with the given parameters. <br>
+		 * Parameters: Function, List: the delegate to call, the parameters to pass to the delegate <br>
+		 * Returns - Value: the return value of the delegate <br>
+		 * Example: <code>Function.callWithList(this.print, List.of("Hello World!"));</code>
+		 */
+		private Value<?> callDelegateWithList(Context context, BuiltInFunction function) throws CodeError {
+			FunctionValue delegate = function.getParameterValueOfType(context, FunctionValue.class, 0);
+			ListValue listValue = function.getParameterValueOfType(context, ListValue.class, 1);
+			return delegate.call(context, listValue.value);
+		}
+
+		/**
+		 * Name: <code>Function.call(delegate, parameters)</code> <br>
+		 * Description: Calls the given delegate with the given arbitrary parameters. <br>
+		 * Parameters: Function, Value...: the delegate to call, the parameters to pass to the delegate <br>
+		 * Returns - Value: the return value of the delegate <br>
+		 * Example: <code>Function.call(Function.getBuiltIn("print", 1), "Hello World!");</code>
+		 */
 		private Value<?> callDelegate(Context context, BuiltInFunction function) throws CodeError {
 			ListValue arguments = function.getParameterValueOfType(context, ListValue.class, 0);
 			ArucasList list = arguments.value;
@@ -207,12 +245,6 @@ public abstract class FunctionValue extends Value<String> {
 				throw new RuntimeError("First parameter must be of function value", function.syntaxPosition, context);
 			}
 			return functionValue.call(context, list);
-		}
-
-		private Value<?> callDelegateWithList(Context context, BuiltInFunction function) throws CodeError {
-			FunctionValue delegate = function.getParameterValueOfType(context, FunctionValue.class, 0);
-			ListValue listValue = function.getParameterValueOfType(context, ListValue.class, 1);
-			return delegate.call(context, listValue.value);
 		}
 
 		@Override

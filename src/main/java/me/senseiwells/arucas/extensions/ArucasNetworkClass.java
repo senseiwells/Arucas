@@ -12,6 +12,11 @@ import me.senseiwells.arucas.values.StringValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
 
+/**
+ * Network class extension for Arucas. Allows you to do http requests. <br>
+ * Fully Documented.
+ * @author senseiwells
+ */
 public class ArucasNetworkClass extends ArucasClassExtension {
 	public ArucasNetworkClass() {
 		super("Network");
@@ -25,6 +30,14 @@ public class ArucasNetworkClass extends ArucasClassExtension {
 		);
 	}
 
+	/**
+	 * Name: <code>Network.requestUrl(url)</code> <br>
+	 * Description: Requests a url and returns the response <br>
+	 * Parameter - String: the url to request <br>
+	 * Returns - String: the response from the url <br>
+	 * Throws - Error: <code>"Failed to request data from ..."</code> if the request fails <br>
+	 * Example: <code>Network.requestUrl("https://google.com");</code>
+	 */
 	private Value<?> requestUrl(Context context, BuiltInFunction function) throws CodeError {
 		String url = function.getFirstParameter(context, StringValue.class).value;
 		String response = NetworkUtils.getStringFromUrl(url);
@@ -34,6 +47,13 @@ public class ArucasNetworkClass extends ArucasClassExtension {
 		return StringValue.of(response);
 	}
 
+	/**
+	 * Name: <code>Network.openUrl(url)</code> <br>
+	 * Description: Opens a url in the default browser <br>
+	 * Parameter - String: the url to open <br>
+	 * Throws - Error: <code>"Failed to open url ..."</code> if the request to open <br>
+	 * Example: <code>Network.openUrl("https://google.com");</code>
+	 */
 	private Value<?> openUrl(Context context, BuiltInFunction function) throws CodeError {
 		String url = function.getFirstParameter(context, StringValue.class).value;
 		if (!NetworkUtils.openUrl(url)) {

@@ -55,6 +55,11 @@ public class ErrorValue extends Value<Value<?>> {
 		return this;
 	}
 
+	/**
+	 * Error class for Arucas. <br>
+	 * Fully Documented.
+	 * @author senseiwells
+	 */
 	public static class ArucasErrorClass extends ArucasClassExtension {
 		public ArucasErrorClass() {
 			super("Error");
@@ -74,15 +79,35 @@ public class ErrorValue extends Value<Value<?>> {
 			);
 		}
 
+		/**
+		 * Name: <code>new Error()</code> <br>
+		 * Description: This creates a new Error object with no message <br>
+		 * Returns - Error: the new Error object <br>
+		 * Example: <code>new Error();</code>
+		 */
 		private Value<?> newError(Context context, BuiltInFunction function) {
 			return new ErrorValue("", function.syntaxPosition, context, NullValue.NULL);
 		}
 
+		/**
+		 * Name: <code>new Error(details)</code> <br>
+		 * Description: This creates a new Error object with the given details as a message <br>
+		 * Parameter - String: the details of the error <br>
+		 * Returns - Error: the new Error object <br>
+		 * Example: <code>new Error("This is an error");</code>
+		 */
 		private Value<?> newError1(Context context, BuiltInFunction function) throws CodeError {
 			StringValue details = function.getParameterValueOfType(context, StringValue.class, 0);
 			return new ErrorValue(details.value, function.syntaxPosition, context, NullValue.NULL);
 		}
 
+		/**
+		 * Name: <code>new Error(details, value)</code> <br>
+		 * Description: This creates a new Error object with the given details as a message and the given value <br>
+		 * Parameter - String, Value: the details of the error, the value that is related to the error <br>
+		 * Returns - Error: the new Error object <br>
+		 * Example: <code>new Error("This is an error", "object");</code>
+		 */
 		private Value<?> newError2(Context context, BuiltInFunction function) throws CodeError {
 			StringValue details = function.getParameterValueOfType(context, StringValue.class, 0);
 			Value<?> value = function.getParameterValue(context, 1);
@@ -98,16 +123,34 @@ public class ErrorValue extends Value<Value<?>> {
 			);
 		}
 
+		/**
+		 * Name: <code>&lt;Error>.getFormattedDetails()</code> <br>
+		 * Description: This returns the message of the error in a formatted string <br>
+		 * Returns - String: the details of the error <br>
+		 * Example: <code>new Error("Error!").getFormattedDetails();</code>
+		 */
 		private Value<?> getFormattedDetails(Context context, MemberFunction function) throws CodeError {
 			ErrorValue error = function.getThis(context, ErrorValue.class);
 			return StringValue.of(error.runtimeError.toString(context));
 		}
 
+		/**
+		 * Name: <code>&lt;Error>.getDetails()</code> <br>
+		 * Description: This returns the raw message of the error <br>
+		 * Returns - String: the details of the error <br>
+		 * Example: <code>new Error("Error!").getDetails();</code>
+		 */
 		private Value<?> getDetails(Context context, MemberFunction function) throws CodeError {
 			ErrorValue error = function.getThis(context, ErrorValue.class);
 			return StringValue.of(error.runtimeError.toString(context, true));
 		}
 
+		/**
+		 * Name: <code>&lt;Error>.getValue()</code> <br>
+		 * Description: This returns the value that is related to the error <br>
+		 * Returns - Value: the value that is related to the error <br>
+		 * Example: <code>new Error("Error!", "object").getValue();</code>
+		 */
 		private Value<?> getValue(Context context, MemberFunction function) throws CodeError {
 			ErrorValue error = function.getThis(context, ErrorValue.class);
 			return error.value;

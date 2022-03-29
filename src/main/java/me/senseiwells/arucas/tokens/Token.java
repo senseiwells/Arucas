@@ -114,8 +114,6 @@ public class Token {
 		NEW,
 		STATIC,
 		OPERATOR,
-		EMBED,
-		AS,
 		THROW,
 
 		// Dot

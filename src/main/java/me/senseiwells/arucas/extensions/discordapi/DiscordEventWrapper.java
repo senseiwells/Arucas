@@ -27,6 +27,11 @@ import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
 
 import java.util.List;
 
+/**
+ * DiscordEvent class wrapper for Arucas. <br>
+ * Fully Documented.
+ * @author senseiwells
+ */
 @ArucasClass(name = "DiscordEvent")
 public class DiscordEventWrapper implements IArucasWrappedClass {
 	@ArucasDefinition
@@ -34,41 +39,93 @@ public class DiscordEventWrapper implements IArucasWrappedClass {
 
 	private GenericEvent event;
 
+	/**
+	 * Name: <code>&lt;DiscordEvent>.getEventName()</code> <br>
+	 * Description: This gets the name of the event <br>
+	 * Returns - String: the name of the event <br>
+	 * Example: <code>event.getEventName();</code>
+	 */
 	@ArucasFunction
 	public StringValue getEventName(Context context) {
 		return StringValue.of(this.event.getClass().getSimpleName());
 	}
 
+	/**
+	 * Name: <code>&lt;DiscordEvent>.getMessage()</code> <br>
+	 * Description: This gets the message that is related to the event <br>
+	 * Returns - DiscordMessage: the message <br>
+	 * Throws - Error: "... has no message" if the event does not have a message <br>
+	 * Example: <code>event.getMessage();</code>
+	 */
 	@ArucasFunction
 	public WrapperClassValue getMessage(Context context) throws CodeError {
 		return DiscordMessageWrapper.newDiscordMessage(this.getMessage(), context);
 	}
 
+	/**
+	 * Name: <code>&lt;DiscordEvent>.getUser()</code> <br>
+	 * Description: This gets the user that is related to the event <br>
+	 * Returns - DiscordUser: the user <br>
+	 * Throws - Error: "... has no user" if the event does not have a user <br>
+	 * Example: <code>event.getUser();</code>
+	 */
 	@ArucasFunction
 	public WrapperClassValue getUser(Context context) throws CodeError {
 		return DiscordUserWrapper.newDiscordUser(this.getUser(), context);
 	}
 
+	/**
+	 * Name: <code>&lt;DiscordEvent>.getChannel()</code> <br>
+	 * Description: This gets the channel that is related to the event <br>
+	 * Returns - DiscordChannel: the channel <br>
+	 * Throws - Error: "... has no channel" if the event does not have a channel <br>
+	 * Example: <code>event.getChannel();</code>
+	 */
 	@ArucasFunction
 	public WrapperClassValue getChannel(Context context) throws CodeError {
 		return DiscordChannelWrapper.newDiscordChannel(this.getChannel(), context);
 	}
 
+	/**
+	 * Name: <code>&lt;DiscordEvent>.getServer()</code> <br>
+	 * Description: This gets the server that is related to the event <br>
+	 * Returns - DiscordServer: the server <br>
+	 * Throws - Error: "... has no server" if the event does not have a server <br>
+	 * Example: <code>event.getServer();</code>
+	 */
 	@ArucasFunction
 	public WrapperClassValue getServer(Context context) throws CodeError {
 		return DiscordServerWrapper.newDiscordServer(this.getServer(), context);
 	}
 
+	/**
+	 * Name: <code>&lt;DiscordEvent>.reply(message)</code> <br>
+	 * Description: This replies to the event with the given message <br>
+	 * Parameter - String: the message <br>
+	 * Example: <code>event.reply("Reply!");</code>
+	 */
 	@ArucasFunction
 	public void reply(Context context, StringValue message) {
 		this.getReplyCallback().reply(message.value).complete();
 	}
 
+	/**
+	 * Name: <code>&lt;DiscordEvent>.replyWithEmbed(embedMap)</code> <br>
+	 * Description: This replies to the event with the given embed map <br>
+	 * Parameter - Map: the embed map <br>
+	 * Example: <code>event.replyWithEmbed({"title": "EMBED!", "description": ["Wow", "Nice"], "colour": 0xFFFFFF});</code>
+	 */
 	@ArucasFunction
 	public void replyWithEmbed(Context context, MapValue mapValue) throws CodeError {
 		this.getReplyCallback().replyEmbeds(DiscordUtils.parseMapAsEmbed(context, mapValue)).complete();
 	}
 
+	/**
+	 * Name: <code>&lt;DiscordEvent>.replyWithFile(file)</code> <br>
+	 * Description: This replies to the event with the given file <br>
+	 * Parameter - File: the file <br>
+	 * Example: <code>event.replyWithFile(new File("/path/to/file.txt"));</code>
+	 */
 	@ArucasFunction
 	public void replyWithFile(Context context, FileValue fileValue) {
 		this.getReplyCallback().replyFile(fileValue.value).complete();

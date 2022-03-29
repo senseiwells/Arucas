@@ -46,6 +46,11 @@ public class SetValue extends Value<ArucasSet> {
 		return "Set";
 	}
 
+	/**
+	 * Set class for Arucas. <br>
+	 * Fully Documented.
+	 * @author senseiwells
+	 */
 	public static class ArucasSetClass extends ArucasClassExtension {
 		public ArucasSetClass() {
 			super("Set");
@@ -63,6 +68,13 @@ public class SetValue extends Value<ArucasSet> {
 			);
 		}
 
+		/**
+		 * Name: <code>Set.of(index)</code> <br>
+		 * Description: this allows you to create a set with an arbitrary number of values <br>
+		 * Parameters - Value: the values you want to add to the set <br>
+		 * Returns - Set: the set you created <br>
+		 * Example: <code>Set.of("object", 81, 96, "case");</code>
+		 */
 		private Value<?> of(Context context, BuiltInFunction function) throws CodeError {
 			ListValue arguments = function.getFirstParameter(context, ListValue.class);
 			ArucasSet set = new ArucasSet();
@@ -86,9 +98,11 @@ public class SetValue extends Value<ArucasSet> {
 		}
 
 		/**
-		 * Description: this allows you to get a value from in the set <p>
-		 * Parameters - Value: the value you want to get from the set <p>
-		 * Returns - Value/Null: the value you wanted to get, null if it wasn't in the set
+		 * Name: <code>&lt;Set>.get(object)</code> <br>
+		 * Description: This allows you to get a value from in the set <br>
+		 * Parameter - Value: the value you want to get from the set <br>
+		 * Returns - Value/Null: the value you wanted to get, null if it wasn't in the set <br>
+		 * Example: <code>Set.of("object").get("object");</code>
 		 */
 		private synchronized Value<?> get(Context context, MemberFunction function) throws CodeError {
 			SetValue thisValue = function.getThis(context, SetValue.class);
@@ -97,9 +111,11 @@ public class SetValue extends Value<ArucasSet> {
 		}
 
 		/**
-		 * Description: this allows you to remove a value from the set <p>
-		 * Parameters - Value: the value you want to remove from the set <p>
-		 * Returns - Boolean: whether the value was removed from the set
+		 * Name: <code>&lt;Set>.remove(object)</code> <br>
+		 * Description: This allows you to remove a value from the set <br>
+		 * Parameter - Value: the value you want to remove from the set <br>
+		 * Returns - Boolean: whether the value was removed from the set <br>
+		 * Example: <code>Set.of("object").remove("object");</code>
 		 */
 		private synchronized Value<?> remove(Context context, MemberFunction function) throws CodeError {
 			SetValue thisValue = function.getThis(context, SetValue.class);
@@ -108,9 +124,11 @@ public class SetValue extends Value<ArucasSet> {
 		}
 
 		/**
-		 * Description: this allows you to add a value to the set <p>
-		 * Parameters - Value: the value you want to add to the set <p>
-		 * Returns - Boolean: whether the value was successfully added to the set
+		 * Name: <code>&lt;Set>.add(value)</code> <br>
+		 * Description: This allows you to add a value to the set <br>
+		 * Parameter - Value: the value you want to add to the set <br>
+		 * Returns - Boolean: whether the value was successfully added to the set <br>
+		 * Example: <code>Set.of().add("object");</code>
 		 */
 		private synchronized Value<?> add(Context context, MemberFunction function) throws CodeError {
 			SetValue thisValue = function.getThis(context, SetValue.class);
@@ -119,10 +137,12 @@ public class SetValue extends Value<ArucasSet> {
 		}
 
 		/**
-		 * Description: this allows you to add all the values in a collection into the set <p>
-		 * Parameters - List/Set: the collection of values you want to add <p>
-		 * Returns - Set: the modified set <p>
-		 * Throws: <code>"'...' is not a colletion"</code>
+		 * Name: <code>&lt;Set>.addAll(otherCollection)</code> <br>
+		 * Description: This allows you to add all the values in a collection into the set <br>
+		 * Parameter - Collection: the collection of values you want to add <br>
+		 * Returns - Set: the modified set <br>
+		 * Throws - Error: <code>"'...' is not a collection"</code> if the parameter isn't a collection <br>
+		 * Example: <code>Set.of().addAll(Set.of("object", 81, 96, "case"));</code>
 		 */
 		private synchronized Value<?> addAll(Context context, MemberFunction function) throws CodeError {
 			SetValue thisValue = function.getThis(context, SetValue.class);
@@ -135,9 +155,11 @@ public class SetValue extends Value<ArucasSet> {
 		}
 
 		/**
-		 * Description: this allows you to check whether a value is in the set <p>
-		 * Parameters - Value: the value that you want to check in the set <p>
-		 * Returns - Boolean: whether the value is in the set
+		 * Name: <code>&lt;Set>.contains(value)</code> <br>
+		 * Description: This allows you to check whether a value is in the set <br>
+		 * Parameter - Value: the value that you want to check in the set <br>
+		 * Returns - Boolean: whether the value is in the set <br>
+		 * Example: <code>Set.of("object").contains("object");</code>
 		 */
 		private synchronized BooleanValue contains(Context context, MemberFunction function) throws CodeError {
 			SetValue thisValue = function.getThis(context, SetValue.class);
@@ -146,10 +168,12 @@ public class SetValue extends Value<ArucasSet> {
 		}
 
 		/**
-		 * Description: this allows you to check whether a collection of values are all in the set <p>
-		 * Parameters - List/Set: the collection of values you want to check in the set <p>
-		 * Returns - Boolean: whether all the values are in the set <p>
-		 * Throws: <code>"'...' is not a collection"</code>
+		 * Name: <code>&lt;Set>.containsAll(otherCollection)</code> <br>
+		 * Description: This allows you to check whether a collection of values are all in the set <br>
+		 * Parameter - Collection: the collection of values you want to check in the set <br>
+		 * Returns - Boolean: whether all the values are in the set <br>
+		 * Throws - Error: <code>"'...' is not a collection"</code> if the parameter isn't a collection <br>
+		 * Example: <code>Set.of("object").containsAll(Set.of("object", 81, 96, "case"));</code>
 		 */
 		private synchronized BooleanValue containsAll(Context context, MemberFunction function) throws CodeError {
 			SetValue thisValue = function.getThis(context, SetValue.class);
@@ -161,8 +185,10 @@ public class SetValue extends Value<ArucasSet> {
 		}
 
 		/**
-		 * Description: this allows you to check whether the set has no values <p>
-		 * Returns - Boolean: whether the set is empty
+		 * Name: <code>&lt;Set>.isEmpty()</code> <br>
+		 * Description: This allows you to check whether the set has no values <br>
+		 * Returns - Boolean: whether the set is empty <br>
+		 * Example: <code>Set.of().isEmpty();</code>
 		 */
 		private synchronized BooleanValue isEmpty(Context context, MemberFunction function) throws CodeError {
 			SetValue thisValue = function.getThis(context, SetValue.class);
@@ -170,7 +196,9 @@ public class SetValue extends Value<ArucasSet> {
 		}
 
 		/**
-		 * Description: this removes all values from inside the set
+		 * Name: <code>&lt;Set>.clear()</code> <br>
+		 * Description: This removes all values from inside the set <br>
+		 * Example: <code>Set.of("object").clear();</code>
 		 */
 		private synchronized Value<?> clear(Context context, MemberFunction function) throws CodeError {
 			SetValue thisValue = function.getThis(context, SetValue.class);
@@ -179,8 +207,10 @@ public class SetValue extends Value<ArucasSet> {
 		}
 
 		/**
-		 * Description: this converts the set to a string and evaluating any collections inside it <p>
-		 * Returns - String: the string representation of the set
+		 * Name: <code>&lt;Set>.toString()</code> <br>
+		 * Description: This converts the set to a string and evaluating any collections inside it <br>
+		 * Returns - String: the string representation of the set <br>
+		 * Example: <code>Set.of("object").toString();</code>
 		 */
 		private synchronized Value<?> toString(Context context, MemberFunction function) throws CodeError {
 			SetValue thisValue = function.getThis(context, SetValue.class);

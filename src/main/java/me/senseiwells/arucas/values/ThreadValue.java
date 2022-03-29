@@ -50,6 +50,11 @@ public class ThreadValue extends Value<ArucasThread> {
 		return "Thread";
 	}
 
+	/**
+	 * Thread class for Arucas. <br>
+	 * Fully Documented.
+	 * @author senseiwells
+	 */
 	public static class ArucasThreadClass extends ArucasClassExtension {
 		public ArucasThreadClass() {
 			super("Thread");
@@ -70,6 +75,13 @@ public class ThreadValue extends Value<ArucasThread> {
 			);
 		}
 
+		/**
+		 * Name: <code>Thread.getCurrentThread()</code> <br>
+		 * Description: This gets the current thread that the code is running on <br>
+		 * Returns - Thread: the current thread <br>
+		 * Throws - Error: <code>"Thread is not safe to get"</code> if the thread doesn't originate from Arucas <br>
+		 * Example: <code>Thread.getCurrentThread();</code>
+		 */
 		private Value<?> getCurrentThread(Context context, BuiltInFunction function) throws RuntimeError {
 			Thread currentThread = Thread.currentThread();
 			if (currentThread instanceof ArucasThread arucasValueThread) {
@@ -78,6 +90,13 @@ public class ThreadValue extends Value<ArucasThread> {
 			throw new RuntimeError("Thread is not safe to get", function.syntaxPosition, context);
 		}
 
+		/**
+		 * Name: <code>Thread.runThreaded(function)</code> <br>
+		 * Description: This starts a new thread and runs a function on it <br>
+		 * Parameter - Function: the function you want to run on a new thread <br>
+		 * Returns - Thread: the new thread <br>
+		 * Example: <code>Thread.runThreaded(fun() { print(); });</code>
+		 */
 		private Value<?> runThreaded1(Context context, BuiltInFunction function) throws CodeError {
 			FunctionValue functionValue = function.getParameterValueOfType(context, FunctionValue.class, 0);
 			ArucasThread thread = context.getThreadHandler().runAsyncFunctionInContext(
@@ -87,6 +106,13 @@ public class ThreadValue extends Value<ArucasThread> {
 			return ThreadValue.of(thread);
 		}
 
+		/**
+		 * Name: <code>Thread.runThreaded(name, function)</code> <br>
+		 * Description: This starts a new thread with a specific name and runs a function on it <br>
+		 * Parameters - String, Function: the name of the thread, the function you want to run on a new thread <br>
+		 * Returns - Thread: the new thread <br>
+		 * Example: <code>Thread.runThreaded("MyThread", fun() { print(); });</code>
+		 */
 		private Value<?> runThreaded2(Context context, BuiltInFunction function) throws CodeError {
 			StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
 			FunctionValue functionValue = function.getParameterValueOfType(context, FunctionValue.class, 1);
@@ -97,6 +123,12 @@ public class ThreadValue extends Value<ArucasThread> {
 			return ThreadValue.of(thread);
 		}
 
+		/**
+		 * Name: <code>Thread.freeze()</code> <br>
+		 * Description: This freezes the current thread <br>
+		 * Returns - Thread: the current thread <br>
+		 * Example: <code>Thread.freeze();</code>
+		 */
 		private Value<?> freeze(Context context, BuiltInFunction function) throws CodeError {
 			Thread currentThread = Thread.currentThread();
 			if (!(currentThread instanceof ArucasThread)) {
@@ -121,21 +153,45 @@ public class ThreadValue extends Value<ArucasThread> {
 			);
 		}
 
+		/**
+		 * Name: <code>&lt;Thread>.isAlive()</code> <br>
+		 * Description: This checks if the thread is alive <br>
+		 * Returns - Boolean: true if the thread is alive, false if not <br>
+		 * Example: <code>Thread.getCurrentThread().isAlive();</code>
+		 */
 		private Value<?> isAlive(Context context, MemberFunction function) throws CodeError {
 			ThreadValue thisValue = function.getParameterValueOfType(context, ThreadValue.class, 0);
 			return BooleanValue.of(thisValue.value.isAlive());
 		}
 
+		/**
+		 * Name: <code>&lt;Thread>.getAge()</code> <br>
+		 * Description: This gets the age of the thread <br>
+		 * Returns - Number: the age of the thread <br>
+		 * Example: <code>Thread.getCurrentThread().getAge();</code>
+		 */
 		private Value<?> getAge(Context context, MemberFunction function) throws CodeError {
 			ThreadValue thisValue = function.getParameterValueOfType(context, ThreadValue.class, 0);
 			return NumberValue.of(System.currentTimeMillis() - thisValue.value.getStartTime());
 		}
 
+		/**
+		 * Name: <code>&lt;Thread>.getName()</code> <br>
+		 * Description: This gets the name of the thread <br>
+		 * Returns - String: the name of the thread <br>
+		 * Example: <code>Thread.getCurrentThread().getName();</code>
+		 */
 		private Value<?> getName(Context context, MemberFunction function) throws CodeError {
 			ThreadValue thisValue = function.getParameterValueOfType(context, ThreadValue.class, 0);
 			return thisValue.name;
 		}
 
+		/**
+		 * Name: <code>&lt;Thread>.stop()</code> <br>
+		 * Description: This stops the thread from executing, anything that was running will be instantly stopped <br>
+		 * Throws - Error: <code>"Thread is not alive"</code> if the thread is not alive <br>
+		 * Example: <code>Thread.getCurrentThread().stop();</code>
+		 */
 		private Value<?> stop(Context context, MemberFunction function) throws CodeError {
 			ThreadValue thisValue = function.getParameterValueOfType(context, ThreadValue.class, 0);
 			if (!thisValue.value.isAlive()) {

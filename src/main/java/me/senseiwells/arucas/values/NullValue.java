@@ -35,6 +35,11 @@ public class NullValue extends Value<Object> {
 		return "Null";
 	}
 
+	/**
+	 * Null class for Arucas. <br>
+	 * No Documentation.
+	 * @author senseiwells
+	 */
 	public static class ArucasNullClass extends ArucasClassExtension {
 		public ArucasNullClass() {
 			super("Null");

@@ -53,6 +53,11 @@ public class FileValue extends Value<File> {
 		return "File";
 	}
 
+	/**
+	 * File class for Arucas. <br>
+	 * Fully Documented.
+	 * @author senseiwells
+	 */
 	public static class ArucasFileClass extends ArucasClassExtension {
 		public ArucasFileClass() {
 			super("File");
@@ -70,6 +75,13 @@ public class FileValue extends Value<File> {
 			);
 		}
 
+		/**
+		 * Name: <code>new File(path)</code> <br>
+		 * Description: This creates a new File object with set path <br>
+		 * Parameter - String: the path of the file <br>
+		 * Returns - File: the new File object <br>
+		 * Example: <code>new File("foo/bar/script.arucas");</code>
+		 */
 		private FileValue newFile(Context context, BuiltInFunction function) throws CodeError {
 			StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
 			return FileValue.of(new File(stringValue.value));
@@ -82,6 +94,12 @@ public class FileValue extends Value<File> {
 			);
 		}
 
+		/**
+		 * Name: <code>File.getDirectory()</code> <br>
+		 * Description: This returns the file of the working directory <br>
+		 * Returns - File: the file of the working directory <br>
+		 * Example: <code>File.getDirectory();</code>
+		 */
 		private Value<?> getDirectory(Context context, BuiltInFunction function) {
 			String filePath = System.getProperty("user.dir");
 			return FileValue.of(new File(filePath));
@@ -103,11 +121,23 @@ public class FileValue extends Value<File> {
 			);
 		}
 
+		/**
+		 * Name: <code>&lt;File>.getName()</code> <br>
+		 * Description: This returns the name of the file <br>
+		 * Example: <code>File.getName();</code>
+		 */
 		private Value<?> getName(Context context, MemberFunction function) throws CodeError {
 			FileValue thisValue = function.getThis(context, FileValue.class);
 			return StringValue.of(thisValue.value.getName());
 		}
 
+		/**
+		 * Name: <code>&lt;File>.read()</code> <br>
+		 * Description: This reads the file and returns the contents as a string <br>
+		 * Returns - String: the contents of the file <br>
+		 * Throws - Error: <code>"There was an error reading the file: ..."</code> if there was an error reading the file <br>
+		 * Example: <code>new File("foo/bar/script.arucas").read();</code>
+		 */
 		private Value<?> readFile(Context context, MemberFunction function) throws CodeError {
 			FileValue thisValue = function.getThis(context, FileValue.class);
 			try {
@@ -128,6 +158,13 @@ public class FileValue extends Value<File> {
 			}
 		}
 
+		/**
+		 * Name: <code>&lt;File>.write(string)</code> <br>
+		 * Description: This writes a string to a file <br>
+		 * Parameter - String: the string to write to the file <br>
+		 * Throws - Error: <code>"There was an error writing the file: ..."</code> if there was an error writing the file <br>
+		 * Example: <code>new File("foo/bar/script.arucas").write("Hello World!");</code>
+		 */
 		private Value<?> writeFile(Context context, MemberFunction function) throws CodeError {
 			FileValue thisValue = function.getThis(context, FileValue.class);
 			StringValue writeValue = function.getParameterValueOfType(context, StringValue.class, 1);
@@ -145,6 +182,14 @@ public class FileValue extends Value<File> {
 			}
 		}
 
+
+		/**
+		 * Name: <code>&lt;File>.getSubFiles()</code> <br>
+		 * Description: This returns a list of all the sub files in the directory <br>
+		 * Returns - List: a list of all the sub files in the directory <br>
+		 * Throws - Error: <code>"Could not find any files"</code> if there are no files in the directory <br>
+		 * Example: <code>new File("foo/bar/script.arucas").getSubFiles();</code>
+		 */
 		private Value<?> getSubFiles(Context context, MemberFunction function) throws CodeError {
 			FileValue thisValue = function.getThis(context, FileValue.class);
 			try {
@@ -163,6 +208,13 @@ public class FileValue extends Value<File> {
 			}
 		}
 
+		/**
+		 * Name: <code>&lt;File>.delete()</code> <br>
+		 * Description: This deletes the file <br>
+		 * Returns - Boolean: true if the file was deleted <br>
+		 * Throws - Error: <code>"Could not delete file: ..."</code> if there was an error deleting the file <br>
+		 * Example: <code>new File("foo/bar/script.arucas").delete();</code>
+		 */
 		private Value<?> deleteFile(Context context, MemberFunction function) throws CodeError {
 			FileValue thisValue = function.getThis(context, FileValue.class);
 			try {
@@ -177,6 +229,13 @@ public class FileValue extends Value<File> {
 			}
 		}
 
+		/**
+		 * Name: <code>&lt;File>.exists()</code> <br>
+		 * Description: This returns if the file exists <br>
+		 * Returns - Boolean: true if the file exists <br>
+		 * Throws - Error: <code>"Could not check file: ..."</code> if there was an error checking the file <br>
+		 * Example: <code>new File("foo/bar/script.arucas").exists();</code>
+		 */
 		private Value<?> exists(Context context, MemberFunction function) throws CodeError {
 			FileValue thisValue = function.getThis(context, FileValue.class);
 			try {
@@ -191,6 +250,13 @@ public class FileValue extends Value<File> {
 			}
 		}
 
+		/**
+		 * Name: <code>&lt;File>.createDirectory()</code> <br>
+		 * Description: This creates all parent directories of the file if they don't already exist <br>
+		 * Returns - Boolean: true if the directories were created <br>
+		 * Throws - Error: <code>"..."</code> if there was an error creating the directories <br>
+		 * Example: <code>new File("foo/bar/script.arucas").createDirectory();</code>
+		 */
 		private Value<?> createDirectory(Context context, MemberFunction function) throws CodeError {
 			FileValue thisValue = function.getThis(context, FileValue.class);
 			try {
@@ -201,11 +267,23 @@ public class FileValue extends Value<File> {
 			}
 		}
 
+		/**
+		 * Name: <code>&lt;File>.getPath()</code> <br>
+		 * Description: This returns the path of the file <br>
+		 * Returns - String: the path of the file <br>
+		 * Example: <code>new File("foo/bar/script.arucas").getPath();</code>
+		 */
 		private Value<?> getPath(Context context, MemberFunction function) throws CodeError {
 			FileValue thisValue = function.getThis(context, FileValue.class);
 			return StringValue.of(thisValue.value.getPath());
 		}
 
+		/**
+		 * Name: <code>&lt;File>.getAbsolutePath()</code> <br>
+		 * Description: This returns the absolute path of the file <br>
+		 * Returns - String: the absolute path of the file <br>
+		 * Example: <code>new File("foo/bar/script.arucas").getAbsolutePath();</code>
+		 */
 		private Value<?> getAbsolutePath(Context context, MemberFunction function) throws CodeError {
 			FileValue thisValue = function.getThis(context, FileValue.class);
 			try {
@@ -216,6 +294,11 @@ public class FileValue extends Value<File> {
 			}
 		}
 
+		/**
+		 * Name: <code>&lt;File>.open()</code> <br>
+		 * Description: This opens the file (as in opens it on your os) <br>
+		 * Example: <code>new File("foo/bar/script.arucas").open();</code>
+		 */
 		private Value<?> open(Context context, MemberFunction function) throws CodeError {
 			FileValue thisValue = function.getThis(context, FileValue.class);
 			try {

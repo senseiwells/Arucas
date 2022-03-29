@@ -11,8 +11,6 @@ import me.senseiwells.arucas.utils.ArucasOperatorMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.functions.ClassMemberFunction;
-import me.senseiwells.arucas.values.functions.EmbeddableFunction;
-import me.senseiwells.arucas.values.functions.FunctionValue;
 
 import java.util.*;
 
@@ -20,7 +18,7 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 	private final ArucasFunctionMap<ClassMemberFunction> methods;
 	private final Map<String, Node> staticMemberVariableNodes;
 	private final List<Node> staticInitializers;
-	private final Map<String, EmbeddedNode> memberVariables;
+	private final Map<String, Node> memberVariables;
 	protected final ArucasFunctionMap<ClassMemberFunction> constructors;
 	protected final ArucasOperatorMap<ClassMemberFunction> operatorMap;
 
@@ -55,26 +53,11 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 			this.staticMemberVariableNodes.put(name, value);
 			return;
 		}
-		this.memberVariables.put(name, new EmbeddedNode(value, null));
+		this.memberVariables.put(name, value);
 	}
 
 	public boolean hasMemberVariable(boolean isStatic, String name) {
 		return isStatic ? this.staticMemberVariableNodes.containsKey(name) : this.memberVariables.containsKey(name);
-	}
-
-	public void addEmbeddedMemberVariableNode(AbstractClassDefinition definition, String name, Node value) {
-		this.memberVariables.put(name, new EmbeddedNode(value, definition));
-	}
-
-	public boolean hasEmbeddedClass(AbstractClassDefinition definition) {
-		// Prevent threading issues...
-		EmbeddedNode[] embeddedNodes = this.memberVariables.values().toArray(EmbeddedNode[]::new);
-		for (EmbeddedNode embeddedNode : embeddedNodes) {
-			if (embeddedNode.definition == definition) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	protected void addClassProperties(ArucasClassValue thisValue, Context context) throws ThrowValue, CodeError {
@@ -86,29 +69,12 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 		}
 
 		// Add member variables
-		for (Map.Entry<String, EmbeddedNode> entry : this.memberVariables.entrySet()) {
+		for (Map.Entry<String, Node> entry : this.memberVariables.entrySet()) {
 			String name = entry.getKey();
-			EmbeddedNode embeddedNode = entry.getValue();
+			Node node = entry.getValue();
 
-			Value<?> value = embeddedNode.node.visit(context);
+			Value<?> value = node.visit(context);
 			thisValue.addMemberVariable(name, value);
-
-			// We do not inherit embedded Value methods since we already have them
-			AbstractClassDefinition definition = embeddedNode.definition;
-			if (definition == null || definition.getValueClass() == Value.class) {
-				continue;
-			}
-
-			for (FunctionValue function : definition.getMethods()) {
-				if (thisValue.hasMember(function.getName(), function.getParameterCount())) {
-					continue;
-				}
-				if (function instanceof EmbeddableFunction embeddableFunction) {
-					embeddableFunction.setCallingMember(() -> thisValue.getMember(name));
-					embeddableFunction.setDefinition(embeddedNode.definition);
-					thisValue.addMethod(function);
-				}
-			}
 		}
 
 		this.operatorMap.forEach((type, function) -> {
@@ -166,8 +132,5 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 	@Override
 	public Class<ArucasClassValue> getValueClass() {
 		return ArucasClassValue.class;
-	}
-
-	protected record EmbeddedNode(Node node, AbstractClassDefinition definition) {
 	}
 }

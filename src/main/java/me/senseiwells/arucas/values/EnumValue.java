@@ -46,6 +46,11 @@ public class EnumValue extends ArucasClassValue {
 		return this == other;
 	}
 
+	/**
+	 * Enum class for Arucas. <br>
+	 * Fully Documented.
+	 * @author senseiwells
+	 */
 	public static class ArucasEnumClass extends ArucasClassExtension {
 		public ArucasEnumClass() {
 			super("Enum");
@@ -64,11 +69,23 @@ public class EnumValue extends ArucasClassValue {
 			);
 		}
 
+		/**
+		 * Name: <code>&lt;Enum>.getName()</code> <br>
+		 * Description: this allows you to get the name of the enum value <br>
+		 * Returns - String: the name of the enum value <br>
+		 * Example: <code>enum.getName();</code>
+		 */
 		private Value<?> getName(Context context, MemberFunction function) throws CodeError {
 			EnumValue enumValue = function.getThis(context, EnumValue.class);
 			return StringValue.of(enumValue.enumName);
 		}
 
+		/**
+		 * Name: <code>&lt;Enum>.ordinal()</code> <br>
+		 * Description: this allows you to get the ordinal of the enum value <br>
+		 * Returns - Number: the ordinal of the enum value <br>
+		 * Example: <code>enum.ordinal();</code>
+		 */
 		private Value<?> ordinal(Context context, MemberFunction function) throws CodeError {
 			EnumValue enumValue = function.getThis(context, EnumValue.class);
 			return NumberValue.of(enumValue.ordinal);

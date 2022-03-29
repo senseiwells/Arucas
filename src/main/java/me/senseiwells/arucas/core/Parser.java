@@ -353,9 +353,6 @@ public class Parser {
 				case LEFT_CURLY_BRACKET -> {
 					definition.addStaticInitializer(this.statements());
 				}
-				case EMBED -> {
-					this.embedClass(definition, isStatic);
-				}
 				default -> throw new CodeError(
 					CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR,
 					"Expected Identifier or function",
@@ -536,70 +533,6 @@ public class Parser {
 		syntaxPosition.end = statements.syntaxPosition.getEndPos();
 
 		return operatorMethod;
-	}
-
-	private void embedClass(ArucasClassDefinition classDefinition, boolean isStatic) throws CodeError {
-		ISyntax startPos = this.currentToken.syntaxPosition;
-		if (isStatic) {
-			throw new CodeError(
-				CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
-				"Cannot have a static operator method",
-				startPos
-			);
-		}
-
-		this.throwIfNotType(Token.Type.EMBED, "Expected 'embed'");
-		this.advance();
-
-		this.throwIfNotType(Token.Type.IDENTIFIER, "Expected identifier");
-		Token identifier = this.currentToken;
-		this.advance();
-
-		AbstractClassDefinition embededClass = this.context.getClassDefinition(identifier.content);
-		if (embededClass == null) {
-			throw new CodeError(CodeError.ErrorType.UNKNOWN_IDENTIFIER, "Class '%s' could not be found".formatted(identifier.content), startPos);
-		}
-		if (embededClass == classDefinition) {
-			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "Cannot embed own class", startPos);
-		}
-		if (classDefinition.hasEmbeddedClass(embededClass)) {
-			throw new CodeError(
-				CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
-				"Cannot embed '%s', duplicate type".formatted(embededClass.getName()),
-				identifier.syntaxPosition
-			);
-		}
-
-		this.throwIfNotType(Token.Type.AS, "Expected 'as'");
-		this.advance();
-
-		this.throwIfNotType(Token.Type.IDENTIFIER, "Expected an identifier");
-		Token token = this.currentToken;
-
-		if (classDefinition.hasMemberVariable(false, token.content)) {
-			throw new CodeError(
-				CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
-				"Cannot have duplicate members",
-				token.syntaxPosition
-			);
-		}
-		this.advance();
-
-		switch (this.currentToken.type) {
-			case ASSIGN_OPERATOR -> {
-				this.advance();
-				classDefinition.addEmbeddedMemberVariableNode(embededClass, token.content, this.sizeComparisonExpression());
-				this.throwIfNotType(Token.Type.SEMICOLON, "Expected ';'");
-				this.advance();
-			}
-			case SEMICOLON -> {
-				classDefinition.addEmbeddedMemberVariableNode(embededClass, token.content, new NullNode(this.currentToken));
-				this.advance();
-			}
-			default -> {
-				throw new CodeError(CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR, "Expected ';' or assignment", token.syntaxPosition);
-			}
-		}
 	}
 
 	// Checks whether the following code is unpacking code
@@ -1010,22 +943,18 @@ public class Parser {
 
 		if (this.currentToken.type == Token.Type.VAR) {
 			this.advance();
-			switch (this.peekNextToken().type) {
-				case ASSIGN_OPERATOR -> {
-					VariableAssignNode assignNode = this.setVariable();
-					assignNode.setLocal(true);
-					return assignNode;
-				}
-				// We do not allow for unpacking of local variables
-				// This is because variable could be member of a class
-				default -> {
-					throw new CodeError(
-						CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
-						"'var' keyword can only be used to assign local variables",
-						this.currentToken.syntaxPosition
-					);
-				}
+			if (this.peekNextToken().type == Token.Type.ASSIGN_OPERATOR) {
+				VariableAssignNode assignNode = this.setVariable();
+				assignNode.setLocal(true);
+				return assignNode;
 			}
+			// We do not allow for unpacking of local variables
+			// This is because variable could be member of a class
+			throw new CodeError(
+				CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
+				"'var' keyword can only be used to assign local variables",
+				this.currentToken.syntaxPosition
+			);
 		}
 		return this.sizeComparisonExpression();
 	}

@@ -45,6 +45,11 @@ public class MapValue extends Value<ArucasMap> {
 		return "Map";
 	}
 
+	/**
+	 * Map class for Arucas. <br>
+	 * Fully Documented.
+	 * @author senseiwells
+	 */
 	public static class ArucasMapClass extends ArucasClassExtension {
 		public ArucasMapClass() {
 			super("Map");
@@ -67,10 +72,18 @@ public class MapValue extends Value<ArucasMap> {
 				new MemberFunction("remove", "key", this::mapRemove),
 				new MemberFunction("clear", this::mapClear),
 				new MemberFunction("isEmpty", this::isEmpty),
+				new MemberFunction("containsKey", "key", this::mapContainsKey),
 				new MemberFunction("toString", this::toString)
 			);
 		}
 
+		/**
+		 * Name: <code>&lt;Map>.get(key)</code> <br>
+		 * Description: this allows you to get the value of a key in the map <br>
+		 * Parameter - Value: the key you want to get the value of <br>
+		 * Returns - Value: the value of the key, will return null if non-existent <br>
+		 * Example: <code>{"key": "value"}.get("key");</code>
+		 */
 		private Value<?> mapGet(Context context, MemberFunction function) throws CodeError {
 			MapValue thisValue = function.getParameterValueOfType(context, MapValue.class, 0);
 			Value<?> key = function.getParameterValue(context, 1);
@@ -78,16 +91,35 @@ public class MapValue extends Value<ArucasMap> {
 			return value == null ? NullValue.NULL : value;
 		}
 
+		/**
+		 * Name: <code>&lt;Map>.getKeys()</code> <br>
+		 * Description: this allows you to get the keys in the map <br>
+		 * Returns - List: a complete list of all the keys <br>
+		 * Example: <code>{"key": "value", "key2", "value2"}.getKeys();</code>
+		 */
 		private Value<?> mapGetKeys(Context context, MemberFunction function) throws CodeError {
 			MapValue thisValue = function.getParameterValueOfType(context, MapValue.class, 0);
 			return new ListValue(thisValue.value.keys());
 		}
 
+		/**
+		 * Name: <code>&lt;Map>.getValues()</code> <br>
+		 * Description: this allows you to get the values in the map <br>
+		 * Returns - List: a complete list of all the values <br>
+		 * Example: <code>{"key": "value", "key2", "value2"}.getValues();</code>
+		 */
 		private Value<?> mapGetValues(Context context, MemberFunction function) throws CodeError {
 			MapValue thisValue = function.getParameterValueOfType(context, MapValue.class, 0);
 			return new ListValue(thisValue.value.values());
 		}
 
+		/**
+		 * Name: <code>&lt;Map>.put(key, value)</code> <br>
+		 * Description: this allows you to put a key and value in the map <br>
+		 * Parameter - Value, Value: the key you want to put, the value you want to put <br>
+		 * Returns - Value: the previous value associated with the key, null if none <br>
+		 * Example: <code>{"key": "value"}.put("key2", "value2");</code>
+		 */
 		private Value<?> mapPut(Context context, MemberFunction function) throws CodeError {
 			MapValue thisValue = function.getParameterValueOfType(context, MapValue.class, 0);
 			Value<?> key = function.getParameterValue(context, 1);
@@ -96,6 +128,13 @@ public class MapValue extends Value<ArucasMap> {
 			return returnValue == null ? NullValue.NULL : returnValue;
 		}
 
+		/**
+		 * Name: <code>&lt;Map>.putIfAbsent(key, value)</code> <br>
+		 * Description: this allows you to put a key and value in the map if it doesn't exist <br>
+		 * Parameter - Value, Value: the key you want to put, the value you want to put <br>
+		 * Returns - Value: the previous value associated with the key, null if none <br>
+		 * Example: <code>{"key": "value"}.putIfAbsent("key2", "value2");</code>
+		 */
 		private Value<?> mapPutIfAbsent(Context context, MemberFunction function) throws CodeError {
 			MapValue thisValue = function.getParameterValueOfType(context, MapValue.class, 0);
 			Value<?> key = function.getParameterValue(context, 1);
@@ -104,6 +143,12 @@ public class MapValue extends Value<ArucasMap> {
 			return returnValue == null ? NullValue.NULL : returnValue;
 		}
 
+		/**
+		 * Name: <code>&lt;Map>.putAll(anotherMap)</code> <br>
+		 * Description: this allows you to put all the keys and values of another map into this map <br>
+		 * Parameter - Value: another map <br>
+		 * Example: <code>{"key": "value"}.putAll({"key2": "value2"});</code>
+		 */
 		private Value<?> mapPutAll(Context context, MemberFunction function) throws CodeError {
 			MapValue thisValue = function.getParameterValueOfType(context, MapValue.class, 0);
 			MapValue anotherMapValue = function.getParameterValueOfType(context, MapValue.class, 1);
@@ -111,6 +156,13 @@ public class MapValue extends Value<ArucasMap> {
 			return NullValue.NULL;
 		}
 
+		/**
+		 * Name: <code>&lt;Map>.remove(key)</code> <br>
+		 * Description: this allows you to remove a key and its value from the map <br>
+		 * Parameter - Value: the key you want to remove <br>
+		 * Returns - Value: the value associated with the key, null if none <br>
+		 * Example: <code>{"key": "value"}.remove("key");</code>
+		 */
 		private Value<?> mapRemove(Context context, MemberFunction function) throws CodeError {
 			MapValue thisValue = function.getParameterValueOfType(context, MapValue.class, 0);
 			Value<?> key = function.getParameterValue(context, 1);
@@ -118,17 +170,47 @@ public class MapValue extends Value<ArucasMap> {
 			return removedValue == null ? NullValue.NULL : removedValue;
 		}
 
+		/**
+		 * Name: <code>&lt;Map>.clear()</code> <br>
+		 * Description: this allows you to clear the map of all the keys and values <br>
+		 * Example: <code>{"key": "value"}.clear();</code>
+		 */
 		private Value<?> mapClear(Context context, MemberFunction function) throws CodeError {
 			MapValue thisValue = function.getParameterValueOfType(context, MapValue.class, 0);
 			thisValue.value.clear();
 			return NullValue.NULL;
 		}
 
+		/**
+		 * Name: <code>&lt;Map>.isEmpty()</code> <br>
+		 * Description: this allows you to check if the map is empty <br>
+		 * Returns - Boolean: true if the map is empty, false otherwise <br>
+		 * Example: <code>{"key": "value"}.isEmpty();</code>
+		 */
 		private BooleanValue isEmpty(Context context, MemberFunction function) throws CodeError {
 			MapValue thisValue = function.getParameterValueOfType(context, MapValue.class, 0);
 			return BooleanValue.of(thisValue.value.isEmpty());
 		}
 
+		/**
+		 * Name: <code>&lt;Map>.containsKey(key)</code> <br>
+		 * Description: this allows you to check if the map contains a specific key <br>
+		 * Parameter - Value: the key you want to check <br>
+		 * Returns - Boolean: true if the map contains the key, false otherwise <br>
+		 * Example: <code>{"key": "value"}.containsKey("key");</code>
+		 */
+		private BooleanValue mapContainsKey(Context context, MemberFunction function) throws CodeError {
+			MapValue thisValue = function.getParameterValueOfType(context, MapValue.class, 0);
+			Value<?> key = function.getParameterValue(context, 1);
+			return BooleanValue.of(thisValue.value.containsKey(context, key));
+		}
+
+		/**
+		 * Name: <code>&lt;Map>.toString()</code> <br>
+		 * Description: this allows you to get the string representation of the map and evaluating any collections inside it <br>
+		 * Returns - String: the string representation of the map <br>
+		 * Example: <code>{"key": []}.toString();</code>
+		 */
 		private Value<?> toString(Context context, MemberFunction function) throws CodeError {
 			MapValue thisValue = function.getParameterValueOfType(context, MapValue.class, 0);
 			return StringValue.of(thisValue.value.getAsStringUnsafe(context, function.syntaxPosition));
