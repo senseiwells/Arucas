@@ -6,7 +6,6 @@ import me.senseiwells.arucas.api.wrappers.IArucasWrappedClass;
 import me.senseiwells.arucas.extensions.ArucasBuiltInExtension;
 import me.senseiwells.arucas.extensions.ArucasMathClass;
 import me.senseiwells.arucas.extensions.ArucasNetworkClass;
-import me.senseiwells.arucas.extensions.discordapi.*;
 import me.senseiwells.arucas.utils.ArucasClassDefinitionMap;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
@@ -105,15 +104,7 @@ public class ContextBuilder {
 	}
 
 	public ContextBuilder addDefaultWrappers() {
-		return this.addWrappers(
-			DiscordAttachmentWrapper::new,
-			DiscordBotWrapper::new,
-			DiscordChannelWrapper::new,
-			DiscordEventWrapper::new,
-			DiscordMessageWrapper::new,
-			DiscordServerWrapper::new,
-			DiscordUserWrapper::new
-		);
+		return this;
 	}
 
 	@SafeVarargs

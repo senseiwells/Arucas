@@ -4,7 +4,6 @@ import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.functions.FunctionValue;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -14,9 +13,7 @@ public class StackTable {
 	private final StackTable rootTable;
 
 	// Lazy generated
-	@Nullable
 	protected Map<String, Value<?>> symbolMap;
-	@Nullable
 	protected ArucasClassDefinitionMap classDefinitions;
 	
 	protected final boolean canContinue;
