@@ -258,7 +258,9 @@ public class Parser {
 
 		if (all) {
 			for (AbstractClassDefinition definition : importDefinitions) {
-				this.throwIfStackNameTaken(definition.getName(), className.syntaxPosition);
+				if (this.context.getClassDefinition(definition.getName()) != definition)  {
+					this.throwIfStackNameTaken(definition.getName(), className.syntaxPosition);
+				}
 				this.context.addClassDefinition(definition);
 			}
 		}
@@ -266,6 +268,9 @@ public class Parser {
 			AbstractClassDefinition definition = importDefinitions.get(className.content);
 			if (definition == null) {
 				throw new RuntimeError("No such class '%s' exists".formatted(className.content), className.syntaxPosition, this.context);
+			}
+			if (this.context.getClassDefinition(definition.getName()) != definition)  {
+				this.throwIfStackNameTaken(definition.getName(), className.syntaxPosition);
 			}
 			this.context.addClassDefinition(definition);
 		}

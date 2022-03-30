@@ -73,7 +73,7 @@ public class ContextBuilder {
 	}
 
 	public ContextBuilder addDefaultClasses() {
-		List<Supplier<ArucasClassExtension>> builtInClasses = List.of(
+		return this.addBuiltInClasses(
 			Value.ArucasBaseClass::new,
 			TypeValue.ArucasTypeClass::new,
 			EnumValue.ArucasEnumClass::new,
@@ -91,8 +91,6 @@ public class ContextBuilder {
 			ArucasMathClass::new,
 			ArucasNetworkClass::new
 		);
-		// You can technically import them but it's redundant
-		return this.addBuiltInClasses(builtInClasses).addClasses("BuiltIn", builtInClasses);
 	}
 
 	/**
@@ -201,6 +199,8 @@ public class ContextBuilder {
 		}
 
 		Map<String, ArucasClassDefinitionMap> importables = new HashMap<>();
+		importables.put("BuiltIn", classDefinitions);
+
 		this.classes.forEach((s, suppliers) -> {
 			ArucasClassDefinitionMap definitions = new ArucasClassDefinitionMap();
 			for (Supplier<ArucasClassExtension> supplier : suppliers) {
