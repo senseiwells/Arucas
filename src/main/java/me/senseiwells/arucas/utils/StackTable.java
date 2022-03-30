@@ -1,11 +1,14 @@
 package me.senseiwells.arucas.utils;
 
-import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.values.Value;
+import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public class StackTable {
 	private final StackTable parentTable;
@@ -15,6 +18,7 @@ public class StackTable {
 	// Lazy generated
 	protected Map<String, Value<?>> symbolMap;
 	protected ArucasClassDefinitionMap classDefinitions;
+	protected Map<String, ArucasClassDefinitionMap> cachedDefinitions;
 	
 	protected final boolean canContinue;
 	protected final boolean canBreak;
@@ -135,6 +139,36 @@ public class StackTable {
 		}
 		
 		this.classDefinitions.add(definition);
+	}
+
+	public void replaceClassDefinition(AbstractClassDefinition definition) {
+		if (this.classDefinitions == null) {
+			this.classDefinitions = new ArucasClassDefinitionMap();
+		}
+
+		this.classDefinitions.replace(definition);
+	}
+
+	public void addCachedDefinitionMap(String fileName, ArucasClassDefinitionMap definitions) {
+		if (this.rootTable == this) {
+			if (this.cachedDefinitions == null) {
+				this.cachedDefinitions = new HashMap<>();
+			}
+
+			this.cachedDefinitions.put(fileName, definitions);
+			return;
+		}
+		this.rootTable.addCachedDefinitionMap(fileName, definitions);
+	}
+
+	public ArucasClassDefinitionMap getCachedDefinitionMap(String fileName) {
+		if (this.rootTable == this) {
+			if (this.cachedDefinitions == null) {
+				return null;
+			}
+			return this.cachedDefinitions.get(fileName);
+		}
+		return this.rootTable.getCachedDefinitionMap(fileName);
 	}
 
 	/**

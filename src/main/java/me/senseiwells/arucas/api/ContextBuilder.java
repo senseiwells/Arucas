@@ -1,6 +1,7 @@
 package me.senseiwells.arucas.api;
 
 import me.senseiwells.arucas.api.impl.ArucasOutputImpl;
+import me.senseiwells.arucas.core.Arucas;
 import me.senseiwells.arucas.values.classes.ArucasWrapperExtension;
 import me.senseiwells.arucas.api.wrappers.IArucasWrappedClass;
 import me.senseiwells.arucas.extensions.ArucasBuiltInExtension;
@@ -13,6 +14,7 @@ import me.senseiwells.arucas.values.*;
 import me.senseiwells.arucas.values.functions.AbstractBuiltInFunction;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -29,6 +31,7 @@ public class ContextBuilder {
 	private IArucasOutput outputHandler;
 	private boolean suppressDeprecated;
 	private String displayName;
+	private Path importPath;
 
 	public ContextBuilder() {
 		this.extensions = new ArrayList<>();
@@ -37,6 +40,7 @@ public class ContextBuilder {
 		this.outputHandler = new ArucasOutputImpl();
 		this.suppressDeprecated = false;
 		this.displayName = "";
+		this.importPath = Arucas.PATH.resolve("imports");
 	}
 
 	public ContextBuilder setDisplayName(String displayName) {
@@ -124,6 +128,11 @@ public class ContextBuilder {
 			.addDefaultWrappers();
 	}
 
+	public ContextBuilder setImportPath(Path newImportPath) {
+		this.importPath = newImportPath;
+		return this;
+	}
+
 	public Context build() {
 		ArucasFunctionMap<AbstractBuiltInFunction<?>> extensionList = new ArucasFunctionMap<>();
 		ArucasClassDefinitionMap classDefinitions = new ArucasClassDefinitionMap();
@@ -144,7 +153,7 @@ public class ContextBuilder {
 
 		ArucasThreadHandler threadHandler = new ArucasThreadHandler();
 
-		Context context = new Context(this.displayName, extensionList, classDefinitions, threadHandler, this.outputHandler);
+		Context context = new Context(this.displayName, extensionList, classDefinitions, threadHandler, this.outputHandler, this.importPath);
 		context.setSuppressDeprecated(this.suppressDeprecated);
 		return context;
 	}

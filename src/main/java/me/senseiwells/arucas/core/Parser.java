@@ -3,10 +3,9 @@ package me.senseiwells.arucas.core;
 import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.nodes.*;
 import me.senseiwells.arucas.throwables.CodeError;
+import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.tokens.Token;
-import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.utils.MutableSyntaxImpl;
-import me.senseiwells.arucas.utils.StringUtils;
+import me.senseiwells.arucas.utils.*;
 import me.senseiwells.arucas.utils.impl.ArucasSet;
 import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.StringValue;
@@ -18,12 +17,16 @@ import me.senseiwells.arucas.values.functions.ClassMemberFunction;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.functions.UserDefinedFunction;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
 public class Parser {
 	private final List<Token> tokens;
 	private final Context context;
 	private final Stack<StackType> parseStack;
+	
 	private int operatorTokenIndex;
 	private Token currentToken;
 
@@ -154,6 +157,9 @@ public class Parser {
 			case SWITCH -> {
 				return this.switchStatement();
 			}
+			case IMPORT -> {
+				return this.importStatement();
+			}
 		}
 
 		ISyntax startPos = this.currentToken.syntaxPosition;
@@ -188,13 +194,56 @@ public class Parser {
 		return node;
 	}
 
+	private Node importStatement() throws CodeError {
+		this.advance();
+
+		this.throwIfNotType(Token.Type.IDENTIFIER, "Expected class name");
+		Token className = this.currentToken;
+		this.throwIfStackNameTaken(className);
+		this.advance();
+
+		this.throwIfNotType(Token.Type.FROM, "Expected 'from' keyword");
+		this.advance();
+
+		this.throwIfNotType(Token.Type.IDENTIFIER, "Expected file name");
+		String fileName = this.currentToken.content;
+		this.advance();
+
+		this.throwIfNotType(Token.Type.SEMICOLON, "Expected ; at end of line");
+		this.advance();
+
+		// We evaluate import classes at compile time since their definitions are required for other compilation
+		ArucasClassDefinitionMap importDefinitions = context.getCachedDefinitions(fileName);
+		if (importDefinitions == null) {
+			try {
+				Path importPath = this.context.getImportPath();
+				Path filePath = importPath.resolve(fileName + ".arucas");
+				String fileContent = Files.readString(filePath);
+				Context childContext = this.context.createChildContext("Import - " + className.content);
+				importDefinitions = Run.importClasses(childContext, fileName, fileContent);
+				this.context.addCachedDefinition(fileName, importDefinitions);
+			}
+			catch (IOException e) {
+				throw new CodeError(CodeError.ErrorType.RUNTIME_ERROR, e.getMessage(), className.syntaxPosition);
+			}
+		}
+
+		AbstractClassDefinition definition = importDefinitions.get(className.content);
+		if (definition == null) {
+			throw new RuntimeError("No such class '%s' exists".formatted(className.content), className.syntaxPosition, this.context);
+		}
+		this.context.addClassDefinition(definition);
+
+		return new NullNode(className);
+	}
+
 	private ArucasClassNode classStatement() throws CodeError {
 		ISyntax startPos = this.currentToken.syntaxPosition;
 		this.advance();
 
 		this.throwIfNotType(Token.Type.IDENTIFIER, "Expected an identifier");
 		Token className = this.currentToken;
-		this.context.throwIfStackNameTaken(className.content, className.syntaxPosition);
+		this.throwIfStackNameTaken(className);
 		this.advance();
 
 		this.throwIfNotType(Token.Type.LEFT_CURLY_BRACKET, "Expected '{'");
@@ -212,7 +261,7 @@ public class Parser {
 
 		this.throwIfNotType(Token.Type.IDENTIFIER, "Expected an identifier");
 		Token enumName = this.currentToken;
-		this.context.throwIfStackNameTaken(enumName.content, enumName.syntaxPosition);
+		this.throwIfStackNameTaken(enumName);
 		this.advance();
 
 		this.throwIfNotType(Token.Type.LEFT_CURLY_BRACKET, "Expected '{'");
@@ -432,7 +481,7 @@ public class Parser {
 		if (this.currentToken.type == Token.Type.IDENTIFIER) {
 			do {
 				this.throwIfNotType(Token.Type.IDENTIFIER, "Expected Identifier");
-				this.context.throwIfStackNameTaken(this.currentToken.content, this.currentToken.syntaxPosition);
+				this.throwIfStackNameTaken(this.currentToken);
 				argumentNames.add(this.currentToken.content);
 				this.context.setLocal(this.currentToken.content, NullValue.NULL);
 				this.advance();
@@ -461,7 +510,7 @@ public class Parser {
 		if (this.currentToken.type == Token.Type.IDENTIFIER) {
 			do {
 				this.throwIfNotType(Token.Type.IDENTIFIER, "Expected Identifier");
-				this.context.throwIfStackNameTaken(this.currentToken.content, this.currentToken.syntaxPosition);
+				this.throwIfStackNameTaken(this.currentToken);
 				argumentNames.add(this.currentToken.content);
 				this.context.setLocal(this.currentToken.content, NullValue.NULL);
 				this.advance();
@@ -589,7 +638,7 @@ public class Parser {
 	private VariableAssignNode setVariable() throws CodeError {
 		this.throwIfNotType(Token.Type.IDENTIFIER, "Expected an identifier");
 		Token variableName = this.currentToken;
-		this.context.throwIfStackNameTaken(variableName.content, variableName.syntaxPosition);
+		this.throwIfStackNameTaken(variableName);
 
 		this.advance();
 		if (this.isStackType(StackType.UNPACKING)) {
@@ -608,7 +657,7 @@ public class Parser {
 	private VariableAssignNode modifyVariable() throws CodeError {
 		this.throwIfNotType(Token.Type.IDENTIFIER, "Expected an identifier");
 		Token variableName = this.currentToken;
-		this.context.throwIfStackNameTaken(variableName.content, variableName.syntaxPosition);
+		this.throwIfStackNameTaken(variableName);
 
 		Node member = this.member();
 		Token operatorToken = this.currentToken;
@@ -703,7 +752,7 @@ public class Parser {
 			this.throwIfNotType(Token.Type.IDENTIFIER, "Expected function name");
 
 			variableNameToken = this.currentToken;
-			this.context.throwIfStackNameTaken(variableNameToken.content, variableNameToken.syntaxPosition);
+			this.throwIfStackNameTaken(variableNameToken);
 
 			this.advance();
 		}
@@ -715,7 +764,7 @@ public class Parser {
 		if (this.currentToken.type == Token.Type.IDENTIFIER) {
 			do {
 				this.throwIfNotType(Token.Type.IDENTIFIER, "Expected Identifier");
-				this.context.throwIfStackNameTaken(this.currentToken.content, this.currentToken.syntaxPosition);
+				this.throwIfStackNameTaken(this.currentToken);
 				argumentNameTokens.add(this.currentToken.content);
 				this.context.setLocal(this.currentToken.content, NullValue.NULL);
 				this.advance();
@@ -1324,6 +1373,10 @@ public class Parser {
 		return !this.parseStack.empty() && this.parseStack.peek() == type;
 	}
 
+	private void throwIfStackNameTaken(Token token) throws CodeError {
+		this.context.throwIfStackNameTaken(token.content, token.syntaxPosition);
+	}
+	
 	enum StackType {
 		UNPACKING,
 		PARENTHESIS,

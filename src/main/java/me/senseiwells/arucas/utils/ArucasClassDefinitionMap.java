@@ -123,6 +123,11 @@ public class ArucasClassDefinitionMap implements Iterable<AbstractClassDefinitio
 		this.nameMap.putIfAbsent(value.getName(), value);
 		this.addSubclasses(value);
 	}
+
+	public void replace(AbstractClassDefinition value) {
+		this.nameMap.put(value.getName(), value);
+		this.addSubclasses(value);
+	}
 	
 	/**
 	 * Returns true if this map is empty.

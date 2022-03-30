@@ -115,6 +115,8 @@ public class Token {
 		STATIC,
 		OPERATOR,
 		THROW,
+		IMPORT,
+		FROM,
 
 		// Dot
 		DOT,

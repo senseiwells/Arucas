@@ -16,6 +16,9 @@ import me.senseiwells.arucas.values.classes.WrapperClassDefinition;
 import me.senseiwells.arucas.values.functions.AbstractBuiltInFunction;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
 /**
@@ -29,6 +32,7 @@ public class Context {
 	private final ArucasFunctionMap<AbstractBuiltInFunction<?>> extensions;
 	private final IArucasOutput arucasOutput;
 	private final UUID contextId;
+	private final Path importPath;
 	
 	private final String displayName;
 	private final Context parentContext;
@@ -43,7 +47,7 @@ public class Context {
 	private final ThrowValue.Break breakThrowable = new ThrowValue.Break();
 	private final ThrowValue.Return returnThrowable = new ThrowValue.Return(NullValue.NULL);
 	
-	private Context(String displayName, Context parentContext, ArucasFunctionMap<AbstractBuiltInFunction<?>> extensions, ArucasClassDefinitionMap classDefinitions, ArucasThreadHandler threadHandler, IArucasOutput arucasOutput) {
+	private Context(String displayName, Context parentContext, ArucasFunctionMap<AbstractBuiltInFunction<?>> extensions, ArucasClassDefinitionMap classDefinitions, ArucasThreadHandler threadHandler, IArucasOutput arucasOutput, Path importPath) {
 		this.extensions = extensions;
 		this.arucasOutput = arucasOutput;
 		this.threadHandler = threadHandler;
@@ -54,14 +58,15 @@ public class Context {
 		this.suppressDeprecated = parentContext != null && parentContext.suppressDeprecated;
 		this.isMain = true;
 		this.stackTable = new StackTable();
+		this.importPath = importPath;
 		
 		// Initialize the class definitions map by inserting the previous table values
 		this.stackTable.classDefinitions = new ArucasClassDefinitionMap();
 		this.stackTable.classDefinitions.insertAll(classDefinitions);
 	}
 	
-	public Context(String displayName, ArucasFunctionMap<AbstractBuiltInFunction<?>> extensions, ArucasClassDefinitionMap classDefinitions, ArucasThreadHandler threadHandler, IArucasOutput arucasOutput) {
-		this(displayName, null, extensions, classDefinitions, threadHandler, arucasOutput);
+	public Context(String displayName, ArucasFunctionMap<AbstractBuiltInFunction<?>> extensions, ArucasClassDefinitionMap classDefinitions, ArucasThreadHandler threadHandler, IArucasOutput arucasOutput, Path importPath) {
+		this(displayName, null, extensions, classDefinitions, threadHandler, arucasOutput, importPath);
 	}
 	
 	private Context(Context branch, StackTable stackTable) {
@@ -76,9 +81,9 @@ public class Context {
 		this.suppressDeprecated = branch.suppressDeprecated;
 		this.isMain = branch.isMain;
 		this.contextId = branch.contextId;
+		this.importPath = branch.importPath;
 	}
 
-	@SuppressWarnings("unused")
 	public Context createBranch() {
 		return new Context(this, this.stackTable);
 	}
@@ -97,7 +102,7 @@ public class Context {
 	}
 	
 	public Context createChildContext(String displayName) {
-		Context context = new Context(displayName, this, this.extensions, this.stackTable.getRoot().classDefinitions, this.threadHandler, this.arucasOutput);
+		Context context = new Context(displayName, this, this.extensions, this.stackTable.getRoot().classDefinitions, this.threadHandler, this.arucasOutput, this.importPath);
 		context.isMain = false;
 		return context;
 	}
@@ -135,6 +140,13 @@ public class Context {
 	@SuppressWarnings("unused")
 	public UUID getContextId() {
 		return this.contextId;
+	}
+
+	public Path getImportPath() throws IOException {
+		if (!Files.exists(this.importPath) && !ExceptionUtils.runSafe(() -> Files.createDirectories(this.importPath))) {
+			throw new IOException("Failed to import '%s'".formatted(this.importPath.toAbsolutePath()));
+		}
+		return this.importPath;
 	}
 	
 	public String getDisplayName() {
@@ -285,9 +297,25 @@ public class Context {
 	public AbstractClassDefinition getClassDefinition(String name) {
 		return this.stackTable.getClassDefinition(name);
 	}
+
+	public ArucasClassDefinitionMap getCachedDefinitions(String fileName) {
+		return this.stackTable.getCachedDefinitionMap(fileName);
+	}
+
+	public ArucasClassDefinitionMap getAllClassDefinitions() {
+		return this.stackTable.classDefinitions;
+	}
 	
 	public void addClassDefinition(AbstractClassDefinition definition) {
 		this.stackTable.addClassDefinition(definition);
+	}
+
+	public void replaceClassDefinition(AbstractClassDefinition definition) {
+		this.stackTable.replaceClassDefinition(definition);
+	}
+
+	public void addCachedDefinition(String fileName, ArucasClassDefinitionMap definitions) {
+		this.stackTable.addCachedDefinitionMap(fileName, definitions);
 	}
 
 	public AbstractBuiltInFunction<?> getBuiltInFunction(String methodName, int parameters) {
