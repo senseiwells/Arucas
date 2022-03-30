@@ -9,8 +9,8 @@ import me.senseiwells.arucas.extensions.ArucasNetworkClass;
 import me.senseiwells.arucas.utils.ArucasClassDefinitionMap;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.utils.ExceptionUtils;
 import me.senseiwells.arucas.values.*;
+import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.values.classes.ArucasWrapperExtension;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 
@@ -157,28 +157,33 @@ public class ContextBuilder {
 			Files.createDirectories(this.importPath);
 		}
 
-		StringBuilder builder = new StringBuilder();
-		Path generationPath = this.importPath.resolve("BuiltIn.arucas");
-
+		ArucasClassDefinitionMap classDefinitions = new ArucasClassDefinitionMap();
 		for (Supplier<ArucasClassExtension> supplier : this.builtInClasses) {
-			builder.append(supplier.get().toString()).append("\n\n");
+			classDefinitions.add(supplier.get());
 		}
-		Files.write(generationPath, Collections.singleton(builder.toString()));
 
-		for (Map.Entry<String, List<Supplier<ArucasClassExtension>>> entry : this.classes.entrySet()) {
-			builder = new StringBuilder();
-			generationPath = this.importPath.resolve(entry.getKey() + ".arucas");
-			for (Supplier<ArucasClassExtension> supplier : entry.getValue()) {
-				builder.append(supplier.get()).append("\n\n");
+		Map<String, ArucasClassDefinitionMap> importables = new HashMap<>();
+		importables.put("BuiltIn", classDefinitions);
+
+		this.classes.forEach((s, suppliers) -> {
+			ArucasClassDefinitionMap definitions = importables.computeIfAbsent(s, str -> new ArucasClassDefinitionMap());
+			for (Supplier<ArucasClassExtension> supplier : suppliers) {
+				definitions.add(supplier.get());
 			}
-			Files.write(generationPath, Collections.singleton(builder.toString()));
-		}
+		});
 
-		for (Map.Entry<String, List<Supplier<IArucasWrappedClass>>> entry : this.wrappers.entrySet()) {
-			builder = new StringBuilder();
-			generationPath = this.importPath.resolve(entry.getKey() + ".arucas");
-			for (Supplier<IArucasWrappedClass> supplier : entry.getValue()) {
-				builder.append(ArucasWrapperExtension.createWrapper(supplier)).append("\n\n");
+		this.wrappers.forEach((s, suppliers) -> {
+			ArucasClassDefinitionMap definitions = importables.computeIfAbsent(s, str -> new ArucasClassDefinitionMap());
+			for (Supplier<IArucasWrappedClass> supplier : suppliers) {
+				definitions.add(ArucasWrapperExtension.createWrapper(supplier));
+			}
+		});
+
+		for (Map.Entry<String, ArucasClassDefinitionMap> entry : importables.entrySet()) {
+			StringBuilder builder = new StringBuilder();
+			Path generationPath = this.importPath.resolve(entry.getKey() + ".arucas");
+			for (AbstractClassDefinition definition : entry.getValue()) {
+				builder.append(definition.toString()).append("\n\n");
 			}
 			Files.write(generationPath, Collections.singleton(builder.toString()));
 		}
@@ -202,21 +207,20 @@ public class ContextBuilder {
 		importables.put("BuiltIn", classDefinitions);
 
 		this.classes.forEach((s, suppliers) -> {
-			ArucasClassDefinitionMap definitions = new ArucasClassDefinitionMap();
+			ArucasClassDefinitionMap definitions = importables.computeIfAbsent(s, str -> new ArucasClassDefinitionMap());
 			for (Supplier<ArucasClassExtension> supplier : suppliers) {
 				definitions.add(supplier.get());
 			}
-			importables.put(s, definitions);
 		});
 
 		this.wrappers.forEach((s, suppliers) -> {
-			ArucasClassDefinitionMap definitions = new ArucasClassDefinitionMap();
+			ArucasClassDefinitionMap definitions = importables.computeIfAbsent(s, str -> new ArucasClassDefinitionMap());
 			for (Supplier<IArucasWrappedClass> supplier : suppliers) {
 				definitions.add(ArucasWrapperExtension.createWrapper(supplier));
 			}
-			importables.put(s, definitions);
 		});
 
+		importables.values().forEach(ArucasClassDefinitionMap::merge);
 		classDefinitions.merge();
 
 		ArucasThreadHandler threadHandler = new ArucasThreadHandler();

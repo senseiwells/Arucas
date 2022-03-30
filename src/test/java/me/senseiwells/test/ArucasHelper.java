@@ -25,7 +25,7 @@ public class ArucasHelper {
 		ContextBuilder builder = new ContextBuilder()
 			.setDisplayName("root")
 			.addClasses(
-				"BuiltIn",
+				"NoBuiltIn",
 				Value.ArucasBaseClass::new,
 				TypeValue.ArucasTypeClass::new,
 				EnumValue.ArucasEnumClass::new,

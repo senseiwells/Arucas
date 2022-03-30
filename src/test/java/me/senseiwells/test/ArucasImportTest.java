@@ -28,16 +28,16 @@ public class ArucasImportTest {
 			"X = Set.of(); ", "X", ArucasHelper.createContextNoBuiltIns()
 		));
 		assertThrows(CodeError.class, () -> ArucasHelper.runUnsafeFull(
-			"import List from BuiltIn; X = Set.of();", "X", ArucasHelper.createContextNoBuiltIns()
+			"import List from NoBuiltIn; X = Set.of();", "X", ArucasHelper.createContextNoBuiltIns()
 		));
 		assertThrows(CodeError.class, () -> ArucasHelper.runUnsafeFull(
-			"X = Set.of(); import Set from BuiltIn;", "X", ArucasHelper.createContextNoBuiltIns()
+			"X = Set.of(); import Set from NoBuiltIn;", "X", ArucasHelper.createContextNoBuiltIns()
 		));
 		assertEquals("<>", ArucasHelper.runSafeFull(
-			"import * from BuiltIn; X = Set.of();", "X", ArucasHelper.createContextNoBuiltIns()
+			"import * from NoBuiltIn; X = Set.of();", "X", ArucasHelper.createContextNoBuiltIns()
 		));
 		assertEquals("<>", ArucasHelper.runSafeFull(
-			"import Set from BuiltIn; X = Set.of();", "X", ArucasHelper.createContextNoBuiltIns()
+			"import Set from NoBuiltIn; X = Set.of();", "X", ArucasHelper.createContextNoBuiltIns()
 		));
 	}
 }
