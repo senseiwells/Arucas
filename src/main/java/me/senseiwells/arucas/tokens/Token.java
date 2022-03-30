@@ -36,11 +36,11 @@ public class Token {
 	public enum Type {
 		// Delimiters
 		WHITESPACE,
-		SEMICOLON,
-		COLON,
 		IDENTIFIER,
-		COMMA,
 		FINISH,
+		SEMICOLON(";"),
+		COLON(":"),
+		COMMA(","),
 
 		// Atoms
 		NUMBER,
@@ -53,44 +53,44 @@ public class Token {
 		SCOPE,
 
 		// Arithmetics
-		PLUS,
-		MINUS,
-		MULTIPLY,
-		DIVIDE,
-		POWER,
+		PLUS("+"),
+		MINUS("-"),
+		MULTIPLY("*"),
+		DIVIDE("/"),
+		POWER("^"),
 
 		// Boolean operators
-		NOT,
-		AND,
-		OR,
-		XOR,
+		NOT("!"),
+		AND("&&"),
+		OR("||"),
+		XOR("~"),
 
 		// Bitwise
-		SHIFT_LEFT,
-		SHIFT_RIGHT,
-		BIT_AND,
-		BIT_OR,
+		SHIFT_LEFT("<<"),
+		SHIFT_RIGHT(">>"),
+		BIT_AND("&"),
+		BIT_OR("|"),
 
 		// Brackets
-		LEFT_BRACKET,
-		RIGHT_BRACKET,
-		LEFT_SQUARE_BRACKET,
-		RIGHT_SQUARE_BRACKET,
-		LEFT_CURLY_BRACKET,
-		RIGHT_CURLY_BRACKET,
+		LEFT_BRACKET("("),
+		RIGHT_BRACKET(")"),
+		LEFT_SQUARE_BRACKET("["),
+		RIGHT_SQUARE_BRACKET("]"),
+		LEFT_CURLY_BRACKET("{"),
+		RIGHT_CURLY_BRACKET("}"),
 
 		// Memory Operator
-		ASSIGN_OPERATOR,
-		INCREMENT,
-		DECREMENT,
+		ASSIGN_OPERATOR("="),
+		INCREMENT("++"),
+		DECREMENT("--"),
 
 		// Comparisons
-		EQUALS,
-		NOT_EQUALS,
-		LESS_THAN,
-		MORE_THAN,
-		LESS_THAN_EQUAL,
-		MORE_THAN_EQUAL,
+		EQUALS("=="),
+		NOT_EQUALS("!="),
+		LESS_THAN("<"),
+		MORE_THAN(">"),
+		LESS_THAN_EQUAL("<="),
+		MORE_THAN_EQUAL(">="),
 
 		// Statements
 		IF,
@@ -119,8 +119,23 @@ public class Token {
 		FROM,
 
 		// Dot
-		DOT,
-		POINTER;
+		DOT("."),
+		POINTER("->");
+
+		private final String asString;
+
+		Type() {
+			this.asString = this.name().toLowerCase();
+		}
+
+		Type(String asString) {
+			this.asString = asString;
+		}
+
+		@Override
+		public String toString() {
+			return this.asString;
+		}
 
 		public static final Set<Type> COMPARISON_TOKEN_TYPES = Set.of(
 			EQUALS,

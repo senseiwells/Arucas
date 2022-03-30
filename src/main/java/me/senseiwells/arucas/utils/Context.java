@@ -13,7 +13,6 @@ import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.values.classes.ArucasClassValue;
 import me.senseiwells.arucas.values.classes.WrapperClassDefinition;
-import me.senseiwells.arucas.values.functions.AbstractBuiltInFunction;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 
 import java.io.IOException;
@@ -29,7 +28,7 @@ import java.util.*;
  */
 public class Context {
 	private final ArucasThreadHandler threadHandler;
-	private final ArucasFunctionMap<AbstractBuiltInFunction<?>> extensions;
+	private final ArucasFunctionMap<FunctionValue> extensions;
 	private final IArucasOutput arucasOutput;
 	private final UUID contextId;
 	private final Path importPath;
@@ -47,7 +46,7 @@ public class Context {
 	private final ThrowValue.Break breakThrowable = new ThrowValue.Break();
 	private final ThrowValue.Return returnThrowable = new ThrowValue.Return(NullValue.NULL);
 	
-	private Context(String displayName, Context parentContext, ArucasFunctionMap<AbstractBuiltInFunction<?>> extensions, ArucasClassDefinitionMap classDefinitions, ArucasThreadHandler threadHandler, IArucasOutput arucasOutput, Path importPath) {
+	private Context(String displayName, Context parentContext, ArucasFunctionMap<FunctionValue> extensions, StackTable stackTable, ArucasThreadHandler threadHandler, IArucasOutput arucasOutput, Path importPath) {
 		this.extensions = extensions;
 		this.arucasOutput = arucasOutput;
 		this.threadHandler = threadHandler;
@@ -57,16 +56,34 @@ public class Context {
 		this.parentContext = parentContext;
 		this.suppressDeprecated = parentContext != null && parentContext.suppressDeprecated;
 		this.isMain = true;
-		this.stackTable = new StackTable();
+		this.stackTable = stackTable;
 		this.importPath = importPath;
-		
-		// Initialize the class definitions map by inserting the previous table values
-		this.stackTable.classDefinitions = new ArucasClassDefinitionMap();
-		this.stackTable.classDefinitions.insertAll(classDefinitions);
 	}
-	
-	public Context(String displayName, ArucasFunctionMap<AbstractBuiltInFunction<?>> extensions, ArucasClassDefinitionMap classDefinitions, ArucasThreadHandler threadHandler, IArucasOutput arucasOutput, Path importPath) {
-		this(displayName, null, extensions, classDefinitions, threadHandler, arucasOutput, importPath);
+
+	/**
+	 * There are a lot of parameters...
+	 *
+	 * @param pc parentContext
+	 * @param s displayName
+	 * @param e extensions
+	 * @param d builtInDefinitions
+	 * @param i importableDefinitions
+	 * @param c cachedDefinitions
+	 * @param th threadHandler
+	 * @param o arucasOutput
+	 * @param ip importPath
+	 */
+	private Context(String s, Context pc, ArucasFunctionMap<FunctionValue> e, ArucasClassDefinitionMap d, Map<String, ArucasClassDefinitionMap> i, Map<String, ArucasClassDefinitionMap> c, ArucasThreadHandler th, IArucasOutput o, Path ip) {
+		this(s, pc, e, new StackTable(), th, o, ip);
+
+		// Initialize the class definitions map by inserting the previous table values
+		this.stackTable.insertAllClassDefinitions(d);
+		this.stackTable.importableDefinitions = i;
+		this.stackTable.cachedDefinitions = c;
+	}
+
+	public Context(String s, ArucasFunctionMap<FunctionValue> e, ArucasClassDefinitionMap d, Map<String, ArucasClassDefinitionMap> i, Map<String, ArucasClassDefinitionMap> c, ArucasThreadHandler th, IArucasOutput o, Path ip) {
+		this(s, null, e, d, i, c, th, o, ip);
 	}
 	
 	private Context(Context branch, StackTable stackTable) {
@@ -102,7 +119,8 @@ public class Context {
 	}
 	
 	public Context createChildContext(String displayName) {
-		Context context = new Context(displayName, this, this.extensions, this.stackTable.getRoot().classDefinitions, this.threadHandler, this.arucasOutput, this.importPath);
+		StackTable root = this.stackTable.getRoot();
+		Context context = new Context(displayName, this, this.extensions, root.classDefinitions, root.importableDefinitions, root.cachedDefinitions, this.threadHandler, this.arucasOutput, this.importPath);
 		context.isMain = false;
 		return context;
 	}
@@ -310,15 +328,15 @@ public class Context {
 		this.stackTable.addClassDefinition(definition);
 	}
 
-	public void replaceClassDefinition(AbstractClassDefinition definition) {
-		this.stackTable.replaceClassDefinition(definition);
+	public void clearCachedDefinitions() {
+		this.stackTable.clearCachedDefinitions();
 	}
 
 	public void addCachedDefinition(String fileName, ArucasClassDefinitionMap definitions) {
 		this.stackTable.addCachedDefinitionMap(fileName, definitions);
 	}
 
-	public AbstractBuiltInFunction<?> getBuiltInFunction(String methodName, int parameters) {
+	public FunctionValue getBuiltInFunction(String methodName, int parameters) {
 		return this.extensions.get(methodName, parameters);
 	}
 

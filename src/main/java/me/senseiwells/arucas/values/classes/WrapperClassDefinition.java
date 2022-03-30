@@ -15,6 +15,7 @@ import me.senseiwells.arucas.values.functions.WrapperClassMemberFunction;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class WrapperClassDefinition extends AbstractClassDefinition {
@@ -60,12 +61,12 @@ public class WrapperClassDefinition extends AbstractClassDefinition {
 	}
 
 	@Override
-	public ArucasFunctionMap<? extends FunctionValue> getMethods() {
+	public ArucasFunctionMap<WrapperClassMemberFunction> getMethods() {
 		return this.methods;
 	}
 
 	@Override
-	public ArucasFunctionMap<? extends FunctionValue> getConstructors() {
+	public ArucasFunctionMap<WrapperClassMemberFunction> getConstructors() {
 		return this.constructors;
 	}
 
@@ -78,6 +79,7 @@ public class WrapperClassDefinition extends AbstractClassDefinition {
 		return this.createDefinition(this.supplier.get(), context, parameters, syntaxPosition);
 	}
 
+	@SuppressWarnings("unused")
 	public WrapperClassValue createNewDefinition(IArucasWrappedClass wrappedClass, Context context, List<Value<?>> parameters) throws CodeError {
 		if (this.supplier.get().getClass() != wrappedClass.getClass()) {
 			throw new RuntimeException("Wrong wrapper class passed in");
@@ -140,5 +142,73 @@ public class WrapperClassDefinition extends AbstractClassDefinition {
 	@Override
 	public Class<WrapperClassValue> getValueClass() {
 		return WrapperClassValue.class;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder("/* Native, implemented in Java */\nclass ");
+		final String indent = "    ";
+
+		Consumer<Integer> argumentAdder = integer -> {
+			integer = Math.max(integer, 0);
+
+			for (int i = 0; i < integer; i++) {
+				String argName = "arg" + (i + 1);
+				builder.append(argName);
+				if (i < integer - 1) {
+					builder.append(", ");
+				}
+			}
+		};
+
+		builder.append(this.getName()).append(" {\n");
+		boolean hadVars = false;
+		for (String member : this.staticFieldMap.keySet()) {
+			builder.append(indent).append("static var ").append(member).append(";\n");
+			hadVars = true;
+		}
+		if (hadVars) {
+			builder.append("\n");
+		}
+
+		hadVars = false;
+		for (String member : this.fieldMap.keySet()) {
+			builder.append(indent).append("var ").append(member).append(";\n");
+			hadVars = true;
+		}
+		if (hadVars) {
+			builder.append("\n");
+		}
+
+		for (FunctionValue function : this.getConstructors()) {
+			builder.append(indent).append(this.getName()).append("(");
+			argumentAdder.accept(function.getParameterCount() - 1);
+			builder.append(") { }\n\n");
+		}
+
+		for (FunctionValue function : this.getMethods()) {
+			builder.append(indent).append("fun ").append(function.getName()).append("(");
+			argumentAdder.accept(function.getParameterCount() - 1);
+			builder.append(") { }\n\n");
+		}
+
+		this.operatorMap.forEach((type, function) -> {
+			builder.append(indent).append("operator ").append(type.toString()).append(" (");
+			argumentAdder.accept(function.getParameterCount() - 1);
+			builder.append(") { }\n\n");
+		});
+
+		for (FunctionValue function : this.getStaticMethods()) {
+			builder.append(indent).append("static fun ").append(function.getName()).append("(");
+			argumentAdder.accept(function.getParameterCount());
+			builder.append(") { }\n\n");
+		}
+
+		String classAsString = builder.toString();
+		if (classAsString.endsWith("\n\n")) {
+			classAsString = classAsString.substring(0, classAsString.length() - 1);
+		}
+		classAsString += "}";
+		return classAsString;
 	}
 }

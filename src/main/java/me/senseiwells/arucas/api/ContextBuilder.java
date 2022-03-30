@@ -1,23 +1,23 @@
 package me.senseiwells.arucas.api;
 
 import me.senseiwells.arucas.api.impl.ArucasOutputImpl;
-import me.senseiwells.arucas.core.Arucas;
-import me.senseiwells.arucas.values.classes.ArucasWrapperExtension;
 import me.senseiwells.arucas.api.wrappers.IArucasWrappedClass;
+import me.senseiwells.arucas.core.Arucas;
 import me.senseiwells.arucas.extensions.ArucasBuiltInExtension;
 import me.senseiwells.arucas.extensions.ArucasMathClass;
 import me.senseiwells.arucas.extensions.ArucasNetworkClass;
 import me.senseiwells.arucas.utils.ArucasClassDefinitionMap;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.ExceptionUtils;
 import me.senseiwells.arucas.values.*;
-import me.senseiwells.arucas.values.functions.AbstractBuiltInFunction;
+import me.senseiwells.arucas.values.classes.ArucasWrapperExtension;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Supplier;
 
 /**
@@ -26,8 +26,9 @@ import java.util.function.Supplier;
 @SuppressWarnings("unused")
 public class ContextBuilder {
 	private final List<Supplier<IArucasExtension>> extensions;
-	private final List<Supplier<ArucasClassExtension>> classes;
-	private final List<Supplier<IArucasWrappedClass>> wrappers;
+	private final List<Supplier<ArucasClassExtension>> builtInClasses;
+	private final Map<String, List<Supplier<ArucasClassExtension>>> classes;
+	private final Map<String, List<Supplier<IArucasWrappedClass>>> wrappers;
 	private IArucasOutput outputHandler;
 	private boolean suppressDeprecated;
 	private String displayName;
@@ -35,12 +36,13 @@ public class ContextBuilder {
 
 	public ContextBuilder() {
 		this.extensions = new ArrayList<>();
-		this.classes = new ArrayList<>();
-		this.wrappers = new ArrayList<>();
+		this.builtInClasses = new ArrayList<>();
+		this.classes = new HashMap<>();
+		this.wrappers = new HashMap<>();
 		this.outputHandler = new ArucasOutputImpl();
 		this.suppressDeprecated = false;
 		this.displayName = "";
-		this.importPath = Arucas.PATH.resolve("imports");
+		this.importPath = Arucas.PATH.resolve("libs");
 	}
 
 	public ContextBuilder setDisplayName(String displayName) {
@@ -64,11 +66,6 @@ public class ContextBuilder {
 		);
 	}
 
-	public ContextBuilder addExtensions(List<Supplier<IArucasExtension>> extensions) {
-		this.extensions.addAll(extensions);
-		return this;
-	}
-
 	@SafeVarargs
 	public final ContextBuilder addExtensions(Supplier<IArucasExtension>... extensions) {
 		this.extensions.addAll(List.of(extensions));
@@ -76,7 +73,7 @@ public class ContextBuilder {
 	}
 
 	public ContextBuilder addDefaultClasses() {
-		return this.addClasses(
+		List<Supplier<ArucasClassExtension>> builtInClasses = List.of(
 			Value.ArucasBaseClass::new,
 			TypeValue.ArucasTypeClass::new,
 			EnumValue.ArucasEnumClass::new,
@@ -94,26 +91,48 @@ public class ContextBuilder {
 			ArucasMathClass::new,
 			ArucasNetworkClass::new
 		);
+		// You can technically import them but it's redundant
+		return this.addBuiltInClasses(builtInClasses).addClasses("BuiltIn", builtInClasses);
 	}
 
-	public ContextBuilder addClasses(List<Supplier<ArucasClassExtension>> extensions) {
-		this.classes.addAll(extensions);
-		return this;
-	}
-
+	/**
+	 * This adds classes that will always be available at runtime, they do not need to be imported
+	 */
 	@SafeVarargs
-	public final ContextBuilder addClasses(Supplier<ArucasClassExtension>... extensions) {
-		this.classes.addAll(List.of(extensions));
+	public final ContextBuilder addBuiltInClasses(Supplier<ArucasClassExtension>... extensions) {
+		return this.addBuiltInClasses(List.of(extensions));
+	}
+
+	public final ContextBuilder addBuiltInClasses(List<Supplier<ArucasClassExtension>> extensions) {
+		this.builtInClasses.addAll(extensions);
 		return this;
 	}
 
-	public ContextBuilder addDefaultWrappers() {
-		return this;
-	}
-
+	/**
+	 * This adds classes that will need to be imported with the file name
+	 */
 	@SafeVarargs
-	public final ContextBuilder addWrappers(Supplier<IArucasWrappedClass>... suppliers) {
-		this.wrappers.addAll(List.of(suppliers));
+	public final ContextBuilder addClasses(String importFileName, Supplier<ArucasClassExtension>... extensions) {
+		return this.addClasses(importFileName, List.of(extensions));
+	}
+
+	public final ContextBuilder addClasses(String importFileName, List<Supplier<ArucasClassExtension>> extensions) {
+		List<Supplier<ArucasClassExtension>> suppliers = this.classes.computeIfAbsent(importFileName, s -> new ArrayList<>());
+		suppliers.addAll(extensions);
+		return this;
+	}
+
+	/**
+	 * This adds wrapper classes that will need to be imported with the file name
+	 */
+	@SafeVarargs
+	public final ContextBuilder addWrappers(String importFileName, Supplier<IArucasWrappedClass>... suppliers) {
+		return this.addWrappers(importFileName, List.of(suppliers));
+	}
+
+	public final ContextBuilder addWrappers(String importFileName, List<Supplier<IArucasWrappedClass>> suppliers) {
+		List<Supplier<IArucasWrappedClass>> supplierList = this.wrappers.computeIfAbsent(importFileName, s -> new ArrayList<>());
+		supplierList.addAll(suppliers);
 		return this;
 	}
 
@@ -124,36 +143,85 @@ public class ContextBuilder {
 	 */
 	public ContextBuilder addDefault() {
 		return this.addDefaultExtensions()
-			.addDefaultClasses()
-			.addDefaultWrappers();
+			.addDefaultClasses();
 	}
 
+	/**
+	 * Sets the path that arucas will use to import files
+	 */
 	public ContextBuilder setImportPath(Path newImportPath) {
 		this.importPath = newImportPath;
 		return this;
 	}
 
+	public ContextBuilder generateArucasFiles() throws IOException {
+		if (!Files.exists(this.importPath)) {
+			Files.createDirectories(this.importPath);
+		}
+
+		StringBuilder builder = new StringBuilder();
+		Path generationPath = this.importPath.resolve("BuiltIn.arucas");
+
+		for (Supplier<ArucasClassExtension> supplier : this.builtInClasses) {
+			builder.append(supplier.get().toString()).append("\n\n");
+		}
+		Files.write(generationPath, Collections.singleton(builder.toString()));
+
+		for (Map.Entry<String, List<Supplier<ArucasClassExtension>>> entry : this.classes.entrySet()) {
+			builder = new StringBuilder();
+			generationPath = this.importPath.resolve(entry.getKey() + ".arucas");
+			for (Supplier<ArucasClassExtension> supplier : entry.getValue()) {
+				builder.append(supplier.get()).append("\n\n");
+			}
+			Files.write(generationPath, Collections.singleton(builder.toString()));
+		}
+
+		for (Map.Entry<String, List<Supplier<IArucasWrappedClass>>> entry : this.wrappers.entrySet()) {
+			builder = new StringBuilder();
+			generationPath = this.importPath.resolve(entry.getKey() + ".arucas");
+			for (Supplier<IArucasWrappedClass> supplier : entry.getValue()) {
+				builder.append(ArucasWrapperExtension.createWrapper(supplier)).append("\n\n");
+			}
+			Files.write(generationPath, Collections.singleton(builder.toString()));
+		}
+
+		return this;
+	}
+
 	public Context build() {
-		ArucasFunctionMap<AbstractBuiltInFunction<?>> extensionList = new ArucasFunctionMap<>();
+		ArucasFunctionMap<FunctionValue> extensionList = new ArucasFunctionMap<>();
 		ArucasClassDefinitionMap classDefinitions = new ArucasClassDefinitionMap();
 
 		for (Supplier<IArucasExtension> supplier : this.extensions) {
 			extensionList.addAll(supplier.get().getDefinedFunctions());
 		}
 
-		for (Supplier<ArucasClassExtension> supplier : this.classes) {
+		for (Supplier<ArucasClassExtension> supplier : this.builtInClasses) {
 			classDefinitions.add(supplier.get());
 		}
 
-		for (Supplier<IArucasWrappedClass> supplier : this.wrappers) {
-			classDefinitions.add(ArucasWrapperExtension.createWrapper(supplier));
-		}
+		Map<String, ArucasClassDefinitionMap> importables = new HashMap<>();
+		this.classes.forEach((s, suppliers) -> {
+			ArucasClassDefinitionMap definitions = new ArucasClassDefinitionMap();
+			for (Supplier<ArucasClassExtension> supplier : suppliers) {
+				definitions.add(supplier.get());
+			}
+			importables.put(s, definitions);
+		});
+
+		this.wrappers.forEach((s, suppliers) -> {
+			ArucasClassDefinitionMap definitions = new ArucasClassDefinitionMap();
+			for (Supplier<IArucasWrappedClass> supplier : suppliers) {
+				definitions.add(ArucasWrapperExtension.createWrapper(supplier));
+			}
+			importables.put(s, definitions);
+		});
 
 		classDefinitions.merge();
 
 		ArucasThreadHandler threadHandler = new ArucasThreadHandler();
 
-		Context context = new Context(this.displayName, extensionList, classDefinitions, threadHandler, this.outputHandler, this.importPath);
+		Context context = new Context(this.displayName, extensionList, classDefinitions, importables, null, threadHandler, this.outputHandler, this.importPath);
 		context.setSuppressDeprecated(this.suppressDeprecated);
 		return context;
 	}

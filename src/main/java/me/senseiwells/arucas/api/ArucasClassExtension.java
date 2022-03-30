@@ -8,10 +8,13 @@ import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
 import me.senseiwells.arucas.values.functions.ConstructorFunction;
+import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public abstract class ArucasClassExtension extends AbstractClassDefinition {
 	private final ArucasFunctionMap<ConstructorFunction> constructors;
@@ -90,5 +93,57 @@ public abstract class ArucasClassExtension extends AbstractClassDefinition {
 		}
 
 		return constructor.call(context, parameters, false);
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder("/* Native, implemented in Java */\nclass ");
+		final String indent = "    ";
+
+		Consumer<List<String>> argumentAdder = argumentList -> {
+			Iterator<String> stringIterator = argumentList.iterator();
+			while (stringIterator.hasNext()) {
+				String argName = stringIterator.next();
+				builder.append(argName);
+				if (stringIterator.hasNext()) {
+					builder.append(", ");
+				}
+			}
+		};
+
+		builder.append(this.getName()).append(" {\n");
+		boolean hadVars = false;
+		for (String member : this.getStaticMemberVariables().keySet()) {
+			builder.append(indent).append("static var ").append(member).append(";\n");
+			hadVars = true;
+		}
+
+		if (hadVars) {
+			builder.append("\n");
+		}
+		for (ConstructorFunction function : this.getConstructors()) {
+			builder.append(indent).append(this.getName()).append("(");
+			argumentAdder.accept(function.argumentNames);
+			builder.append(") { }\n\n");
+		}
+
+		for (MemberFunction function : this.getMethods()) {
+			builder.append(indent).append("fun ").append(function.getName()).append("(");
+			argumentAdder.accept(function.argumentNames.subList(1, function.argumentNames.size()));
+			builder.append(") { }\n\n");
+		}
+
+		for (FunctionValue function : this.getStaticMethods()) {
+			builder.append(indent).append("static fun ").append(function.getName()).append("(");
+			argumentAdder.accept(function.argumentNames);
+			builder.append(") { }\n\n");
+		}
+
+		String classAsString = builder.toString();
+		if (classAsString.endsWith("\n\n")) {
+			classAsString = classAsString.substring(0, classAsString.length() - 1);
+		}
+		classAsString += "}";
+		return classAsString;
 	}
 }

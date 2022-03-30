@@ -17,7 +17,6 @@ public class BenchmarkArucasMap {
 		Context context = new ContextBuilder()
 			.setDisplayName("System.in")
 			.addDefault()
-			.addWrappers(ArucasTestWrapper::new)
 			.build();
 
 		final int STEPS = 1000000;

@@ -5,7 +5,10 @@ import me.senseiwells.arucas.nodes.*;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.tokens.Token;
-import me.senseiwells.arucas.utils.*;
+import me.senseiwells.arucas.utils.ArucasClassDefinitionMap;
+import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.MutableSyntaxImpl;
+import me.senseiwells.arucas.utils.StringUtils;
 import me.senseiwells.arucas.utils.impl.ArucasSet;
 import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.StringValue;
@@ -26,7 +29,7 @@ public class Parser {
 	private final List<Token> tokens;
 	private final Context context;
 	private final Stack<StackType> parseStack;
-	
+
 	private int operatorTokenIndex;
 	private Token currentToken;
 
@@ -76,6 +79,8 @@ public class Parser {
 
 			statements.add(this.statement());
 		}
+
+		this.context.clearCachedDefinitions();
 
 		return new ListNode(statements, startPos, this.currentToken.syntaxPosition);
 	}
@@ -197,42 +202,73 @@ public class Parser {
 	private Node importStatement() throws CodeError {
 		this.advance();
 
-		this.throwIfNotType(Token.Type.IDENTIFIER, "Expected class name");
+		boolean all = this.currentToken.type == Token.Type.MULTIPLY;
+		if (!all) {
+			this.throwIfNotType(Token.Type.IDENTIFIER, "Expected class name");
+		}
 		Token className = this.currentToken;
-		this.throwIfStackNameTaken(className);
 		this.advance();
 
 		this.throwIfNotType(Token.Type.FROM, "Expected 'from' keyword");
 		this.advance();
 
-		this.throwIfNotType(Token.Type.IDENTIFIER, "Expected file name");
-		String fileName = this.currentToken.content;
-		this.advance();
+		StringBuilder stringBuilder = new StringBuilder();
+		do {
+			this.throwIfNotType(Token.Type.IDENTIFIER, "Expected file name");
+			stringBuilder.append(this.currentToken.content);
+			this.advance();
+			if (this.currentToken.type != Token.Type.DOT) {
+				break;
+			}
+			stringBuilder.append("\\");
+		}
+		while (this.advance());
+
+		String fileName = stringBuilder.toString();
 
 		this.throwIfNotType(Token.Type.SEMICOLON, "Expected ; at end of line");
 		this.advance();
 
 		// We evaluate import classes at compile time since their definitions are required for other compilation
-		ArucasClassDefinitionMap importDefinitions = context.getCachedDefinitions(fileName);
+		// This is also needed so we can make sure there are no stack name conflicts since
+		ArucasClassDefinitionMap importDefinitions = this.context.getCachedDefinitions(fileName);
 		if (importDefinitions == null) {
 			try {
 				Path importPath = this.context.getImportPath();
 				Path filePath = importPath.resolve(fileName + ".arucas");
 				String fileContent = Files.readString(filePath);
-				Context childContext = this.context.createChildContext("Import - " + className.content);
+				Context childContext = this.context.createChildContext("Import - " + className.content + " from " + fileName);
 				importDefinitions = Run.importClasses(childContext, fileName, fileContent);
 				this.context.addCachedDefinition(fileName, importDefinitions);
 			}
 			catch (IOException e) {
-				throw new CodeError(CodeError.ErrorType.RUNTIME_ERROR, e.getMessage(), className.syntaxPosition);
+				throw new CodeError(
+					CodeError.ErrorType.RUNTIME_ERROR,
+					e.getMessage(), className.syntaxPosition
+				);
+			}
+			catch (StackOverflowError e) {
+				throw new CodeError(
+					CodeError.ErrorType.RUNTIME_ERROR,
+					"StackOverflow: Likely due to cyclical import",
+					className.syntaxPosition
+				);
 			}
 		}
 
-		AbstractClassDefinition definition = importDefinitions.get(className.content);
-		if (definition == null) {
-			throw new RuntimeError("No such class '%s' exists".formatted(className.content), className.syntaxPosition, this.context);
+		if (all) {
+			for (AbstractClassDefinition definition : importDefinitions) {
+				this.throwIfStackNameTaken(definition.getName(), className.syntaxPosition);
+				this.context.addClassDefinition(definition);
+			}
 		}
-		this.context.addClassDefinition(definition);
+		else {
+			AbstractClassDefinition definition = importDefinitions.get(className.content);
+			if (definition == null) {
+				throw new RuntimeError("No such class '%s' exists".formatted(className.content), className.syntaxPosition, this.context);
+			}
+			this.context.addClassDefinition(definition);
+		}
 
 		return new NullNode(className);
 	}
@@ -1374,9 +1410,13 @@ public class Parser {
 	}
 
 	private void throwIfStackNameTaken(Token token) throws CodeError {
-		this.context.throwIfStackNameTaken(token.content, token.syntaxPosition);
+		this.throwIfStackNameTaken(token.content, token.syntaxPosition);
 	}
-	
+
+	private void throwIfStackNameTaken(String name, ISyntax syntax) throws CodeError {
+		this.context.throwIfStackNameTaken(name, syntax);
+	}
+
 	enum StackType {
 		UNPACKING,
 		PARENTHESIS,

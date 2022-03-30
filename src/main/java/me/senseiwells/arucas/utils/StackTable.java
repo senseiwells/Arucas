@@ -7,7 +7,6 @@ import me.senseiwells.arucas.values.functions.FunctionValue;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 public class StackTable {
@@ -16,8 +15,24 @@ public class StackTable {
 	private final StackTable rootTable;
 
 	// Lazy generated
-	protected Map<String, Value<?>> symbolMap;
+	/**
+	 * This is the symbol map that gets the value related to identifiers
+	 */
+	private Map<String, Value<?>> symbolMap;
+
+	/**
+	 * These are the definitions that are currently available in the stack
+	 */
 	protected ArucasClassDefinitionMap classDefinitions;
+
+	/**
+	 * These are the importable built-in definitions
+	 */
+	protected Map<String, ArucasClassDefinitionMap> importableDefinitions;
+
+	/**
+	 * These are definitions cached when importing from files
+	 */
 	protected Map<String, ArucasClassDefinitionMap> cachedDefinitions;
 	
 	protected final boolean canContinue;
@@ -113,7 +128,10 @@ public class StackTable {
 
 		return functionValue;
 	}
-	
+
+	/**
+	 * Gets a class definition if it's available in the stack
+	 */
 	public AbstractClassDefinition getClassDefinition(String name) {
 		if (this.classDefinitions != null) {
 			AbstractClassDefinition definition = this.classDefinitions.get(name);
@@ -125,6 +143,9 @@ public class StackTable {
 		return this.parentTable != null ? this.parentTable.getClassDefinition(name) : null;
 	}
 
+	/**
+	 * Checks whether a class definition is available in the stack
+	 */
 	public boolean hasClassDefinition(String name) {
 		if (this.classDefinitions == null || !this.classDefinitions.has(name)) {
 			return this.parentTable != null && this.parentTable.hasClassDefinition(name);
@@ -132,7 +153,10 @@ public class StackTable {
 
 		return true;
 	}
-	
+
+	/**
+	 * Adds a class definition to the stack
+	 */
 	public void addClassDefinition(AbstractClassDefinition definition) {
 		if (this.classDefinitions == null) {
 			this.classDefinitions = new ArucasClassDefinitionMap();
@@ -141,14 +165,20 @@ public class StackTable {
 		this.classDefinitions.add(definition);
 	}
 
-	public void replaceClassDefinition(AbstractClassDefinition definition) {
+	/**
+	 * Adds class definition map without sorting
+	 */
+	public void insertAllClassDefinitions(ArucasClassDefinitionMap definitions) {
 		if (this.classDefinitions == null) {
 			this.classDefinitions = new ArucasClassDefinitionMap();
 		}
 
-		this.classDefinitions.replace(definition);
+		this.classDefinitions.insertAll(definitions);
 	}
 
+	/**
+	 * Adds a class definition map to the cache (used for importing)
+	 */
 	public void addCachedDefinitionMap(String fileName, ArucasClassDefinitionMap definitions) {
 		if (this.rootTable == this) {
 			if (this.cachedDefinitions == null) {
@@ -161,14 +191,31 @@ public class StackTable {
 		this.rootTable.addCachedDefinitionMap(fileName, definitions);
 	}
 
+	/**
+	 * Tries to get a class definition map if it's in the cache or if it's importable
+	 */
 	public ArucasClassDefinitionMap getCachedDefinitionMap(String fileName) {
 		if (this.rootTable == this) {
-			if (this.cachedDefinitions == null) {
-				return null;
+			// Built-in importable definitions takes precedence
+			if (this.importableDefinitions != null) {
+				ArucasClassDefinitionMap definitions = this.importableDefinitions.get(fileName);
+				if (definitions != null) {
+					return definitions;
+				}
 			}
-			return this.cachedDefinitions.get(fileName);
+			return this.cachedDefinitions == null ? null : this.cachedDefinitions.get(fileName);
 		}
 		return this.rootTable.getCachedDefinitionMap(fileName);
+	}
+
+	/**
+	 * Clears the cache
+	 */
+	public void clearCachedDefinitions() {
+		if (this.cachedDefinitions != null) {
+			this.cachedDefinitions.clear();
+			this.cachedDefinitions = null;
+		}
 	}
 
 	/**

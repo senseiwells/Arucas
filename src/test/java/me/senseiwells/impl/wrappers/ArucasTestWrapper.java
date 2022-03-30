@@ -33,6 +33,11 @@ public class ArucasTestWrapper implements IArucasWrappedClass {
 		this.memberValue = NumberValue.of(10);
 	}
 
+	@ArucasConstructor
+	public void constructor(Context context, NumberValue numberValue) {
+
+	}
+
 	@ArucasOperator(Token.Type.MINUS)
 	public Value<?> minusU(Context context) {
 		return NumberValue.of(-10);
