@@ -338,4 +338,103 @@ public class ArucasClassTest {
 			"""
 		));
 	}
+
+	@Test
+	public void testArbitraryParameters() {
+		assertThrows(CodeError.class, () -> ArucasHelper.compile(
+			"""
+			class  E {
+				fun test(a, b...) { }
+			}
+			"""
+		));
+		assertThrows(CodeError.class, () -> ArucasHelper.compile(
+			"""
+			class  E {
+				fun test(a, b, c...) { }
+			}
+			"""
+		));
+		assertThrows(CodeError.class, () -> ArucasHelper.compile(
+			"""
+			class  E {
+				fun test(...a) { }
+			}
+			"""
+		));
+		assertThrows(CodeError.class, () -> ArucasHelper.compile(
+			"""
+			class E {
+				static fun test(a, b...) { }
+			}
+			"""
+		));
+		assertThrows(CodeError.class, () -> ArucasHelper.compile(
+			"""
+			class E {
+				static fun test(...a) { }
+			}
+			"""
+		));
+		assertEquals("[1, 2, 3, 4]", ArucasHelper.runSafe(
+			"""
+			class E {
+				fun test(a...) {
+					return a;
+				}
+
+				static fun test(a...) {
+					return a;
+				}
+			}
+
+			return new E().test(1, 2).concat(E.test(3, 4));
+			"""
+		));
+		assertEquals("E", ArucasHelper.runSafe(
+			"""
+			class E {
+				fun test(a...) {
+					return this.toString();
+				}
+
+				fun toString() {
+					return "E";
+				}
+			}
+
+			return new E().test();
+			"""
+		));
+		assertEquals("0", ArucasHelper.runSafe(
+			"""
+			class E {
+				var total = 0;
+				
+				E(params...) {
+					foreach (param : params) {
+						this.total = this.total + param;
+					}
+				}
+			}
+			
+			return new E(-1, 4, -3).total;
+			"""
+		));
+		assertEquals("0", ArucasHelper.runSafe(
+			"""
+			class E {
+				var total = 0;
+				
+				E(params...) {
+					foreach (param : params) {
+						this.total = this.total + param;
+					}
+				}
+			}
+			
+			return new E().total;
+			"""
+		));
+	}
 }

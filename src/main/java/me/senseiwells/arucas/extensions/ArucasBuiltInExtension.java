@@ -13,6 +13,7 @@ import me.senseiwells.arucas.utils.impl.IArucasCollection;
 import me.senseiwells.arucas.values.*;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
 import me.senseiwells.arucas.values.functions.FunctionValue;
+import me.senseiwells.arucas.values.functions.IMemberFunction;
 
 import java.io.File;
 import java.io.IOException;
@@ -280,7 +281,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 	/**
 	 * Name: <code>len(collection)</code> <br>
 	 * Description: This is used to get the length of a collection or string <br>
-	 * Parameter - String/Collection: the collection or string <br>
+	 * Parameter - String/Collection/Function: the collection or string <br>
 	 * Throws - Error: <code>"Cannot pass ... into len()"</code> if the parameter is not a collection or string <br>
 	 * Example: <code>len("Hello World");</code> 
 	 */
@@ -291,6 +292,13 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		}
 		if (value.value instanceof IArucasCollection collection) {
 			return NumberValue.of(collection.size());
+		}
+		if (value instanceof FunctionValue functionValue) {
+			// If the function is a member we don't include itself in the length
+			if (value instanceof IMemberFunction) {
+				return NumberValue.of(functionValue.getParameterCount() - 1);
+			}
+			return NumberValue.of(functionValue.getParameterCount());
 		}
 		throw new RuntimeError("Cannot pass %s into len()".formatted(value), function.syntaxPosition, context);
 	}

@@ -80,4 +80,23 @@ public class ArucasEnumTest {
 		"""
 		));
 	}
+
+	@Test
+	public void testArbitraryParameters() {
+		assertEquals("[1, 2, 3]", ArucasHelper.runSafe(
+			"""
+			enum E {
+				A(1, 2, 3),
+				B;
+				
+				var values;
+				E(a...) {
+					this.values = a;
+				}
+			}
+			   
+			return E.A.values.concat(E.B.values);
+			"""
+		));
+	}
 }

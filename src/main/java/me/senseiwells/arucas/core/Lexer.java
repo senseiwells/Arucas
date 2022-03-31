@@ -103,6 +103,7 @@ public class Lexer {
 			.addRule(Type.FROM, i -> i.addString("from"))
 
 			// Dot operator
+			.addRule(Type.ARBITRARY, i -> i.addString("..."))
 			.addRule(Type.DOT, i -> i.addString("."))
 			.addRule(Type.POINTER, i -> i.addString("->"))
 		;

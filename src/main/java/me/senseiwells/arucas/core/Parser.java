@@ -474,7 +474,8 @@ public class Parser {
 		List<String> argumentNames = this.getClassMemberArguments();
 
 		MutableSyntaxImpl syntaxPosition = new MutableSyntaxImpl(startPos.getStartPos(), null);
-		ClassMemberFunction classConstructor = new ClassMemberFunction(name, argumentNames, syntaxPosition);
+		ClassMemberFunction classConstructor = this.isStackTypePop(StackType.ARBITRARY) ?
+			new ClassMemberFunction.Arbitrary(name, argumentNames, syntaxPosition): new ClassMemberFunction(name, argumentNames, syntaxPosition);
 		this.context.setLocal(name, classConstructor);
 
 		Node statements = this.statements();
@@ -491,7 +492,7 @@ public class Parser {
 		this.advance();
 
 		this.throwIfNotType(Token.Type.IDENTIFIER, "Expected method name");
-		Token variableNameToken = this.currentToken;
+		String name = this.currentToken.content;
 		this.advance();
 
 		this.throwIfNotType(Token.Type.LEFT_BRACKET, "Expected '('");
@@ -502,8 +503,10 @@ public class Parser {
 		List<String> argumentNames = this.getClassMemberArguments();
 
 		MutableSyntaxImpl syntaxPosition = new MutableSyntaxImpl(startPos.getStartPos(), null);
-		ClassMemberFunction classMethod = new ClassMemberFunction(variableNameToken.content, argumentNames, syntaxPosition);
-		this.context.setLocal(variableNameToken.content, classMethod);
+		ClassMemberFunction classMethod = this.isStackTypePop(StackType.ARBITRARY) ?
+			new ClassMemberFunction.Arbitrary(name, argumentNames, syntaxPosition): new ClassMemberFunction(name, argumentNames, syntaxPosition);
+
+		this.context.setLocal(name, classMethod);
 
 		Node statements = this.statements();
 		this.context.popScope();
@@ -523,9 +526,26 @@ public class Parser {
 			do {
 				this.throwIfNotType(Token.Type.IDENTIFIER, "Expected Identifier");
 				this.throwIfStackNameTaken(this.currentToken);
-				argumentNames.add(this.currentToken.content);
-				this.context.setLocal(this.currentToken.content, NullValue.NULL);
+				String varName = this.currentToken.content;
+				argumentNames.add(varName);
 				this.advance();
+
+				if (this.currentToken.type == Token.Type.ARBITRARY) {
+					// 2 because we include 'this'
+					if (argumentNames.size() == 2) {
+						this.parseStack.push(StackType.ARBITRARY);
+						this.context.setLocal(varName, NullValue.NULL);
+						this.advance();
+						break;
+					}
+					throw new CodeError(
+						CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR,
+						"Cannot have multiple parameters with arbitrary parameter function",
+						this.currentToken.syntaxPosition
+					);
+				}
+
+				this.context.setLocal(varName, NullValue.NULL);
 			}
 			while (this.currentToken.type == Token.Type.COMMA && this.advance());
 		}
@@ -536,6 +556,7 @@ public class Parser {
 
 	private UserDefinedFunction staticClassMethod() throws CodeError {
 		ISyntax startPos = this.currentToken.syntaxPosition;
+		MutableSyntaxImpl syntaxPosition = new MutableSyntaxImpl(startPos.getStartPos(), null);
 		this.advance();
 
 		this.throwIfNotType(Token.Type.IDENTIFIER, "Expected method name");
@@ -548,21 +569,40 @@ public class Parser {
 		this.context.pushScope(this.currentToken.syntaxPosition);
 
 		List<String> argumentNames = new ArrayList<>();
+
+		UserDefinedFunction staticClassMethod = null;
 		if (this.currentToken.type == Token.Type.IDENTIFIER) {
 			do {
 				this.throwIfNotType(Token.Type.IDENTIFIER, "Expected Identifier");
 				this.throwIfStackNameTaken(this.currentToken);
-				argumentNames.add(this.currentToken.content);
-				this.context.setLocal(this.currentToken.content, NullValue.NULL);
+				String varName = this.currentToken.content;
+				argumentNames.add(varName);
 				this.advance();
+
+				if (this.currentToken.type == Token.Type.ARBITRARY) {
+					if (argumentNames.size() == 1) {
+						staticClassMethod = new UserDefinedFunction.Arbitrary(variableNameToken.content, varName, syntaxPosition);
+						this.context.setLocal(varName, NullValue.NULL);
+						this.advance();
+						break;
+					}
+					throw new CodeError(
+						CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR,
+						"Cannot have multiple parameters with arbitrary parameter function",
+						this.currentToken.syntaxPosition
+					);
+				}
+
+				this.context.setLocal(varName, NullValue.NULL);
 			}
 			while (this.currentToken.type == Token.Type.COMMA && this.advance());
 		}
 		this.throwIfNotType(Token.Type.RIGHT_BRACKET, "Expected ',' or ')'");
 		this.advance();
 
-		MutableSyntaxImpl syntaxPosition = new MutableSyntaxImpl(startPos.getStartPos(), null);
-		UserDefinedFunction staticClassMethod = new UserDefinedFunction(variableNameToken.content, argumentNames, syntaxPosition);
+		if (staticClassMethod == null) {
+			staticClassMethod = new UserDefinedFunction(variableNameToken.content, argumentNames, syntaxPosition);
+		}
 		this.context.setLocal(variableNameToken.content, staticClassMethod);
 
 		Node statements = this.statements();
@@ -802,20 +842,44 @@ public class Parser {
 
 		this.context.pushScope(this.currentToken.syntaxPosition);
 
+		FunctionNode functionNode = null;
 		if (this.currentToken.type == Token.Type.IDENTIFIER) {
 			do {
 				this.throwIfNotType(Token.Type.IDENTIFIER, "Expected Identifier");
 				this.throwIfStackNameTaken(this.currentToken);
-				argumentNameTokens.add(this.currentToken.content);
-				this.context.setLocal(this.currentToken.content, NullValue.NULL);
+				String varName = this.currentToken.content;
+				argumentNameTokens.add(varName);
 				this.advance();
+
+				if (this.currentToken.type == Token.Type.ARBITRARY) {
+					// We can't have more than one argument be arbitrary
+					// Since this would not work with the current FunctionMap system
+					if (argumentNameTokens.size() == 1) {
+						functionNode = new FunctionNode(
+							functionStartToken,
+							new UserDefinedFunction.Arbitrary(variableNameToken.content, varName, functionStartToken.syntaxPosition)
+						);
+						this.context.setLocal(varName, NullValue.NULL);
+						this.advance();
+						break;
+					}
+					throw new CodeError(
+						CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR,
+						"Cannot have multiple parameters with arbitrary parameter function",
+						this.currentToken.syntaxPosition
+					);
+				}
+
+				this.context.setLocal(varName, NullValue.NULL);
 			}
 			while (this.currentToken.type == Token.Type.COMMA && this.advance());
 		}
 		this.throwIfNotType(Token.Type.RIGHT_BRACKET, "Expected ',' or ')'");
 		this.advance();
 
-		FunctionNode functionNode = new FunctionNode(functionStartToken, variableNameToken, argumentNameTokens);
+		if (functionNode == null) {
+			functionNode = new FunctionNode(functionStartToken, variableNameToken, argumentNameTokens);
+		}
 		this.context.setLocal(variableNameToken.content, functionNode.getFunctionValue());
 
 		Node statements = this.statements();
@@ -1414,6 +1478,14 @@ public class Parser {
 		return !this.parseStack.empty() && this.parseStack.peek() == type;
 	}
 
+	private boolean isStackTypePop(StackType type) {
+		if (this.isStackType(type)) {
+			this.parseStack.pop();
+			return true;
+		}
+		return false;
+	}
+
 	private void throwIfStackNameTaken(Token token) throws CodeError {
 		this.throwIfStackNameTaken(token.content, token.syntaxPosition);
 	}
@@ -1429,5 +1501,6 @@ public class Parser {
 		LIST,
 		MAP,
 		FUN,
+		ARBITRARY
 	}
 }

@@ -1,5 +1,6 @@
 package me.senseiwells.test;
 
+import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import org.junit.Test;
 
@@ -165,6 +166,41 @@ public class ArucasFunctionTest {
 			}
 			del = E.type.getStaticMethod("d", 1);
 			return del(null);
+			"""
+		));
+	}
+
+	@Test
+	public void testArbitraryParameters() {
+		assertThrows(CodeError.class, () -> ArucasHelper.compile("fun test(a, b...) { }"));
+		assertThrows(CodeError.class, () -> ArucasHelper.compile("fun test(a, b, c, d...) { }"));
+		assertThrows(CodeError.class, () -> ArucasHelper.compile("fun test(...a) { }"));
+		assertEquals("[1, 2, 3]", ArucasHelper.runSafe(
+			"""
+			del = fun(a...) {
+				return a;
+			};
+			return del(1, 2, 3);
+			"""
+		));
+		assertEquals("26", ArucasHelper.runSafe(
+			"""
+			fun adder(nums...) {
+				total = 0;
+				foreach (n : nums) {
+					total = total + n;
+				}
+				return total;
+			}
+			return adder(5, 6, 7, 8);
+			"""
+		));
+		assertEquals("[]", ArucasHelper.runSafe(
+			"""
+			del = fun(a...) {
+				return a;
+			};
+			return del();
 			"""
 		));
 	}

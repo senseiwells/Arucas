@@ -4,6 +4,7 @@ import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.MutableSyntaxImpl;
+import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.functions.UserDefinedFunction;
 import me.senseiwells.arucas.values.Value;
 
@@ -14,9 +15,13 @@ public class FunctionNode extends Node {
 	private final UserDefinedFunction functionValue;
 
 	public FunctionNode(Token functionToken, Token varNameToken, List<String> argumentNames) {
+		this(varNameToken, new UserDefinedFunction(varNameToken.content, argumentNames, functionToken.syntaxPosition));
+	}
+
+	public FunctionNode(Token varNameToken, UserDefinedFunction functionValue) {
 		super(varNameToken, new MutableSyntaxImpl(varNameToken.syntaxPosition.getStartPos(), null));
 		this.variableNameToken = varNameToken;
-		this.functionValue = new UserDefinedFunction(varNameToken.content, argumentNames, functionToken.syntaxPosition);
+		this.functionValue = functionValue;
 	}
 	
 	public void complete(Node bodyNode) {

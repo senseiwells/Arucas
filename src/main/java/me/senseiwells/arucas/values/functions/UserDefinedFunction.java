@@ -5,6 +5,8 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.nodes.Node;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.impl.ArucasList;
+import me.senseiwells.arucas.values.ListValue;
 import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
 
@@ -33,5 +35,26 @@ public class UserDefinedFunction extends FunctionValue {
 		this.checkAndPopulateArguments(context, arguments, this.argumentNames);
 		this.bodyNode.visit(context);
 		return NullValue.NULL;
+	}
+
+	public static final class Arbitrary extends UserDefinedFunction {
+		public Arbitrary(String name, String argumentName, ISyntax syntaxPosition) {
+			super(name, List.of(argumentName), syntaxPosition);
+		}
+
+		@Override
+		public int getParameterCount() {
+			return -1;
+		}
+
+		@Override
+		public void checkAndPopulateArguments(Context context, List<Value<?>> arguments, List<String> argumentNames) {
+			ArucasList list = new ArucasList();
+			// This can be empty
+			if (arguments != null && !arguments.isEmpty()) {
+				list.addAll(arguments);
+			}
+			context.setLocal(this.argumentNames.get(0), new ListValue(list));
+		}
 	}
 }

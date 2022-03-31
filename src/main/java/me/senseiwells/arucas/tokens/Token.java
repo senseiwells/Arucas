@@ -120,7 +120,8 @@ public class Token {
 
 		// Dot
 		DOT("."),
-		POINTER("->");
+		POINTER("->"),
+		ARBITRARY("...");
 
 		private final String asString;
 
