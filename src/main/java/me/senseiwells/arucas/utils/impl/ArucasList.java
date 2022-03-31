@@ -122,6 +122,32 @@ public class ArucasList implements IArucasCollection, List<Value<?>>, ValueIdent
 		return this.addAll(values.toArray(Value[]::new));
 	}
 
+
+	@Override
+	public boolean addAll(int index, Collection<? extends Value<?>> c) {
+		this.checkAddIndex(index);
+
+		Value<?>[] valueData = c instanceof ArucasList arucasList ? arucasList.toArray() : c.toArray(Value[]::new);
+		int numNew = valueData.length;
+		if (numNew == 0) {
+			return false;
+		}
+
+		Value<?>[] elementData = this.valueData;
+		final int size = this.size;
+		if (numNew > elementData.length - size) {
+			elementData = this.grow(size + numNew);
+		}
+
+		int numMoved = size - index;
+		if (numMoved > 0) {
+			System.arraycopy(elementData, index, elementData, index + numNew, numMoved);
+		}
+		System.arraycopy(valueData, 0, elementData, index, numNew);
+		this.size = size + numNew;
+		return true;
+	}
+
 	private synchronized boolean addAll(Value<?>[] valueArray) {
 		int newSize = valueArray.length;
 		if (newSize == 0) {
@@ -360,9 +386,6 @@ public class ArucasList implements IArucasCollection, List<Value<?>>, ValueIdent
 	/**
 	 * These methods are unsupported.
 	 */
-
-	@Override
-	public boolean addAll(int index, Collection<? extends Value<?>> c) { throw new UnsupportedOperationException(); }
 
 	@Override
 	public boolean contains(Object o) { throw new UnsupportedOperationException(); }

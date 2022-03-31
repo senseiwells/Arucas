@@ -42,10 +42,6 @@ public class ArucasClassDefinitionMap implements Iterable<AbstractClassDefinitio
 	 * This method adds the class definition value to all of its subclasses.
 	 */
 	private void addSubclasses(AbstractClassDefinition value) {
-		if (this.isMerged) {
-			return;
-		}
-
 		Class<?> clazz = value.getValueClass();
 		Class<?> baseClazz = clazz;
 		List<AbstractClassDefinition> baseSet = this.classMap.computeIfAbsent(clazz, (v) -> new ArrayList<>());
@@ -76,6 +72,8 @@ public class ArucasClassDefinitionMap implements Iterable<AbstractClassDefinitio
 				}
 			}
 		}
+
+		this.merge();
 	}
 	
 	/**
@@ -96,16 +94,13 @@ public class ArucasClassDefinitionMap implements Iterable<AbstractClassDefinitio
 	}
 
 	public void merge() {
-		if (this.isMerged) {
-			return;
-		}
+		this.mergedClassMap.clear();
 
 		for (Class<?> key : this.classMap.keySet().toArray(Class<?>[]::new)) {
 			this.mergedClassMap.put(key, MergedClassMethods.mergeMethods(this.classMap.get(key)));
 		}
 
 		this.isMerged = true;
-		this.classMap.clear();
 	}
 
 	@Deprecated(forRemoval = true)

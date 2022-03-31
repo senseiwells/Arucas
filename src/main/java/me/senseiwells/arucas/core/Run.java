@@ -13,6 +13,7 @@ import java.util.List;
 
 public class Run {
 	public static Value<?> run(Context context, String fileName, String fileContent) throws CodeError {
+		context = context.createChildContext(fileName);
 		Node nodeResult = compile(context, fileName, fileContent);
 		long startTime = System.nanoTime();
 		try {

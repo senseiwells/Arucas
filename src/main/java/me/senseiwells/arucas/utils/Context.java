@@ -72,18 +72,24 @@ public class Context {
 	 * @param th threadHandler
 	 * @param o arucasOutput
 	 * @param ip importPath
+	 * @param fa forceAddDefinitions
 	 */
-	private Context(String s, Context pc, ArucasFunctionMap<FunctionValue> e, ArucasClassDefinitionMap d, Map<String, ArucasClassDefinitionMap> i, Map<String, ArucasClassDefinitionMap> c, ArucasThreadHandler th, IArucasOutput o, Path ip) {
+	private Context(String s, Context pc, ArucasFunctionMap<FunctionValue> e, ArucasClassDefinitionMap d, Map<String, ArucasClassDefinitionMap> i, Map<String, ArucasClassDefinitionMap> c, ArucasThreadHandler th, IArucasOutput o, Path ip, boolean fa) {
 		this(s, pc, e, new StackTable(), th, o, ip);
 
 		// Initialize the class definitions map by inserting the previous table values
-		this.stackTable.insertAllClassDefinitions(d);
 		this.stackTable.importableDefinitions = i;
 		this.stackTable.cachedDefinitions = c;
+		if (fa) {
+			this.stackTable.classDefinitions = d;
+		}
+		else {
+			this.stackTable.insertAllClassDefinitions(d);
+		}
 	}
 
 	public Context(String s, ArucasFunctionMap<FunctionValue> e, ArucasClassDefinitionMap d, Map<String, ArucasClassDefinitionMap> i, Map<String, ArucasClassDefinitionMap> c, ArucasThreadHandler th, IArucasOutput o, Path ip) {
-		this(s, null, e, d, i, c, th, o, ip);
+		this(s, null, e, d, i, c, th, o, ip, false);
 	}
 	
 	private Context(Context branch, StackTable stackTable) {
@@ -120,9 +126,18 @@ public class Context {
 	
 	public Context createChildContext(String displayName) {
 		StackTable root = this.stackTable.getRoot();
-		Context context = new Context(displayName, this, this.extensions, root.classDefinitions, root.importableDefinitions, root.cachedDefinitions, this.threadHandler, this.arucasOutput, this.importPath);
+		Context context = new Context(displayName, this, this.extensions, root.classDefinitions, root.importableDefinitions, root.cachedDefinitions, this.threadHandler, this.arucasOutput, this.importPath, false);
 		context.isMain = false;
 		return context;
+	}
+
+	/**
+	 * We have special context for parser since we want to be able to add class definitions the
+	 * existing stack table which will be used at runtime. This is needed for imports.
+	 */
+	public Context createParserContext() {
+		StackTable root = this.stackTable.getRoot();
+		return new Context("Parser Context", this, this.extensions, root.classDefinitions, root.importableDefinitions, root.cachedDefinitions, this.threadHandler, this.arucasOutput, this.importPath, true);
 	}
 	
 	public ThrowValue.Continue getContinueThrowable() {

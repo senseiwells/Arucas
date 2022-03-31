@@ -6,6 +6,7 @@ import me.senseiwells.arucas.core.Arucas;
 import me.senseiwells.arucas.extensions.ArucasBuiltInExtension;
 import me.senseiwells.arucas.extensions.ArucasMathClass;
 import me.senseiwells.arucas.extensions.ArucasNetworkClass;
+import me.senseiwells.arucas.extensions.util.CollectorValue;
 import me.senseiwells.arucas.utils.ArucasClassDefinitionMap;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
@@ -90,6 +91,9 @@ public class ContextBuilder {
 			FileValue.ArucasFileClass::new,
 			ArucasMathClass::new,
 			ArucasNetworkClass::new
+		).addClasses(
+			"util\\Collection",
+			CollectorValue.ArucasCollectorClass::new
 		);
 	}
 
@@ -153,10 +157,6 @@ public class ContextBuilder {
 	}
 
 	public ContextBuilder generateArucasFiles() throws IOException {
-		if (!Files.exists(this.importPath)) {
-			Files.createDirectories(this.importPath);
-		}
-
 		ArucasClassDefinitionMap classDefinitions = new ArucasClassDefinitionMap();
 		for (Supplier<ArucasClassExtension> supplier : this.builtInClasses) {
 			classDefinitions.add(supplier.get());
@@ -182,6 +182,10 @@ public class ContextBuilder {
 		for (Map.Entry<String, ArucasClassDefinitionMap> entry : importables.entrySet()) {
 			StringBuilder builder = new StringBuilder();
 			Path generationPath = this.importPath.resolve(entry.getKey() + ".arucas");
+			Path parent = generationPath.getParent();
+			if (!Files.exists(parent)) {
+				Files.createDirectories(parent);
+			}
 			for (AbstractClassDefinition definition : entry.getValue()) {
 				builder.append(definition.toString()).append("\n\n");
 			}
