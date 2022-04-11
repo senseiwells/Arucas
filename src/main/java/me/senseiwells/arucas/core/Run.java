@@ -29,7 +29,7 @@ public class Run {
 		}
 		finally {
 			if (context.isDebug()) {
-				context.getOutput().log("Execution time: " + (System.nanoTime() - startTime) / 1000 + " microseconds for '" + fileName + "'");
+				context.getOutput().log("Execution time: " + (System.nanoTime() - startTime) / 1000 + " microseconds for '" + fileName + "'\n");
 			}
 		}
 	}

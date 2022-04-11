@@ -44,7 +44,10 @@ public class WrapperClassMemberFunction extends ClassMemberFunction {
 	public WrapperClassMemberFunction copy(WrapperClassValue thisValue, IArucasWrappedClass wrappedClass) {
 		return new WrapperClassMemberFunction(thisValue, wrappedClass, this.getName(), this.parameters, this.isStatic, this.methodHandle);
 	}
-	
+
+	@Override
+	protected void populateArguments(Context context, List<Value<?>> arguments, List<String> argumentNames) { }
+
 	@Override
 	protected Value<?> callOverride(Context context, List<Value<?>> arguments, boolean returnable) throws CodeError {
 		Object[] args = new Object[1 + this.parameters];

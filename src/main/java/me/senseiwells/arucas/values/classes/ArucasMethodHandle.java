@@ -4,9 +4,9 @@ import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.ExceptionUtils;
 import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
-import me.senseiwells.arucas.values.classes.ArucasClassValue;
 
 import java.lang.invoke.MethodHandle;
 import java.util.regex.MatchResult;
@@ -22,7 +22,7 @@ public class ArucasMethodHandle {
 	}
 
 	public Value<?> call(Object[] args, ArucasClassValue thisValue, ISyntax syntaxPosition, Context context) throws CodeError {
-		try {
+		return invokeMethodHandle(() -> {
 			switch (this.returnType) {
 				case THIS -> {
 					this.methodHandle.invokeWithArguments(args);
@@ -39,12 +39,18 @@ public class ArucasMethodHandle {
 					return (Value<?>) this.methodHandle.invokeWithArguments(args);
 				}
 			}
+		}, syntaxPosition, context);
+	}
+
+	public static <T extends Value<?>> T invokeMethodHandle(ExceptionUtils.ThrowableSupplier<T> supplier, ISyntax syntaxPosition, Context context) throws CodeError {
+		try {
+			return supplier.get();
 		}
 		catch (CodeError codeError) {
 			throw codeError;
 		}
 		catch (ClassCastException e) {
-			throw new RuntimeError(this.formatCastException(e.getMessage()), syntaxPosition, context);
+			throw new RuntimeError(formatCastException(e.getMessage()), syntaxPosition, context);
 		}
 		catch (Throwable t) {
 			String message = t.getMessage();
@@ -53,7 +59,7 @@ public class ArucasMethodHandle {
 		}
 	}
 
-	private String formatCastException(String message) {
+	private static String formatCastException(String message) {
 		String[] matches = Pattern.compile("[a-zA-Z]+(?=Value(?!\\.))")
 			.matcher(message).results().map(MatchResult::group)
 			.toArray(String[]::new);

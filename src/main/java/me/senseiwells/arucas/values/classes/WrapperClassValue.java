@@ -57,6 +57,11 @@ public class WrapperClassValue extends ArucasClassValue {
 		return this.getAllMembers().get(name);
 	}
 
+	@Override
+	public Object asJavaValue() {
+		return this.wrapperClass.asJavaValue();
+	}
+
 	private ArucasMemberHandle getHandle(String name) {
 		return ((WrapperClassDefinition) this.value).getMemberHandle(name);
 	}

@@ -55,6 +55,11 @@ public class ErrorValue extends Value<Value<?>> {
 		return this;
 	}
 
+	@Override
+	public RuntimeError asJavaValue() {
+		return this.runtimeError;
+	}
+
 	/**
 	 * Error class for Arucas. <br>
 	 * Fully Documented.

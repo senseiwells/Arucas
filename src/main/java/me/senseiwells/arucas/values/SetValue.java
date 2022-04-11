@@ -69,9 +69,9 @@ public class SetValue extends Value<ArucasSet> {
 		}
 
 		/**
-		 * Name: <code>Set.of(index)</code> <br>
+		 * Name: <code>Set.of(values...)</code> <br>
 		 * Description: this allows you to create a set with an arbitrary number of values <br>
-		 * Parameters - Value: the values you want to add to the set <br>
+		 * Parameters - Value...: the values you want to add to the set <br>
 		 * Returns - Set: the set you created <br>
 		 * Example: <code>Set.of("object", 81, 96, "case");</code>
 		 */

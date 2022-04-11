@@ -1,13 +1,16 @@
 package me.senseiwells.arucas.nodes;
 
+import me.senseiwells.arucas.extensions.util.JavaValue;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.ReflectionUtils;
 import me.senseiwells.arucas.values.StringValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.ArucasClassValue;
 import me.senseiwells.arucas.values.functions.IMemberFunction;
+import me.senseiwells.arucas.values.functions.JavaFunction;
 
 public class MemberAccessNode extends Node {
 	private final Node leftNode;
@@ -27,7 +30,22 @@ public class MemberAccessNode extends Node {
 		// The memberNameNode is the MemberAccessNode that contains the name of the member
 		StringValue memberName = (StringValue) this.memberNameNode.visit(context);
 
-		Value<?> value = memberValue instanceof ArucasClassValue classValue ? classValue.getMember(memberName.value) : null;
+		Value<?> value = null;
+		if (memberValue instanceof ArucasClassValue classValue) {
+			value = classValue.getMember(memberName.value);
+		}
+		else if (memberValue instanceof JavaValue javaValue) {
+			value = ReflectionUtils.getFieldFromJavaValue(javaValue, memberName.value, this.syntaxPosition, context);
+			if (value == null) {
+				Object callingObject = javaValue.asJavaValue();
+				Class<?> callingClass = callingObject.getClass();
+				value = JavaFunction.of(
+					ReflectionUtils.getMethodSlow(callingClass, callingObject, memberName.value, -1),
+					callingObject,
+					this.syntaxPosition
+				);
+			}
+		}
 
 		if (value == null) {
 			// Get a delegate if method exists
@@ -41,7 +59,7 @@ public class MemberAccessNode extends Node {
 		if (value == null) {
 			throw new RuntimeError("Member variable '%s' was not defined for the value type '%s'".formatted(
 				memberName,
-				memberValue.getClass().getSimpleName()
+				memberValue.getTypeName()
 			), this.syntaxPosition, context);
 		}
 		

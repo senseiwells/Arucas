@@ -3,7 +3,6 @@ package me.senseiwells.arucas.utils;
 import me.senseiwells.arucas.api.ArucasThreadHandler;
 import me.senseiwells.arucas.api.IArucasOutput;
 import me.senseiwells.arucas.api.ISyntax;
-import me.senseiwells.arucas.values.classes.ArucasWrapperExtension;
 import me.senseiwells.arucas.api.wrappers.IArucasWrappedClass;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
@@ -12,13 +11,17 @@ import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.values.classes.ArucasClassValue;
+import me.senseiwells.arucas.values.classes.ArucasWrapperExtension;
 import me.senseiwells.arucas.values.classes.WrapperClassDefinition;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Runtime context class of the programming language.
@@ -29,6 +32,7 @@ import java.util.*;
 public class Context {
 	private final ArucasThreadHandler threadHandler;
 	private final ArucasFunctionMap<FunctionValue> extensions;
+	private final ValueConverter converter;
 	private final IArucasOutput arucasOutput;
 	private final UUID contextId;
 	private final Path importPath;
@@ -46,56 +50,30 @@ public class Context {
 	private final ThrowValue.Break breakThrowable = new ThrowValue.Break();
 	private final ThrowValue.Return returnThrowable = new ThrowValue.Return(NullValue.NULL);
 	
-	private Context(String displayName, Context parentContext, ArucasFunctionMap<FunctionValue> extensions, StackTable stackTable, ArucasThreadHandler threadHandler, IArucasOutput arucasOutput, Path importPath) {
+	private Context(String name, Context parent, ArucasFunctionMap<FunctionValue> extensions, StackTable table, ArucasThreadHandler handler, ValueConverter converter, IArucasOutput output, Path importPath) {
 		this.extensions = extensions;
-		this.arucasOutput = arucasOutput;
-		this.threadHandler = threadHandler;
-		this.contextId = parentContext != null ? parentContext.contextId : UUID.randomUUID();
+		this.arucasOutput = output;
+		this.threadHandler = handler;
+		this.converter = converter;
+		this.contextId = parent != null ? parent.contextId : UUID.randomUUID();
 		
-		this.displayName = displayName;
-		this.parentContext = parentContext;
-		this.suppressDeprecated = parentContext != null && parentContext.suppressDeprecated;
+		this.displayName = name;
+		this.parentContext = parent;
+		this.suppressDeprecated = parent != null && parent.suppressDeprecated;
 		this.isMain = true;
-		this.stackTable = stackTable;
+		this.stackTable = table;
 		this.importPath = importPath;
 	}
 
-	/**
-	 * There are a lot of parameters...
-	 *
-	 * @param pc parentContext
-	 * @param s displayName
-	 * @param e extensions
-	 * @param d builtInDefinitions
-	 * @param i importableDefinitions
-	 * @param c cachedDefinitions
-	 * @param th threadHandler
-	 * @param o arucasOutput
-	 * @param ip importPath
-	 * @param fa forceAddDefinitions
-	 */
-	private Context(String s, Context pc, ArucasFunctionMap<FunctionValue> e, ArucasClassDefinitionMap d, Map<String, ArucasClassDefinitionMap> i, Map<String, ArucasClassDefinitionMap> c, ArucasThreadHandler th, IArucasOutput o, Path ip, boolean fa) {
-		this(s, pc, e, new StackTable(), th, o, ip);
-
-		// Initialize the class definitions map by inserting the previous table values
-		this.stackTable.importableDefinitions = i;
-		this.stackTable.cachedDefinitions = c;
-		if (fa) {
-			this.stackTable.classDefinitions = d;
-		}
-		else {
-			this.stackTable.insertAllClassDefinitions(d);
-		}
-	}
-
-	public Context(String s, ArucasFunctionMap<FunctionValue> e, ArucasClassDefinitionMap d, Map<String, ArucasClassDefinitionMap> i, Map<String, ArucasClassDefinitionMap> c, ArucasThreadHandler th, IArucasOutput o, Path ip) {
-		this(s, null, e, d, i, c, th, o, ip, false);
+	public Context(String displayName, Context parent, ArucasFunctionMap<FunctionValue> extensions, ArucasThreadHandler handler, ValueConverter converter, IArucasOutput output, Path importPath) {
+		this(displayName, parent, extensions, new StackTable(), handler, converter, output, importPath);
 	}
 	
 	private Context(Context branch, StackTable stackTable) {
 		this.displayName = branch.displayName;
 		this.stackTable = stackTable;
 		this.threadHandler = branch.threadHandler;
+		this.converter = branch.converter;
 		this.arucasOutput = branch.arucasOutput;
 		this.extensions = branch.extensions;
 		this.parentContext = branch.parentContext;
@@ -126,9 +104,9 @@ public class Context {
 	
 	public Context createChildContext(String displayName) {
 		StackTable root = this.stackTable.getRoot();
-		Context context = new Context(displayName, this, this.extensions, root.classDefinitions, root.importableDefinitions, root.cachedDefinitions, this.threadHandler, this.arucasOutput, this.importPath, false);
+		Context context = new Context(displayName, this, this.extensions, this.threadHandler, this.converter, this.arucasOutput, this.importPath);
 		context.isMain = false;
-		return context;
+		return context.setStackTable(root.classDefinitions, root.importableDefinitions, root.cachedDefinitions, false);
 	}
 
 	/**
@@ -137,7 +115,8 @@ public class Context {
 	 */
 	public Context createParserContext() {
 		StackTable root = this.stackTable.getRoot();
-		return new Context("Parser Context", this, this.extensions, root.classDefinitions, root.importableDefinitions, root.cachedDefinitions, this.threadHandler, this.arucasOutput, this.importPath, true);
+		Context context = new Context("Parser Context", this, this.extensions, this.threadHandler, this.converter, this.arucasOutput, this.importPath);
+		return context.setStackTable(root.classDefinitions, root.importableDefinitions, root.cachedDefinitions, true);
 	}
 	
 	public ThrowValue.Continue getContinueThrowable() {
@@ -326,7 +305,11 @@ public class Context {
 		}
 		throw new RuntimeError("No such wrapper class exists", syntaxPosition, this);
 	}
-	
+
+	public Value<?> convertValue(Object object) throws CodeError {
+		return this.converter.convertFrom(object, this);
+	}
+
 	public AbstractClassDefinition getClassDefinition(String name) {
 		return this.stackTable.getClassDefinition(name);
 	}
@@ -357,6 +340,21 @@ public class Context {
 
 	public FunctionValue getMemberFunction(Class<?> clazz, String methodName, int parameters) {
 		return this.stackTable.getClassFunction(clazz, methodName, parameters);
+	}
+
+	private Context setStackTable(ArucasClassDefinitionMap definitions, Map<String, ArucasClassDefinitionMap> imports, Map<String, ArucasClassDefinitionMap> cached, boolean force) {
+		this.stackTable.importableDefinitions = imports;
+		this.stackTable.cachedDefinitions = cached;
+		if (force) {
+			this.stackTable.classDefinitions = definitions;
+			return this;
+		}
+		this.stackTable.insertAllClassDefinitions(definitions);
+		return this;
+	}
+
+	public Context setStackTable(ArucasClassDefinitionMap definitions, Map<String, ArucasClassDefinitionMap> imports, Map<String, ArucasClassDefinitionMap> cached) {
+		return this.setStackTable(definitions, imports, cached, false);
 	}
 	
 	@Deprecated(forRemoval = true)

@@ -90,6 +90,11 @@ public class ArucasClassValue extends Value<AbstractClassDefinition> implements 
 	}
 
 	@Override
+	public Object asJavaValue() {
+		return this;
+	}
+
+	@Override
 	public int getHashCode(Context context) throws CodeError {
 		// If 'hashCode' is overridden we should use that here
 		FunctionValue memberFunction = this.getMember("hashCode", 1);

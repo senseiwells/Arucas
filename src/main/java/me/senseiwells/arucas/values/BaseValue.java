@@ -30,6 +30,10 @@ public abstract class BaseValue implements ValueIdentifier {
 	 */
 	public abstract Value<?> newCopy(Context context) throws CodeError;
 
+	public Object asJavaValue() {
+		return this.getValue();
+	}
+
 	/**
 	 * This gets called when the binary operator <code>&&</code>
 	 * is used in Arucas

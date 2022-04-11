@@ -1,4 +1,4 @@
-package me.senseiwells.arucas.extensions;
+package me.senseiwells.arucas.extensions.util;
 
 import me.senseiwells.arucas.api.ArucasClassExtension;
 import me.senseiwells.arucas.throwables.CodeError;

@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MemberFunction extends AbstractBuiltInFunction<MemberFunction> implements IMemberFunction {
-	public MemberFunction(String name, List<String> argumentNames, FunctionDefinition<MemberFunction> function, String isDeprecated) {
-		super(name, addThis(argumentNames), function, isDeprecated);
+	public MemberFunction(String name, List<String> argumentNames, FunctionDefinition<MemberFunction> function, String deprecationMessage) {
+		super(name, addThis(argumentNames), function, deprecationMessage);
 	}
 
 	public MemberFunction(String name, List<String> argumentNames, FunctionDefinition<MemberFunction> function) {
@@ -27,12 +27,12 @@ public class MemberFunction extends AbstractBuiltInFunction<MemberFunction> impl
 		this(name, List.of(), function, null);
 	}
 
-	public MemberFunction(String name, String argument, FunctionDefinition<MemberFunction> function, String isDeprecated) {
-		this(name, List.of(argument), function, isDeprecated);
+	public MemberFunction(String name, String argument, FunctionDefinition<MemberFunction> function, String deprecationMessage) {
+		this(name, List.of(argument), function, deprecationMessage);
 	}
 
-	public MemberFunction(String name, FunctionDefinition<MemberFunction> function, String isDeprecated) {
-		this(name, List.of(), function, isDeprecated);
+	public MemberFunction(String name, FunctionDefinition<MemberFunction> function, String deprecationMessage) {
+		this(name, List.of(), function, deprecationMessage);
 	}
 
 	public <T extends Value<?>> T getThis(Context context, Class<T> clazz) throws CodeError {

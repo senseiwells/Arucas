@@ -15,6 +15,7 @@ public class Main {
 			.setDisplayName("System.in")
 			.addDefault()
 			.generateArucasFiles()
+			.addWrappers("test", ArucasTestWrapper::new)
 			.build();
 		
 		while (true) {

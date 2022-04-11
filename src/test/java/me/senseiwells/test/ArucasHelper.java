@@ -4,7 +4,7 @@ import me.senseiwells.arucas.api.ContextBuilder;
 import me.senseiwells.arucas.core.Lexer;
 import me.senseiwells.arucas.core.Parser;
 import me.senseiwells.arucas.extensions.ArucasMathClass;
-import me.senseiwells.arucas.extensions.ArucasNetworkClass;
+import me.senseiwells.arucas.extensions.util.ArucasNetworkClass;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.Context;
@@ -58,8 +58,7 @@ public class ArucasHelper {
 	
 	public static String runUnsafe(String syntax) throws CodeError {
 		Context context = createContext();
-		context.getThreadHandler().runOnThreadReturnable(context, "", "_run_value=(fun(){%s})();".formatted(syntax));
-		Value<?> value = context.getStackTable().get("_run_value");
+		Value<?> value = context.getThreadHandler().runOnThreadReturnable(context, "", syntax);
 		return value == null ? null : value.getAsString(context);
 	}
 	
@@ -75,8 +74,8 @@ public class ArucasHelper {
 	
 	public static String runUnsafeFull(String syntax, String resultVariable) throws CodeError {
 		Context context = createContext();
-		context.getThreadHandler().runOnThreadReturnable(context, "", syntax);
-		Value<?> value = context.getStackTable().get(resultVariable);
+		syntax = syntax + "return " + resultVariable + ";";
+		Value<?> value = context.getThreadHandler().runOnThreadReturnable(context, "", syntax);
 		return value == null ? null : value.getAsString(context);
 	}
 	
@@ -92,8 +91,8 @@ public class ArucasHelper {
 
 	public static String runUnsafeFull(String syntax, String resultVariable, Context context) throws CodeError {
 		context = createContext(context);
-		context.getThreadHandler().runOnThreadReturnable(context, "", syntax);
-		Value<?> value = context.getStackTable().get(resultVariable);
+		syntax = syntax + "return " + resultVariable + ";";
+		Value<?> value = context.getThreadHandler().runOnThreadReturnable(context, "", syntax);
 		return value == null ? null : value.getAsString(context);
 	}
 

@@ -158,8 +158,9 @@ public class StringValue extends Value<String> {
 		}
 
 		/**
-		 * Name: <code>&lt;String>.format(...)</code> <br>
+		 * Name: <code>&lt;String>.format(strings...)</code> <br>
 		 * Description: This formats the string with the given parameters <br>
+		 * Parameter - String...: the strings to add <br>
 		 * Returns - String: the formatted string <br>
 		 * Throws - Error: <code>"You are missing values to be formatted!"</code> if there are not enough parameters <br>
 		 * Example: <code>"%s %s".format("hello", "world");</code>

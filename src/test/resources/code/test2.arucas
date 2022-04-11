@@ -1,20 +1,14 @@
 // run(File.getDirectory().getPath() + "/src/test/resources/code/test2.arucas");
 
-class E {
-    var map = {};
+import Java from util.Internal;
 
-    operator ~ (str) {
-        return this.map.get(str);
-    }
+debug(true);
 
-    operator + (lst) {
-        if (lst.instanceOf(List.type)) {
-            this.map.put(lst.get(0), lst.get(1));
-        }
-    }
-}
+testClassName = "me.senseiwells.impl.Test";
+testInstance = Java.constructClass(testClassName);
+del = Java.getStaticMethodDelegate(testClassName, "F", 0);
 
-e = new E();
+r = Java.callStaticMethod(testClassName, "G");
 
-e + ["name", "sensei"];
-print(e ~ "name");
+print(r.toArucasValue());
+

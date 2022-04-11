@@ -389,34 +389,24 @@ public class ArucasList implements IArucasCollection, List<Value<?>>, ValueIdent
 
 	@Override
 	public boolean contains(Object o) { throw new UnsupportedOperationException(); }
-
 	@Override
 	public boolean remove(Object o) { throw new UnsupportedOperationException(); }
-
 	@Override
 	public boolean containsAll(Collection<?> c) { throw new UnsupportedOperationException(); }
-
 	@Override
 	public boolean retainAll(Collection<?> c) { throw new UnsupportedOperationException(); }
-
 	@Override
 	public <T> T[] toArray(T[] a) { throw new UnsupportedOperationException(); }
-
 	@Override
 	public int indexOf(Object o) { throw new UnsupportedOperationException(); }
-
 	@Override
 	public int lastIndexOf(Object o) { throw new UnsupportedOperationException(); }
-
 	@Override
 	public ListIterator<Value<?>> listIterator() { throw new UnsupportedOperationException(); }
-
 	@Override
 	public ListIterator<Value<?>> listIterator(int index) { throw new UnsupportedOperationException(); }
-
 	@Override
-	public List<Value<?>> subList(int fromIndex, int toIndex) { throw new UnsupportedOperationException(); }
-
+	public ArucasList subList(int fromIndex, int toIndex) { throw new UnsupportedOperationException(); }
 	@Override
 	public Value<?> set(int index, Value<?> element) { throw new UnsupportedOperationException(); }
 

@@ -1,9 +1,11 @@
 package me.senseiwells.arucas.nodes;
 
+import me.senseiwells.arucas.extensions.util.JavaValue;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.ReflectionUtils;
 import me.senseiwells.arucas.values.StringValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.ArucasClassValue;
@@ -51,6 +53,19 @@ public class MemberCallNode extends CallNode {
 					argumentValues.add(classValue);
 				}
 			}
+		}
+		else if (memberValue instanceof JavaValue javaValue) {
+			function = context.getMemberFunction(memberValue.getClass(), memberFunctionName.value, this.argumentNodes.size() + 1);
+
+			if (function == null) {
+				// We check if there are any Java methods, we check this AFTER Arucas methods since
+				// it's possible to call JavaMethods by using the Arucas function 'callJavaMethod'.
+				Value<?> returnValue = ReflectionUtils.callMethodFromJavaValue(javaValue, memberFunctionName.value, this.argumentNodes, this.syntaxPosition, context);
+				if (returnValue != null) {
+					return returnValue;
+				}
+			}
+			argumentValues.add(memberValue);
 		}
 		else {
 			function = context.getMemberFunction(memberValue.getClass(), memberFunctionName.value, this.argumentNodes.size() + 1);

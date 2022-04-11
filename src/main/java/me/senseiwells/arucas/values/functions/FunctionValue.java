@@ -37,7 +37,7 @@ public abstract class FunctionValue extends Value<String> {
 		return this.argumentNames.size();
 	}
 
-	private void checkArguments(Context context, List<Value<?>> arguments, List<String> argumentNames) throws CodeError {
+	protected void checkArguments(Context context, List<Value<?>> arguments, List<String> argumentNames) throws CodeError {
 		int argumentSize = arguments == null ? 0 : arguments.size();
 		if (argumentSize > argumentNames.size()) {
 			throw new RuntimeError(
@@ -55,7 +55,7 @@ public abstract class FunctionValue extends Value<String> {
 		}
 	}
 
-	private void populateArguments(Context context, List<Value<?>> arguments, List<String> argumentNames) {
+	protected void populateArguments(Context context, List<Value<?>> arguments, List<String> argumentNames) {
 		for (int i = 0; i < argumentNames.size(); i++) {
 			String argumentName = argumentNames.get(i);
 			Value<?> argumentValue = arguments.get(i);
@@ -122,6 +122,11 @@ public abstract class FunctionValue extends Value<String> {
 
 	@Override
 	public final FunctionValue copy(Context context) {
+		return this;
+	}
+
+	@Override
+	public FunctionValue asJavaValue() {
 		return this;
 	}
 
