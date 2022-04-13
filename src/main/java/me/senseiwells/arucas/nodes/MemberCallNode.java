@@ -60,7 +60,8 @@ public class MemberCallNode extends CallNode {
 			if (function == null) {
 				// We check if there are any Java methods, we check this AFTER Arucas methods since
 				// it's possible to call JavaMethods by using the Arucas function 'callJavaMethod'.
-				Value<?> returnValue = ReflectionUtils.callMethodFromJavaValue(javaValue, memberFunctionName.value, this.argumentNodes, this.syntaxPosition, context);
+				String obfuscatedName = JavaValue.getObfuscatedMethodName(context, javaValue.asJavaValue().getClass(), memberFunctionName.value);
+				Value<?> returnValue = ReflectionUtils.callMethodFromJavaValue(javaValue, obfuscatedName, this.argumentNodes, this.syntaxPosition, context);
 				if (returnValue != null) {
 					return returnValue;
 				}

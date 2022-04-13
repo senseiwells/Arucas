@@ -1,6 +1,8 @@
 package me.senseiwells.arucas.extensions.util;
 
 import me.senseiwells.arucas.api.ArucasClassExtension;
+import me.senseiwells.arucas.api.IArucasAPI;
+import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
@@ -56,6 +58,39 @@ public class JavaValue extends Value<Object> {
 	@Override
 	public final Object asJavaValue() {
 		return this.value;
+	}
+
+	public static Class<?> getObfuscatedClass(Context context, ISyntax syntaxPosition, String name) throws RuntimeError {
+		IArucasAPI api = context.getAPI();
+		String remappedClassName = api.shouldObfuscate() ? api.obfuscate(name) : name;
+		Class<?> clazz = ExceptionUtils.catchAsNull(() -> Class.forName(remappedClassName));
+		if (clazz == null) {
+			throw new RuntimeError(
+				"No such class with '%s'".formatted(name),
+				syntaxPosition, context
+			);
+		}
+		return clazz;
+	}
+
+	public static String getObfuscatedMethodName(Context context, Class<?> clazz, String name) {
+		if (context.getAPI().shouldObfuscate()) {
+			String deobfuscatedClassName = context.getAPI().deobfuscate(clazz.getName());
+			String fullMethodName = deobfuscatedClassName + "#" + name + "()";
+			String obfuscatedMethod = context.getAPI().obfuscate(fullMethodName);
+			return obfuscatedMethod.substring(obfuscatedMethod.lastIndexOf('#') + 1, obfuscatedMethod.length() - 2);
+		}
+		return name;
+	}
+
+	public static String getObfuscatedFieldName(Context context, Class<?> clazz, String name) {
+		if (context.getAPI().shouldObfuscate()) {
+			String deobfuscatedClassName = context.getAPI().deobfuscate(clazz.getName());
+			String fullFieldName = deobfuscatedClassName + "#" + name;
+			String obfuscatedField = context.getAPI().obfuscate(fullFieldName);
+			return obfuscatedField.substring(obfuscatedField.lastIndexOf('#') + 1);
+		}
+		return name;
 	}
 
 	/**
@@ -221,14 +256,7 @@ public class JavaValue extends Value<Object> {
 		 */
 		private Value<?> classFromName(Context context, BuiltInFunction function) throws CodeError {
 			String name = function.getFirstParameter(context, StringValue.class).value;
-			Class<?> clazz = ExceptionUtils.catchAsNull(() -> Class.forName(name));
-			if (clazz != null) {
-				return new JavaValue(clazz);
-			}
-			throw new RuntimeError(
-				"No such class with '%s'".formatted(name),
-				function.syntaxPosition, context
-			);
+			return new JavaValue(JavaValue.getObfuscatedClass(context, function.syntaxPosition, name));
 		}
 
 		/**
@@ -242,13 +270,8 @@ public class JavaValue extends Value<Object> {
 		private Value<?> getStaticField(Context context, BuiltInFunction function) throws CodeError {
 			String className = function.getFirstParameter(context, StringValue.class).value;
 			String fieldName = function.getParameterValueOfType(context, StringValue.class, 1).value;
-			Class<?> clazz = ExceptionUtils.catchAsNull(() -> Class.forName(className));
-			if (clazz == null) {
-				throw new RuntimeError(
-					"No such class with '%s'".formatted(className),
-					function.syntaxPosition, context
-				);
-			}
+			Class<?> clazz = JavaValue.getObfuscatedClass(context, function.syntaxPosition, className);
+			fieldName = JavaValue.getObfuscatedFieldName(context, clazz, fieldName);
 			return ReflectionUtils.getFieldFromName(clazz, null, fieldName, function.syntaxPosition, context);
 		}
 
@@ -265,13 +288,8 @@ public class JavaValue extends Value<Object> {
 			String className = function.getFirstParameter(context, StringValue.class).value;
 			String fieldName = function.getParameterValueOfType(context, StringValue.class, 1).value;
 			Value<?> value = function.getParameterValue(context, 2);
-			Class<?> clazz = ExceptionUtils.catchAsNull(() -> Class.forName(className));
-			if (clazz == null) {
-				throw new RuntimeError(
-					"No such class with '%s'".formatted(className),
-					function.syntaxPosition, context
-				);
-			}
+			Class<?> clazz = JavaValue.getObfuscatedClass(context, function.syntaxPosition, className);
+			fieldName = JavaValue.getObfuscatedFieldName(context, clazz, fieldName);
 			ReflectionUtils.setFieldFromName(clazz, null, value.asJavaValue(), fieldName, function.syntaxPosition, context);
 			return NullValue.NULL;
 		}
@@ -290,13 +308,8 @@ public class JavaValue extends Value<Object> {
 			String className = function.getFirstParameter(context, StringValue.class).value;
 			String methodName = function.getParameterValueOfType(context, StringValue.class, 1).value;
 			int parameters = function.getParameterValueOfType(context, NumberValue.class, 2).value.intValue();
-			Class<?> clazz = ExceptionUtils.catchAsNull(() -> Class.forName(className));
-			if (clazz == null) {
-				throw new RuntimeError(
-					"No such class with '%s'".formatted(className),
-					function.syntaxPosition, context
-				);
-			}
+			Class<?> clazz = JavaValue.getObfuscatedClass(context, function.syntaxPosition, className);
+			methodName = getObfuscatedMethodName(context, clazz, methodName);
 			Method method = ReflectionUtils.getMethodSlow(clazz, null, methodName, parameters);
 			JavaFunction javaFunction = JavaFunction.of(method, null, function.syntaxPosition);
 			if (javaFunction != null) {
@@ -361,16 +374,11 @@ public class JavaValue extends Value<Object> {
 					function.syntaxPosition, context
 				);
 			}
-			Class<?> clazz = ExceptionUtils.catchAsNull(() -> Class.forName(className.value));
-			if (clazz == null) {
-				throw new RuntimeError(
-					"No such class with '%s'".formatted(className.value),
-					function.syntaxPosition, context
-				);
-			}
+			Class<?> clazz = JavaValue.getObfuscatedClass(context, function.syntaxPosition, className.value);
+			String name = getObfuscatedMethodName(context, clazz, methodName.value);
 			arguments.remove(0);
 			arguments.remove(0);
-			return ReflectionUtils.callMethodFromNameAndArgs(clazz, null, methodName.value, arguments, function.syntaxPosition, context);
+			return ReflectionUtils.callMethodFromNameAndArgs(clazz, null, name, arguments, function.syntaxPosition, context);
 		}
 
 		/**
@@ -391,13 +399,7 @@ public class JavaValue extends Value<Object> {
 					function.syntaxPosition, context
 				);
 			}
-			Class<?> clazz = ExceptionUtils.catchAsNull(() -> Class.forName(className.value));
-			if (clazz == null) {
-				throw new RuntimeError(
-					"No such class with '%s'".formatted(className.value),
-					function.syntaxPosition, context
-				);
-			}
+			Class<?> clazz = JavaValue.getObfuscatedClass(context, function.syntaxPosition, className.value);
 			arguments.remove(0);
 			return ReflectionUtils.constructFromArgs(clazz, arguments, function.syntaxPosition, context);
 		}
@@ -441,6 +443,7 @@ public class JavaValue extends Value<Object> {
 			int parameters = function.getParameterValueOfType(context, NumberValue.class, 2).value.intValue();
 			Object callingObject = thisValue.asJavaValue();
 			Class<?> callingClass = callingObject.getClass();
+			methodName = getObfuscatedMethodName(context, callingClass, methodName);
 			Method method = ReflectionUtils.getMethodSlow(callingClass, callingObject, methodName, parameters);
 			JavaFunction javaFunction = JavaFunction.of(method, callingObject, function.syntaxPosition);
 			if (javaFunction != null) {
@@ -478,7 +481,8 @@ public class JavaValue extends Value<Object> {
 			arguments.remove(0);
 
 			Object callingObject = thisValue.asJavaValue();
-			return ReflectionUtils.callMethodFromNameAndArgs(callingObject.getClass(), callingObject, methodName.value, arguments, function.syntaxPosition, context);
+			String name = getObfuscatedMethodName(context, callingObject.getClass(), methodName.value);
+			return ReflectionUtils.callMethodFromNameAndArgs(callingObject.getClass(), callingObject, name, arguments, function.syntaxPosition, context);
 		}
 
 		/**
@@ -494,6 +498,7 @@ public class JavaValue extends Value<Object> {
 			JavaValue thisValue = function.getThis(context, JavaValue.class);
 			String fieldName = function.getParameterValueOfType(context, StringValue.class, 1).value;
 			Object callingObject = thisValue.asJavaValue();
+			fieldName = getObfuscatedFieldName(context, callingObject.getClass(), fieldName);
 			return ReflectionUtils.getFieldFromName(callingObject.getClass(), callingObject, fieldName, function.syntaxPosition, context);
 		}
 
@@ -509,8 +514,9 @@ public class JavaValue extends Value<Object> {
 		private Value<?> setJavaField(Context context, MemberFunction function) throws CodeError {
 			JavaValue thisValue = function.getThis(context, JavaValue.class);
 			String fieldName = function.getParameterValueOfType(context, StringValue.class, 1).value;
-			Value<?> newValue = function.getParameterValue(context, 1);
+			Value<?> newValue = function.getParameterValue(context, 2);
 			Object callingObject = thisValue.asJavaValue();
+			fieldName = getObfuscatedFieldName(context, callingObject.getClass(), fieldName);
 			ReflectionUtils.setFieldFromName(callingObject.getClass(), callingObject, newValue, fieldName, function.syntaxPosition, context);
 			return NullValue.NULL;
 		}

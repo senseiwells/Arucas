@@ -35,12 +35,14 @@ public class MemberAccessNode extends Node {
 			value = classValue.getMember(memberName.value);
 		}
 		else if (memberValue instanceof JavaValue javaValue) {
-			value = ReflectionUtils.getFieldFromJavaValue(javaValue, memberName.value, this.syntaxPosition, context);
+			Object callingObject = javaValue.asJavaValue();
+			Class<?> callingClass = callingObject.getClass();
+			String obfuscatedName = JavaValue.getObfuscatedFieldName(context, callingClass, memberName.value);
+			value = ReflectionUtils.getFieldFromJavaValue(javaValue, obfuscatedName, this.syntaxPosition, context);
 			if (value == null) {
-				Object callingObject = javaValue.asJavaValue();
-				Class<?> callingClass = callingObject.getClass();
+				obfuscatedName = JavaValue.getObfuscatedMethodName(context, callingClass, memberName.value);
 				value = JavaFunction.of(
-					ReflectionUtils.getMethodSlow(callingClass, callingObject, memberName.value, -1),
+					ReflectionUtils.getMethodSlow(callingClass, callingObject, obfuscatedName, -1),
 					callingObject,
 					this.syntaxPosition
 				);

@@ -1,6 +1,7 @@
 package me.senseiwells.arucas.utils;
 
 import me.senseiwells.arucas.api.ArucasThreadHandler;
+import me.senseiwells.arucas.api.IArucasAPI;
 import me.senseiwells.arucas.api.IArucasOutput;
 import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.api.wrappers.IArucasWrappedClass;
@@ -32,10 +33,9 @@ import java.util.UUID;
 public class Context {
 	private final ArucasThreadHandler threadHandler;
 	private final ArucasFunctionMap<FunctionValue> extensions;
+	private final IArucasAPI arucasAPI;
 	private final ValueConverter converter;
-	private final IArucasOutput arucasOutput;
 	private final UUID contextId;
-	private final Path importPath;
 	
 	private final String displayName;
 	private final Context parentContext;
@@ -50,9 +50,9 @@ public class Context {
 	private final ThrowValue.Break breakThrowable = new ThrowValue.Break();
 	private final ThrowValue.Return returnThrowable = new ThrowValue.Return(NullValue.NULL);
 	
-	private Context(String name, Context parent, ArucasFunctionMap<FunctionValue> extensions, StackTable table, ArucasThreadHandler handler, ValueConverter converter, IArucasOutput output, Path importPath) {
+	private Context(String name, Context parent, ArucasFunctionMap<FunctionValue> extensions, StackTable table, ArucasThreadHandler handler, ValueConverter converter, IArucasAPI api) {
 		this.extensions = extensions;
-		this.arucasOutput = output;
+		this.arucasAPI = api;
 		this.threadHandler = handler;
 		this.converter = converter;
 		this.contextId = parent != null ? parent.contextId : UUID.randomUUID();
@@ -62,11 +62,10 @@ public class Context {
 		this.suppressDeprecated = parent != null && parent.suppressDeprecated;
 		this.isMain = true;
 		this.stackTable = table;
-		this.importPath = importPath;
 	}
 
-	public Context(String displayName, Context parent, ArucasFunctionMap<FunctionValue> extensions, ArucasThreadHandler handler, ValueConverter converter, IArucasOutput output, Path importPath) {
-		this(displayName, parent, extensions, new StackTable(), handler, converter, output, importPath);
+	public Context(String displayName, Context parent, ArucasFunctionMap<FunctionValue> extensions, ArucasThreadHandler handler, ValueConverter converter, IArucasAPI api) {
+		this(displayName, parent, extensions, new StackTable(), handler, converter, api);
 	}
 	
 	private Context(Context branch, StackTable stackTable) {
@@ -74,7 +73,7 @@ public class Context {
 		this.stackTable = stackTable;
 		this.threadHandler = branch.threadHandler;
 		this.converter = branch.converter;
-		this.arucasOutput = branch.arucasOutput;
+		this.arucasAPI = branch.arucasAPI;
 		this.extensions = branch.extensions;
 		this.parentContext = branch.parentContext;
 		this.isDebug = branch.isDebug;
@@ -82,7 +81,6 @@ public class Context {
 		this.suppressDeprecated = branch.suppressDeprecated;
 		this.isMain = branch.isMain;
 		this.contextId = branch.contextId;
-		this.importPath = branch.importPath;
 	}
 
 	public Context createBranch() {
@@ -104,7 +102,7 @@ public class Context {
 	
 	public Context createChildContext(String displayName) {
 		StackTable root = this.stackTable.getRoot();
-		Context context = new Context(displayName, this, this.extensions, this.threadHandler, this.converter, this.arucasOutput, this.importPath);
+		Context context = new Context(displayName, this, this.extensions, this.threadHandler, this.converter, this.arucasAPI);
 		context.isMain = false;
 		return context.setStackTable(root.classDefinitions, root.importableDefinitions, root.cachedDefinitions, false);
 	}
@@ -115,7 +113,7 @@ public class Context {
 	 */
 	public Context createParserContext() {
 		StackTable root = this.stackTable.getRoot();
-		Context context = new Context("Parser Context", this, this.extensions, this.threadHandler, this.converter, this.arucasOutput, this.importPath);
+		Context context = new Context("Parser Context", this, this.extensions, this.threadHandler, this.converter, this.arucasAPI);
 		return context.setStackTable(root.classDefinitions, root.importableDefinitions, root.cachedDefinitions, true);
 	}
 	
@@ -140,10 +138,17 @@ public class Context {
 	}
 
 	/**
+	 * Returns the current API
+	 */
+	public IArucasAPI getAPI() {
+		return this.arucasAPI;
+	}
+
+	/**
 	 * Returns this contexts output object.
 	 */
 	public IArucasOutput getOutput() {
-		return this.arucasOutput;
+		return this.arucasAPI.getOutput();
 	}
 
 	/**
@@ -155,10 +160,11 @@ public class Context {
 	}
 
 	public Path getImportPath() throws IOException {
-		if (!Files.exists(this.importPath) && !ExceptionUtils.runSafe(() -> Files.createDirectories(this.importPath))) {
-			throw new IOException("Failed to import '%s'".formatted(this.importPath.toAbsolutePath()));
+		Path importPath = this.arucasAPI.getImportPath();
+		if (!Files.exists(importPath) && !ExceptionUtils.runSafe(() -> Files.createDirectories(importPath))) {
+			throw new IOException("Failed to import '%s'".formatted(importPath.toAbsolutePath()));
 		}
-		return this.importPath;
+		return importPath;
 	}
 	
 	public String getDisplayName() {
@@ -287,7 +293,7 @@ public class Context {
 
 	public void printDeprecated(String message) {
 		if (!this.suppressDeprecated) {
-			this.getOutput().println(this.arucasOutput.addErrorFormattingBold(message));
+			this.getOutput().println(this.arucasAPI.getOutput().addErrorFormattingBold(message));
 		}
 	}
 

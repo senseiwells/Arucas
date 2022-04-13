@@ -1,8 +1,7 @@
 package me.senseiwells.arucas.api;
 
-import me.senseiwells.arucas.api.impl.ArucasOutputImpl;
+import me.senseiwells.arucas.api.impl.DefaultArucasAPI;
 import me.senseiwells.arucas.api.wrappers.IArucasWrappedClass;
-import me.senseiwells.arucas.core.Arucas;
 import me.senseiwells.arucas.extensions.ArucasBuiltInExtension;
 import me.senseiwells.arucas.extensions.ArucasMathClass;
 import me.senseiwells.arucas.extensions.util.ArucasNetworkClass;
@@ -36,10 +35,10 @@ public class ContextBuilder {
 	private final Map<String, List<Supplier<ArucasClassExtension>>> classes;
 	private final Map<String, List<Supplier<IArucasWrappedClass>>> wrappers;
 	private final ValueConverter converter;
-	private IArucasOutput outputHandler;
+
+	private IArucasAPI arucasAPI;
 	private boolean suppressDeprecated;
 	private String displayName;
-	private Path importPath;
 
 	public ContextBuilder() {
 		this.extensions = new ArrayList<>();
@@ -47,10 +46,8 @@ public class ContextBuilder {
 		this.classes = new HashMap<>();
 		this.wrappers = new HashMap<>();
 		this.converter = new ValueConverter();
-		this.outputHandler = new ArucasOutputImpl();
-		this.suppressDeprecated = false;
+		this.arucasAPI = new DefaultArucasAPI();
 		this.displayName = "";
-		this.importPath = Arucas.PATH.resolve("libs");
 	}
 
 	public ContextBuilder setDisplayName(String displayName) {
@@ -63,8 +60,8 @@ public class ContextBuilder {
 		return this;
 	}
 
-	public ContextBuilder setOutputHandler(IArucasOutput outputHandler) {
-		this.outputHandler = outputHandler;
+	public ContextBuilder setArucasAPI(IArucasAPI api) {
+		this.arucasAPI = api;
 		return this;
 	}
 
@@ -132,14 +129,6 @@ public class ContextBuilder {
 	 */
 	public final ContextBuilder addArrayConversion(ArucasBiFunction<Object[], Context, Value<?>> converter) {
 		this.converter.addArrayConversion(converter);
-		return this;
-	}
-
-	/**
-	 * Sets the path that arucas will use to import files
-	 */
-	public ContextBuilder setImportPath(Path newImportPath) {
-		this.importPath = newImportPath;
 		return this;
 	}
 
@@ -263,7 +252,7 @@ public class ContextBuilder {
 
 		for (Map.Entry<String, ArucasClassDefinitionMap> entry : importables.entrySet()) {
 			StringBuilder builder = new StringBuilder();
-			Path generationPath = this.importPath.resolve(entry.getKey() + ".arucas");
+			Path generationPath = this.arucasAPI.getImportPath().resolve(entry.getKey() + ".arucas");
 			Path parent = generationPath.getParent();
 			if (!Files.exists(parent)) {
 				Files.createDirectories(parent);
@@ -311,7 +300,7 @@ public class ContextBuilder {
 
 		ArucasThreadHandler threadHandler = new ArucasThreadHandler();
 
-		Context context = new Context(this.displayName, null, extensionList, threadHandler, this.converter, this.outputHandler, this.importPath);
+		Context context = new Context(this.displayName, null, extensionList, threadHandler, this.converter, this.arucasAPI);
 		context.setSuppressDeprecated(this.suppressDeprecated);
 		return context.setStackTable(classDefinitions, importables, null);
 	}

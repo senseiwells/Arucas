@@ -43,7 +43,8 @@ public class MemberAssignNode extends VariableAssignNode {
 		}
 		if (memberValue instanceof JavaValue javaValue) {
 			Value<?> newValue = this.getNewValue(context);
-			if (ReflectionUtils.setFieldFromJavaValue(javaValue, newValue, memberName.value, this.syntaxPosition, context)) {
+			String obfuscatedFieldName = JavaValue.getObfuscatedFieldName(context, javaValue.asJavaValue().getClass(), memberName.value);
+			if (ReflectionUtils.setFieldFromJavaValue(javaValue, newValue, obfuscatedFieldName, this.syntaxPosition, context)) {
 				return newValue;
 			}
 		}
