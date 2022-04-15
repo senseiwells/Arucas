@@ -21,9 +21,6 @@ import java.util.List;
 public class JavaValue extends Value<Object> {
 	private JavaValue(Object value) {
 		super(value);
-		if (value == null) {
-			throw new IllegalStateException("Java cannot be null");
-		}
 	}
 
 	public static Value<?> of(Object value) {
@@ -407,7 +404,7 @@ public class JavaValue extends Value<Object> {
 		@Override
 		public ArucasFunctionMap<MemberFunction> getDefinedMethods() {
 			return ArucasFunctionMap.of(
-				new MemberFunction("toArucasValue", this::toValue),
+				new MemberFunction("toArucas", this::toValue),
 				new MemberFunction("getMethodDelegate", List.of("methodName", "parameters"), this::getMethodDelegate),
 				new MemberFunction("getField", "fieldName", this::getJavaField, "You should get the field directly"),
 				new MemberFunction("setField", List.of("fieldName", "value"), this::setJavaField, "You should set the field directly"),
@@ -416,11 +413,11 @@ public class JavaValue extends Value<Object> {
 		}
 
 		/**
-		 * Name: <code>&lt;Java>.toArucasValue()</code> <br>
+		 * Name: <code>&lt;Java>.toArucas()</code> <br>
 		 * Description: This converts the Java value to an Arucas Value <br>
 		 * Returns - Value: the Value in Arucas, this may still be of Java value if the value cannot be
 		 * converted into an Arucas value, values like Strings, Numbers, Lists, etc... will be converted <br>
-		 * Example: <code>Java.of([1, 2, 3]).toArucasValue();</code>
+		 * Example: <code>Java.of([1, 2, 3]).toArucas();</code>
 		 */
 		private Value<?> toValue(Context context, MemberFunction function) throws CodeError {
 			JavaValue thisValue = function.getThis(context, JavaValue.class);
@@ -457,7 +454,7 @@ public class JavaValue extends Value<Object> {
 
 		/**
 		 * Deprecated: You should call the method directly on the value: <code>Java.of("").isBlank();</code> <br>
-		 * Name: <code>&lt;Java>.callMethodArbitrary(methodName, parameters...)</code> <br>
+		 * Name: <code>&lt;Java>.callMethod(methodName, parameters...)</code> <br>
 		 * Description: This calls the specified method with the specified parameters, this is slower
 		 * than calling a delegate, this is the same speed as calling the method directly on the value however <br>
 		 * Parameters - String, Value...: the name of the method, the parameters to call the method with,
@@ -465,7 +462,7 @@ public class JavaValue extends Value<Object> {
 		 * Object array with your VarArg arguments <br>
 		 * Returns - Java: the return value of the method call wrapped in the Java wrapper <br>
 		 * Throws - Error: <code>"..."</code> if the method is not found <br>
-		 * Example: <code>Java.of("").callMethodArbitrary("isBlank");</code>
+		 * Example: <code>Java.of("").callMethod("isBlank");</code>
 		 */
 		private Value<?> callMethodArbitrary(Context context, MemberFunction function) throws CodeError {
 			JavaValue thisValue = function.getThis(context, JavaValue.class);
@@ -517,7 +514,7 @@ public class JavaValue extends Value<Object> {
 			Value<?> newValue = function.getParameterValue(context, 2);
 			Object callingObject = thisValue.asJavaValue();
 			fieldName = getObfuscatedFieldName(context, callingObject.getClass(), fieldName);
-			ReflectionUtils.setFieldFromName(callingObject.getClass(), callingObject, newValue, fieldName, function.syntaxPosition, context);
+			ReflectionUtils.setFieldFromName(callingObject.getClass(), callingObject, newValue.asJavaValue(), fieldName, function.syntaxPosition, context);
 			return NullValue.NULL;
 		}
 

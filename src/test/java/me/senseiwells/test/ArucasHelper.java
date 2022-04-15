@@ -57,14 +57,21 @@ public class ArucasHelper {
 	}
 	
 	public static String runUnsafe(String syntax) throws CodeError {
-		Context context = createContext();
+		return runUnsafe(syntax, createContext());
+	}
+
+	public static String runUnsafe(String syntax, Context context) throws CodeError {
 		Value<?> value = context.getThreadHandler().runOnThreadReturnable(context, "", syntax);
 		return value == null ? null : value.getAsString(context);
 	}
-	
+
 	public static String runSafe(String syntax) {
+		return runSafe(syntax, createContext());
+	}
+	
+	public static String runSafe(String syntax, Context context) {
 		try {
-			return runUnsafe(syntax);
+			return runUnsafe(syntax, context);
 		}
 		catch (CodeError e) {
 			e.printStackTrace();
@@ -73,36 +80,18 @@ public class ArucasHelper {
 	}
 	
 	public static String runUnsafeFull(String syntax, String resultVariable) throws CodeError {
-		Context context = createContext();
-		syntax = syntax + "return " + resultVariable + ";";
-		Value<?> value = context.getThreadHandler().runOnThreadReturnable(context, "", syntax);
-		return value == null ? null : value.getAsString(context);
-	}
-	
-	public static String runSafeFull(String syntax, String resultVariable) {
-		try {
-			return runUnsafeFull(syntax, resultVariable);
-		}
-		catch (CodeError e) {
-			e.printStackTrace();
-			return null;
-		}
+		return runUnsafeFull(syntax, resultVariable, createContext());
 	}
 
 	public static String runUnsafeFull(String syntax, String resultVariable, Context context) throws CodeError {
-		context = createContext(context);
-		syntax = syntax + "return " + resultVariable + ";";
-		Value<?> value = context.getThreadHandler().runOnThreadReturnable(context, "", syntax);
-		return value == null ? null : value.getAsString(context);
+		return runUnsafe(syntax + "return " + resultVariable + ";", context);
+	}
+
+	public static String runSafeFull(String syntax, String resultVariable) {
+		return runSafeFull(syntax, resultVariable, createContext());
 	}
 
 	public static String runSafeFull(String syntax, String resultVariable, Context context) {
-		try {
-			return runUnsafeFull(syntax, resultVariable, context);
-		}
-		catch (CodeError e) {
-			e.printStackTrace();
-			return null;
-		}
+		return runSafe(syntax + "return " + resultVariable + ";", context);
 	}
 }

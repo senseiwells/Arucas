@@ -5,7 +5,7 @@ public class Test {
 	public final String A = "A";
 	public String B = "B";
 
-	private String C = "C";
+	public static String C = "C";
 
 	public String D;
 

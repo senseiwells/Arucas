@@ -10,5 +10,5 @@ del = Java.getStaticMethodDelegate(testClassName, "F", 0);
 
 r = Java.callStaticMethod(testClassName, "G");
 
-print(r.toArucasValue());
+print(r.toArucas());
 

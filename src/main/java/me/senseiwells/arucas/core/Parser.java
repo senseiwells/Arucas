@@ -814,7 +814,7 @@ public class Parser {
 		return new WhileNode(condition, statement);
 	}
 
-	private static int functionLambdaIndex = 1;
+	private int functionLambdaIndex = 1;
 
 	private Node functionDefinition(boolean isLambda) throws CodeError {
 		this.parseStack.add(StackType.FUN);
@@ -825,7 +825,7 @@ public class Parser {
 
 		if (isLambda) {
 			variableNameToken = new Token(
-				Token.Type.IDENTIFIER, "%d$lambda".formatted(functionLambdaIndex++),
+				Token.Type.IDENTIFIER, "%d$lambda".formatted(this.functionLambdaIndex++),
 				this.currentToken.syntaxPosition
 			);
 		}
