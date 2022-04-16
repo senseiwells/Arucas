@@ -231,12 +231,12 @@ public class JavaValue extends Value<Object> {
 		}
 
 		/**
-		 * Name: <code>Java.of(value)</code> <br>
+		 * Name: <code>Java.valueOf(value)</code> <br>
 		 * Description: Converts any Arucas value into a Java value then wraps it
 		 * in the Java wrapper and returns it <br>
 		 * Parameter - Value: any value to get the Java value of <br>
 		 * Returns - Java/Null: the Java wrapper value, null if argument was null <br>
-		 * Example: <code>Java.of("Hello World!");</code>
+		 * Example: <code>Java.valueOf("Hello World!");</code>
 		 */
 		private Value<?> of(Context context, BuiltInFunction function) {
 			Value<?> value = function.getParameterValue(context, 0);
@@ -336,12 +336,12 @@ public class JavaValue extends Value<Object> {
 		}
 
 		/**
-		 * Name: <code>Java.of(values...)</code> <br>
+		 * Name: <code>Java.arrayOf(values...)</code> <br>
 		 * Description: Creates a Java Object array with a given values, this will be the size of the array,
 		 * again this cannot be used to create primitive arrays <br>
 		 * Parameters - Value...: the values to add to the array <br>
 		 * Returns - Java: the Java Object array <br>
-		 * Example: <code>Java.arrayWithValues(1, 2, 3, "string!", false);</code>
+		 * Example: <code>Java.arrayOf(1, 2, 3, "string!", false);</code>
 		 */
 		private Value<?> arrayOf(Context context, BuiltInFunction function) throws CodeError {
 			ArucasList arucasList = function.getFirstParameter(context, ListValue.class).value;
@@ -417,7 +417,7 @@ public class JavaValue extends Value<Object> {
 		 * Description: This converts the Java value to an Arucas Value <br>
 		 * Returns - Value: the Value in Arucas, this may still be of Java value if the value cannot be
 		 * converted into an Arucas value, values like Strings, Numbers, Lists, etc... will be converted <br>
-		 * Example: <code>Java.of([1, 2, 3]).toArucas();</code>
+		 * Example: <code>Java.valueOf([1, 2, 3]).toArucas();</code>
 		 */
 		private Value<?> toValue(Context context, MemberFunction function) throws CodeError {
 			JavaValue thisValue = function.getThis(context, JavaValue.class);
@@ -432,7 +432,7 @@ public class JavaValue extends Value<Object> {
 		 * Parameters - String, Number: the name of the method, the number of parameters <br>
 		 * Returns - Function: the function containing the Java method delegate <br>
 		 * Throws - Error: <code>"..."</code> if the method is not found <br>
-		 * Example: <code>Java.of("string!").getMethodDelegate("isBlank", 0);</code>
+		 * Example: <code>Java.valueOf("string!").getMethodDelegate("isBlank", 0);</code>
 		 */
 		private Value<?> getMethodDelegate(Context context, MemberFunction function) throws CodeError {
 			JavaValue thisValue = function.getThis(context, JavaValue.class);
@@ -453,7 +453,7 @@ public class JavaValue extends Value<Object> {
 		}
 
 		/**
-		 * Deprecated: You should call the method directly on the value: <code>Java.of("").isBlank();</code> <br>
+		 * Deprecated: You should call the method directly on the value: <code>Java.valueOf("").isBlank();</code> <br>
 		 * Name: <code>&lt;Java>.callMethod(methodName, parameters...)</code> <br>
 		 * Description: This calls the specified method with the specified parameters, this is slower
 		 * than calling a delegate, this is the same speed as calling the method directly on the value however <br>
@@ -462,7 +462,7 @@ public class JavaValue extends Value<Object> {
 		 * Object array with your VarArg arguments <br>
 		 * Returns - Java: the return value of the method call wrapped in the Java wrapper <br>
 		 * Throws - Error: <code>"..."</code> if the method is not found <br>
-		 * Example: <code>Java.of("").callMethod("isBlank");</code>
+		 * Example: <code>Java.valueOf("").callMethod("isBlank");</code>
 		 */
 		private Value<?> callMethodArbitrary(Context context, MemberFunction function) throws CodeError {
 			JavaValue thisValue = function.getThis(context, JavaValue.class);
