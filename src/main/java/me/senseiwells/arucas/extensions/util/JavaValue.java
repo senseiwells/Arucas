@@ -91,8 +91,8 @@ public class JavaValue extends Value<Object> {
 	}
 
 	/**
-	 * Java class for Arucas. This allows for direct interaction
-	 * from Arucas to Java <br>
+	 * Java class for Arucas. This allows for direct interaction from Arucas to Java <br>
+	 * Import the class with <code>import Java from util.Internal;</code>
 	 * Fully Documented.
 	 * @author senseiwells
 	 */

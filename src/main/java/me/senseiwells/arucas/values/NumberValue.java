@@ -161,6 +161,8 @@ public class NumberValue extends Value<Double> {
 
 	/**
 	 * Number class for Arucas. <br>
+	 * This class cannot be constructed as it has a literal representation. <br>
+	 * For math related functions see the Math class. <br>
 	 * Fully Documented.
 	 * @author senseiwells
 	 */

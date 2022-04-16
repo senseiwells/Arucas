@@ -86,6 +86,12 @@ public class BooleanValue extends Value<Boolean> {
 		return "Boolean";
 	}
 
+	/**
+	 * Boolean class for Arucas. <br>
+	 * This class cannot be constructed since Booleans have literals. <br>
+	 * No Documentation.
+	 * @author senseiwells
+	 */
 	public static class ArucasBooleanClass extends ArucasClassExtension {
 		public ArucasBooleanClass() {
 			super("Boolean");

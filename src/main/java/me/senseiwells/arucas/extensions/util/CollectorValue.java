@@ -47,6 +47,8 @@ public class CollectorValue extends Value<ArucasList> {
 
 	/**
 	 * Collector class for Arucas. <br>
+	 * Import the class with <code>import Collector from util.Collection;</code> <br>
+	 * This class is similar to Java streams, allowing for easy modifications of collections. <br>
 	 * Fully Documented.
 	 * @author senseiwells
 	 */

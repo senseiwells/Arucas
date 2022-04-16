@@ -48,6 +48,7 @@ public class ListValue extends Value<ArucasList> {
 
 	/**
 	 * List class for Arucas. <br>
+	 * This class cannot be constructed since it has a literal, <code>[]</code> <br>
 	 * Fully Documented.
 	 * @author senseiwells
 	 */

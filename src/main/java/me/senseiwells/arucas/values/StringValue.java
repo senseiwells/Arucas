@@ -54,6 +54,8 @@ public class StringValue extends Value<String> {
 
 	/**
 	 * String class for Arucas. <br>
+	 * This class cannot be constructed since strings have a literal. <br>
+	 * Strings are immutable. <br>
 	 * Fully Documented.
 	 * @author senseiwells
 	 */

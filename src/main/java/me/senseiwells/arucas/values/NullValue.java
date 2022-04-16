@@ -37,6 +37,7 @@ public class NullValue extends Value<Object> {
 
 	/**
 	 * Null class for Arucas. <br>
+	 * This class cannot be constructed since null has a literal <code>null</code> <br>
 	 * No Documentation.
 	 * @author senseiwells
 	 */

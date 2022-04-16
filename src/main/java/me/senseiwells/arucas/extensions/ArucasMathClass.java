@@ -14,6 +14,7 @@ import java.util.Map;
 
 /**
  * Math class extension for Arucas. Provides many basic math functions. <br>
+ * This is a utility class, and cannot be constructed. <br>
  * Fully Documented.
  * @author senseiwells
  */

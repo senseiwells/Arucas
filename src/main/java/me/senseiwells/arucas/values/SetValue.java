@@ -48,6 +48,7 @@ public class SetValue extends Value<ArucasSet> {
 
 	/**
 	 * Set class for Arucas. <br>
+	 * An instance of the class can be created by using <code>Set.of(values...)</code> <br>
 	 * Fully Documented.
 	 * @author senseiwells
 	 */

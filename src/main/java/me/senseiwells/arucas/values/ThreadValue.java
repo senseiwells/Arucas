@@ -92,7 +92,9 @@ public class ThreadValue extends Value<ArucasThread> {
 
 		/**
 		 * Name: <code>Thread.runThreaded(function)</code> <br>
-		 * Description: This starts a new thread and runs a function on it <br>
+		 * Description: This starts a new thread and runs a function on it, the thread will
+		 * terminate when it finishes executing the function, threads will stop automatically
+		 * when the program stops, you are also able to stop threads by using the Thread value <br>
 		 * Parameter - Function: the function you want to run on a new thread <br>
 		 * Returns - Thread: the new thread <br>
 		 * Example: <code>Thread.runThreaded(fun() { print(); });</code>
@@ -125,7 +127,8 @@ public class ThreadValue extends Value<ArucasThread> {
 
 		/**
 		 * Name: <code>Thread.freeze()</code> <br>
-		 * Description: This freezes the current thread <br>
+		 * Description: This freezes the current thread, stops anything else from executing on the thread
+		 * this can only be stopped by stopping the thread <br>
 		 * Returns - Thread: the current thread <br>
 		 * Example: <code>Thread.freeze();</code>
 		 */
@@ -155,7 +158,7 @@ public class ThreadValue extends Value<ArucasThread> {
 
 		/**
 		 * Name: <code>&lt;Thread>.isAlive()</code> <br>
-		 * Description: This checks if the thread is alive <br>
+		 * Description: This checks if the thread is alive (still running) <br>
 		 * Returns - Boolean: true if the thread is alive, false if not <br>
 		 * Example: <code>Thread.getCurrentThread().isAlive();</code>
 		 */
@@ -166,7 +169,7 @@ public class ThreadValue extends Value<ArucasThread> {
 
 		/**
 		 * Name: <code>&lt;Thread>.getAge()</code> <br>
-		 * Description: This gets the age of the thread <br>
+		 * Description: This gets the age of the thread in milliseconds <br>
 		 * Returns - Number: the age of the thread <br>
 		 * Example: <code>Thread.getCurrentThread().getAge();</code>
 		 */

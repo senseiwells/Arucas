@@ -14,6 +14,8 @@ import me.senseiwells.arucas.values.functions.BuiltInFunction;
 
 /**
  * Network class extension for Arucas. Allows you to do http requests. <br>
+ * Import the class with <code>import Network from util.Network;</code> <br>
+ * This is a utility class and cannot be constructed. <br>
  * Fully Documented.
  * @author senseiwells
  */

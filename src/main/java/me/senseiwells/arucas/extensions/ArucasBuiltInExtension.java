@@ -28,7 +28,7 @@ import java.util.Random;
 import java.util.Scanner;
 
 /**
- * Built in extension for Arucas. Provides many standard functions. <br>
+ * Built-in extension for Arucas. Provides many standard functions. <br>
  * Fully Documented.
  * @author senseiwells
  */
@@ -66,7 +66,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		new BuiltInFunction("getDate", this::getDate),
 		new BuiltInFunction("len", "value", this::len),
 		new BuiltInFunction("throwRuntimeError", "message", this::throwRuntimeError, "Use 'throw new Error()'"),
-		new BuiltInFunction("callFunctionWithList", List.of("function", "argList"), this::callFunctionWithList, "Use 'Function.callDelegateWithList()'"),
+		new BuiltInFunction("callFunctionWithList", List.of("function", "argList"), this::callFunctionWithList, "Use 'Function.callWithList()'"),
 		new BuiltInFunction("runFromString", "string", this::runFromString)
 	);
 
@@ -318,13 +318,14 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 	}
 
 	/**
-	 * Deprecated <br>
+	 * Deprecated: You should use Function class <code>Function.callWithList(fun() {}, [])</code> <br>
 	 * Name: <code>callFunctionWithList(function, list)</code> <br>
 	 * Description: This is used to call a function with a list of arguments <br>
 	 * Parameters - Function, List: the function and the list of arguments <br>
 	 * Returns - Value: the return value of the function <br>
 	 * Example: <code>callFunctionWithList(fun(n1, n2, n3) {}, [1, 2, 3]);</code>
 	 */
+	@Deprecated
 	private Value<?> callFunctionWithList(Context context, BuiltInFunction function) throws CodeError {
 		FunctionValue functionValue = function.getParameterValueOfType(context, FunctionValue.class, 0);
 		ArucasList listValue = function.getParameterValueOfType(context, ListValue.class, 1).value;

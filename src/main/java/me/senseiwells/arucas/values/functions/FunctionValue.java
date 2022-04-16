@@ -76,6 +76,7 @@ public abstract class FunctionValue extends Value<String> {
 
 	/**
 	 * API overridable method.
+	 * @hidden nomd
 	 */
 	protected Value<?> callOverride(Context context, List<Value<?>> arguments, boolean returnable) throws CodeError {
 		context.pushFunctionScope(this.syntaxPosition);
