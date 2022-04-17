@@ -78,7 +78,9 @@ jar {
     from {
         configurations.packImplementation.collect { it.isDirectory() ? it : zipTree(it) }
     }
-    // No manifest since there's no main class
+
+    manifest.attributes("Main-Class": "me.senseiwells.arucas.Main")
+    manifest.attributes("Class-Path": configurations.runtimeClasspath.files.collect { it.getName() }.join(' '))
 }
 
 publishing {
