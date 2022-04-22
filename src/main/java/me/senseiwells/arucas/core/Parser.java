@@ -441,6 +441,13 @@ public class Parser {
 					definition.addOperatorMethod(token.type, operatorMethod);
 				}
 				case LEFT_CURLY_BRACKET -> {
+					if (!isStatic) {
+						throw new CodeError(
+							CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR,
+							"Unexpected '{'",
+							this.currentToken.syntaxPosition
+						);
+					}
 					definition.addStaticInitializer(this.statements());
 				}
 				default -> throw new CodeError(
