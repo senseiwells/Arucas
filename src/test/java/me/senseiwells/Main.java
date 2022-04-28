@@ -4,6 +4,7 @@ import me.senseiwells.arucas.api.ContextBuilder;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.classes.ArucasWrapperExtension;
 import me.senseiwells.impl.wrappers.ArucasTestWrapper;
+import me.senseiwells.impl.wrappers.ChildWrapper;
 
 import java.io.IOException;
 import java.util.Scanner;
@@ -17,6 +18,7 @@ public class Main {
 			.setDisplayName("System.in")
 			.addDefault()
 			.generateArucasFiles()
+			.addWrappers("test", ChildWrapper::new)
 			.build();
 
 		if (args.length != 0 && args[0].equals("-noformat")) {

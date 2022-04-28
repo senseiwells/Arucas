@@ -13,6 +13,9 @@ import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.function.Supplier;
 
 public class ArucasWrapperExtension {
@@ -27,19 +30,28 @@ public class ArucasWrapperExtension {
 	}
 
 	private void init() {
-		for (Method method : this.clazz.getMethods()) {
+		Class<?> clazz = this.clazz;
+		if (clazz.getAnnotation(ArucasClass.class) == null) {
+			throw new RuntimeException("Wrapper class '%s' was not annotated with @ArucasClass".formatted(clazz.getSimpleName()));
+		}
+
+		List<Class<?>> classList = new ArrayList<>();
+		while (clazz != Object.class) {
+			classList.add(0, clazz);
+			clazz = clazz.getSuperclass();
+		}
+		for (Class<?> each : classList) {
+			this.define(each);
+		}
+	}
+
+	private void define(Class<?> clazz) {
+		boolean isThisClass = clazz == this.clazz;
+		for (Method method : clazz.getMethods()) {
 			ArucasFunction functionAnnotation = method.getAnnotation(ArucasFunction.class);
 			if (functionAnnotation != null) {
 				if (!this.addMethod(method)) {
-					throw invalidWrapperMethod(this.clazz, method, "Invalid method signature");
-				}
-				continue;
-			}
-
-			ArucasConstructor constructorAnnotation = method.getAnnotation(ArucasConstructor.class);
-			if (constructorAnnotation != null) {
-				if (!this.addConstructor(method)) {
-					throw invalidWrapperMethod(this.clazz, method, "Invalid constructor signature");
+					throw invalidWrapperMethod(clazz, method, "Invalid method signature");
 				}
 				continue;
 			}
@@ -47,33 +59,47 @@ public class ArucasWrapperExtension {
 			ArucasOperator operatorAnnotation = method.getAnnotation(ArucasOperator.class);
 			if (operatorAnnotation != null) {
 				if (!this.addOperator(method, operatorAnnotation)) {
-					throw invalidWrapperMethod(this.clazz, method, "Invalid operator signature");
+					throw invalidWrapperMethod(clazz, method, "Invalid operator signature");
+				}
+				continue;
+			}
+
+			if (!isThisClass) {
+				continue;
+			}
+
+			ArucasConstructor constructorAnnotation = method.getAnnotation(ArucasConstructor.class);
+			if (constructorAnnotation != null) {
+				if (!this.addConstructor(method)) {
+					throw invalidWrapperMethod(clazz, method, "Invalid constructor signature");
 				}
 			}
 		}
 
 		boolean hasDefinition = false;
-		for (Field field : this.clazz.getFields()) {
+		for (Field field : clazz.getFields()) {
 			ArucasMember memberAnnotation = field.getAnnotation(ArucasMember.class);
 			if (memberAnnotation != null) {
 				if (!this.addMemberVariable(field, memberAnnotation)) {
-					throw invalidWrapperField(this.clazz, field, "Invalid field signature");
+					throw invalidWrapperField(clazz, field, "Invalid field signature");
 				}
 				continue;
 			}
 
-
+			if (!isThisClass) {
+				continue;
+			}
 			ArucasDefinition definitionAnnotation = field.getAnnotation(ArucasDefinition.class);
 			if (definitionAnnotation != null) {
 				if (hasDefinition) {
-					throw invalidWrapperField(this.clazz, field, "Already have definition reference");
+					throw invalidWrapperField(clazz, field, "Already have definition reference");
 				}
 				int mods = field.getModifiers();
 				if (!Modifier.isStatic(mods) || Modifier.isFinal(mods)) {
-					throw invalidWrapperField(this.clazz, field, "Definition reference must be static and not final");
+					throw invalidWrapperField(clazz, field, "Definition reference must be static and not final");
 				}
 				if (field.getType() != WrapperClassDefinition.class) {
-					throw invalidWrapperField(this.clazz, field, "Definition must be of type 'WrapperClassDefinition'");
+					throw invalidWrapperField(clazz, field, "Definition must be of type 'WrapperClassDefinition'");
 				}
 
 				if (ExceptionUtils.runSafe(() -> field.set(null, this.classDefinition))) {
