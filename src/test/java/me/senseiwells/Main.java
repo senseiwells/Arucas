@@ -2,18 +2,15 @@ package me.senseiwells;
 
 import me.senseiwells.arucas.api.ContextBuilder;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.values.classes.ArucasWrapperExtension;
-import me.senseiwells.impl.wrappers.ArucasTestWrapper;
 import me.senseiwells.impl.wrappers.ChildWrapper;
 
 import java.io.IOException;
 import java.util.Scanner;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.ExecutionException;
 
 public class Main {
 	@Deprecated
-	public static void main(String[] args) throws InterruptedException, IOException {
+	public static void main(String[] args) throws InterruptedException, IOException, ExecutionException {
 		Context context = new ContextBuilder()
 			.setDisplayName("System.in")
 			.addDefault()
@@ -42,9 +39,7 @@ public class Main {
 				}
 			}
 
-			CountDownLatch latch = new CountDownLatch(1);
-			context.getThreadHandler().runOnThread(context, "System.in", line, latch);
-			latch.await();
+			context.getThreadHandler().runOnMainThreadFuture(context, "System.in", line).get();
 		}
 	}
 }

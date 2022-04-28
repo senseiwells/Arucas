@@ -5,10 +5,10 @@ import me.senseiwells.arucas.utils.Context;
 
 import java.io.IOException;
 import java.util.Scanner;
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 
 public class Main {
-	public static void main(String[] args) throws InterruptedException, IOException {
+	public static void main(String[] args) throws InterruptedException, IOException, ExecutionException {
 		Context context = new ContextBuilder()
 			.setDisplayName("System.in")
 			.addDefault()
@@ -36,9 +36,7 @@ public class Main {
 				}
 			}
 
-			CountDownLatch latch = new CountDownLatch(1);
-			context.getThreadHandler().runOnThread(context, "System.in", line, latch);
-			latch.await();
+			context.getThreadHandler().runOnMainThreadFuture(context, "System.in", line).get();
 		}
 	}
 }
