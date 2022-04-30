@@ -12,6 +12,9 @@ import me.senseiwells.arucas.values.functions.MemberFunction;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.MatchResult;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class StringValue extends Value<String> {
 	private StringValue(String value) {
@@ -84,6 +87,10 @@ public class StringValue extends Value<String> {
 				new MemberFunction("capitalise", this::capitalise),
 				new MemberFunction("split", "delimiter", this::split),
 				new MemberFunction("subString", List.of("from", "to"), this::subString),
+				new MemberFunction("matches", "regex", this::matches),
+				new MemberFunction("find", "regex", this::find),
+				new MemberFunction("startsWith", "string", this::startsWith),
+				new MemberFunction("endsWith", "string", this::endsWith),
 				new MemberFunction.Arbitrary("format", this::stringFormatted)
 			);
 		}
@@ -254,6 +261,63 @@ public class StringValue extends Value<String> {
 				throw new RuntimeError("Index out of bounds", function.syntaxPosition, context);
 			}
 			return StringValue.of(thisValue.value.substring(fromIndex, toIndex));
+		}
+
+		/**
+		 * Name: <code>&lt;String>.matches(regex)</code> <br>
+		 * Description: This checks if the string matches the given regex <br>
+		 * Parameter - String: the regex to check the string with <br>
+		 * Returns - Boolean: true if the string matches the given regex <br>
+		 * Example: <code>"hello".matches("[a-z]*");</code>
+		 */
+		private Value<?> matches(Context context, MemberFunction function) throws CodeError {
+			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
+			StringValue regex = function.getParameterValueOfType(context, StringValue.class, 1);
+			return BooleanValue.of(thisValue.value.matches(regex.value));
+		}
+
+		/**
+		 * Name: <code>&lt;String>.find(regex)</code> <br>
+		 * Description: This finds all instances of the regex in the string <br>
+		 * Parameter - String: the regex to search the string with <br>
+		 * Returns - List: the list of all instances of the regex in the string <br>
+		 * Example: <code>"hello".find("[a-z]*");</code>
+		 */
+		private Value<?> find(Context context, MemberFunction function) throws CodeError {
+			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
+			StringValue regex = function.getParameterValueOfType(context, StringValue.class, 1);
+			Matcher matcher = Pattern.compile(regex.value).matcher(thisValue.value);
+			ArucasList arucasList = new ArucasList();
+			while (matcher.find()) {
+				arucasList.add(StringValue.of(matcher.group()));
+			}
+			return new ListValue(arucasList);
+		}
+
+		/**
+		 * Name: <code>&lt;String>.startsWith(string)</code> <br>
+		 * Description: This checks if the string starts with the given string <br>
+		 * Parameter - String: the string to check the string with <br>
+		 * Returns - Boolean: true if the string starts with the given string <br>
+		 * Example: <code>"hello".startsWith("he");</code>
+		 */
+		private Value<?> startsWith(Context context, MemberFunction function) throws CodeError {
+			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
+			StringValue otherString = function.getParameterValueOfType(context, StringValue.class, 1);
+			return BooleanValue.of(thisValue.value.startsWith(otherString.value));
+		}
+
+		/**
+		 * Name: <code>&lt;String>.endsWith(string)</code> <br>
+		 * Description: This checks if the string ends with the given string <br>
+		 * Parameter - String: the string to check the string with <br>
+		 * Returns - Boolean: true if the string ends with the given string <br>
+		 * Example: <code>"hello".endsWith("he");</code>
+		 */
+		private Value<?> endsWith(Context context, MemberFunction function) throws CodeError {
+			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
+			StringValue otherString = function.getParameterValueOfType(context, StringValue.class, 1);
+			return BooleanValue.of(thisValue.value.endsWith(otherString.value));
 		}
 	}
 }
