@@ -85,7 +85,7 @@ public final class ArucasThreadHandler {
 			this.fatalErrorHandler.accept(context, throwable, this.currentFileContent);
 		}
 		finally {
-			if (!(Thread.currentThread() instanceof ArucasThread arucasThread) || arucasThread.isStopControlled()) {
+			if (!(Thread.currentThread() instanceof ArucasThread arucasThread) || !arucasThread.isStopControlled()) {
 				this.stop();
 			}
 		}
