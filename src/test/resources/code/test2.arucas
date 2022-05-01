@@ -2,13 +2,9 @@
 
 import Java from util.Internal;
 
-debug(true);
+f = Java.functionOf(fun(something) {
+    // print(something);
+    return something;
+});
 
-testClassName = "me.senseiwells.impl.Test";
-testInstance = Java.constructClass(testClassName);
-del = Java.getStaticMethodDelegate(testClassName, "F", 0);
-
-r = Java.callStaticMethod(testClassName, "G");
-
-print(r.toArucas());
-
+Java.callStaticMethod("me.senseiwells.impl.Test", "runFunction", f);

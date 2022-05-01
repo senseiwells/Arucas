@@ -7,15 +7,15 @@ import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.ExceptionUtils;
+import me.senseiwells.arucas.utils.ExceptionUtils.ThrowableSupplier;
 import me.senseiwells.arucas.utils.impl.ArucasList;
-import me.senseiwells.arucas.values.ListValue;
-import me.senseiwells.arucas.values.NumberValue;
-import me.senseiwells.arucas.values.StringValue;
-import me.senseiwells.arucas.values.Value;
+import me.senseiwells.arucas.values.*;
 import me.senseiwells.arucas.values.classes.ArucasClassValue;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 public abstract class FunctionValue extends Value<String> {
 	public final List<String> argumentNames;
@@ -110,6 +110,21 @@ public abstract class FunctionValue extends Value<String> {
 				"StackOverflow: Call stack went too deep",
 				this.syntaxPosition
 			);
+		}
+	}
+
+	/**
+	 * This method should be used if no Exceptions should be
+	 * propagated past this point, in which case it will
+	 * stop the Main thead and the program right here.
+	 */
+	public final Value<?> safeCall(Context context, ThrowableSupplier<List<Value<?>>> arguments) {
+		try {
+			return this.call(context, arguments.get());
+		}
+		catch (Throwable throwable) {
+			context.getThreadHandler().tryError(context, throwable);
+			return null;
 		}
 	}
 

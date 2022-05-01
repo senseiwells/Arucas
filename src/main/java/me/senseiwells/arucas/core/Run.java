@@ -1,5 +1,6 @@
 package me.senseiwells.arucas.core;
 
+import me.senseiwells.arucas.api.IArucasOutput;
 import me.senseiwells.arucas.nodes.Node;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
@@ -16,20 +17,25 @@ public class Run {
 		context = context.createChildContext(fileName);
 		Node nodeResult = compile(context, fileName, fileContent);
 		long startTime = System.nanoTime();
+		Value<?> returnValue = null;
 		try {
 			context.pushRunScope();
-			nodeResult.visit(context);
+			returnValue = nodeResult.visit(context);
 			return NullValue.NULL;
 		}
 		catch (ThrowValue.Return tv) {
-			return tv.getReturnValue();
+			return returnValue = tv.getReturnValue();
 		}
 		catch (ThrowValue tv) {
 			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, tv.getMessage(), nodeResult.syntaxPosition);
 		}
 		finally {
 			if (context.isDebug()) {
-				context.getOutput().log("Execution time: " + (System.nanoTime() - startTime) / 1000 + " microseconds for '" + fileName + "'\n");
+				IArucasOutput output = context.getOutput();
+				if (returnValue != null) {
+					output.log("Return values: " + returnValue.getAsString(context) + "\n");
+				}
+				output.log("Execution time: " + (System.nanoTime() - startTime) / 1000 + " microseconds for '" + fileName + "'\n");
 			}
 		}
 	}

@@ -103,6 +103,7 @@ public class Context {
 	public Context createChildContext(String displayName) {
 		StackTable root = this.stackTable.getRoot();
 		Context context = new Context(displayName, this, this.extensions, this.threadHandler, this.converter, this.arucasAPI);
+		context.isDebug = this.isDebug;
 		context.isMain = false;
 		return context.setStackTable(root.classDefinitions, root.importableDefinitions, root.cachedDefinitions, false);
 	}

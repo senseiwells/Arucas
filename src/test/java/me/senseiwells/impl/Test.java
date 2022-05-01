@@ -1,5 +1,7 @@
 package me.senseiwells.impl;
 
+import java.util.function.Function;
+
 @SuppressWarnings("all")
 public class Test {
 	public final String A = "A";
@@ -26,5 +28,9 @@ public class Test {
 
 	public static int[] G() {
 		return new int[]{1, 2, 3, 4};
+	}
+
+	public static String runFunction(Function<String, String> function) {
+		return function.apply(C);
 	}
 }

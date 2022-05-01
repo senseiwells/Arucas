@@ -34,6 +34,11 @@ public class ArucasList implements IArucasCollection, List<Value<?>>, ValueIdent
 		this.valueData = this.size == 0 ? DEFAULT_DATA : valueArray;
 	}
 
+	private ArucasList(Value<?>[] valueData) {
+		this.size = valueData.length;
+		this.valueData = this.size == 0 ? DEFAULT_DATA : valueData;
+	}
+
 	@Override
 	public synchronized int size() {
 		return this.size;
@@ -410,6 +415,14 @@ public class ArucasList implements IArucasCollection, List<Value<?>>, ValueIdent
 	@Override
 	public Value<?> set(int index, Value<?> element) { throw new UnsupportedOperationException(); }
 
+
+	public static ArucasList of(Value<?>... values) {
+		return new ArucasList(values);
+	}
+
+	public static List<Value<?>> arrayListOf(Value<?>... values) {
+		return new ArrayList<>(Arrays.asList(values));
+	}
 
 	public static final int MAX_ARRAY_LENGTH = Integer.MAX_VALUE - 8;
 

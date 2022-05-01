@@ -35,7 +35,7 @@ public class ArucasThread extends Thread {
 
 	public synchronized ArucasThread start(Context context) {
 		if (context.isDebug()) {
-			context.getOutput().log("Starting Thread: " + this.getName());
+			context.getOutput().log("Starting Thread: " + this.getName() + "\n");
 		}
 		this.start();
 		return this;

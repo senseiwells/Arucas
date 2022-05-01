@@ -12,11 +12,16 @@ import me.senseiwells.arucas.utils.ReflectionUtils;
 import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.values.*;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
+import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.functions.JavaFunction;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class JavaValue extends Value<Object> {
 	private JavaValue(Object value) {
@@ -118,6 +123,18 @@ public class JavaValue extends Value<Object> {
 				new BuiltInFunction("setStaticField", List.of("className", "fieldName", "value"), this::setStaticField),
 				new BuiltInFunction("getStaticMethodDelegate", List.of("className", "methodName", "parameters"), this::getStaticMethodDelegate),
 				new BuiltInFunction("arrayWithSize", "size", this::arrayWithSize),
+				new BuiltInFunction("doubleArray", "size", this::doubleArray),
+				new BuiltInFunction("floatArray", "size", this::floatArray),
+				new BuiltInFunction("longArray", "size", this::longArray),
+				new BuiltInFunction("intArray", "size", this::intArray),
+				new BuiltInFunction("shortArray", "size", this::shortArray),
+				new BuiltInFunction("byteArray", "size", this::byteArray),
+				new BuiltInFunction("charArray", "size", this::charArray),
+				new BuiltInFunction("booleanArray", "size", this::booleanArray),
+				new BuiltInFunction("runnableOf", "function", this::runnableOf),
+				new BuiltInFunction("consumerOf", "function", this::consumerOf),
+				new BuiltInFunction("supplierOf", "function", this::supplierOf),
+				new BuiltInFunction("functionOf", "function", this::functionOf),
 				new BuiltInFunction.Arbitrary("arrayOf", this::arrayOf),
 				new BuiltInFunction.Arbitrary("callStaticMethod", this::callStaticMethod),
 				new BuiltInFunction.Arbitrary("constructClass", this::constructClass)
@@ -321,18 +338,193 @@ public class JavaValue extends Value<Object> {
 		/**
 		 * Name: <code>Java.arrayWithSize(size)</code> <br>
 		 * Description: Creates a Java Object array with a given size, the array is filled with null values
-		 * by default and can be filled with any Java values, arrays cannot be expanded or shrunk, you cannot
-		 * create a primitive array, you will need some more reflection to do that <br>
+		 * by default and can be filled with any Java values, this array cannot be expanded <br>
 		 * Parameter - Number: the size of the array <br>
 		 * Returns - Java: the Java Object array <br>
 		 * Example: <code>Java.arrayWithSize(10);</code>
 		 */
 		private Value<?> arrayWithSize(Context context, BuiltInFunction function) throws CodeError {
-			NumberValue size = function.getFirstParameter(context, NumberValue.class);
-			if (size.value.intValue() < 0) {
-				throw new RuntimeError("Cannot have a negative size array", function.syntaxPosition, context);
-			}
-			return new JavaValue(new Object[size.value.intValue()]);
+			int size = function.getFirstParameter(context, NumberValue.class).value.intValue();
+			this.checkArraySize(context, function.syntaxPosition, size);
+			return new JavaValue(new Object[size]);
+		}
+
+		/**
+		 * Name: <code>Java.doubleArray(size)</code> <br>
+		 * Description: Creates a Java double array with a given size, the array is filled with 0's
+		 * by default and can be filled with only doubles <br>
+		 * Parameter - Number: the size of the array <br>
+		 * Returns - Java: the Java double array <br>
+		 * Example: <code>Java.doubleArray(10);</code>
+		 */
+		private Value<?> doubleArray(Context context, BuiltInFunction function) throws CodeError {
+			int size = function.getFirstParameter(context, NumberValue.class).value.intValue();
+			this.checkArraySize(context, function.syntaxPosition, size);
+			return new JavaValue(new double[size]);
+		}
+
+		/**
+		 * Name: <code>Java.floatArray(size)</code> <br>
+		 * Description: Creates a Java float array with a given size, the array is filled with 0's
+		 * by default and can be filled with only floats <br>
+		 * Parameter - Number: the size of the array <br>
+		 * Returns - Java: the Java float array <br>
+		 * Example: <code>Java.floatArray(10);</code>
+		 */
+		private Value<?> floatArray(Context context, BuiltInFunction function) throws CodeError {
+			int size = function.getFirstParameter(context, NumberValue.class).value.intValue();
+			this.checkArraySize(context, function.syntaxPosition, size);
+			return new JavaValue(new float[size]);
+		}
+
+		/**
+		 * Name: <code>Java.longArray(size)</code> <br>
+		 * Description: Creates a Java long array with a given size, the array is filled with 0's
+		 * by default and can be filled with only longs <br>
+		 * Parameter - Number: the size of the array <br>
+		 * Returns - Java: the Java long array <br>
+		 * Example: <code>Java.longArray(10);</code>
+		 */
+		private Value<?> longArray(Context context, BuiltInFunction function) throws CodeError {
+			int size = function.getFirstParameter(context, NumberValue.class).value.intValue();
+			this.checkArraySize(context, function.syntaxPosition, size);
+			return new JavaValue(new long[size]);
+		}
+
+		/**
+		 * Name: <code>Java.intArray(size)</code> <br>
+		 * Description: Creates a Java int array with a given size, the array is filled with 0's
+		 * by default and can be filled with only ints <br>
+		 * Parameter - Number: the size of the array <br>
+		 * Returns - Java: the Java int array <br>
+		 * Example: <code>Java.intArray(10);</code>
+		 */
+		private Value<?> intArray(Context context, BuiltInFunction function) throws CodeError {
+			int size = function.getFirstParameter(context, NumberValue.class).value.intValue();
+			this.checkArraySize(context, function.syntaxPosition, size);
+			return new JavaValue(new int[size]);
+		}
+
+		/**
+		 * Name: <code>Java.shortArray(size)</code> <br>
+		 * Description: Creates a Java short array with a given size, the array is filled with 0's
+		 * by default and can be filled with only shorts <br>
+		 * Parameter - Number: the size of the array <br>
+		 * Returns - Java: the Java short array <br>
+		 * Example: <code>Java.shortArray(10);</code>
+		 */
+		private Value<?> shortArray(Context context, BuiltInFunction function) throws CodeError {
+			int size = function.getFirstParameter(context, NumberValue.class).value.intValue();
+			this.checkArraySize(context, function.syntaxPosition, size);
+			return new JavaValue(new short[size]);
+		}
+
+		/**
+		 * Name: <code>Java.byteArray(size)</code> <br>
+		 * Description: Creates a Java byte array with a given size, the array is filled with 0's
+		 * by default and can be filled with only bytes <br>
+		 * Parameter - Number: the size of the array <br>
+		 * Returns - Java: the Java byte array <br>
+		 * Example: <code>Java.byteArray(10);</code>
+		 */
+		private Value<?> byteArray(Context context, BuiltInFunction function) throws CodeError {
+			int size = function.getFirstParameter(context, NumberValue.class).value.intValue();
+			this.checkArraySize(context, function.syntaxPosition, size);
+			return new JavaValue(new byte[size]);
+		}
+
+		/**
+		 * Name: <code>Java.charArray(size)</code> <br>
+		 * Description: Creates a Java char array with a given size, the array is filled with 0's
+		 * by default and can be filled with only chars <br>
+		 * Parameter - Number: the size of the array <br>
+		 * Returns - Java: the Java char array <br>
+		 * Example: <code>Java.charArray(10);</code>
+		 */
+		private Value<?> charArray(Context context, BuiltInFunction function) throws CodeError {
+			int size = function.getFirstParameter(context, NumberValue.class).value.intValue();
+			this.checkArraySize(context, function.syntaxPosition, size);
+			return new JavaValue(new char[size]);
+		}
+
+		/**
+		 * Name: <code>Java.booleanArray(size)</code> <br>
+		 * Description: Creates a Java boolean array with a given size, the array is filled with
+		 * false by default and can be filled with only booleans <br>
+		 * Parameter - Number: the size of the array <br>
+		 * Returns - Java: the Java boolean array <br>
+		 * Example: <code>Java.booleanArray(10);</code>
+		 */
+		private Value<?> booleanArray(Context context, BuiltInFunction function) throws CodeError {
+			int size = function.getFirstParameter(context, NumberValue.class).value.intValue();
+			this.checkArraySize(context, function.syntaxPosition, size);
+			return new JavaValue(new boolean[size]);
+		}
+
+		/**
+		 * Name: <code>Java.runnableOf(function)</code> <br>
+		 * Description: Creates a Java Runnable object from a given function <br>
+		 * Parameter - Function: the function to be executed, this must have no parameters and
+		 * any return values will be ignored <br>
+		 * Returns - Java: the Java Runnable object <br>
+		 * Example: <code>Java.runnableOf(fun() { print("runnable"); });</code>
+		 */
+		private Value<?> runnableOf(Context context, BuiltInFunction function) throws CodeError {
+			FunctionValue functionValue = function.getFirstParameter(context, FunctionValue.class);
+			Context branchContext = context.createBranch();
+			return new JavaValue((Runnable) () -> {
+				functionValue.safeCall(branchContext, ArrayList::new);
+			});
+		}
+
+		/**
+		 * Name: <code>Java.consumerOf(function)</code> <br>
+		 * Description: Creates a Java Consumer object from a given function <br>
+		 * Parameter - Function: the function to be executed, this must have one parameter and
+		 * any return values will be ignored, the parameter type is unknown at compile time <br>
+		 * Returns - Java: the Java Consumer object <br>
+		 * Example: <code>Java.consumerOf(fun(something) { print(something); });</code>
+		 */
+		private Value<?> consumerOf(Context context, BuiltInFunction function) throws CodeError {
+			FunctionValue functionValue = function.getFirstParameter(context, FunctionValue.class);
+			Context branchContext = context.createBranch();
+			return new JavaValue((Consumer<Object>) o -> {
+				functionValue.safeCall(context, () -> ArucasList.arrayListOf(branchContext.convertValue(o)));
+			});
+		}
+
+		/**
+		 * Name: <code>Java.supplierOf(function)</code> <br>
+		 * Description: Creates a Java Supplier object from a given function <br>
+		 * Parameter - Function: the function to be executed, this must have no parameters and
+		 * must return (supply) a value <br>
+		 * Returns - Java: the Java Supplier object <br>
+		 * Example: <code>Java.supplierOf(fun() { return "supplier"; });</code>
+		 */
+		private Value<?> supplierOf(Context context, BuiltInFunction function) throws CodeError {
+			FunctionValue functionValue = function.getFirstParameter(context, FunctionValue.class);
+			Context branchContext = context.createBranch();
+			return new JavaValue((Supplier<Object>) () -> {
+				Value<?> returnValue = functionValue.safeCall(branchContext, ArrayList::new);
+				return returnValue == null ? null : returnValue.asJavaValue();
+			});
+		}
+
+		/**
+		 * Name: <code>Java.functionOf(function)</code> <br>
+		 * Description: Creates a Java Function object from a given function <br>
+		 * Parameter - Function: the function to be executed, this must have one parameter and
+		 * must return a value <br>
+		 * Returns - Java: the Java Function object <br>
+		 * Example: <code>Java.functionOf(fun(num) { return num + 10; });</code>
+		 */
+		private Value<?> functionOf(Context context, BuiltInFunction function) throws CodeError {
+			FunctionValue functionValue = function.getFirstParameter(context, FunctionValue.class);
+			Context branchContext = context.createBranch();
+			return new JavaValue((Function<Object, Object>) o -> {
+				Value<?> returnValue = functionValue.safeCall(context, () -> ArucasList.arrayListOf(branchContext.convertValue(o)));
+				return returnValue == null ? null : returnValue.asJavaValue();
+			});
 		}
 
 		/**
@@ -516,6 +708,12 @@ public class JavaValue extends Value<Object> {
 			fieldName = getObfuscatedFieldName(context, callingObject.getClass(), fieldName);
 			ReflectionUtils.setFieldFromName(callingObject.getClass(), callingObject, newValue.asJavaValue(), fieldName, function.syntaxPosition, context);
 			return NullValue.NULL;
+		}
+
+		private void checkArraySize(Context context, ISyntax syntaxPosition, int size) throws RuntimeError {
+			if (size < 0) {
+				throw new RuntimeError("Cannot have a negative size array", syntaxPosition, context);
+			}
 		}
 
 		@Override

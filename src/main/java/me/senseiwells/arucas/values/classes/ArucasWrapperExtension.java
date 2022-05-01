@@ -40,6 +40,7 @@ public class ArucasWrapperExtension {
 			classList.add(0, clazz);
 			clazz = clazz.getSuperclass();
 		}
+		classList.addAll(Arrays.asList(clazz.getInterfaces()));
 		for (Class<?> each : classList) {
 			this.define(each);
 		}

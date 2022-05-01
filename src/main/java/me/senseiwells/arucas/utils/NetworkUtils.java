@@ -5,6 +5,8 @@ import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.StandardCharsets;
 
 public class NetworkUtils {
@@ -29,6 +31,19 @@ public class NetworkUtils {
 		}
 		catch (IOException ioException) {
 			return null;
+		}
+	}
+
+	// Returns true if successful
+	public static boolean downloadFile(String url, File file) {
+		try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+			URL website = new URL(url);
+			ReadableByteChannel byteChannel = Channels.newChannel(website.openStream());
+			fileOutputStream.getChannel().transferFrom(byteChannel, 0, Long.MAX_VALUE);
+			return true;
+		}
+		catch (IOException e) {
+			return false;
 		}
 	}
 
