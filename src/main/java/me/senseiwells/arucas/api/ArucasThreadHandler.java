@@ -10,12 +10,12 @@ import me.senseiwells.arucas.values.Value;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 @SuppressWarnings({"UnusedReturnValue", "unused"})
 public final class ArucasThreadHandler {
 	private final ThreadGroup arucasThreadGroup;
+	private final ThreadPoolExecutor asyncThreads;
 	private final List<Runnable> shutdownEvents;
 
 	private TriConsumer<Context, Throwable, String> fatalErrorHandler;
@@ -32,6 +32,11 @@ public final class ArucasThreadHandler {
 		this.currentFileContent = "";
 		this.isRunning = false;
 		this.hasError = false;
+
+		this.asyncThreads = new ThreadPoolExecutor(
+			1, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<>(),
+			runnable -> new ArucasThread(this.arucasThreadGroup, runnable, "Arucas Async Thread")
+		);
 	}
 
 	/**
@@ -221,7 +226,7 @@ public final class ArucasThreadHandler {
 	 * @see #runAsyncFunctionInContext(Context, ThrowableConsumer, String) 
 	 */
 	public ArucasThread runAsyncFunctionInContext(Context context, ThrowableConsumer<Context> consumer) {
-		return this.runAsyncFunction(context, consumer, "Arucas Runnable Thread");
+		return this.runAsyncFunction(context, consumer, "Arucas Async Thread");
 	}
 
 	/**
@@ -252,6 +257,24 @@ public final class ArucasThreadHandler {
 		}, name).start(context);
 	}
 
+	public void runAsyncFunctionInThreadPool(Context context, ThrowableConsumer<Context> consumer) {
+		if (context.getThreadHandler() != this || !this.isRunning()) {
+			return;
+		}
+
+		this.asyncThreads.execute(() -> {
+			if (context.isDebug()) {
+				context.getOutput().log("Running Async Thread\n");
+			}
+			try {
+				consumer.accept(context);
+			}
+			catch (Throwable t) {
+				this.tryError(context, t);
+			}
+		});
+	}
+
 	private synchronized void stop() {
 		if (this.isRunning()) {
 			this.isRunning = false;
@@ -259,6 +282,7 @@ public final class ArucasThreadHandler {
 			this.shutdownEvents.clear();
 
 			this.arucasThreadGroup.interrupt();
+			this.asyncThreads.shutdownNow();
 			this.currentFileContent = "";
 		}
 	}
