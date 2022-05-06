@@ -93,6 +93,14 @@ public class ArucasList implements IArucasCollection, List<Value<?>>, ValueIdent
 	}
 
 	@Override
+	public Value<?> set(int index, Value<?> element) {
+		this.checkExistingIndex(index);
+		Value<?> oldValue = this.valueData[index];
+		this.valueData[index] = element;
+		return oldValue;
+	}
+
+	@Override
 	public synchronized boolean add(Value<?> value) {
 		this.add(value, this.valueData, this.size);
 		return true;
@@ -412,8 +420,6 @@ public class ArucasList implements IArucasCollection, List<Value<?>>, ValueIdent
 	public ListIterator<Value<?>> listIterator(int index) { throw new UnsupportedOperationException(); }
 	@Override
 	public ArucasList subList(int fromIndex, int toIndex) { throw new UnsupportedOperationException(); }
-	@Override
-	public Value<?> set(int index, Value<?> element) { throw new UnsupportedOperationException(); }
 
 
 	public static ArucasList of(Value<?>... values) {
