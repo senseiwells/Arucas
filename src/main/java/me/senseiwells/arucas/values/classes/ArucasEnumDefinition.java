@@ -13,11 +13,11 @@ import me.senseiwells.arucas.values.functions.ClassMemberFunction;
 
 import java.util.*;
 
-public class ArcuasEnumDefinition extends ArucasClassDefinition {
+public class ArucasEnumDefinition extends ArucasClassDefinition {
 	private final Map<String, EnumValue> enums;
 	private Map<String, ListNode> enumInitializerMap;
 
-	public ArcuasEnumDefinition(String name) {
+	public ArucasEnumDefinition(String name) {
 		super(name);
 		this.enums = new LinkedHashMap<>();
 		this.enumInitializerMap = new LinkedHashMap<>();

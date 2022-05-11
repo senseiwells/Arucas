@@ -14,7 +14,7 @@ import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.StringValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
-import me.senseiwells.arucas.values.classes.ArcuasEnumDefinition;
+import me.senseiwells.arucas.values.classes.ArucasEnumDefinition;
 import me.senseiwells.arucas.values.classes.ArucasClassDefinition;
 import me.senseiwells.arucas.values.functions.ClassMemberFunction;
 import me.senseiwells.arucas.values.functions.FunctionValue;
@@ -308,7 +308,7 @@ public class Parser {
 		this.throwIfNotType(Token.Type.LEFT_CURLY_BRACKET, "Expected '{'");
 		this.advance();
 
-		ArcuasEnumDefinition definition = new ArcuasEnumDefinition(enumName.content);
+		ArucasEnumDefinition definition = new ArucasEnumDefinition(enumName.content);
 		this.context.addClassDefinition(definition);
 		this.context.pushScope(startPos);
 
