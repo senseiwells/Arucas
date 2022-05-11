@@ -105,10 +105,9 @@ public abstract class FunctionValue extends Value<String> {
 			);
 		}
 		catch (StackOverflowError e) {
-			throw new CodeError(
-				CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
+			throw new RuntimeError(
 				"StackOverflow: Call stack went too deep",
-				this.syntaxPosition
+				this.syntaxPosition, context
 			);
 		}
 	}

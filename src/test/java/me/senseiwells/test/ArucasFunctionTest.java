@@ -27,7 +27,7 @@ public class ArucasFunctionTest {
 			X = A();
 			""", "X"
 		));
-		assertEquals("100", ArucasHelper.runSafeFull(
+		assertEquals("1", ArucasHelper.runSafeFull(
 			"""
 			X = '1';
 			fun test(X) {}

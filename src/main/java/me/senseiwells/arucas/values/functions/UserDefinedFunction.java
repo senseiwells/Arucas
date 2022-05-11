@@ -25,15 +25,17 @@ public class UserDefinedFunction extends FunctionValue {
 	}
 
 	public void setLocalContext(Context context) {
-		this.localContext = context;
+		this.localContext = context.createBranch();
 	}
 
 	protected Value<?> execute(Context context, List<Value<?>> arguments) throws CodeError, ThrowValue {
 		if (this.localContext != null) {
-			context = this.localContext;
+			context = this.localContext.createBranch();
 		}
+		context.pushFunctionScope(this.syntaxPosition);
 		this.checkAndPopulateArguments(context, arguments, this.argumentNames);
 		this.bodyNode.visit(context);
+		context.popScope();
 		return NullValue.NULL;
 	}
 

@@ -118,15 +118,10 @@ public class StackTable {
 	}
 
 	public FunctionValue getClassFunction(Class<?> clazz, String name, int parameters) {
-		FunctionValue functionValue = null;
-		if (this.classDefinitions != null) {
-			functionValue = this.classDefinitions.getFunctionForClass(clazz, name, parameters);
+		if (this == this.rootTable) {
+			return this.classDefinitions.getFunctionForClass(clazz, name, parameters);
 		}
-		if (functionValue == null && this.parentTable != null) {
-			return this.parentTable.getClassFunction(clazz, name, parameters);
-		}
-
-		return functionValue;
+		return this.rootTable.getClassFunction(clazz, name, parameters);
 	}
 
 	/**

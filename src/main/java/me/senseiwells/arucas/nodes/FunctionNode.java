@@ -40,7 +40,7 @@ public class FunctionNode extends Node {
 		String functionName = this.variableNameToken.content;
 		context.throwIfStackNameTaken(null, this.syntaxPosition);
 
-		this.functionValue.setLocalContext(context.createBranch());
+		this.functionValue.setLocalContext(context);
 		context.setVariable(functionName, this.functionValue);
 		return this.functionValue;
 	}
