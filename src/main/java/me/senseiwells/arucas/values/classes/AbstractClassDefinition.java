@@ -54,12 +54,12 @@ public abstract class AbstractClassDefinition implements MemberOperations {
 	}
 
 	public final void init(Context context) throws ThrowValue, CodeError {
-		this.localContext = context;
+		this.localContext = context.createBranch();
 		this.initialiseStatics(context);
 	}
 
 	public final Context getLocalContext(Context fallback) {
-		return this.localContext == null ? fallback : this.localContext;
+		return this.localContext == null ? fallback : this.localContext.createBranch();
 	}
 
 	/**

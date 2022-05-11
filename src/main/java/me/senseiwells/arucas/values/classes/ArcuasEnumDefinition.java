@@ -14,50 +14,53 @@ import me.senseiwells.arucas.values.functions.ClassMemberFunction;
 import java.util.*;
 
 public class ArcuasEnumDefinition extends ArucasClassDefinition {
-	private final Map<String, ListNode> enumInitializerMap;
-	private final List<EnumValue> enumValues;
-	private Set<String> enumNames;
+	private final Map<String, EnumValue> enums;
+	private Map<String, ListNode> enumInitializerMap;
 
 	public ArcuasEnumDefinition(String name) {
 		super(name);
+		this.enums = new LinkedHashMap<>();
 		this.enumInitializerMap = new LinkedHashMap<>();
-		this.enumValues = new ArrayList<>();
+
 		this.addStaticMethod(new BuiltInFunction("values", this::values));
 		this.addStaticMethod(new BuiltInFunction("fromString", "string", this::fromString));
 	}
 
 	public void addEnum(String enumName, ListNode node) {
-		this.enumInitializerMap.put(enumName, node);
+		if (this.enumInitializerMap != null) {
+			this.enumInitializerMap.put(enumName, node);
+		}
 	}
 
 	public boolean hasEnum(String enumName) {
-		return this.enumNames != null ? this.enumNames.contains(enumName) : this.enumInitializerMap.containsKey(enumName);
+		return this.enumInitializerMap == null ? this.enums.containsKey(enumName) : this.enumInitializerMap.containsKey(enumName);
 	}
 
 	public Value<?> fromString(Context context, BuiltInFunction function) throws CodeError {
 		StringValue stringValue = function.getFirstParameter(context, StringValue.class);
-		return this.getEnumValue(stringValue.value);
+		EnumValue enumValue = this.getEnumValue(stringValue.value);
+		return enumValue == null ? NullValue.NULL : enumValue;
 	}
 
 	public Value<?> values(Context context, BuiltInFunction function) {
 		ArucasList list = new ArucasList();
-		list.addAll(this.enumValues);
+		list.addAll(this.enums.values());
 		return new ListValue(list);
 	}
 
-	public Value<?> getEnumValue(String name) {
-		for (EnumValue enumValue : this.enumValues) {
-			if (enumValue.getEnumName().equals(name)) {
-				return enumValue;
-			}
-		}
-		return NullValue.NULL;
+	@SuppressWarnings("unused")
+	public Collection<String> names() {
+		return this.enums.keySet();
+	}
+
+	public EnumValue getEnumValue(String name) {
+		return this.enums.get(name);
 	}
 
 	private EnumValue createEnumValue(String enumName, Context ctx, List<Value<?>> parameters, ISyntax syntaxPosition) throws CodeError, ThrowValue {
 		Context context = this.getLocalContext(ctx);
 
-		EnumValue thisValue = new EnumValue(this, enumName, this.enumValues.size());
+		EnumValue thisValue = new EnumValue(this, enumName, this.enums.size());
 
 		this.addClassProperties(thisValue, context);
 
@@ -89,17 +92,16 @@ public class ArcuasEnumDefinition extends ArucasClassDefinition {
 			ListValue list = node.visit(context);
 			EnumValue enumValue = this.createEnumValue(name, context, list.value, node.syntaxPosition);
 
-			this.enumValues.add(enumValue);
+			this.enums.put(name, enumValue);
 			this.getStaticMemberVariables().put(name, enumValue);
 		}
-		this.enumNames = Set.of(this.enumInitializerMap.keySet().toArray(String[]::new));
-		this.enumInitializerMap.clear();
+		this.enumInitializerMap = null;
 		super.initialiseStatics(context);
 	}
 
 	@Override
 	public boolean isAssignable(String name) {
-		return this.enumNames != null && !this.enumNames.contains(name) && super.isAssignable(name);
+		return !this.enums.containsKey(name) && super.isAssignable(name);
 	}
 
 	@Override
