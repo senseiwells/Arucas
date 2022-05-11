@@ -50,6 +50,8 @@ public class WrapperClassMemberFunction extends ClassMemberFunction {
 
 	@Override
 	protected Value<?> callOverride(Context context, List<Value<?>> arguments, boolean returnable) throws CodeError {
+		context.pushFunctionScope(this.syntaxPosition);
+
 		Object[] args = new Object[1 + this.parameters];
 		int iModifier = 0;
 		if (!this.isStatic) {
@@ -63,11 +65,17 @@ public class WrapperClassMemberFunction extends ClassMemberFunction {
 			args[i + iModifier] = arguments.get(i);
 		}
 
+		Value<?> returnValue;
 		if (returnable) {
-			return this.methodHandle.call(args, this.thisValue, this.syntaxPosition, context);
+			returnValue = this.methodHandle.call(args, this.thisValue, this.syntaxPosition, context);
 		}
-		this.methodHandle.call(args, this.thisValue, this.syntaxPosition, context);
-		return NullValue.NULL;
+		else {
+			this.methodHandle.call(args, this.thisValue, this.syntaxPosition, context);
+			returnValue = NullValue.NULL;
+		}
+
+		context.popScope();
+		return returnValue;
 	}
 	
 	@Override
