@@ -5,6 +5,7 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.ValueTypes;
 import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.utils.impl.ArucasThread;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
@@ -47,7 +48,7 @@ public class ThreadValue extends Value<ArucasThread> {
 
 	@Override
 	public String getTypeName() {
-		return "Thread";
+		return ValueTypes.THREAD;
 	}
 
 	/**
@@ -57,7 +58,7 @@ public class ThreadValue extends Value<ArucasThread> {
 	 */
 	public static class ArucasThreadClass extends ArucasClassExtension {
 		public ArucasThreadClass() {
-			super("Thread");
+			super(ValueTypes.THREAD);
 		}
 
 		@Override

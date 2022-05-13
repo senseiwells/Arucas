@@ -4,6 +4,7 @@ import me.senseiwells.arucas.api.ArucasClassExtension;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.ValueTypes;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.values.classes.ArucasClassValue;
 import me.senseiwells.arucas.values.functions.FunctionValue;
@@ -38,7 +39,7 @@ public class EnumValue extends ArucasClassValue {
 			return memberFunction.call(context, new ArrayList<>()).getAsString(context);
 		}
 
-		return "<enum " + this.getName() + " - " + this.enumName + ">";
+		return "<enum " + this.getName() + " - " + this.getEnumName() + ">";
 	}
 
 	@Override
@@ -53,7 +54,7 @@ public class EnumValue extends ArucasClassValue {
 	 */
 	public static class ArucasEnumClass extends ArucasClassExtension {
 		public ArucasEnumClass() {
-			super("Enum");
+			super(ValueTypes.ENUM);
 		}
 
 		@Override

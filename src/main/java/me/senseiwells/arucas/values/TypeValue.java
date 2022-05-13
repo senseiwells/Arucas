@@ -5,6 +5,7 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.ValueTypes;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.values.classes.ArucasClassDefinition;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
@@ -40,7 +41,7 @@ public class TypeValue extends Value<AbstractClassDefinition> {
 
 	@Override
 	public String getTypeName() {
-		return "Type";
+		return ValueTypes.TYPE;
 	}
 
 	/**
@@ -50,7 +51,7 @@ public class TypeValue extends Value<AbstractClassDefinition> {
 	 */
 	public static class ArucasTypeClass extends ArucasClassExtension {
 		public ArucasTypeClass() {
-			super("Type");
+			super(ValueTypes.TYPE);
 		}
 
 		@Override

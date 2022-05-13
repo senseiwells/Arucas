@@ -6,6 +6,7 @@ import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.ExceptionUtils;
+import me.senseiwells.arucas.utils.ValueTypes;
 import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
 import me.senseiwells.arucas.values.functions.ConstructorFunction;
@@ -50,7 +51,7 @@ public class FileValue extends Value<File> {
 
 	@Override
 	public String getTypeName() {
-		return "File";
+		return ValueTypes.FILE;
 	}
 
 	/**
@@ -60,7 +61,7 @@ public class FileValue extends Value<File> {
 	 */
 	public static class ArucasFileClass extends ArucasClassExtension {
 		public ArucasFileClass() {
-			super("File");
+			super(ValueTypes.FILE);
 		}
 
 		@Override

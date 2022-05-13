@@ -9,6 +9,7 @@ import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.ExceptionUtils;
 import me.senseiwells.arucas.utils.ExceptionUtils.ThrowableSupplier;
+import me.senseiwells.arucas.utils.ValueTypes;
 import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.values.*;
 import me.senseiwells.arucas.values.classes.ArucasClassValue;
@@ -76,7 +77,6 @@ public abstract class FunctionValue extends Value<String> {
 
 	/**
 	 * API overridable method.
-	 * @hidden nomd
 	 */
 	protected Value<?> callOverride(Context context, List<Value<?>> arguments, boolean returnable) throws CodeError {
 		context.pushFunctionScope(this.syntaxPosition);
@@ -165,7 +165,7 @@ public abstract class FunctionValue extends Value<String> {
 
 	@Override
 	public String getTypeName() {
-		return "Function";
+		return ValueTypes.FUNCTION;
 	}
 
 	/**
@@ -175,7 +175,7 @@ public abstract class FunctionValue extends Value<String> {
 	 */
 	public static class ArucasFunctionClass extends ArucasClassExtension {
 		public ArucasFunctionClass() {
-			super("Function");
+			super(ValueTypes.FUNCTION);
 		}
 
 		@Override

@@ -1,9 +1,13 @@
 package me.senseiwells.arucas.extensions;
 
 import me.senseiwells.arucas.api.ArucasClassExtension;
+import me.senseiwells.arucas.api.docs.ClassDoc;
+import me.senseiwells.arucas.api.docs.FunctionDoc;
+import me.senseiwells.arucas.api.docs.MemberDoc;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.ValueTypes;
 import me.senseiwells.arucas.values.BaseValue;
 import me.senseiwells.arucas.values.NumberValue;
 import me.senseiwells.arucas.values.Value;
@@ -12,17 +16,20 @@ import me.senseiwells.arucas.values.functions.BuiltInFunction;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Math class extension for Arucas. Provides many basic math functions. <br>
- * This is a utility class, and cannot be constructed. <br>
- * Fully Documented.
- * @author senseiwells
- */
+import static me.senseiwells.arucas.utils.ValueTypes.NUMBER;
+
+@ClassDoc(
+	name = ValueTypes.MATH,
+	desc = "Provides many basic math functions. This is a utility class, and cannot be constructed."
+)
 public class ArucasMathClass extends ArucasClassExtension {
 	public ArucasMathClass() {
 		super("Math");
 	}
 
+	@MemberDoc(isStatic = true, name = "pi", desc = "The value of pi", type = NUMBER, examples = "Math.pi;")
+	@MemberDoc(isStatic = true, name = "e", desc = "The value of e", type = NUMBER, examples = "Math.e;")
+	@MemberDoc(isStatic = true, name = "root2", desc = "The value of root 2", type = NUMBER, examples = "Math.root2;")
 	@Override
 	public Map<String, Value<?>> getDefinedStaticVariables() {
 		return Map.of(
@@ -61,112 +68,134 @@ public class ArucasMathClass extends ArucasClassExtension {
 		);
 	}
 
-	/**
-	 * Name: <code>Math.round(num)</code> <br>
-	 * Description: Rounds a number to the nearest integer <br>
-	 * Parameter - Number: the number to round <br>
-	 * Returns - Number: the rounded number <br>
-	 * Example: <code>Math.round(3.5);</code> 
-	 */
+	@FunctionDoc(
+		isStatic = true,
+		name = "round",
+		desc = "Rounds a number to the nearest integer",
+		params = {NUMBER, "num", "the number to round"},
+		returns = {NUMBER, "the rounded number"},
+		example = "Math.round(3.5);"
+	)
 	private NumberValue round(Context context, BuiltInFunction function) throws CodeError {
 		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
 		return NumberValue.of(Math.round(numberValue));
 	}
 
-	/**
-	 * Name: <code>Math.ceil(num)</code> <br>
-	 * Description: Rounds a number up to the nearest integer <br>
-	 * Parameter - Number: the number to round <br>
-	 * Returns - Number: the rounded number <br>
-	 * Example: <code>Math.ceil(3.5);</code> 
-	 */
+	@FunctionDoc(
+		isStatic = true,
+		name = "ceil",
+		desc = "Rounds a number up to the nearest integer",
+		params = {NUMBER, "num", "the number to round"},
+		returns = {NUMBER, "the rounded number"},
+		example = "Math.ceil(3.5);"
+	)
 	private NumberValue ceil(Context context, BuiltInFunction function) throws CodeError {
 		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
 		return NumberValue.of(Math.ceil(numberValue));
 	}
 
-	/**
-	 * Name: <code>Math.floor(num)</code> <br>
-	 * Description: Rounds a number down to the nearest integer <br>
-	 * Parameter - Number: the number to round <br>
-	 * Returns - Number: the rounded number <br>
-	 * Example: <code>Math.floor(3.5);</code> 
-	 */
+	@FunctionDoc(
+		isStatic = true,
+		name = "floor",
+		desc = "Rounds a number down to the nearest integer",
+		params = {NUMBER, "num", "the number to round"},
+		returns = {NUMBER, "the rounded number"},
+		example = "Math.floor(3.5);"
+	)
 	private NumberValue floor(Context context, BuiltInFunction function) throws CodeError {
 		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
 		return NumberValue.of(Math.floor(numberValue));
 	}
 
-	/**
-	 * Name: <code>Math.sqrt(num)</code> <br>
-	 * Description: Returns the square root of a number <br>
-	 * Parameter - Number: the number to square root <br>
-	 * Returns - Number: the square root of the number <br>
-	 * Example: <code>Math.sqrt(9);</code> 
-	 */
+	@FunctionDoc(
+		isStatic = true,
+		name = "sqrt",
+		desc = "Returns the square root of a number",
+		params = {NUMBER, "num", "the number to square root"},
+		returns = {NUMBER, "the square root of the number"},
+		example = "Math.sqrt(9);"
+	)
 	private Value<?> sqrt(Context context, BuiltInFunction function) throws CodeError {
 		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
 		return NumberValue.of(Math.sqrt(numberValue));
 	}
 
-	/**
-	 * Name: <code>Math.abs(num)</code> <br>
-	 * Description: Returns the absolute value of a number <br>
-	 * Parameter - Number: the number to get the absolute value of <br>
-	 * Returns - Number: the absolute value of the number <br>
-	 * Example: <code>Math.abs(-3);</code> 
-	 */
+	@FunctionDoc(
+		isStatic = true,
+		name = "abs",
+		desc = "Returns the absolute value of a number",
+		params = {NUMBER, "num", "the number to get the absolute value of"},
+		returns = {NUMBER, "the absolute value of the number"},
+		example = "Math.abs(-3);"
+	)
 	private Value<?> abs(Context context, BuiltInFunction function) throws CodeError {
 		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
 		return NumberValue.of(Math.abs(numberValue));
 	}
 
-	/**
-	 * Name: <code>Math.mod(num1, num2)</code> <br>
-	 * Description: Returns the remainder of a division <br>
-	 * Parameters - Number, Number: the number to divide, the divisor <br>
-	 * Returns - Number: the remainder of the division <br>
-	 * Example: <code>Math.mod(5, 2);</code> 
-	 */
+	@FunctionDoc(
+		isStatic = true,
+		name = "mod",
+		desc = "Returns the remainder of a division",
+		params = {
+			NUMBER, "num1", "the number to divide",
+			NUMBER, "num2", "the divisor"
+		},
+		returns = {NUMBER, "the remainder of the division"},
+		example = "Math.mod(5, 2);"
+	)
 	private Value<?> mod(Context context, BuiltInFunction function) throws CodeError {
 		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
 		double otherNumber = function.getParameterValueOfType(context, NumberValue.class, 1).value;
 		return NumberValue.of(numberValue % otherNumber);
 	}
 
-	/**
-	 * Name: <code>Math.max(num1, num2)</code> <br>
-	 * Description: Returns the largest number <br>
-	 * Parameters - Number, Number: the numbers to compare <br>
-	 * Returns - Number: the largest number <br>
-	 * Example: <code>Math.max(5, 2);</code> 
-	 */
+	@FunctionDoc(
+		isStatic = true,
+		name = "max",
+		desc = "Returns the largest number",
+		params = {
+			NUMBER, "num1", "the first number to compare",
+			NUMBER, "num2", "the second number to compare"
+		},
+		returns = {NUMBER, "the largest number"},
+		example = "Math.max(5, 2);"
+	)
 	private Value<?> max(Context context, BuiltInFunction function) throws CodeError {
 		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
 		double otherNumber = function.getParameterValueOfType(context, NumberValue.class, 1).value;
 		return NumberValue.of(Math.max(numberValue, otherNumber));
 	}
 
-	/**
-	 * Name: <code>Math.min(num1, num2)</code> <br>
-	 * Description: Returns the smallest number <br>
-	 * Parameters - Number, Number: the numbers to compare <br>
-	 * Returns - Number: the smallest number <br>
-	 * Example: <code>Math.min(5, 2);</code> 
-	 */
+	@FunctionDoc(
+		isStatic = true,
+		name = "min",
+		desc = "Returns the smallest number",
+		params = {
+			NUMBER, "num1", "the first number to compare",
+			NUMBER, "num2", "the second number to compare"
+		},
+		returns = {NUMBER, "the smallest number"},
+		example = "Math.min(5, 2);"
+	)
 	private Value<?> min(Context context, BuiltInFunction function) throws CodeError {
 		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
 		double otherNumber = function.getParameterValueOfType(context, NumberValue.class, 1).value;
 		return NumberValue.of(Math.min(numberValue, otherNumber));
 	}
 
-	/**
-	 * Name: <code>Math.clamp(value, min, max)</code> <br>
-	 * Description: Clamps a value between a minimum and maximum <br>
-	 * Parameters - Number, Number, Number: the value to clamp, the minimum, the maximum <br>
-	 * Returns - Number: the clamped value <br>
-	 * Example: <code>Math.clamp(10, 2, 8);</code> 
-	 */
+	@FunctionDoc(
+		isStatic = true,
+		name = "clamp",
+		desc = "Clamps a value between a minimum and maximum",
+		params = {
+			NUMBER, "value", "the value to clamp",
+			NUMBER, "min", "the minimum",
+			NUMBER, "max", "the maximum"
+		},
+		returns = {NUMBER, "the clamped value"},
+		example = "Math.clamp(10, 2, 8);"
+	)
 	private Value<?> clamp(Context context, BuiltInFunction function) throws CodeError {
 		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
 		double minNumber = function.getParameterValueOfType(context, NumberValue.class, 1).value;
@@ -174,170 +203,187 @@ public class ArucasMathClass extends ArucasClassExtension {
 		return NumberValue.of(numberValue < minNumber ? minNumber : Math.min(numberValue, maxNumber));
 	}
 
-	/**
-	 * Name: <code>Math.toRadians(num)</code> <br>
-	 * Description: Converts a number from degrees to radians <br>
-	 * Parameter - Number: the number to convert <br>
-	 * Returns - Number: the number in radians <br>
-	 * Example: <code>Math.toRadians(90);</code> 
-	 */
+	@FunctionDoc(
+		isStatic = true,
+		name = "toRadians",
+		desc = "Converts a number from degrees to radians",
+		params = {NUMBER, "num", "the number to convert"},
+		returns = {NUMBER, "the number in radians"},
+		example = "Math.toRadians(90);"
+	)
 	private Value<?> toRadians(Context context, BuiltInFunction function) throws CodeError {
 		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
 		return NumberValue.of(Math.toRadians(numberValue));
 	}
 
-	/**
-	 * Name: <code>Math.toDegrees(num)</code> <br>
-	 * Description: Converts a number from radians to degrees <br>
-	 * Parameter - Number: the number to convert <br>
-	 * Returns - Number: the number in degrees <br>
-	 * Example: <code>Math.toDegrees(Math.PI);</code> 
-	 */
+	@FunctionDoc(
+		isStatic = true,
+		name = "toDegrees",
+		desc = "Converts a number from radians to degrees",
+		params = {NUMBER, "num", "the number to convert"},
+		returns = {NUMBER, "the number in degrees"},
+		example = "Math.toDegrees(Math.pi);"
+	)
 	private Value<?> toDegrees(Context context, BuiltInFunction function) throws CodeError {
 		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
 		return NumberValue.of(Math.toDegrees(numberValue));
 	}
 
-	/**
-	 * Name: <code>Math.log(num)</code> <br>
-	 * Description: Returns the natural logarithm of a number <br>
-	 * Parameter - Number: the number to get the logarithm of <br>
-	 * Returns - Number: the natural logarithm of the number <br>
-	 * Example: <code>Math.log(Math.E);<code>
-	 */
+	@FunctionDoc(
+		isStatic = true,
+		name = "log",
+		desc = "Returns the natural logarithm of a number",
+		params = {NUMBER, "num", "the number to get the logarithm of"},
+		returns = {NUMBER, "the natural logarithm of the number"},
+		example = "Math.log(Math.e);"
+	)
 	private Value<?> log(Context context, BuiltInFunction function) throws CodeError {
 		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
 		return NumberValue.of(Math.log(numberValue));
 	}
 
-	/**
-	 * Name: <code>Math.logBase(base, num)</code> <br>
-	 * Description: Returns the logarithm of a number with a specified base <br>
-	 * Parameters - Number, Number: the base, the number to get the logarithm of <br>
-	 * Returns - Number: the logarithm of the number <br>
-	 * Example: <code>Math.logBase(2, 4);<code>
-	 */
+	@FunctionDoc(
+		isStatic = true,
+		name = "log",
+		desc = "Returns the logarithm of a number with a specified base",
+		params = {
+			NUMBER, "base", "the base",
+			NUMBER, "num", "the number to get the logarithm of",
+		},
+		returns = {NUMBER, "the logarithm of the number"},
+		example = "Math.log(2, 4);"
+	)
 	private Value<?> logBase(Context context, BuiltInFunction function) throws CodeError {
 		double baseNumber = function.getParameterValueOfType(context, NumberValue.class, 0).value;
 		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 1).value;
 		return NumberValue.of(Math.log(numberValue) / Math.log(baseNumber));
 	}
 
-	/**
-	 * Name: <code>Math.log10(num)</code> <br>
-	 * Description: Returns the base 10 logarithm of a number <br>
-	 * Parameter - Number: the number to get the logarithm of <br>
-	 * Returns - Number: the base 10 logarithm of the number <br>
-	 * Example: <code>Math.log10(100);<code>
-	 */
+	@FunctionDoc(
+		isStatic = true,
+		name = "log10",
+		desc = "Returns the base 10 logarithm of a number",
+		params = {NUMBER, "num", "the number to get the logarithm of"},
+		returns = {NUMBER, "the base 10 logarithm of the number"},
+		example = "Math.log10(100);"
+	)
 	private Value<?> log10(Context context, BuiltInFunction function) throws CodeError {
 		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
 		return NumberValue.of(Math.log10(numberValue));
 	}
 
-	/**
-	 * Name: <code>Math.sin(num)</code> <br>
-	 * Description: Returns the sine of a number <br>
-	 * Parameter - Number: the number to get the sine of <br>
-	 * Returns - Number: the sine of the number <br>
-	 * Example: <code>Math.sin(Math.PI);<code>
-	 */
+	@FunctionDoc(
+		isStatic = true,
+		name = "sin",
+		desc = "Returns the sine of a number",
+		params = {NUMBER, "num", "the number to get the sine of"},
+		returns = {NUMBER, "the sine of the number"},
+		example = "Math.sin(Math.pi);"
+	)
 	private Value<?> sin(Context context, BuiltInFunction function) throws CodeError {
 		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
 		return NumberValue.of(Math.sin(numberValue));
 	}
 
-	/**
-	 * Name: <code>Math.cos(num)</code> <br>
-	 * Description: Returns the cosine of a number <br>
-	 * Parameter - Number: the number to get the cosine of <br>
-	 * Returns - Number: the cosine of the number <br>
-	 * Example: <code>Math.cos(Math.PI);<code>
-	 */
+	@FunctionDoc(
+		isStatic = true,
+		name = "cos",
+		desc = "Returns the cosine of a number",
+		params = {NUMBER, "num", "the number to get the cosine of"},
+		returns = {NUMBER, "the cosine of the number"},
+		example = "Math.cos(Math.pi);"
+	)
 	private Value<?> cos(Context context, BuiltInFunction function) throws CodeError {
 		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
 		return NumberValue.of(Math.cos(numberValue));
 	}
 
-	/**
-	 * Name: <code>Math.tan(num)</code> <br>
-	 * Description: Returns the tangent of a number <br>
-	 * Parameter - Number: the number to get the tangent of <br>
-	 * Returns - Number: the tangent of the number <br>
-	 * Example: <code>Math.tan(Math.PI);<code>
-	 */
+	@FunctionDoc(
+		isStatic = true,
+		name = "tan",
+		desc = "Returns the tangent of a number",
+		params = {NUMBER, "num", "the number to get the tangent of"},
+		returns = {NUMBER, "the tangent of the number"},
+		example = "Math.tan(Math.pi);"
+	)
 	private Value<?> tan(Context context, BuiltInFunction function) throws CodeError {
 		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
 		return NumberValue.of(Math.tan(numberValue));
 	}
 
-	/**
-	 * Name: <code>Math.arcsin(num)</code> <br>
-	 * Description: Returns the arc sine of a number <br>
-	 * Parameter - Number: the number to get the arc sine of <br>
-	 * Returns - Number: the arc sine of the number <br>
-	 * Example: <code>Math.arcsin(Math.sin(Math.PI));<code>
-	 */
+	@FunctionDoc(
+		isStatic = true,
+		name = "arcsin",
+		desc = "Returns the arc sine of a number",
+		params = {NUMBER, "num", "the number to get the arc sine of"},
+		returns = {NUMBER, "the arc sine of the number"},
+		example = "Math.arcsin(Math.sin(Math.pi));"
+	)
 	private Value<?> arcsin(Context context, BuiltInFunction function) throws CodeError {
 		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
 		return NumberValue.of(Math.asin(numberValue));
 	}
 
-	/**
-	 * Name: <code>Math.arccos(num)</code> <br>
-	 * Description: Returns the arc cosine of a number <br>
-	 * Parameter - Number: the number to get the arc cosine of <br>
-	 * Returns - Number: the arc cosine of the number <br>
-	 * Example: <code>Math.arccos(Math.cos(Math.PI));<code>
-	 */
+	@FunctionDoc(
+		isStatic = true,
+		name = "arccos",
+		desc = "Returns the arc cosine of a number",
+		params = {NUMBER, "num", "the number to get the arc cosine of"},
+		returns = {NUMBER, "the arc cosine of the number"},
+		example = "Math.arccos(Math.cos(Math.pi));"
+	)
 	private Value<?> arccos(Context context, BuiltInFunction function) throws CodeError {
 		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
 		return NumberValue.of(Math.acos(numberValue));
 	}
 
-	/**
-	 * Name: <code>Math.arctan(num)</code> <br>
-	 * Description: Returns the arc tangent of a number <br>
-	 * Parameter - Number: the number to get the arc tangent of <br>
-	 * Returns - Number: the arc tangent of the number <br>
-	 * Example: <code>Math.arctan(Math.tan(Math.PI));<code>
-	 */
+	@FunctionDoc(
+		isStatic = true,
+		name = "arctan",
+		desc = "Returns the arc tangent of a number",
+		params = {NUMBER, "num", "the number to get the arc tangent of"},
+		returns = {NUMBER, "the arc tangent of the number"},
+		example = "Math.arctan(Math.tan(Math.pi));"
+	)
 	private Value<?> arctan(Context context, BuiltInFunction function) throws CodeError {
 		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
 		return NumberValue.of(Math.atan(numberValue));
 	}
 
-	/**
-	 * Name: <code>Math.cosec(num)</code> <br>
-	 * Description: Returns the cosecant of a number <br>
-	 * Parameter - Number: the number to get the cosecant of <br>
-	 * Returns - Number: the cosecant of the number <br>
-	 * Example: <code>Math.cosec(Math.PI);<code>
-	 */
+	@FunctionDoc(
+		isStatic = true,
+		name = "cosec",
+		desc = "Returns the cosecant of a number",
+		params = {NUMBER, "num", "the number to get the cosecant of"},
+		returns = {NUMBER, "the cosecant of the number"},
+		example = "Math.cosec(Math.pi);"
+	)
 	private Value<?> cosec(Context context, BuiltInFunction function) throws CodeError {
 		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
 		return NumberValue.of(1 / Math.sin(numberValue));
 	}
 
-	/**
-	 * Name: <code>Math.sec(num)</code> <br>
-	 * Description: Returns the secant of a number <br>
-	 * Parameter - Number: the number to get the secant of <br>
-	 * Returns - Number: the secant of the number <br>
-	 * Example: <code>Math.sec(Math.PI);<code>
-	 */
+	@FunctionDoc(
+		isStatic = true,
+		name = "sec",
+		desc = "Returns the secant of a number",
+		params = {NUMBER, "num", "the number to get the secant of"},
+		returns = {NUMBER, "the secant of the number"},
+		example = "Math.sec(Math.pi);"
+	)
 	private Value<?> sec(Context context, BuiltInFunction function) throws CodeError {
 		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
 		return NumberValue.of(1 / Math.cos(numberValue));
 	}
 
-	/**
-	 * Name: <code>Math.cot(num)</code> <br>
-	 * Description: Returns the cotangent of a number <br>
-	 * Parameter - Number: the number to get the cotangent of <br>
-	 * Returns - Number: the cotangent of the number <br>
-	 * Example: <code>Math.cot(Math.PI);<code>
-	 */
+	@FunctionDoc(
+		isStatic = true,
+		name = "cot",
+		desc = "Returns the cotangent of a number",
+		params = {NUMBER, "num", "the number to get the cotangent of"},
+		returns = {NUMBER, "the cotangent of the number"},
+		example = "Math.cot(Math.pi);"
+	)
 	private Value<?> cot(Context context, BuiltInFunction function) throws CodeError {
 		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
 		return NumberValue.of(1 / Math.tan(numberValue));

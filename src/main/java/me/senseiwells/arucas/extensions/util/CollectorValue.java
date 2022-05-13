@@ -1,6 +1,8 @@
 package me.senseiwells.arucas.extensions.util;
 
 import me.senseiwells.arucas.api.ArucasClassExtension;
+import me.senseiwells.arucas.api.docs.ClassDoc;
+import me.senseiwells.arucas.api.docs.FunctionDoc;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
@@ -14,6 +16,8 @@ import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
 import java.util.ArrayList;
+
+import static me.senseiwells.arucas.utils.ValueTypes.*;
 
 public class CollectorValue extends Value<ArucasList> {
 	public CollectorValue(ArucasList value) {
@@ -37,24 +41,22 @@ public class CollectorValue extends Value<ArucasList> {
 
 	@Override
 	public String getTypeName() {
-		return "Collector";
+		return COLLECTOR;
 	}
 
 	@Override
 	public Value<ArucasList> copy(Context context) throws CodeError {
 		return this;
 	}
-
-	/**
-	 * Collector class for Arucas. <br>
-	 * Import the class with <code>import Collector from util.Collection;</code> <br>
-	 * This class is similar to Java streams, allowing for easy modifications of collections. <br>
-	 * Fully Documented.
-	 * @author senseiwells
-	 */
+	
+	@ClassDoc(
+		name = COLLECTOR,
+		desc = "This class is similar to Java streams, allowing for easy modifications of collections.",
+		importPath = "util.Collection"
+	)
 	public static class ArucasCollectorClass extends ArucasClassExtension {
 		public ArucasCollectorClass() {
-			super("Collector");
+			super(COLLECTOR);
 		}
 
 		@Override
@@ -71,14 +73,15 @@ public class CollectorValue extends Value<ArucasList> {
 			);
 		}
 
-		/**
-		 * Name: <code>Collector.of(collection)</code> <br>
-		 * Description: This creates a collector for a collection <br>
-		 * Parameter - Collection: the collection of values you want to evaluate <br>
-		 * Returns - Collector: the collector <br>
-		 * Throws - Error: <code>"'...' is not a collection"</code> if the parameter isn't a collection <br>
-		 * Example: <code>Collector.of([1, 2, 3]);</code>
-		 */
+		@FunctionDoc(
+			isStatic = true,
+			name = "of",
+			desc = "This creates a collector for a collection",
+			params = {COLLECTION, "collection", "the collection of values you want to evaluate"},
+			returns = {COLLECTOR, "the collector"},
+			throwMsgs = "... is not a collection",
+			example = "Collector.of([1, 2, 3]);"
+		)
 		private Value<?> of(Context context, BuiltInFunction function) throws CodeError {
 			Value<?> value = function.getParameterValue(context, 0);
 			if (value.value instanceof IArucasCollection collection) {
@@ -89,25 +92,28 @@ public class CollectorValue extends Value<ArucasList> {
 			throw new RuntimeError("'%s' is not a collection".formatted(value.getAsString(context)), function.syntaxPosition, context);
 		}
 
-		/**
-		 * Name: <code>Collector.of(value...)</code> <br>
-		 * Description: This creates a collector for a collection <br>
-		 * Parameter - Value: the values you want to evaluate <br>
-		 * Returns - Collector: the collector <br>
-		 * Example: <code>Collector.of(1, 2, 3);</code>
-		 */
+		@FunctionDoc(
+			isVarArgs = true,
+			isStatic = true,
+			name = "of",
+			desc = "This creates a collector for a collection",
+			params = {ANY, "value...", "the values you want to evaluate"},
+			returns = {COLLECTOR, "the collector"},
+			example = "Collector.of(1, 2, '3');"
+		)
 		private Value<?> ofArbitrary(Context context, BuiltInFunction function) throws CodeError {
 			ListValue arguments = function.getFirstParameter(context, ListValue.class);
 			return new CollectorValue(arguments.value);
 		}
 
-		/**
-		 * Name: <code>Collector.isCollection(value)</code> <br>
-		 * Description: This checks if the value is a collection <br>
-		 * Parameter - Value: the value you want to check <br>
-		 * Returns - Boolean: <code>true</code> if the value is a collection <br>
-		 * Example: <code>Collector.isCollection([]);</code>
-		 */
+		@FunctionDoc(
+			isStatic = true,
+			name = "isCollection",
+			desc = "This checks if the value is a collection",
+			params = {ANY, "value", "the value you want to check"},
+			returns = {BOOLEAN, "true if the value is a collection"},
+			example = "Collector.isCollection([1, 2, 3]);"
+		)
 		private Value<?> isCollection(Context context, BuiltInFunction function) {
 			Value<?> value = function.getParameterValue(context, 0);
 			return BooleanValue.of(value.value instanceof IArucasCollection);
@@ -128,14 +134,18 @@ public class CollectorValue extends Value<ArucasList> {
 			);
 		}
 
-		/**
-		 * Name: <code>&lt;Collector>.filter(predicate)</code> <br>
-		 * Description: This filters the collection using the predicate <br>
-		 * Parameter - Function: a function that takes a value and returns Boolean, true if it should be kept, false if not <br>
-		 * Returns - Collector: the filtered collection <br>
-		 * Throws - Error: <code>"Predicate must return Boolean"</code> if the predicate doesn't return a Boolean <br>
-		 * Example: <code>Collector.of([1, 2, 3]).filter(fun(value) { return value < 3; });</code>
-		 */
+		@FunctionDoc(
+			name = "filter",
+			desc = "This filters the collection using the predicate",
+			params = {FUNCTION, "predicate", "a function that takes a value and returns Boolean, true if it should be kept, false if not"},
+			returns = {COLLECTOR, "the filtered collection"},
+			throwMsgs = "Predicate must return Boolean",
+			example = """
+			Collector.of([1, 2, 3]).filter(fun(value) {
+			    return value < 3;
+			});
+			"""
+		)
 		private Value<?> filter(Context context, MemberFunction function) throws CodeError {
 			CollectorValue thisValue = function.getThis(context, CollectorValue.class);
 			FunctionValue predicate = function.getParameterValueOfType(context, FunctionValue.class, 1);
@@ -150,14 +160,18 @@ public class CollectorValue extends Value<ArucasList> {
 			return thisValue;
 		}
 
-		/**
-		 * Name: <code>&lt;Collector>.anyMatch(predicate)</code> <br>
-		 * Description: This checks if any of the values in the collection match the predicate <br>
-		 * Parameter - Function: a function that takes a value and returns Boolean, true if it matches, false if not <br>
-		 * Returns - Boolean: true if any of the values match the predicate, false if not <br>
-		 * Throws - Error: <code>"Predicate must return Boolean"</code> if the predicate doesn't return a Boolean <br>
-		 * Example: <code>Collector.of([1, 2, 3]).anyMatch(fun(value) { return value < 3; });</code>
-		 */
+		@FunctionDoc(
+			name = "anyMatch",
+			desc = "This checks if any of the values in the collection match the predicate",
+			params = {FUNCTION, "predicate", "a function that takes a value and returns Boolean, true if it matches, false if not"},
+			returns = {BOOLEAN, "true if any of the values match the predicate, false if not"},
+			throwMsgs = "Predicate must return Boolean",
+			example = """
+			Collector.of([1, 2, 3]).anyMatch(fun(value) {
+			    return value < 3;
+			});
+			"""
+		)
 		private Value<?> anyMatch(Context context, MemberFunction function) throws CodeError {
 			CollectorValue thisValue = function.getThis(context, CollectorValue.class);
 			FunctionValue predicate = function.getParameterValueOfType(context, FunctionValue.class, 1);
@@ -171,14 +185,18 @@ public class CollectorValue extends Value<ArucasList> {
 			return BooleanValue.FALSE;
 		}
 
-		/**
-		 * Name: <code>&lt;Collector>.allMatch(predicate)</code> <br>
-		 * Description: This checks if all the values in the collection match the predicate <br>
-		 * Parameter - Function: a function that takes a value and returns Boolean, true if it matches, false if not <br>
-		 * Returns - Boolean: true if all the values match the predicate, false if not <br>
-		 * Throws - Error: <code>"Predicate must return Boolean"</code> if the predicate doesn't return a Boolean <br>
-		 * Example: <code>Collector.of([1, 2, 3]).allMatch(fun(value) { return value < 5; });</code>
-		 */
+		@FunctionDoc(
+			name = "allMatch",
+			desc = "This checks if all the values in the collection match the predicate",
+			params = {FUNCTION, "predicate", "a function that takes a value and returns Boolean, true if it matches, false if not"},
+			returns = {BOOLEAN, "true if all the values match the predicate, false if not"},
+			throwMsgs = "Predicate must return Boolean",
+			example = """
+			Collector.of([1, 2, 3]).anyMatch(fun(value) {
+			    return value < 5;
+			});
+			"""
+		)
 		private Value<?> allMatch(Context context, MemberFunction function) throws CodeError {
 			CollectorValue thisValue = function.getThis(context, CollectorValue.class);
 			FunctionValue predicate = function.getParameterValueOfType(context, FunctionValue.class, 1);
@@ -192,14 +210,18 @@ public class CollectorValue extends Value<ArucasList> {
 			return BooleanValue.TRUE;
 		}
 
-		/**
-		 * Name: <code>&lt;Collector>.noneMatch(predicate)</code> <br>
-		 * Description: This checks if none of the values in the collection match the predicate <br>
-		 * Parameter - Function: a function that takes a value and returns Boolean, true if it matches, false if not <br>
-		 * Returns - Boolean: true if none of the values match the predicate, false if not <br>
-		 * Throws - Error: <code>"Predicate must return Boolean"</code> if the predicate doesn't return a Boolean <br>
-		 * Example: <code>Collector.of([1, 2, 3]).noneMatch(fun(value) { return value < 5; });</code>
-		 */
+		@FunctionDoc(
+			name = "noneMatch",
+			desc = "This checks if none of the values in the collection match the predicate",
+			params = {FUNCTION, "predicate", "a function that takes a value and returns Boolean, true if it matches, false if not"},
+			returns = {BOOLEAN, "true if none of the values match the predicate, false if not"},
+			throwMsgs = "Predicate must return Boolean",
+			example = """
+			Collector.of([1, 2, 3]).noneMatch(fun(value) {
+			    return value < 5;
+			});
+			"""
+		)
 		private Value<?> noneMatch(Context context, MemberFunction function) throws CodeError {
 			CollectorValue thisValue = function.getThis(context, CollectorValue.class);
 			FunctionValue predicate = function.getParameterValueOfType(context, FunctionValue.class, 1);
@@ -213,13 +235,17 @@ public class CollectorValue extends Value<ArucasList> {
 			return BooleanValue.TRUE;
 		}
 
-		/**
-		 * Name: <code>&lt;Collector>.map(mapper)</code> <br>
-		 * Description: This maps the values in Collector to a new value <br>
-		 * Parameter - Function: a function that takes a value and returns a new value <br>
-		 * Returns - Collector: a new Collector with the mapped values <br>
-		 * Example: <code>Collector.of([1, 2, 3]).map(fun(value) { return value * 2; });</code>
-		 */
+		@FunctionDoc(
+			name = "map",
+			desc = "This maps the values in Collector to a new value",
+			params = {FUNCTION, "mapper", "a function that takes a value and returns a new value"},
+			returns = {COLLECTOR, "a new Collector with the mapped values"},
+			example = """
+			Collector.of([1, 2, 3]).map(fun(value) {
+				return value * 2;
+			});
+			"""
+		)
 		private Value<?> map(Context context, MemberFunction function) throws CodeError {
 			CollectorValue thisValue = function.getThis(context, CollectorValue.class);
 			FunctionValue mapper = function.getParameterValueOfType(context, FunctionValue.class, 1);
@@ -234,13 +260,17 @@ public class CollectorValue extends Value<ArucasList> {
 			return thisValue;
 		}
 
-		/**
-		 * Name: <code>&lt;Collector>.forEach(function)</code> <br>
-		 * Description: This iterates over all the values in the Collector and calls the passed in function with each value <br>
-		 * Parameter - Function: a function that takes a value and returns nothing <br>
-		 * Returns - Collector: the Collector <br>
-		 * Example: <code>Collector.of([1, 2, 3]).forEach(fun(value) { print(value); });</code>
-		 */
+		@FunctionDoc(
+			name = "forEach",
+			desc = "This iterates over all the values in the Collector and calls the passed in function with each value",
+			params = {FUNCTION, "function", "a function that takes a value and returns nothing"},
+			returns = {COLLECTOR, "the Collector"},
+			example = """
+			Collector.of([1, 2, 3]).forEach(fun(value) {
+				print(value);
+			});
+			"""
+		)
 		private Value<?> forEach(Context context, MemberFunction function) throws CodeError {
 			CollectorValue thisValue = function.getThis(context, CollectorValue.class);
 			FunctionValue forEachFunction = function.getParameterValueOfType(context, FunctionValue.class, 1);
@@ -255,13 +285,15 @@ public class CollectorValue extends Value<ArucasList> {
 			return thisValue;
 		}
 
-		/**
-		 * Name: <code>&lt;Collector>.flatten()</code> <br>
-		 * Description: If there are values in the collector that are collections they will be expanded, collections inside collections
-		 * are not flattened, you would have to call this method again <br>
-		 * Returns - Collector: a new Collector with the expanded values <br>
-		 * Example: <code>Collector.of([1, 2, [3, 4]]).flatten();</code>
-		 */
+		@FunctionDoc(
+			name = "flatten",
+			desc = {
+				"If there are values in the collector that are collections they will be expanded, ",
+				"collections inside collections are not flattened, you would have to call this method again"
+			},
+			returns = {COLLECTOR, "a new Collector with the expanded values"},
+			example = "Collector.of([1, 2, [3, 4]]).flatten();"
+		)
 		private Value<?> flatten(Context context, MemberFunction function) throws CodeError {
 			CollectorValue thisValue = function.getThis(context, CollectorValue.class);
 
@@ -277,12 +309,12 @@ public class CollectorValue extends Value<ArucasList> {
 			return thisValue;
 		}
 
-		/**
-		 * Name: <code>&lt;Collector>.toSet()</code> <br>
-		 * Description: This puts all the values in the collector into a set and returns it <br>
-		 * Returns - Set: a set with all the values in the collector <br>
-		 * Example: <code>Collector.of([1, 2, 3]).toSet();</code>
-		 */
+		@FunctionDoc(
+			name = "toSet",
+			desc = "This puts all the values in the collector into a set and returns it",
+			returns = {SET, "a set with all the values in the collector"},
+			example = "Collector.of([1, 2, 3]).toSet();"
+		)
 		private Value<?> toSet(Context context, MemberFunction function) throws CodeError {
 			CollectorValue thisValue = function.getThis(context, CollectorValue.class);
 			ArucasSet set = new ArucasSet();
@@ -290,12 +322,12 @@ public class CollectorValue extends Value<ArucasList> {
 			return new SetValue(set);
 		}
 
-		/**
-		 * Name: <code>&lt;Collector>.toList()</code> <br>
-		 * Description: This puts all the values in the collector into a list and returns it <br>
-		 * Returns - List: a list with all the values in the collector <br>
-		 * Example: <code>Collector.of([1, 2, 3]).toList();</code>
-		 */
+		@FunctionDoc(
+			name = "toList",
+			desc = "This puts all the values in the collector into a list and returns it",
+			returns = {LIST, "a list with all the values in the collector"},
+			example = "Collector.of([1, 2, 3]).toList();"
+		)
 		private Value<?> toList(Context context, MemberFunction function) throws CodeError {
 			CollectorValue thisValue = function.getThis(context, CollectorValue.class);
 			ArucasList list = new ArucasList(thisValue.value);

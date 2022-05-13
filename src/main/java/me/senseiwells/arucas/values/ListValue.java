@@ -5,6 +5,7 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.ValueTypes;
 import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.utils.impl.IArucasCollection;
 import me.senseiwells.arucas.values.functions.MemberFunction;
@@ -43,7 +44,7 @@ public class ListValue extends Value<ArucasList> {
 
 	@Override
 	public String getTypeName() {
-		return "List";
+		return ValueTypes.LIST;
 	}
 
 	/**
@@ -54,7 +55,7 @@ public class ListValue extends Value<ArucasList> {
 	 */
 	public static class ArucasListClass extends ArucasClassExtension {
 		public ArucasListClass() {
-			super("List");
+			super(ValueTypes.LIST);
 		}
 
 		@Override

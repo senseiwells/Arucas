@@ -5,6 +5,7 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.ValueTypes;
 import me.senseiwells.arucas.utils.impl.ArucasSet;
 import me.senseiwells.arucas.utils.impl.IArucasCollection;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
@@ -43,7 +44,7 @@ public class SetValue extends Value<ArucasSet> {
 
 	@Override
 	public String getTypeName() {
-		return "Set";
+		return ValueTypes.SET;
 	}
 
 	/**
@@ -54,7 +55,7 @@ public class SetValue extends Value<ArucasSet> {
 	 */
 	public static class ArucasSetClass extends ArucasClassExtension {
 		public ArucasSetClass() {
-			super("Set");
+			super(ValueTypes.SET);
 		}
 
 		@Override

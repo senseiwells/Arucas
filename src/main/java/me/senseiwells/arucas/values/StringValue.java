@@ -7,6 +7,7 @@ import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.StringUtils;
+import me.senseiwells.arucas.utils.ValueTypes;
 import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
@@ -52,7 +53,7 @@ public class StringValue extends Value<String> {
 
 	@Override
 	public String getTypeName() {
-		return "String";
+		return ValueTypes.STRING;
 	}
 
 	/**
@@ -64,7 +65,7 @@ public class StringValue extends Value<String> {
 	 */
 	public static class ArucasStringClass extends ArucasClassExtension {
 		public ArucasStringClass() {
-			super("String");
+			super(ValueTypes.STRING);
 		}
 
 		@Override

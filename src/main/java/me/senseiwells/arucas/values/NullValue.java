@@ -2,6 +2,7 @@ package me.senseiwells.arucas.values;
 
 import me.senseiwells.arucas.api.ArucasClassExtension;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.ValueTypes;
 
 public class NullValue extends Value<Object> {
 	public static final NullValue NULL = new NullValue();
@@ -32,7 +33,7 @@ public class NullValue extends Value<Object> {
 
 	@Override
 	public String getTypeName() {
-		return "Null";
+		return ValueTypes.NULL;
 	}
 
 	/**
@@ -43,7 +44,7 @@ public class NullValue extends Value<Object> {
 	 */
 	public static class ArucasNullClass extends ArucasClassExtension {
 		public ArucasNullClass() {
-			super("Null");
+			super(ValueTypes.NULL);
 		}
 
 		@Override

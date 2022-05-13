@@ -6,6 +6,7 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.ValueTypes;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
 import java.text.DecimalFormat;
@@ -156,7 +157,7 @@ public class NumberValue extends Value<Double> {
 
 	@Override
 	public String getTypeName() {
-		return "Number";
+		return ValueTypes.NUMBER;
 	}
 
 	/**
@@ -168,7 +169,7 @@ public class NumberValue extends Value<Double> {
 	 */
 	public static class ArucasNumberClass extends ArucasClassExtension {
 		public ArucasNumberClass() {
-			super("Number");
+			super(ValueTypes.NUMBER);
 		}
 
 		@Override

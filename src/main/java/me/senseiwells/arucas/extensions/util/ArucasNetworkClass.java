@@ -1,27 +1,30 @@
 package me.senseiwells.arucas.extensions.util;
 
 import me.senseiwells.arucas.api.ArucasClassExtension;
+import me.senseiwells.arucas.api.docs.ClassDoc;
+import me.senseiwells.arucas.api.docs.FunctionDoc;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.NetworkUtils;
+import me.senseiwells.arucas.utils.ValueTypes;
 import me.senseiwells.arucas.values.*;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
 
 import java.io.File;
 import java.util.List;
 
-/**
- * Network class extension for Arucas. Allows you to do http requests. <br>
- * Import the class with <code>import Network from util.Network;</code> <br>
- * This is a utility class and cannot be constructed. <br>
- * Fully Documented.
- * @author senseiwells
- */
+import static me.senseiwells.arucas.utils.ValueTypes.*;
+
+@ClassDoc(
+	name = ValueTypes.NETWORK,
+	desc = "Allows you to do http requests. This is a utility class and cannot be constructed.",
+	importPath = "util.Network"
+)
 public class ArucasNetworkClass extends ArucasClassExtension {
 	public ArucasNetworkClass() {
-		super("Network");
+		super(ValueTypes.NETWORK);
 	}
 
 	@Override
@@ -33,14 +36,15 @@ public class ArucasNetworkClass extends ArucasClassExtension {
 		);
 	}
 
-	/**
-	 * Name: <code>Network.requestUrl(url)</code> <br>
-	 * Description: Requests an url and returns the response <br>
-	 * Parameter - String: the url to request <br>
-	 * Returns - String: the response from the url <br>
-	 * Throws - Error: <code>"Failed to request data from ..."</code> if the request fails <br>
-	 * Example: <code>Network.requestUrl("https://google.com");</code>
-	 */
+	@FunctionDoc(
+		isStatic = true,
+		name = "requestUrl",
+		desc = "Requests an url and returns the response",
+		params = {STRING, "url", "the url to request"},
+		returns = {STRING, "the response from the url"},
+		throwMsgs = "Failed to request data from ...",
+		example = "Network.requestUrl('https://google.com');"
+	)
 	private Value<?> requestUrl(Context context, BuiltInFunction function) throws CodeError {
 		String url = function.getFirstParameter(context, StringValue.class).value;
 		String response = NetworkUtils.getStringFromUrl(url);
@@ -50,26 +54,31 @@ public class ArucasNetworkClass extends ArucasClassExtension {
 		return StringValue.of(response);
 	}
 
-	/**
-	 * Name: <code>Network.downloadFile(url, file)</code> <br>
-	 * Description: Downloads a file from a url to a file <br>
-	 * Parameter - String, File: the url to download from, the file to download it to <br>
-	 * Returns - Boolean: whether the download was successful <br>
-	 * Example: <code>Network.downloadFile("https://arucas.com", new File("dir/downloads"));</code>
-	 */
+	@FunctionDoc(
+		isStatic = true,
+		name = "downloadFile",
+		desc = "Downloads a file from an url to a file",
+		params = {
+			STRING, "url", "the url to download from",
+			FILE, "file", "the file to download to"
+		},
+		returns = {BOOLEAN, "whether the download was successful"},
+		example = "Network.downloadFile('https://arucas.com', new File('dir/downloads'));"
+	)
 	private Value<?> downloadFile(Context context, BuiltInFunction function) throws CodeError {
 		String url = function.getFirstParameter(context, StringValue.class).value;
 		File file = function.getParameterValueOfType(context, FileValue.class, 1).value;
 		return BooleanValue.of(NetworkUtils.downloadFile(url, file));
 	}
 
-	/**
-	 * Name: <code>Network.openUrl(url)</code> <br>
-	 * Description: Opens a url in the default browser <br>
-	 * Parameter - String: the url to open <br>
-	 * Throws - Error: <code>"Failed to open url ..."</code> if the request to open <br>
-	 * Example: <code>Network.openUrl("https://google.com");</code>
-	 */
+	@FunctionDoc(
+		isStatic = true,
+		name = "openUrl",
+		desc = "Opens an url in the default browser",
+		params = {STRING, "url", "the url to open"},
+		throwMsgs = "Failed to open url ...",
+		example = "Network.openUrl('https://google.com');"
+	)
 	private Value<?> openUrl(Context context, BuiltInFunction function) throws CodeError {
 		String url = function.getFirstParameter(context, StringValue.class).value;
 		if (!NetworkUtils.openUrl(url)) {

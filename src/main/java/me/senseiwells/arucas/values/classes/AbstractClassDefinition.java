@@ -130,4 +130,9 @@ public abstract class AbstractClassDefinition implements MemberOperations {
 	public final ArucasFunctionMap<?> getAllMembers() {
 		return this.staticMethods;
 	}
+
+	@Override
+	public String toString() {
+		return super.toString();
+	}
 }

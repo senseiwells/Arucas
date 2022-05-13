@@ -4,6 +4,7 @@ import me.senseiwells.arucas.api.ArucasClassExtension;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.ValueTypes;
 import me.senseiwells.arucas.utils.impl.ArucasMap;
 import me.senseiwells.arucas.utils.impl.ArucasOrderedMap;
 import me.senseiwells.arucas.values.functions.MemberFunction;
@@ -42,7 +43,7 @@ public class MapValue extends Value<ArucasMap> {
 
 	@Override
 	public String getTypeName() {
-		return "Map";
+		return ValueTypes.MAP;
 	}
 
 	/**
@@ -53,7 +54,7 @@ public class MapValue extends Value<ArucasMap> {
 	 */
 	public static class ArucasMapClass extends ArucasClassExtension {
 		public ArucasMapClass() {
-			super("Map");
+			super(ValueTypes.MAP);
 		}
 
 		@Override

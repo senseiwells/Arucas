@@ -7,6 +7,7 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.ValueTypes;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
 import me.senseiwells.arucas.values.functions.ConstructorFunction;
 import me.senseiwells.arucas.values.functions.MemberFunction;
@@ -47,7 +48,7 @@ public class ErrorValue extends Value<Value<?>> {
 
 	@Override
 	public String getTypeName() {
-		return "Error";
+		return ValueTypes.ERROR;
 	}
 
 	@Override
@@ -67,7 +68,7 @@ public class ErrorValue extends Value<Value<?>> {
 	 */
 	public static class ArucasErrorClass extends ArucasClassExtension {
 		public ArucasErrorClass() {
-			super("Error");
+			super(ValueTypes.ERROR);
 		}
 
 		@Override

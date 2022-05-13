@@ -5,12 +5,10 @@ import me.senseiwells.arucas.api.IArucasAPI;
 import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
-import me.senseiwells.arucas.utils.ArucasFunctionMap;
-import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.utils.ExceptionUtils;
-import me.senseiwells.arucas.utils.ReflectionUtils;
+import me.senseiwells.arucas.utils.*;
 import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.values.*;
+import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.functions.JavaFunction;
@@ -49,7 +47,7 @@ public class JavaValue extends Value<Object> {
 
 	@Override
 	public String getTypeName() {
-		return "Java";
+		return ValueTypes.JAVA;
 	}
 
 	@Override
@@ -103,7 +101,7 @@ public class JavaValue extends Value<Object> {
 	 */
 	public static class ArucasJavaClass extends ArucasClassExtension {
 		public ArucasJavaClass() {
-			super("Java");
+			super(ValueTypes.JAVA);
 		}
 
 		@Override

@@ -5,6 +5,7 @@ import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.ValueTypes;
 
 public class BooleanValue extends Value<Boolean> {
 	public static final BooleanValue TRUE = new BooleanValue(true);
@@ -83,7 +84,7 @@ public class BooleanValue extends Value<Boolean> {
 
 	@Override
 	public String getTypeName() {
-		return "Boolean";
+		return ValueTypes.BOOLEAN;
 	}
 
 	/**
@@ -94,7 +95,7 @@ public class BooleanValue extends Value<Boolean> {
 	 */
 	public static class ArucasBooleanClass extends ArucasClassExtension {
 		public ArucasBooleanClass() {
-			super("Boolean");
+			super(ValueTypes.BOOLEAN);
 		}
 
 		@Override
