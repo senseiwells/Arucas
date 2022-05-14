@@ -62,6 +62,10 @@ public abstract class AbstractClassDefinition implements MemberOperations {
 		return this.localContext == null ? fallback : this.localContext.createBranch();
 	}
 
+	public Class<?> getDefiningClass() {
+		return this.getClass();
+	}
+
 	/**
 	 * Returns the value type of this class.
 	 */

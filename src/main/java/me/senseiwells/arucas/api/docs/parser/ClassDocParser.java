@@ -5,8 +5,10 @@ import me.senseiwells.arucas.api.docs.ConstructorDoc;
 import me.senseiwells.arucas.api.docs.FunctionDoc;
 import me.senseiwells.arucas.api.docs.MemberDoc;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
+import me.senseiwells.arucas.values.classes.WrapperClassDefinition;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -15,10 +17,12 @@ public class ClassDocParser extends DocParser {
 
 	private final AbstractClassDefinition definition;
 	private final Class<?> definitionClass;
+	private final boolean isWrapper;
 
 	public ClassDocParser(AbstractClassDefinition definition) {
 		this.definition = definition;
-		this.definitionClass = definition.getClass();
+		this.definitionClass = definition.getDefiningClass();
+		this.isWrapper = definition instanceof WrapperClassDefinition;
 	}
 
 	/**
@@ -48,7 +52,7 @@ public class ClassDocParser extends DocParser {
 		Map<String, FunctionDoc> functionDocMap = new HashMap<>();
 		Map<String, MemberDoc> memberDocMap = new HashMap<>();
 		
-		for (Method method : this.definitionClass.getDeclaredMethods()) {
+		for (Method method : this.isWrapper ? this.definitionClass.getMethods() : this.definitionClass.getDeclaredMethods()) {
 			ConstructorDoc constructorDoc = method.getAnnotation(ConstructorDoc.class);
 			if (constructorDoc != null) {
 				constructorDocMap.put(constructorDoc.params().length, constructorDoc);
@@ -65,6 +69,15 @@ public class ClassDocParser extends DocParser {
 			for (MemberDoc memberDoc : memberDocs) {
 				String memberId = (memberDoc.isStatic() ? "$" : "") + memberDoc.name();
 				memberDocMap.put(memberId, memberDoc);
+			}
+		}
+		if (this.isWrapper) {
+			for (Field field : this.definitionClass.getFields()) {
+				MemberDoc memberDoc = field.getAnnotation(MemberDoc.class);
+				if (memberDoc != null) {
+					String memberId = (memberDoc.isStatic() ? "$" : "") + memberDoc.name();
+					memberDocMap.put(memberId, memberDoc);
+				}
 			}
 		}
 
@@ -90,19 +103,19 @@ public class ClassDocParser extends DocParser {
 		}
 
 		for (FunctionValue function : this.definition.getConstructors()) {
-			ConstructorDoc doc = constructorDocMap.get(function.getParameterCount());
+			int parameterCount = this.isWrapper ? function.getParameterCount() - 1 : function.getParameterCount();
+			ConstructorDoc doc = constructorDocMap.get(parameterCount);
 			List<String> parameterNames = null;
 			if (doc != null) {
 				builder.append(INDENT).append("/*\n");
 				for (String desc : doc.desc()) {
 					builder.append(INDENT).append(" * ").append(desc).append("\n");
 				}
-
 				parameterNames = this.addParameters(builder, doc.params());
-				builder.append("\n").append(INDENT).append(" */\n");
+				builder.append(INDENT).append(" */\n");
 			}
 			builder.append(INDENT).append(this.definition.getName()).append("(");
-			this.addArgumentsToBuilder(builder, parameterNames, function.getParameterCount());
+			this.addArgumentsToBuilder(builder, parameterNames, parameterCount);
 			builder.append(");\n\n");
 		}
 
@@ -112,7 +125,7 @@ public class ClassDocParser extends DocParser {
 			FunctionDoc doc = functionDocMap.get(functionId);
 			List<String> parameterNames = this.addFunctionDoc(builder, doc);
 			builder.append(INDENT).append("fun ").append(function.getName()).append("(");
-			this.addArgumentsToBuilder(builder, parameterNames, function.getParameterCount());
+			this.addArgumentsToBuilder(builder, parameterNames, function.getParameterCount() - 1);
 			builder.append(");\n\n");
 		}
 

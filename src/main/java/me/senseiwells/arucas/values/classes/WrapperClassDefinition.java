@@ -69,6 +69,11 @@ public class WrapperClassDefinition extends AbstractClassDefinition {
 	}
 
 	@Override
+	public Class<?> getDefiningClass() {
+		return this.supplier.get().getClass();
+	}
+
+	@Override
 	public void initialiseStatics(Context context) {
 	}
 

@@ -1,5 +1,6 @@
 package me.senseiwells.impl.wrappers;
 
+import me.senseiwells.arucas.api.docs.ConstructorDoc;
 import me.senseiwells.arucas.api.docs.FunctionDoc;
 import me.senseiwells.arucas.api.wrappers.ArucasClass;
 import me.senseiwells.arucas.api.wrappers.ArucasConstructor;
@@ -8,6 +9,10 @@ import me.senseiwells.arucas.utils.Context;
 
 @ArucasClass(name = "Child")
 public class ChildWrapper extends BaseWrapper {
+	@ConstructorDoc(
+		desc = "Creates a Child instance",
+		example = "new Child();"
+	)
 	@ArucasConstructor
 	public void constructor(Context context) {
 
@@ -15,7 +20,7 @@ public class ChildWrapper extends BaseWrapper {
 
 	@FunctionDoc(
 		name = "doSomethingElse",
-		desc = "Does something",
+		desc = "Does something else",
 		example = "child.doSomethingElse();"
 	)
 	@ArucasFunction
