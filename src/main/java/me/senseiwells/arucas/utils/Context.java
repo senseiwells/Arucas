@@ -9,6 +9,7 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.values.NullValue;
+import me.senseiwells.arucas.values.GenericValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.values.classes.ArucasClassValue;
@@ -126,7 +127,7 @@ public class Context {
 		return this.breakThrowable;
 	}
 	
-	public ThrowValue.Return getReturnThrowable(Value<?> value) {
+	public ThrowValue.Return getReturnThrowable(Value value) {
 		this.returnThrowable.setReturnValue(value);
 		return this.returnThrowable;
 	}
@@ -280,15 +281,15 @@ public class Context {
 		}
 	}
 	
-	public void setVariable(String name, Value<?> value) {
+	public void setVariable(String name, Value value) {
 		this.stackTable.set(name, value);
 	}
 	
-	public void setLocal(String name, Value<?> value) {
+	public void setLocal(String name, Value value) {
 		this.stackTable.setLocal(name, value);
 	}
 	
-	public Value<?> getVariable(String name) {
+	public Value getVariable(String name) {
 		return this.stackTable.get(name);
 	}
 
@@ -299,7 +300,7 @@ public class Context {
 	}
 
 	@SuppressWarnings("unused")
-	public ArucasClassValue createWrapperClass(Class<? extends IArucasWrappedClass> clazz, List<Value<?>> parameters, ISyntax syntaxPosition) throws CodeError {
+	public ArucasClassValue createWrapperClass(Class<? extends IArucasWrappedClass> clazz, List<Value> parameters, ISyntax syntaxPosition) throws CodeError {
 		String wrapperName = ArucasWrapperExtension.getWrapperName(clazz);
 		
 		if (wrapperName == null) {
@@ -313,7 +314,7 @@ public class Context {
 		throw new RuntimeError("No such wrapper class exists", syntaxPosition, this);
 	}
 
-	public Value<?> convertValue(Object object) throws CodeError {
+	public Value convertValue(Object object) throws CodeError {
 		return this.converter.convertFrom(object, this);
 	}
 

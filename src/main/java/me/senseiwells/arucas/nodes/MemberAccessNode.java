@@ -23,14 +23,14 @@ public class MemberAccessNode extends Node {
 	}
 
 	@Override
-	public Value<?> visit(Context context) throws CodeError, ThrowValue {
+	public Value visit(Context context) throws CodeError, ThrowValue {
 		// The leftNode holds the Value that contains the member
-		Value<?> memberValue = this.leftNode.visit(context);
-		
+		Value memberValue = this.leftNode.visit(context);
+
 		// The memberNameNode is the MemberAccessNode that contains the name of the member
 		StringValue memberName = (StringValue) this.memberNameNode.visit(context);
 
-		Value<?> value = null;
+		Value value = null;
 		if (memberValue instanceof ArucasClassValue classValue) {
 			value = classValue.getMember(memberName.value);
 		}
@@ -64,7 +64,7 @@ public class MemberAccessNode extends Node {
 				memberValue.getTypeName()
 			), this.syntaxPosition, context);
 		}
-		
+
 		return value;
 	}
 }

@@ -1,12 +1,12 @@
 package me.senseiwells.arucas.nodes;
 
-import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.Value;
+import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ public class StaticCallNode extends Node {
 	}
 
 	@Override
-	public Value<?> visit(Context context) throws CodeError, ThrowValue {
+	public Value visit(Context context) throws CodeError, ThrowValue {
 		this.keepRunning();
 		int arguments = this.argumentNodes.size();
 
@@ -38,13 +38,13 @@ public class StaticCallNode extends Node {
 			), this.syntaxPosition, context);
 		}
 
-		List<Value<?>> argumentValues = new ArrayList<>();
+		List<Value> argumentValues = new ArrayList<>();
 		for (Node node : this.argumentNodes) {
 			argumentValues.add(node.visit(context));
 		}
 
 		context.pushScope(this.syntaxPosition);
-		Value<?> result = method.call(context, argumentValues);
+		Value result = method.call(context, argumentValues);
 		context.popScope();
 		return result;
 	}

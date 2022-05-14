@@ -7,19 +7,16 @@ import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.ArucasOperatorMap;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.values.BooleanValue;
-import me.senseiwells.arucas.values.NumberValue;
-import me.senseiwells.arucas.values.TypeValue;
-import me.senseiwells.arucas.values.Value;
+import me.senseiwells.arucas.values.*;
 import me.senseiwells.arucas.values.functions.ClassMemberFunction;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.functions.MemberOperations;
 
 import java.util.*;
 
-public class ArucasClassValue extends Value<AbstractClassDefinition> implements MemberOperations {
+public class ArucasClassValue extends GenericValue<AbstractClassDefinition> implements MemberOperations {
 	private final ArucasFunctionMap<FunctionValue> methods;
-	private final Map<String, Value<?>> members;
+	private final Map<String, Value> members;
 	private final ArucasOperatorMap<ClassMemberFunction> operatorMap;
 
 	public ArucasClassValue(AbstractClassDefinition arucasClass) {
@@ -37,7 +34,7 @@ public class ArucasClassValue extends Value<AbstractClassDefinition> implements 
 		this.methods.add(method);
 	}
 
-	public void addMemberVariable(String name, Value<?> value) {
+	public void addMemberVariable(String name, Value value) {
 		this.members.put(name, value);
 	}
 
@@ -60,7 +57,7 @@ public class ArucasClassValue extends Value<AbstractClassDefinition> implements 
 	}
 
 	@Override
-	public boolean setMember(String name, Value<?> value) {
+	public boolean setMember(String name, Value value) {
 		if (!this.isAssignable(name)) {
 			return false;
 		}
@@ -70,8 +67,8 @@ public class ArucasClassValue extends Value<AbstractClassDefinition> implements 
 	}
 
 	@Override
-	public Value<?> getMember(String name) {
-		Value<?> member = this.members.get(name);
+	public Value getMember(String name) {
+		Value member = this.members.get(name);
 		if (member != null) {
 			return member;
 		}
@@ -99,7 +96,7 @@ public class ArucasClassValue extends Value<AbstractClassDefinition> implements 
 		// If 'hashCode' is overridden we should use that here
 		FunctionValue memberFunction = this.getMember("hashCode", 1);
 		if (memberFunction != null) {
-			Value<?> value = memberFunction.call(context, new ArrayList<>());
+			Value value = memberFunction.call(context, new ArrayList<>());
 			if (!(value instanceof NumberValue numberValue)) {
 				throw new RuntimeError("hashCode() must return a number", memberFunction.syntaxPosition, context);
 			}
@@ -121,16 +118,16 @@ public class ArucasClassValue extends Value<AbstractClassDefinition> implements 
 	}
 
 	@Override
-	public boolean isEquals(Context context, Value<?> other) throws CodeError {
+	public boolean isEquals(Context context, Value other) throws CodeError {
 		// If 'equals' is overridden we should use that here
 		FunctionValue equalsMethod = this.getOperatorMethod(Token.Type.EQUALS, 2);
 		/*if (equalsMethod == null) {
 			equalsMethod = this.getMember("equals", 2);
 		}*/
 		if (equalsMethod != null) {
-			List<Value<?>> parameters = new ArrayList<>();
+			List<Value> parameters = new ArrayList<>();
 			parameters.add(other);
-			Value<?> value = equalsMethod.call(context, parameters);
+			Value value = equalsMethod.call(context, parameters);
 			if (!(value instanceof BooleanValue booleanValue)) {
 				throw new RuntimeError("operator '==' must return a boolean", equalsMethod.syntaxPosition, context);
 			}

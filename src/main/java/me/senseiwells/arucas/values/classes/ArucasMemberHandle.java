@@ -12,7 +12,7 @@ public class ArucasMemberHandle {
 	final MethodHandle getter;
 	final boolean isStatic;
 	final boolean isAssignable;
-	
+
 	public ArucasMemberHandle(String name, MethodHandle getter, MethodHandle setter, boolean isStatic, boolean isAssignable) {
 		this.name = name;
 		this.getter = getter;
@@ -20,41 +20,41 @@ public class ArucasMemberHandle {
 		this.isStatic = isStatic;
 		this.isAssignable = isAssignable;
 	}
-	
+
 	public String getName() {
 		return this.name;
 	}
-	
+
 	public boolean isStatic() {
 		return this.isStatic;
 	}
-	
+
 	public boolean isAssignable() {
 		return this.isAssignable;
 	}
-	
-	public Value<?> get(IArucasWrappedClass parent) {
+
+	public Value get(IArucasWrappedClass parent) {
 		try {
-			Value<?> value;
+			Value value;
 			if (this.isStatic) {
-				value = (Value<?>) this.getter.invoke();
+				value = (Value) this.getter.invoke();
 			}
 			else {
-				value = (Value<?>) this.getter.invoke(parent);
+				value = (Value) this.getter.invoke(parent);
 			}
-			
+
 			return value == null ? NullValue.NULL : value;
 		}
 		catch (Throwable ignore) {
 			return NullValue.NULL;
 		}
 	}
-	
-	public boolean set(IArucasWrappedClass parent, Value<?> value) {
+
+	public boolean set(IArucasWrappedClass parent, Value value) {
 		if (!this.isAssignable) {
 			return false;
 		}
-		
+
 		try {
 			if (this.isStatic) {
 				this.setter.invoke(value == null ? NullValue.NULL : value);
@@ -66,7 +66,7 @@ public class ArucasMemberHandle {
 		catch (Throwable ignore) {
 			return false;
 		}
-		
+
 		return true;
 	}
 }

@@ -19,10 +19,10 @@ public class UnpackAssignNode extends VariableAssignNode {
 	}
 
 	@Override
-	public Value<?> visit(Context context) throws CodeError, ThrowValue {
-		Value<?> unpackable = this.getNewValue(context);
+	public Value visit(Context context) throws CodeError, ThrowValue {
+		Value unpackable = this.getNewValue(context);
 
-		if (!(unpackable.value instanceof ArucasList list)) {
+		if (!(unpackable.getValue() instanceof ArucasList list)) {
 			throw new RuntimeError("You can only unpack lists", this.syntaxPosition, context);
 		}
 		if (list.size() != this.assignableNodes.size()) {
@@ -31,7 +31,7 @@ public class UnpackAssignNode extends VariableAssignNode {
 
 		for (int i = 0; i < this.assignableNodes.size(); i++) {
 			VariableAssignNode assignNode = this.assignableNodes.get(i);
-			Value<?> newValue = list.get(i);
+			Value newValue = list.get(i);
 			assignNode.setValue(newValue);
 			assignNode.visit(context);
 		}

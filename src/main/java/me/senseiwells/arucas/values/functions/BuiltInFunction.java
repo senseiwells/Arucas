@@ -33,7 +33,7 @@ public class BuiltInFunction extends AbstractBuiltInFunction<BuiltInFunction> {
 	}
 
 	@Override
-	protected Value<?> execute(Context context, List<Value<?>> arguments) throws CodeError {
+	protected Value execute(Context context, List<Value> arguments) throws CodeError {
 		this.checkDeprecated(context);
 		this.checkAndPopulateArguments(context, arguments, this.argumentNames);
 		return this.function.execute(context, this);
@@ -58,7 +58,7 @@ public class BuiltInFunction extends AbstractBuiltInFunction<BuiltInFunction> {
 		}
 
 		@Override
-		public void checkAndPopulateArguments(Context context, List<Value<?>> arguments, List<String> argumentNames) {
+		public void checkAndPopulateArguments(Context context, List<Value> arguments, List<String> argumentNames) {
 			ArucasList list = new ArucasList();
 			// This can be empty
 			if (arguments != null && !arguments.isEmpty()) {

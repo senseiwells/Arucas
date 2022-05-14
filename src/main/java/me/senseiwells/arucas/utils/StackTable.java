@@ -1,6 +1,7 @@
 package me.senseiwells.arucas.utils;
 
 import me.senseiwells.arucas.api.ISyntax;
+import me.senseiwells.arucas.values.GenericValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.values.functions.FunctionValue;
@@ -18,7 +19,7 @@ public class StackTable {
 	/**
 	 * This is the symbol map that gets the value related to identifiers
 	 */
-	private Map<String, Value<?>> symbolMap;
+	private Map<String, Value> symbolMap;
 
 	/**
 	 * These are the definitions that are currently available in the stack
@@ -62,9 +63,9 @@ public class StackTable {
 	/**
 	 * Returns the value of the variable name.
 	 */
-	public Value<?> get(String name) {
+	public Value get(String name) {
 		if (this.symbolMap != null) {
-			Value<?> value = this.symbolMap.get(name);
+			Value value = this.symbolMap.get(name);
 			if (value != null) {
 				return value;
 			}
@@ -80,7 +81,7 @@ public class StackTable {
 	/**
 	 * Change the value of a variable called name.
 	 */
-	public void set(String name, Value<?> value) {
+	public void set(String name, Value value) {
 		StackTable parentTable = this.getParent(name);
 		if (parentTable != null && parentTable.symbolMap != null) {
 			// If a parentTable was found then symbolMap is not null
@@ -94,7 +95,7 @@ public class StackTable {
 	/**
 	 * Change the value of a local variable called name.
 	 */
-	public void setLocal(String name, Value<?> value) {
+	public void setLocal(String name, Value value) {
 		if (this.symbolMap == null) {
 			this.symbolMap = new HashMap<>();
 		}

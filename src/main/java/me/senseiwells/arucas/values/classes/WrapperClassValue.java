@@ -39,17 +39,17 @@ public class WrapperClassValue extends ArucasClassValue {
 	}
 
 	@Override
-	public boolean setMember(String name, Value<?> value) {
+	public boolean setMember(String name, Value value) {
 		ArucasMemberHandle handle = this.getHandle(name);
 		if (handle != null) {
 			return handle.set(this.wrapperClass, value);
 		}
-		
+
 		return false;
 	}
 
 	@Override
-	public Value<?> getMember(String name) {
+	public Value getMember(String name) {
 		ArucasMemberHandle handle = this.getHandle(name);
 		if (handle != null) {
 			return handle.get(this.wrapperClass);

@@ -19,7 +19,7 @@ public class WrapperClassMemberFunction extends ClassMemberFunction {
 	private final ArucasMethodHandle methodHandle;
 	private final boolean isStatic;
 	private final int parameters;
-	
+
 	private WrapperClassMemberFunction(WrapperClassValue thisValue, IArucasWrappedClass classValue, String name, int parameters, boolean isStatic, ArucasMethodHandle methodHandle) {
 		super(thisValue, name, createParameters(parameters), ISyntax.empty());
 		this.classValue = classValue;
@@ -31,25 +31,26 @@ public class WrapperClassMemberFunction extends ClassMemberFunction {
 	public WrapperClassMemberFunction(String name, int parameters, boolean isStatic, ArucasMethodHandle methodHandle) {
 		this(null, null, name, parameters, isStatic, methodHandle);
 	}
-	
+
 	private static List<String> createParameters(int count) {
 		return Collections.nCopies(count, "");
 	}
-	
+
+	@Override
 	@Deprecated
 	public WrapperClassMemberFunction copy(ArucasClassValue value) {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	public WrapperClassMemberFunction copy(WrapperClassValue thisValue, IArucasWrappedClass wrappedClass) {
 		return new WrapperClassMemberFunction(thisValue, wrappedClass, this.getName(), this.parameters, this.isStatic, this.methodHandle);
 	}
 
 	@Override
-	protected void populateArguments(Context context, List<Value<?>> arguments, List<String> argumentNames) { }
+	protected void populateArguments(Context context, List<Value> arguments, List<String> argumentNames) { }
 
 	@Override
-	protected Value<?> callOverride(Context context, List<Value<?>> arguments, boolean returnable) throws CodeError {
+	protected Value callOverride(Context context, List<Value> arguments, boolean returnable) throws CodeError {
 		context.pushFunctionScope(this.syntaxPosition);
 
 		Object[] args = new Object[1 + this.parameters];
@@ -65,7 +66,7 @@ public class WrapperClassMemberFunction extends ClassMemberFunction {
 			args[i + iModifier] = arguments.get(i);
 		}
 
-		Value<?> returnValue;
+		Value returnValue;
 		if (returnable) {
 			returnValue = this.methodHandle.call(args, this.thisValue, this.syntaxPosition, context);
 		}
@@ -77,7 +78,7 @@ public class WrapperClassMemberFunction extends ClassMemberFunction {
 		context.popScope();
 		return returnValue;
 	}
-	
+
 	@Override
 	public String getAsString(Context context) throws CodeError {
 		return "<class " + this.thisValue.getName() + "::" + this.getName() + "@" + Integer.toHexString(Objects.hashCode(this)) + ">";

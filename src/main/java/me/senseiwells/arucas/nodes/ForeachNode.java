@@ -20,14 +20,14 @@ public class ForeachNode extends Node {
 	}
 
 	@Override
-	public Value<?> visit(Context context) throws CodeError, ThrowValue {
+	public Value visit(Context context) throws CodeError, ThrowValue {
 		context.pushLoopScope(this.syntaxPosition);
-		Value<?> forValue = this.list.visit(context);
-		if (!(forValue.value instanceof IArucasCollection collection)) {
+		Value forValue = this.list.visit(context);
+		if (!(forValue.getValue() instanceof IArucasCollection collection)) {
 			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "For loop must contain a collection", this.syntaxPosition);
 		}
 
-		for (Value<?> item : collection.asCollection()) {
+		for (Value item : collection.asCollection()) {
 			// Throws an error if the thread has been interrupted
 			this.keepRunning();
 

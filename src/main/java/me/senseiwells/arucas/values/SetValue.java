@@ -14,7 +14,7 @@ import me.senseiwells.arucas.values.functions.MemberFunction;
 
 import static me.senseiwells.arucas.utils.ValueTypes.*;
 
-public class SetValue extends Value<ArucasSet> {
+public class SetValue extends GenericValue<ArucasSet> {
 
 	public SetValue(ArucasSet value) {
 		super(value);
@@ -41,7 +41,7 @@ public class SetValue extends Value<ArucasSet> {
 	}
 
 	@Override
-	public boolean isEquals(Context context, Value<?> other) throws CodeError {
+	public boolean isEquals(Context context, Value other) throws CodeError {
 		return this.value.isEquals(context, other);
 	}
 
@@ -82,7 +82,7 @@ public class SetValue extends Value<ArucasSet> {
 			returns = {SET, "the unordered set"},
 			example = "Set.unordered();"
 		)
-		private Value<?> unordered(Context context, BuiltInFunction function) {
+		private Value unordered(Context context, BuiltInFunction function) {
 			return new SetValue(new ArucasSet());
 		}
 
@@ -95,7 +95,7 @@ public class SetValue extends Value<ArucasSet> {
 			returns = {SET, "the set you created"},
 			example = "Set.of('object', 81, 96, 'case');"
 		)
-		private Value<?> of(Context context, BuiltInFunction function) throws CodeError {
+		private Value of(Context context, BuiltInFunction function) throws CodeError {
 			ListValue arguments = function.getFirstParameter(context, ListValue.class);
 			ArucasSet set = new ArucasSet();
 			set.addAll(context, arguments.value);
@@ -129,9 +129,9 @@ public class SetValue extends Value<ArucasSet> {
 			returns = {ANY, "the value you wanted to get, null if it wasn't in the set"},
 			example = "Set.of('object').get('object');"
 		)
-		private Value<?> get(Context context, MemberFunction function) throws CodeError {
+		private Value get(Context context, MemberFunction function) throws CodeError {
 			SetValue thisValue = function.getThis(context, SetValue.class);
-			Value<?> value = function.getParameterValue(context, 1);
+			Value value = function.getParameterValue(context, 1);
 			return thisValue.value.get(context, value);
 		}
 
@@ -142,9 +142,9 @@ public class SetValue extends Value<ArucasSet> {
 			returns = {BOOLEAN, "whether the value was removed from the set"},
 			example = "Set.of('object').remove('object');"
 		)
-		private Value<?> remove(Context context, MemberFunction function) throws CodeError {
+		private Value remove(Context context, MemberFunction function) throws CodeError {
 			SetValue thisValue = function.getThis(context, SetValue.class);
-			Value<?> value = function.getParameterValue(context, 1);
+			Value value = function.getParameterValue(context, 1);
 			return BooleanValue.of(thisValue.value.remove(context, value));
 		}
 
@@ -155,9 +155,9 @@ public class SetValue extends Value<ArucasSet> {
 			returns = {BOOLEAN, "whether the value was successfully added to the set"},
 			example = "Set.of().add('object');"
 		)
-		private Value<?> add(Context context, MemberFunction function) throws CodeError {
+		private Value add(Context context, MemberFunction function) throws CodeError {
 			SetValue thisValue = function.getThis(context, SetValue.class);
-			Value<?> value = function.getParameterValue(context, 1);
+			Value value = function.getParameterValue(context, 1);
 			return BooleanValue.of(thisValue.value.add(context, value));
 		}
 
@@ -169,10 +169,10 @@ public class SetValue extends Value<ArucasSet> {
 			throwMsgs = "... is not a collection",
 			example = "Set.of().addAll(Set.of('object', 81, 96, 'case'));"
 		)
-		private Value<?> addAll(Context context, MemberFunction function) throws CodeError {
+		private Value addAll(Context context, MemberFunction function) throws CodeError {
 			SetValue thisValue = function.getThis(context, SetValue.class);
-			Value<?> value = function.getParameterValue(context, 1);
-			if (value.value instanceof IArucasCollection collection) {
+			Value value = function.getParameterValue(context, 1);
+			if (value.getValue() instanceof IArucasCollection collection) {
 				thisValue.value.addAll(context, collection.asCollection());
 				return thisValue;
 			}
@@ -188,7 +188,7 @@ public class SetValue extends Value<ArucasSet> {
 		)
 		private BooleanValue contains(Context context, MemberFunction function) throws CodeError {
 			SetValue thisValue = function.getThis(context, SetValue.class);
-			Value<?> value = function.getParameterValue(context, 1);
+			Value value = function.getParameterValue(context, 1);
 			return BooleanValue.of(thisValue.value.contains(context, value));
 		}
 
@@ -202,8 +202,8 @@ public class SetValue extends Value<ArucasSet> {
 		)
 		private BooleanValue containsAll(Context context, MemberFunction function) throws CodeError {
 			SetValue thisValue = function.getThis(context, SetValue.class);
-			Value<?> value = function.getParameterValue(context, 1);
-			if (value.value instanceof IArucasCollection collection) {
+			Value value = function.getParameterValue(context, 1);
+			if (value.getValue() instanceof IArucasCollection collection) {
 				return BooleanValue.of(thisValue.value.containsAll(context, collection.asCollection()));
 			}
 			throw new RuntimeError("'%s' is not a collection".formatted(value.getAsString(context)), function.syntaxPosition, context);
@@ -225,7 +225,7 @@ public class SetValue extends Value<ArucasSet> {
 			desc = "This removes all values from inside the set",
 			example = "Set.of('object').clear();"
 		)
-		private Value<?> clear(Context context, MemberFunction function) throws CodeError {
+		private Value clear(Context context, MemberFunction function) throws CodeError {
 			SetValue thisValue = function.getThis(context, SetValue.class);
 			thisValue.value.clear();
 			return NullValue.NULL;
@@ -237,7 +237,7 @@ public class SetValue extends Value<ArucasSet> {
 			returns = {STRING, "the string representation of the set"},
 			example = "Set.of('object').toString();"
 		)
-		private Value<?> toString(Context context, MemberFunction function) throws CodeError {
+		private Value toString(Context context, MemberFunction function) throws CodeError {
 			SetValue thisValue = function.getThis(context, SetValue.class);
 			return StringValue.of(thisValue.value.getAsStringUnsafe(context, function.syntaxPosition));
 		}

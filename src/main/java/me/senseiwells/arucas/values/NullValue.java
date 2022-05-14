@@ -5,9 +5,7 @@ import me.senseiwells.arucas.api.docs.ClassDoc;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.ValueTypes;
 
-import static me.senseiwells.arucas.utils.ValueTypes.NULL;
-
-public class NullValue extends Value<Object> {
+public class NullValue extends GenericValue<Object> {
 	public static final NullValue NULL = new NullValue();
 
 	private NullValue() {
@@ -30,7 +28,7 @@ public class NullValue extends Value<Object> {
 	}
 
 	@Override
-	public boolean isEquals(Context context, Value<?> other) {
+	public boolean isEquals(Context context, Value other) {
 		return other == NULL;
 	}
 

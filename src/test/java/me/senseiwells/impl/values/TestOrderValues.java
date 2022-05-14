@@ -4,12 +4,13 @@ import me.senseiwells.arucas.api.ArucasClassExtension;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.StringValue;
+import me.senseiwells.arucas.values.GenericValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.functions.ConstructorFunction;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
 public class TestOrderValues {
-	public static class AValue extends Value<String> {
+	public static class AValue extends GenericValue<String> {
 		public AValue() {
 			super(null);
 		}
@@ -25,7 +26,7 @@ public class TestOrderValues {
 		}
 
 		@Override
-		public boolean isEquals(Context context, Value<?> other) {
+		public boolean isEquals(Context context, Value other) {
 			return false;
 		}
 
@@ -73,7 +74,7 @@ public class TestOrderValues {
 		}
 
 		@Override
-		public boolean isEquals(Context context, Value<?> other) {
+		public boolean isEquals(Context context, Value other) {
 			return false;
 		}
 
@@ -127,7 +128,7 @@ public class TestOrderValues {
 		}
 
 		@Override
-		public boolean isEquals(Context context, Value<?> other) {
+		public boolean isEquals(Context context, Value other) {
 			return false;
 		}
 

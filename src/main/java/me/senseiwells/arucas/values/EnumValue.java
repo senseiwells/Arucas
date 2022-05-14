@@ -46,7 +46,7 @@ public class EnumValue extends ArucasClassValue {
 	}
 
 	@Override
-	public boolean isEquals(Context context, Value<?> other) throws CodeError {
+	public boolean isEquals(Context context, Value other) throws CodeError {
 		return this == other;
 	}
 
@@ -78,7 +78,7 @@ public class EnumValue extends ArucasClassValue {
 			returns = {STRING, "the name of the enum value"},
 			example = "enum.getName();"
 		)
-		private Value<?> getName(Context context, MemberFunction function) throws CodeError {
+		private Value getName(Context context, MemberFunction function) throws CodeError {
 			EnumValue enumValue = function.getThis(context, EnumValue.class);
 			return StringValue.of(enumValue.enumName);
 		}
@@ -89,7 +89,7 @@ public class EnumValue extends ArucasClassValue {
 			returns = {NUMBER, "the ordinal of the enum value"},
 			example = "enum.ordinal();"
 		)
-		private Value<?> ordinal(Context context, MemberFunction function) throws CodeError {
+		private Value ordinal(Context context, MemberFunction function) throws CodeError {
 			EnumValue enumValue = function.getThis(context, EnumValue.class);
 			return NumberValue.of(enumValue.ordinal);
 		}

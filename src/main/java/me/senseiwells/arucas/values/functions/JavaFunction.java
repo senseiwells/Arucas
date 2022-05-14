@@ -33,10 +33,10 @@ public class JavaFunction extends FunctionValue {
 	}
 
 	@Override
-	protected void populateArguments(Context context, List<Value<?>> arguments, List<String> argumentNames) { }
+	protected void populateArguments(Context context, List<Value> arguments, List<String> argumentNames) { }
 
 	@Override
-	protected Value<?> execute(Context context, List<Value<?>> arguments) throws CodeError, ThrowValue {
+	protected Value execute(Context context, List<Value> arguments) throws CodeError, ThrowValue {
 		boolean isStatic = this.callingObject == null;
 		Object[] parameters = new Object[this.getParameterCount() + (isStatic ? 0 : 1)];
 		for (int i = 0; i < arguments.size(); i++) {

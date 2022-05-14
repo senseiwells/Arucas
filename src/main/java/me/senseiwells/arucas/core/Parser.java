@@ -14,8 +14,8 @@ import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.StringValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
-import me.senseiwells.arucas.values.classes.ArucasEnumDefinition;
 import me.senseiwells.arucas.values.classes.ArucasClassDefinition;
+import me.senseiwells.arucas.values.classes.ArucasEnumDefinition;
 import me.senseiwells.arucas.values.functions.ClassMemberFunction;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.functions.UserDefinedFunction;
@@ -258,7 +258,7 @@ public class Parser {
 
 		if (all) {
 			for (AbstractClassDefinition definition : importDefinitions) {
-				if (this.context.getClassDefinition(definition.getName()) != definition)  {
+				if (this.context.getClassDefinition(definition.getName()) != definition) {
 					this.throwIfStackNameTaken(definition.getName(), className.syntaxPosition);
 				}
 				this.context.addClassDefinition(definition);
@@ -269,7 +269,7 @@ public class Parser {
 			if (definition == null) {
 				throw new RuntimeError("No such class '%s' exists".formatted(className.content), className.syntaxPosition, this.context);
 			}
-			if (this.context.getClassDefinition(definition.getName()) != definition)  {
+			if (this.context.getClassDefinition(definition.getName()) != definition) {
 				this.throwIfStackNameTaken(definition.getName(), className.syntaxPosition);
 			}
 			this.context.addClassDefinition(definition);
@@ -482,7 +482,7 @@ public class Parser {
 
 		MutableSyntaxImpl syntaxPosition = new MutableSyntaxImpl(startPos.getStartPos(), null);
 		ClassMemberFunction classConstructor = this.isStackTypePop(StackType.ARBITRARY) ?
-			new ClassMemberFunction.Arbitrary(name, argumentNames, syntaxPosition): new ClassMemberFunction(name, argumentNames, syntaxPosition);
+			new ClassMemberFunction.Arbitrary(name, argumentNames, syntaxPosition) : new ClassMemberFunction(name, argumentNames, syntaxPosition);
 		this.context.setLocal(name, classConstructor);
 
 		Node statements = this.statements();
@@ -511,7 +511,7 @@ public class Parser {
 
 		MutableSyntaxImpl syntaxPosition = new MutableSyntaxImpl(startPos.getStartPos(), null);
 		ClassMemberFunction classMethod = this.isStackTypePop(StackType.ARBITRARY) ?
-			new ClassMemberFunction.Arbitrary(name, argumentNames, syntaxPosition): new ClassMemberFunction(name, argumentNames, syntaxPosition);
+			new ClassMemberFunction.Arbitrary(name, argumentNames, syntaxPosition) : new ClassMemberFunction(name, argumentNames, syntaxPosition);
 
 		this.context.setLocal(name, classMethod);
 
@@ -1049,7 +1049,7 @@ public class Parser {
 				this.advance();
 				Node expression = this.expression();
 
-				Value<?> value;
+				Value value;
 				if (expression instanceof DirectAccessNode direct && (value = direct.getValue()) != null) {
 					if (allRawCases.contains(this.context, value)) {
 						throw new CodeError(
@@ -1402,7 +1402,7 @@ public class Parser {
 					return this.staticMember(classDefinition);
 				}
 
-				Value<?> value = this.context.getVariable(token.content);
+				Value value = this.context.getVariable(token.content);
 				/* This can be checked at runtime
 				if (value == null) {
 					throw new CodeError(CodeError.ErrorType.UNKNOWN_IDENTIFIER, "Could not find '%s'".formatted(token.content), token.syntaxPosition);

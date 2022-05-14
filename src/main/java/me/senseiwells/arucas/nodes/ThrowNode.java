@@ -18,10 +18,10 @@ public class ThrowNode extends Node {
 	}
 
 	@Override
-	public Value<?> visit(Context context) throws CodeError, ThrowValue {
+	public Value visit(Context context) throws CodeError, ThrowValue {
 		this.keepRunning();
 
-		Value<?> throwable = this.throwExpression.visit(context);
+		Value throwable = this.throwExpression.visit(context);
 		if (throwable instanceof ErrorValue errorValue) {
 			throw errorValue.getRuntimeError();
 		}

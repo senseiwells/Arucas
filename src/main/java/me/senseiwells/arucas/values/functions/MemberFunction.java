@@ -5,6 +5,7 @@ import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.values.ListValue;
+import me.senseiwells.arucas.values.GenericValue;
 import me.senseiwells.arucas.values.Value;
 
 import java.util.ArrayList;
@@ -35,12 +36,12 @@ public class MemberFunction extends AbstractBuiltInFunction<MemberFunction> impl
 		this(name, List.of(), function, deprecationMessage);
 	}
 
-	public <T extends Value<?>> T getThis(Context context, Class<T> clazz) throws CodeError {
+	public <T extends Value> T getThis(Context context, Class<T> clazz) throws CodeError {
 		return this.getFirstParameter(context, clazz);
 	}
 
 	@Override
-	protected Value<?> execute(Context context, List<Value<?>> arguments) throws CodeError {
+	protected Value execute(Context context, List<Value> arguments) throws CodeError {
 		this.checkDeprecated(context);
 
 		this.checkAndPopulateArguments(context, arguments, this.argumentNames);
@@ -48,8 +49,8 @@ public class MemberFunction extends AbstractBuiltInFunction<MemberFunction> impl
 	}
 
 	@Override
-	public <E extends Value<?>> E getParameterValueOfType(Context context, Class<E> clazz, int index, String additionalInfo) throws CodeError {
-		Value<?> value = this.getParameterValue(context, index);
+	public <E extends Value> E getParameterValueOfType(Context context, Class<E> clazz, int index, String additionalInfo) throws CodeError {
+		Value value = this.getParameterValue(context, index);
 		if (!clazz.isInstance(value)) {
 			throw this.throwInvalidParameterError("Must pass %s into parameter %d for %s()%s".formatted(
 				clazz.getSimpleName(), index, this.value, additionalInfo == null ? "" : ("\n" + additionalInfo)
@@ -67,7 +68,7 @@ public class MemberFunction extends AbstractBuiltInFunction<MemberFunction> impl
 	}
 
 	@Override
-	public FunctionValue setThisAndGet(Value<?> thisValue) {
+	public FunctionValue setThisAndGet(Value thisValue) {
 		return new Delegatable(thisValue, this);
 	}
 
@@ -90,7 +91,7 @@ public class MemberFunction extends AbstractBuiltInFunction<MemberFunction> impl
 		}
 
 		@Override
-		public void checkAndPopulateArguments(Context context, List<Value<?>> arguments, List<String> argumentNames) throws RuntimeError {
+		public void checkAndPopulateArguments(Context context, List<Value> arguments, List<String> argumentNames) throws RuntimeError {
 			if (arguments == null || arguments.isEmpty()) {
 				// This should never happen as members always pass themselves in
 				throw new RuntimeError("Value was not found in parameter", this.syntaxPosition, context);
@@ -108,15 +109,15 @@ public class MemberFunction extends AbstractBuiltInFunction<MemberFunction> impl
 	}
 
 	private static class Delegatable extends MemberFunction {
-		private final Value<?> thisValue;
+		private final Value thisValue;
 
-		public Delegatable(Value<?> thisValue, MemberFunction function) {
+		public Delegatable(Value thisValue, MemberFunction function) {
 			super(function.getName(), function.argumentNames, function.function, function.deprecatedMessage);
 			this.thisValue = thisValue;
 		}
 
 		@Override
-		protected Value<?> execute(Context context, List<Value<?>> arguments) throws CodeError {
+		protected Value execute(Context context, List<Value> arguments) throws CodeError {
 			arguments.add(0, this.thisValue);
 			return super.execute(context, arguments);
 		}

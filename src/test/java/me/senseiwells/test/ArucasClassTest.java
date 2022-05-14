@@ -388,7 +388,7 @@ public class ArucasClassTest {
 				}
 			}
 
-			return new E().test(1, 2).concat(E.test(3, 4));
+			return new E().test(1, 2).addAll(E.test(3, 4));
 			"""
 		));
 		assertEquals("E", ArucasHelper.runSafe(

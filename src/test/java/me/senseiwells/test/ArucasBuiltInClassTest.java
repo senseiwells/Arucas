@@ -42,7 +42,7 @@ public class ArucasBuiltInClassTest {
 		assertEquals("10", ArucasHelper.runSafe("return [5, 10, 15].remove(1);"));
 		assertEquals("[2, \"foo\"]", ArucasHelper.runSafe("return [2].append('foo');"));
 		assertEquals("[\"foo\", 2]", ArucasHelper.runSafe("return [2].insert('foo', 0);"));
-		assertEquals("[2, 3, 4, 5]", ArucasHelper.runSafe("return [2, 3].concat([4, 5]);"));
+		assertEquals("[2, 3, 4, 5]", ArucasHelper.runSafe("return [2, 3].addAll([4, 5]);"));
 		assertEquals("true", ArucasHelper.runSafe("return ['foo', 'bar'].contains('bar');"));
 		assertEquals("false", ArucasHelper.runSafe("return ['foo', 'baz'].contains('bar');"));
 		assertEquals("true", ArucasHelper.runSafe("return ['foo', 'bar', 'baz'].containsAll(['foo', 'baz']);"));

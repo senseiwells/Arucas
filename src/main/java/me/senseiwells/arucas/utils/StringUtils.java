@@ -272,11 +272,11 @@ public class StringUtils {
 	/**
 	 * Convert value objects into their simple form.
 	 */
-	public static String toPlainString(Context context, Value<?> value) throws CodeError {
+	public static String toPlainString(Context context, Value value) throws CodeError {
 		if (value instanceof StringValue) {
 			return "\"" + value.getAsString(context) + "\"";
 		}
-		if (value.value instanceof IArucasCollection collection) {
+		if (value.getValue() instanceof IArucasCollection collection) {
 			return collection.getAsStringSafe();
 		}
 		return value.getAsString(context);

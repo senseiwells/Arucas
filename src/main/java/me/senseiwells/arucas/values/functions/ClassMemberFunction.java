@@ -6,6 +6,7 @@ import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.values.ListValue;
+import me.senseiwells.arucas.values.GenericValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.ArucasClassValue;
 
@@ -32,7 +33,7 @@ public class ClassMemberFunction extends UserDefinedFunction implements IMemberF
 	}
 	
 	@Override
-	public Value<?> execute(Context context, List<Value<?>> arguments) throws CodeError, ThrowValue {
+	public Value execute(Context context, List<Value> arguments) throws CodeError, ThrowValue {
 		// This value is always added as the first parameter
 		arguments.add(0, this.thisValue);
 		return super.execute(context, arguments);
@@ -44,7 +45,7 @@ public class ClassMemberFunction extends UserDefinedFunction implements IMemberF
 	}
 
 	@Override
-	public FunctionValue setThisAndGet(Value<?> thisValue) {
+	public FunctionValue setThisAndGet(Value thisValue) {
 		if (thisValue instanceof ArucasClassValue classValue) {
 			return this.copy(classValue);
 		}
@@ -73,14 +74,14 @@ public class ClassMemberFunction extends UserDefinedFunction implements IMemberF
 		}
 
 		@Override
-		public Value<?> execute(Context context, List<Value<?>> arguments) throws CodeError, ThrowValue {
+		public Value execute(Context context, List<Value> arguments) throws CodeError, ThrowValue {
 			ArucasList list = new ArucasList();
 			// This can be empty
 			if (arguments != null && !arguments.isEmpty()) {
 				list.addAll(arguments);
 			}
 
-			List<Value<?>> listOfList = new ArrayList<>();
+			List<Value> listOfList = new ArrayList<>();
 			listOfList.add(new ListValue(list));
 			return super.execute(context, listOfList);
 		}

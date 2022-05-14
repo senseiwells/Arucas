@@ -21,7 +21,7 @@ public class ArucasMethodHandle {
 		this.returnType = returnType == null ? ReturnType.VALUE : returnType;
 	}
 
-	public Value<?> call(Object[] args, ArucasClassValue thisValue, ISyntax syntaxPosition, Context context) throws CodeError {
+	public Value call(Object[] args, ArucasClassValue thisValue, ISyntax syntaxPosition, Context context) throws CodeError {
 		return invokeMethodHandle(() -> {
 			switch (this.returnType) {
 				case THIS -> {
@@ -36,13 +36,13 @@ public class ArucasMethodHandle {
 					return NullValue.NULL;
 				}
 				default -> {
-					return (Value<?>) this.methodHandle.invokeWithArguments(args);
+					return (Value) this.methodHandle.invokeWithArguments(args);
 				}
 			}
 		}, syntaxPosition, context);
 	}
 
-	public static <T extends Value<?>> T invokeMethodHandle(ExceptionUtils.ThrowableSupplier<T> supplier, ISyntax syntaxPosition, Context context) throws CodeError {
+	public static <T extends Value> T invokeMethodHandle(ExceptionUtils.ThrowableSupplier<T> supplier, ISyntax syntaxPosition, Context context) throws CodeError {
 		try {
 			return supplier.get();
 		}

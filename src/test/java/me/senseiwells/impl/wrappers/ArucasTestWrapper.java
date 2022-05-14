@@ -18,13 +18,13 @@ public class ArucasTestWrapper implements IArucasWrappedClass {
 	public static WrapperClassDefinition DEFINITION;
 
 	@ArucasMember(assignable = false)
-	public static final Value<?> memberStaticValue = StringValue.of("Static MEMBER!");
+	public static final Value memberStaticValue = StringValue.of("Static MEMBER!");
 
 	@ArucasMember
-	public Value<?> memberValue = StringValue.of("Normal MEMBER!");
+	public Value memberValue = StringValue.of("Normal MEMBER!");
 
 	@ArucasFunction
-	public Value<?> getName(Context context, ListValue list, MapValue map, StringValue string) throws CodeError {
+	public Value getName(Context context, ListValue list, MapValue map, StringValue string) throws CodeError {
 		return DEFINITION.createNewDefinition(context, List.of(), ISyntax.EMPTY);
 	}
 
@@ -39,17 +39,17 @@ public class ArucasTestWrapper implements IArucasWrappedClass {
 	}
 
 	@ArucasOperator(Token.Type.MINUS)
-	public Value<?> minusU(Context context) {
+	public Value minusU(Context context) {
 		return NumberValue.of(-10);
 	}
 
 	@ArucasOperator(Token.Type.MINUS)
-	public Value<?> minusBin(Context context, NumberValue numberValue) {
+	public Value minusBin(Context context, NumberValue numberValue) {
 		return NumberValue.of(10 - numberValue.value);
 	}
 
 	@ArucasOperator(Token.Type.NOT)
-	public Value<?> not(Context context) {
+	public Value not(Context context) {
 		return BooleanValue.TRUE;
 	}
 
@@ -69,7 +69,7 @@ public class ArucasTestWrapper implements IArucasWrappedClass {
 	}
 
 	@ArucasFunction
-	public Value<?> testing(Context context, ListValue list, MapValue map, StringValue string) {
+	public Value testing(Context context, ListValue list, MapValue map, StringValue string) {
 		System.out.printf("0: %s\n", this);
 		System.out.printf("1: %s\n", list);
 		System.out.printf("2: %s\n", map);
@@ -78,7 +78,7 @@ public class ArucasTestWrapper implements IArucasWrappedClass {
 	}
 
 	@ArucasFunction
-	public static Value<?> benchmark(Context context, ListValue list, MapValue map, StringValue string) {
+	public static Value benchmark(Context context, ListValue list, MapValue map, StringValue string) {
 		System.out.printf("0: %s\n", list);
 		System.out.printf("1: %s\n", map);
 		System.out.printf("2: %s\n", string);
@@ -86,17 +86,17 @@ public class ArucasTestWrapper implements IArucasWrappedClass {
 	}
 
 	@ArucasFunction
-	public Value<?> toList(Context context) {
+	public Value toList(Context context) {
 		return NullValue.NULL;
 	}
 
 	@ArucasFunction
-	public static Value<?> staticMethod(Context context) {
+	public static Value staticMethod(Context context) {
 		return NullValue.NULL;
 	}
 
 	@ArucasFunction
-	public Value<?> toString(Context context) {
+	public Value toString(Context context) {
 		return StringValue.of("Testing string");
 	}
 }

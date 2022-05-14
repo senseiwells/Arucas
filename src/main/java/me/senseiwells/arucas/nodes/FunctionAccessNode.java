@@ -4,7 +4,6 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.StringValue;
-import me.senseiwells.arucas.values.Value;
 
 public class FunctionAccessNode extends Node {
 	private final StringValue functionName;

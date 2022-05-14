@@ -14,7 +14,7 @@ public class TryNode extends Node {
 	private final Node bodyNode;
 	private final Node catchNode;
 	private final String catchParameterName;
-	
+
 	public TryNode(Node bodyNode, Node catchNode, String catchParameterName) {
 		super(bodyNode.token, bodyNode.syntaxPosition, catchNode.syntaxPosition);
 		this.bodyNode = bodyNode;
@@ -23,7 +23,7 @@ public class TryNode extends Node {
 	}
 
 	@Override
-	public Value<?> visit(Context context) throws CodeError, ThrowValue {
+	public Value visit(Context context) throws CodeError, ThrowValue {
 		StackTable originalScope = context.getStackTable();
 		context.pushScope(this.syntaxPosition);
 		try {
@@ -33,7 +33,7 @@ public class TryNode extends Node {
 			context.moveScope(originalScope);
 			context.pushScope(this.syntaxPosition);
 
-			Value<?> value = e instanceof ArucasRuntimeError are ? are.getErrorValue() : new ErrorValue(e);
+			Value value = e instanceof ArucasRuntimeError are ? are.getErrorValue() : new ErrorValue(e);
 			context.setLocal(this.catchParameterName, value);
 			this.catchNode.visit(context);
 		}

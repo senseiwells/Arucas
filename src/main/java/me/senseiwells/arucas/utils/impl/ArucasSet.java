@@ -6,6 +6,7 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.StringUtils;
 import me.senseiwells.arucas.values.NullValue;
+import me.senseiwells.arucas.values.GenericValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.ValueIdentifier;
 
@@ -14,7 +15,7 @@ import java.util.Iterator;
 
 public class ArucasSet implements IArucasCollection, ValueIdentifier {
 	// Empty object used as value.
-	static final Value<?> EMPTY = NullValue.NULL;
+	static final Value EMPTY = NullValue.NULL;
 
 	private final ArucasMap map;
 	
@@ -29,7 +30,7 @@ public class ArucasSet implements IArucasCollection, ValueIdentifier {
 	/**
 	 * Add an element to the set
 	 */
-	public synchronized boolean add(Context context, Value<?> value) throws CodeError {
+	public synchronized boolean add(Context context, Value value) throws CodeError {
 		return this.map.put(context, value, EMPTY) == null;
 	}
 
@@ -40,30 +41,30 @@ public class ArucasSet implements IArucasCollection, ValueIdentifier {
 	 * different state, if a set contains a
 	 * value it may not be the 'exact' value.
 	 */
-	public synchronized Value<?> get(Context context, Value<?> value) throws CodeError {
-		Value<?> returnValue = this.map.getKey(context, value);
+	public synchronized Value get(Context context, Value value) throws CodeError {
+		Value returnValue = this.map.getKey(context, value);
 		return returnValue == null ? NullValue.NULL : returnValue;
 	}
 	
 	/**
 	 * Remove an element from this set
 	 */
-	public synchronized boolean remove(Context context, Value<?> value) throws CodeError {
+	public synchronized boolean remove(Context context, Value value) throws CodeError {
 		return this.map.remove(context, value) != null;
 	}
 	
 	/**
 	 * Returns if this set contains the value
 	 */
-	public synchronized boolean contains(Context context, Value<?> value) throws CodeError {
+	public synchronized boolean contains(Context context, Value value) throws CodeError {
 		return this.map.containsKey(context, value);
 	}
 
 	/**
 	 * Returns if this set contains all the values in a collection
 	 */
-	public synchronized boolean containsAll(Context context, Collection<? extends Value<?>> list) throws CodeError {
-		for (Value<?> value : list) {
+	public synchronized boolean containsAll(Context context, Collection<? extends Value> list) throws CodeError {
+		for (Value value : list) {
 			if (!this.contains(context, value)) {
 				return false;
 			}
@@ -75,8 +76,8 @@ public class ArucasSet implements IArucasCollection, ValueIdentifier {
 	/**
 	 * Add all elements in the collection to this set
 	 */
-	public synchronized void addAll(Context context, Collection<? extends Value<?>> list) throws CodeError {
-		for (Value<?> value : list) {
+	public synchronized void addAll(Context context, Collection<? extends Value> list) throws CodeError {
+		for (Value value : list) {
 			this.add(context, value);
 		}
 	}
@@ -108,7 +109,7 @@ public class ArucasSet implements IArucasCollection, ValueIdentifier {
 	}
 
 	@Override
-	public Collection<? extends Value<?>> asCollection() {
+	public Collection<? extends Value> asCollection() {
 		return this.map.keys();
 	}
 
@@ -127,9 +128,9 @@ public class ArucasSet implements IArucasCollection, ValueIdentifier {
 		StringBuilder sb = new StringBuilder();
 		sb.append('<');
 		
-		Iterator<Value<?>> iter = this.map.keys().iterator();
+		Iterator<Value> iter = this.map.keys().iterator();
 		while (iter.hasNext()) {
-			Value<?> value = iter.next();
+			Value value = iter.next();
 			sb.append(StringUtils.toPlainString(context, value));
 
 			if (iter.hasNext()) {
@@ -141,7 +142,7 @@ public class ArucasSet implements IArucasCollection, ValueIdentifier {
 	}
 	
 	@Override
-	public boolean isEquals(Context context, Value<?> other) throws CodeError {
+	public boolean isEquals(Context context, Value other) throws CodeError {
 		return this.map.isEquals(context, other);
 	}
 	

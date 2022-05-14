@@ -5,9 +5,9 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.values.BaseValue;
-import me.senseiwells.arucas.values.TypeValue;
 import me.senseiwells.arucas.values.Value;
+import me.senseiwells.arucas.values.TypeValue;
+import me.senseiwells.arucas.values.GenericValue;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.functions.MemberOperations;
 
@@ -18,7 +18,7 @@ import java.util.Map;
 public abstract class AbstractClassDefinition implements MemberOperations {
 	private final String name;
 	private final ArucasFunctionMap<FunctionValue> staticMethods;
-	private final Map<String, Value<?>> staticMemberVariables;
+	private final Map<String, Value> staticMemberVariables;
 	private final TypeValue typeValue;
 	private Context localContext;
 
@@ -37,7 +37,7 @@ public abstract class AbstractClassDefinition implements MemberOperations {
 
 	public abstract ArucasFunctionMap<? extends FunctionValue> getConstructors();
 
-	public final Map<String, Value<?>> getStaticMemberVariables() {
+	public final Map<String, Value> getStaticMemberVariables() {
 		return this.staticMemberVariables;
 	}
 
@@ -69,7 +69,7 @@ public abstract class AbstractClassDefinition implements MemberOperations {
 	/**
 	 * Returns the value type of this class.
 	 */
-	public abstract Class<? extends BaseValue> getValueClass();
+	public abstract Class<? extends Value> getValueClass();
 
 	/**
 	 * This gets called when the class is initialised.
@@ -79,7 +79,7 @@ public abstract class AbstractClassDefinition implements MemberOperations {
 	/**
 	 * This gets called when a new instance of this object is created.
 	 */
-	public abstract Value<?> createNewDefinition(Context context, List<Value<?>> parameters, ISyntax syntaxPosition) throws CodeError, ThrowValue;
+	public abstract Value createNewDefinition(Context context, List<Value> parameters, ISyntax syntaxPosition) throws CodeError, ThrowValue;
 
 	/**
 	 * These methods are for Runtime, when accessing and assigning static members.
@@ -112,7 +112,7 @@ public abstract class AbstractClassDefinition implements MemberOperations {
 	}
 
 	@Override
-	public boolean setMember(String name, Value<?> value) {
+	public boolean setMember(String name, Value value) {
 		if (!this.isAssignable(name)) {
 			return false;
 		}
@@ -122,11 +122,11 @@ public abstract class AbstractClassDefinition implements MemberOperations {
 	}
 
 	@Override
-	public Value<?> getMember(String name) {
+	public Value getMember(String name) {
 		if (name.equals("type")) {
 			return this.getType();
 		}
-		Value<?> member = this.staticMemberVariables.get(name);
+		Value member = this.staticMemberVariables.get(name);
 		return member == null ? this.staticMethods.get(name) : member;
 	}
 

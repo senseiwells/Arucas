@@ -4,7 +4,7 @@ import me.senseiwells.arucas.api.wrappers.*;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.ExceptionUtils;
-import me.senseiwells.arucas.values.Value;
+import me.senseiwells.arucas.values.GenericValue;
 import me.senseiwells.arucas.values.functions.WrapperClassMemberFunction;
 
 import java.lang.invoke.MethodHandle;
@@ -135,7 +135,7 @@ public class ArucasWrapperExtension {
 		for (int i = 1; i < parameters.length; i++) {
 			Class<?> param = parameters[i];
 
-			if (!Value.class.isAssignableFrom(param)) {
+			if (!GenericValue.class.isAssignableFrom(param)) {
 				throw invalidWrapperMethod(clazz, method, "Invalid parameter %d '%s' is not a subclass of Value".formatted(i - 1, param.getSimpleName()));
 			}
 		}
@@ -174,7 +174,7 @@ public class ArucasWrapperExtension {
 		if (returnType == clazz) {
 			return ArucasMethodHandle.ReturnType.THIS;
 		}
-		if (Value.class.isAssignableFrom(returnType)) {
+		if (GenericValue.class.isAssignableFrom(returnType)) {
 			return ArucasMethodHandle.ReturnType.VALUE;
 		}
 		return null;
@@ -278,11 +278,11 @@ public class ArucasWrapperExtension {
 		// We must force fields to be Value if they can be assigned in the language
 
 		if (isAssignable) {
-			if (field.getType() != Value.class) {
+			if (field.getType() != GenericValue.class) {
 				throw invalidWrapperField(clazz, field, "Field type must be type Value");
 			}
 		}
-		else if (!Value.class.isAssignableFrom(field.getType())) {
+		else if (!GenericValue.class.isAssignableFrom(field.getType())) {
 			throw invalidWrapperField(clazz, field, "Return type was not a subclass of Value");
 		}
 

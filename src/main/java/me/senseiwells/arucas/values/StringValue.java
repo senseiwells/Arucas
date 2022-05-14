@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 
 import static me.senseiwells.arucas.utils.ValueTypes.*;
 
-public class StringValue extends Value<String> {
+public class StringValue extends GenericValue<String> {
 	private StringValue(String value) {
 		super(value);
 	}
@@ -29,7 +29,7 @@ public class StringValue extends Value<String> {
 	}
 
 	@Override
-	public StringValue addTo(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
+	public StringValue addTo(Context context, Value other, ISyntax syntaxPosition) throws CodeError {
 		return new StringValue(this.value + other.getAsString(context));
 	}
 
@@ -49,7 +49,7 @@ public class StringValue extends Value<String> {
 	}
 
 	@Override
-	public boolean isEquals(Context context, Value<?> other) {
+	public boolean isEquals(Context context, Value other) {
 		return (other instanceof StringValue that) && this.value.equals(that.value);
 	}
 
@@ -101,7 +101,7 @@ public class StringValue extends Value<String> {
 			returns = {LIST, "the list of characters"},
 			example = "'hello'.toList();"
 		)
-		private Value<?> stringToList(Context context, MemberFunction function) throws CodeError {
+		private Value stringToList(Context context, MemberFunction function) throws CodeError {
 			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
 			ArucasList stringList = new ArucasList();
 			for (char c : thisValue.value.toCharArray()) {
@@ -120,7 +120,7 @@ public class StringValue extends Value<String> {
 			returns = {STRING, "the modified string"},
 			example = "'hello'.replaceAll('l', 'x');"
 		)
-		private Value<?> stringReplaceAll(Context context, MemberFunction function) throws CodeError {
+		private Value stringReplaceAll(Context context, MemberFunction function) throws CodeError {
 			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
 			StringValue remove = function.getParameterValueOfType(context, StringValue.class, 1);
 			StringValue replace = function.getParameterValueOfType(context, StringValue.class, 2);
@@ -133,7 +133,7 @@ public class StringValue extends Value<String> {
 			returns = {STRING, "the uppercase string"},
 			example = "'hello'.uppercase();"
 		)
-		private Value<?> stringUppercase(Context context, MemberFunction function) throws CodeError {
+		private Value stringUppercase(Context context, MemberFunction function) throws CodeError {
 			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
 			return new StringValue(thisValue.value.toUpperCase(Locale.ROOT));
 		}
@@ -144,7 +144,7 @@ public class StringValue extends Value<String> {
 			returns = {STRING, "the lowercase string"},
 			example = "'HELLO'.lowercase();"
 		)
-		private Value<?> stringLowercase(Context context, MemberFunction function) throws CodeError {
+		private Value stringLowercase(Context context, MemberFunction function) throws CodeError {
 			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
 			return new StringValue(thisValue.value.toLowerCase(Locale.ROOT));
 		}
@@ -156,7 +156,7 @@ public class StringValue extends Value<String> {
 			returns = {NUMBER, "the number value"},
 			example = "'0xFF'.toNumber();"
 		)
-		private Value<?> stringToNumber(Context context, MemberFunction function) throws CodeError {
+		private Value stringToNumber(Context context, MemberFunction function) throws CodeError {
 			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
 			try {
 				return NumberValue.of(StringUtils.parseNumber(thisValue.value));
@@ -179,9 +179,9 @@ public class StringValue extends Value<String> {
 			throwMsgs = "You are missing values to be formatted",
 			example = "'%s %s'.format('hello', 'world');"
 		)
-		private Value<?> stringFormatted(Context context, MemberFunction function) throws CodeError {
+		private Value stringFormatted(Context context, MemberFunction function) throws CodeError {
 			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
-			final Value<?>[] array = function.getParameterValueOfType(context, ListValue.class, 1).value.toArray();
+			final Value[] array = function.getParameterValueOfType(context, ListValue.class, 1).value.toArray();
 			int i = 0;
 			String string = thisValue.value;
 			while (string.contains("%s")) {
@@ -201,7 +201,7 @@ public class StringValue extends Value<String> {
 			returns = {BOOLEAN, "true if the string contains the given string"},
 			example = "'hello'.contains('he');"
 		)
-		private Value<?> stringContainsString(Context context, MemberFunction function) throws CodeError {
+		private Value stringContainsString(Context context, MemberFunction function) throws CodeError {
 			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
 			String otherString = function.getParameterValueOfType(context, StringValue.class, 1).value;
 			return BooleanValue.of(thisValue.value.contains(otherString));
@@ -213,7 +213,7 @@ public class StringValue extends Value<String> {
 			returns = {STRING, "the stripped string"},
 			example = "'  hello  '.strip();"
 		)
-		private Value<?> strip(Context context, MemberFunction function) throws CodeError {
+		private Value strip(Context context, MemberFunction function) throws CodeError {
 			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
 			return new StringValue(thisValue.value.strip());
 		}
@@ -224,7 +224,7 @@ public class StringValue extends Value<String> {
 			returns = {STRING, "the capitalised string"},
 			example = "'foo'.capitalise();"
 		)
-		private Value<?> capitalise(Context context, MemberFunction function) throws CodeError {
+		private Value capitalise(Context context, MemberFunction function) throws CodeError {
 			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
 			if (thisValue.value.isEmpty()) {
 				return thisValue;
@@ -241,7 +241,7 @@ public class StringValue extends Value<String> {
 			returns = {LIST, "the list of strings"},
 			example = "'foo/bar/baz'.split('/');"
 		)
-		private Value<?> split(Context context, MemberFunction function) throws CodeError {
+		private Value split(Context context, MemberFunction function) throws CodeError {
 			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
 			String otherString = function.getParameterValueOfType(context, StringValue.class, 1).value;
 			ArucasList list = new ArucasList();
@@ -261,7 +261,7 @@ public class StringValue extends Value<String> {
 			returns = {STRING, "the substring"},
 			example = "'hello'.subString(1, 3);"
 		)
-		private Value<?> subString(Context context, MemberFunction function) throws CodeError {
+		private Value subString(Context context, MemberFunction function) throws CodeError {
 			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
 			int fromIndex = function.getParameterValueOfType(context, NumberValue.class, 1).value.intValue();
 			int toIndex = function.getParameterValueOfType(context, NumberValue.class, 2).value.intValue();
@@ -278,7 +278,7 @@ public class StringValue extends Value<String> {
 			returns = {BOOLEAN, "true if the string matches the given regex"},
 			example = "'hello'.matches('[a-z]*');"
 		)
-		private Value<?> matches(Context context, MemberFunction function) throws CodeError {
+		private Value matches(Context context, MemberFunction function) throws CodeError {
 			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
 			StringValue regex = function.getParameterValueOfType(context, StringValue.class, 1);
 			return BooleanValue.of(thisValue.value.matches(regex.value));
@@ -291,7 +291,7 @@ public class StringValue extends Value<String> {
 			returns = {LIST, "the list of all instances of the regex in the string"},
 			example = "'hello'.find('[a-z]*');"
 		)
-		private Value<?> find(Context context, MemberFunction function) throws CodeError {
+		private Value find(Context context, MemberFunction function) throws CodeError {
 			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
 			StringValue regex = function.getParameterValueOfType(context, StringValue.class, 1);
 			Matcher matcher = Pattern.compile(regex.value).matcher(thisValue.value);
@@ -309,7 +309,7 @@ public class StringValue extends Value<String> {
 			returns = {BOOLEAN, "true if the string starts with the given string"},
 			example = "'hello'.startsWith('he');"
 		)
-		private Value<?> startsWith(Context context, MemberFunction function) throws CodeError {
+		private Value startsWith(Context context, MemberFunction function) throws CodeError {
 			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
 			StringValue otherString = function.getParameterValueOfType(context, StringValue.class, 1);
 			return BooleanValue.of(thisValue.value.startsWith(otherString.value));
@@ -322,7 +322,7 @@ public class StringValue extends Value<String> {
 			returns = {BOOLEAN, "true if the string ends with the given string"},
 			example = "'hello'.endsWith('he');"
 		)
-		private Value<?> endsWith(Context context, MemberFunction function) throws CodeError {
+		private Value endsWith(Context context, MemberFunction function) throws CodeError {
 			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
 			StringValue otherString = function.getParameterValueOfType(context, StringValue.class, 1);
 			return BooleanValue.of(thisValue.value.endsWith(otherString.value));

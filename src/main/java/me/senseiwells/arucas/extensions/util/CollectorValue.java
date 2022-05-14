@@ -19,7 +19,7 @@ import java.util.ArrayList;
 
 import static me.senseiwells.arucas.utils.ValueTypes.*;
 
-public class CollectorValue extends Value<ArucasList> {
+public class CollectorValue extends GenericValue<ArucasList> {
 	public CollectorValue(ArucasList value) {
 		super(value);
 	}
@@ -35,7 +35,7 @@ public class CollectorValue extends Value<ArucasList> {
 	}
 
 	@Override
-	public boolean isEquals(Context context, Value<?> other) throws CodeError {
+	public boolean isEquals(Context context, Value other) throws CodeError {
 		return this.value.isEquals(context, other);
 	}
 
@@ -45,7 +45,7 @@ public class CollectorValue extends Value<ArucasList> {
 	}
 
 	@Override
-	public Value<ArucasList> copy(Context context) throws CodeError {
+	public GenericValue<ArucasList> copy(Context context) throws CodeError {
 		return this;
 	}
 	
@@ -60,7 +60,7 @@ public class CollectorValue extends Value<ArucasList> {
 		}
 
 		@Override
-		public Class<? extends BaseValue> getValueClass() {
+		public Class<? extends Value> getValueClass() {
 			return CollectorValue.class;
 		}
 
@@ -82,9 +82,9 @@ public class CollectorValue extends Value<ArucasList> {
 			throwMsgs = "... is not a collection",
 			example = "Collector.of([1, 2, 3]);"
 		)
-		private Value<?> of(Context context, BuiltInFunction function) throws CodeError {
-			Value<?> value = function.getParameterValue(context, 0);
-			if (value.value instanceof IArucasCollection collection) {
+		private Value of(Context context, BuiltInFunction function) throws CodeError {
+			Value value = function.getParameterValue(context, 0);
+			if (value.getValue() instanceof IArucasCollection collection) {
 				ArucasList list = new ArucasList();
 				list.addAll(collection.asCollection());
 				return new CollectorValue(list);
@@ -101,7 +101,7 @@ public class CollectorValue extends Value<ArucasList> {
 			returns = {COLLECTOR, "the collector"},
 			example = "Collector.of(1, 2, '3');"
 		)
-		private Value<?> ofArbitrary(Context context, BuiltInFunction function) throws CodeError {
+		private Value ofArbitrary(Context context, BuiltInFunction function) throws CodeError {
 			ListValue arguments = function.getFirstParameter(context, ListValue.class);
 			return new CollectorValue(arguments.value);
 		}
@@ -114,9 +114,9 @@ public class CollectorValue extends Value<ArucasList> {
 			returns = {BOOLEAN, "true if the value is a collection"},
 			example = "Collector.isCollection([1, 2, 3]);"
 		)
-		private Value<?> isCollection(Context context, BuiltInFunction function) {
-			Value<?> value = function.getParameterValue(context, 0);
-			return BooleanValue.of(value.value instanceof IArucasCollection);
+		private Value isCollection(Context context, BuiltInFunction function) {
+			Value value = function.getParameterValue(context, 0);
+			return BooleanValue.of(value.getValue() instanceof IArucasCollection);
 		}
 
 		@Override
@@ -146,7 +146,7 @@ public class CollectorValue extends Value<ArucasList> {
 			});
 			"""
 		)
-		private Value<?> filter(Context context, MemberFunction function) throws CodeError {
+		private Value filter(Context context, MemberFunction function) throws CodeError {
 			CollectorValue thisValue = function.getThis(context, CollectorValue.class);
 			FunctionValue predicate = function.getParameterValueOfType(context, FunctionValue.class, 1);
 
@@ -172,7 +172,7 @@ public class CollectorValue extends Value<ArucasList> {
 			});
 			"""
 		)
-		private Value<?> anyMatch(Context context, MemberFunction function) throws CodeError {
+		private Value anyMatch(Context context, MemberFunction function) throws CodeError {
 			CollectorValue thisValue = function.getThis(context, CollectorValue.class);
 			FunctionValue predicate = function.getParameterValueOfType(context, FunctionValue.class, 1);
 
@@ -197,7 +197,7 @@ public class CollectorValue extends Value<ArucasList> {
 			});
 			"""
 		)
-		private Value<?> allMatch(Context context, MemberFunction function) throws CodeError {
+		private Value allMatch(Context context, MemberFunction function) throws CodeError {
 			CollectorValue thisValue = function.getThis(context, CollectorValue.class);
 			FunctionValue predicate = function.getParameterValueOfType(context, FunctionValue.class, 1);
 
@@ -222,7 +222,7 @@ public class CollectorValue extends Value<ArucasList> {
 			});
 			"""
 		)
-		private Value<?> noneMatch(Context context, MemberFunction function) throws CodeError {
+		private Value noneMatch(Context context, MemberFunction function) throws CodeError {
 			CollectorValue thisValue = function.getThis(context, CollectorValue.class);
 			FunctionValue predicate = function.getParameterValueOfType(context, FunctionValue.class, 1);
 
@@ -246,13 +246,13 @@ public class CollectorValue extends Value<ArucasList> {
 			});
 			"""
 		)
-		private Value<?> map(Context context, MemberFunction function) throws CodeError {
+		private Value map(Context context, MemberFunction function) throws CodeError {
 			CollectorValue thisValue = function.getThis(context, CollectorValue.class);
 			FunctionValue mapper = function.getParameterValueOfType(context, FunctionValue.class, 1);
 
 			for (int i = 0; i < thisValue.value.size(); i++) {
-				Value<?> value = thisValue.value.get(i);
-				ArrayList<Value<?>> parameters = new ArrayList<>();
+				Value value = thisValue.value.get(i);
+				ArrayList<Value> parameters = new ArrayList<>();
 				parameters.add(value);
 				thisValue.value.set(i, mapper.call(context, parameters));
 			}
@@ -271,13 +271,13 @@ public class CollectorValue extends Value<ArucasList> {
 			});
 			"""
 		)
-		private Value<?> forEach(Context context, MemberFunction function) throws CodeError {
+		private Value forEach(Context context, MemberFunction function) throws CodeError {
 			CollectorValue thisValue = function.getThis(context, CollectorValue.class);
 			FunctionValue forEachFunction = function.getParameterValueOfType(context, FunctionValue.class, 1);
 
 			for (int i = 0; i < thisValue.value.size(); i++) {
-				Value<?> value = thisValue.value.get(i);
-				ArrayList<Value<?>> parameters = new ArrayList<>();
+				Value value = thisValue.value.get(i);
+				ArrayList<Value> parameters = new ArrayList<>();
 				parameters.add(value);
 				forEachFunction.call(context, parameters);
 			}
@@ -294,12 +294,12 @@ public class CollectorValue extends Value<ArucasList> {
 			returns = {COLLECTOR, "a new Collector with the expanded values"},
 			example = "Collector.of([1, 2, [3, 4]]).flatten();"
 		)
-		private Value<?> flatten(Context context, MemberFunction function) throws CodeError {
+		private Value flatten(Context context, MemberFunction function) throws CodeError {
 			CollectorValue thisValue = function.getThis(context, CollectorValue.class);
 
 			for (int i = 0; i < thisValue.value.size(); i++) {
-				Value<?> value = thisValue.value.get(i);
-				if (value.value instanceof IArucasCollection collection) {
+				Value value = thisValue.value.get(i);
+				if (value.getValue() instanceof IArucasCollection collection) {
 					thisValue.value.addAll(i + 1, collection.asCollection());
 					thisValue.value.remove(i);
 					i += collection.size() - 1;
@@ -315,7 +315,7 @@ public class CollectorValue extends Value<ArucasList> {
 			returns = {SET, "a set with all the values in the collector"},
 			example = "Collector.of([1, 2, 3]).toSet();"
 		)
-		private Value<?> toSet(Context context, MemberFunction function) throws CodeError {
+		private Value toSet(Context context, MemberFunction function) throws CodeError {
 			CollectorValue thisValue = function.getThis(context, CollectorValue.class);
 			ArucasSet set = new ArucasSet();
 			set.addAll(context, thisValue.value);
@@ -328,16 +328,16 @@ public class CollectorValue extends Value<ArucasList> {
 			returns = {LIST, "a list with all the values in the collector"},
 			example = "Collector.of([1, 2, 3]).toList();"
 		)
-		private Value<?> toList(Context context, MemberFunction function) throws CodeError {
+		private Value toList(Context context, MemberFunction function) throws CodeError {
 			CollectorValue thisValue = function.getThis(context, CollectorValue.class);
 			ArucasList list = new ArucasList(thisValue.value);
 			return new ListValue(list);
 		}
 
-		private boolean callPredicate(Context context, FunctionValue predicate, Value<?> value) throws CodeError {
-			ArrayList<Value<?>> parameters = new ArrayList<>();
+		private boolean callPredicate(Context context, FunctionValue predicate, Value value) throws CodeError {
+			ArrayList<Value> parameters = new ArrayList<>();
 			parameters.add(value);
-			Value<?> returnValue = predicate.call(context, parameters);
+			Value returnValue = predicate.call(context, parameters);
 			if (!(returnValue instanceof BooleanValue booleanValue)) {
 				throw new RuntimeError("Predicate must return Boolean", predicate.syntaxPosition, context);
 			}

@@ -95,7 +95,7 @@ public class ArucasEnumTest {
 				}
 			}
 			   
-			return E.A.values.concat(E.B.values);
+			return E.A.values.addAll(E.B.values);
 			"""
 		));
 	}

@@ -9,20 +9,17 @@ import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.utils.ExceptionUtils;
 import me.senseiwells.arucas.utils.ExceptionUtils.ThrowableSupplier;
-import me.senseiwells.arucas.utils.ValueTypes;
 import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.values.*;
 import me.senseiwells.arucas.values.classes.ArucasClassValue;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Supplier;
 
 import static me.senseiwells.arucas.utils.ValueTypes.*;
 
-public abstract class FunctionValue extends Value<String> {
+public abstract class FunctionValue extends GenericValue<String> {
 	public final List<String> argumentNames;
 	public final ISyntax syntaxPosition;
 	public final String deprecatedMessage;
@@ -42,7 +39,7 @@ public abstract class FunctionValue extends Value<String> {
 		return this.argumentNames.size();
 	}
 
-	protected void checkArguments(Context context, List<Value<?>> arguments, List<String> argumentNames) throws CodeError {
+	protected void checkArguments(Context context, List<Value> arguments, List<String> argumentNames) throws CodeError {
 		int argumentSize = arguments == null ? 0 : arguments.size();
 		if (argumentSize > argumentNames.size()) {
 			throw new RuntimeError(
@@ -60,15 +57,15 @@ public abstract class FunctionValue extends Value<String> {
 		}
 	}
 
-	protected void populateArguments(Context context, List<Value<?>> arguments, List<String> argumentNames) {
+	protected void populateArguments(Context context, List<Value> arguments, List<String> argumentNames) {
 		for (int i = 0; i < argumentNames.size(); i++) {
 			String argumentName = argumentNames.get(i);
-			Value<?> argumentValue = arguments.get(i);
+			Value argumentValue = arguments.get(i);
 			context.setLocal(argumentName, argumentValue);
 		}
 	}
 
-	public void checkAndPopulateArguments(Context context, List<Value<?>> arguments, List<String> argumentNames) throws CodeError {
+	public void checkAndPopulateArguments(Context context, List<Value> arguments, List<String> argumentNames) throws CodeError {
 		this.checkArguments(context, arguments, argumentNames);
 		this.populateArguments(context, arguments, argumentNames);
 	}
@@ -77,15 +74,15 @@ public abstract class FunctionValue extends Value<String> {
 		return new RuntimeError(details, this.syntaxPosition, context);
 	}
 
-	protected abstract Value<?> execute(Context context, List<Value<?>> arguments) throws CodeError, ThrowValue;
+	protected abstract Value execute(Context context, List<Value> arguments) throws CodeError, ThrowValue;
 
 	/**
 	 * API overridable method.
 	 */
-	protected Value<?> callOverride(Context context, List<Value<?>> arguments, boolean returnable) throws CodeError {
+	protected Value callOverride(Context context, List<Value> arguments, boolean returnable) throws CodeError {
 		context.pushFunctionScope(this.syntaxPosition);
 		try {
-			Value<?> value = this.execute(context, arguments);
+			Value value = this.execute(context, arguments);
 			context.popScope();
 			return value;
 		}
@@ -121,7 +118,7 @@ public abstract class FunctionValue extends Value<String> {
 	 * propagated past this point, in which case it will
 	 * stop the Main thead and the program right here.
 	 */
-	public final Value<?> safeCall(Context context, ThrowableSupplier<List<Value<?>>> arguments) {
+	public final Value safeCall(Context context, ThrowableSupplier<List<Value>> arguments) {
 		try {
 			return this.call(context, arguments.get());
 		}
@@ -131,11 +128,11 @@ public abstract class FunctionValue extends Value<String> {
 		}
 	}
 
-	public final Value<?> call(Context context, List<Value<?>> arguments) throws CodeError {
+	public final Value call(Context context, List<Value> arguments) throws CodeError {
 		return this.call(context, arguments, true);
 	}
 
-	public final Value<?> call(Context context, List<Value<?>> arguments, boolean returnable) throws CodeError {
+	public final Value call(Context context, List<Value> arguments, boolean returnable) throws CodeError {
 		return this.callOverride(context, arguments, returnable);
 	}
 
@@ -160,7 +157,7 @@ public abstract class FunctionValue extends Value<String> {
 	}
 
 	@Override
-	public boolean isEquals(Context context, Value<?> other) {
+	public boolean isEquals(Context context, Value other) {
 		// The problem here is that it is not enough to check the parameter count and name
 		// If this function was a delegate of a class, and then we compared it to a delegate
 		// of the same class but another instance it should always return false.
@@ -202,7 +199,7 @@ public abstract class FunctionValue extends Value<String> {
 			returns = {FUNCTION, "the built-in function delegate"},
 			example = "Function.getBuiltIn('print', 1);"
 		)
-		private Value<?> getBuiltInDelegate(Context context, BuiltInFunction function) throws CodeError {
+		private Value getBuiltInDelegate(Context context, BuiltInFunction function) throws CodeError {
 			StringValue functionName = function.getParameterValueOfType(context, StringValue.class, 0);
 			NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 1);
 			FunctionValue functionValue = context.getBuiltInFunction(functionName.value, numberValue.value.intValue());
@@ -228,8 +225,8 @@ public abstract class FunctionValue extends Value<String> {
 			returns = {FUNCTION, "the method delegate"},
 			example = "Function.getMethod('String', 'contains', 1);"
 		)
-		private Value<?> getMethodDelegate(Context context, BuiltInFunction function) throws CodeError {
-			Value<?> callingValue = function.getParameterValue(context, 0);
+		private Value getMethodDelegate(Context context, BuiltInFunction function) throws CodeError {
+			Value callingValue = function.getParameterValue(context, 0);
 			StringValue methodNameValue = function.getParameterValueOfType(context, StringValue.class, 1);
 			NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 2);
 
@@ -261,7 +258,7 @@ public abstract class FunctionValue extends Value<String> {
 			returns = {ANY, "the return value of the delegate"},
 			example = "Function.callWithList(fun(m1, m2) { }, ['Hello', 'World']);"
 		)
-		private Value<?> callDelegateWithList(Context context, BuiltInFunction function) throws CodeError {
+		private Value callDelegateWithList(Context context, BuiltInFunction function) throws CodeError {
 			FunctionValue delegate = function.getParameterValueOfType(context, FunctionValue.class, 0);
 			ListValue listValue = function.getParameterValueOfType(context, ListValue.class, 1);
 			return delegate.call(context, listValue.value);
@@ -279,7 +276,7 @@ public abstract class FunctionValue extends Value<String> {
 			returns = {ANY, "the return value of the delegate"},
 			example = "Function.call(Function.getBuiltIn('print', 1), 'Hello World!');"
 		)
-		private Value<?> callDelegate(Context context, BuiltInFunction function) throws CodeError {
+		private Value callDelegate(Context context, BuiltInFunction function) throws CodeError {
 			ListValue arguments = function.getParameterValueOfType(context, ListValue.class, 0);
 			ArucasList list = arguments.value;
 			if (list.size() < 1 || !(list.remove(0) instanceof FunctionValue functionValue)) {

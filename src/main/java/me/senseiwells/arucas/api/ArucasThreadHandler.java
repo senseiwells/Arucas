@@ -23,7 +23,7 @@ public final class ArucasThreadHandler {
 
 	private boolean isRunning;
 	private boolean hasError;
-	
+
 	// This class can only be instantiated from this package
 	ArucasThreadHandler() {
 		this.arucasThreadGroup = new ThreadGroup("Arucas Thread Group");
@@ -99,8 +99,8 @@ public final class ArucasThreadHandler {
 	/**
 	 * This method is to run the base script from
 	 *
-	 * @param context the base context
-	 * @param fileName the name of the file you are running from
+	 * @param context     the base context
+	 * @param fileName    the name of the file you are running from
 	 * @param fileContent the Arucas code you want to execute
 	 */
 	public ArucasThread runOnMainThread(Context context, String fileName, String fileContent) {
@@ -131,11 +131,11 @@ public final class ArucasThreadHandler {
 	/**
 	 * This method is to run the base script returning a Future
 	 *
-	 * @param context the base context
-	 * @param fileName the name of the file you are running from
+	 * @param context     the base context
+	 * @param fileName    the name of the file you are running from
 	 * @param fileContent the Arucas code you want to execute
 	 */
-	public Future<Value<?>> runOnMainThreadFuture(Context context, String fileName, String fileContent) {
+	public Future<Value> runOnMainThreadFuture(Context context, String fileName, String fileContent) {
 		// Make sure that this handler belongs to the provided context
 		// Cannot have two main threads for the same program
 		if (context.getThreadHandler() != this) {
@@ -149,9 +149,9 @@ public final class ArucasThreadHandler {
 		this.hasError = false;
 		this.isRunning = true;
 
-		CompletableFuture<Value<?>> futureValue = new CompletableFuture<>();
+		CompletableFuture<Value> futureValue = new CompletableFuture<>();
 		new ArucasThread(this.arucasThreadGroup, () -> {
-			Value<?> value;
+			Value value;
 			try {
 				value = Run.run(context, fileName, fileContent);
 				this.stop();
@@ -171,11 +171,11 @@ public final class ArucasThreadHandler {
 	 * correct value and throwing any errors that the
 	 * script would have thrown on the Main Thread
 	 *
-	 * @param context the base context
-	 * @param fileName the name of the file you are running from
+	 * @param context     the base context
+	 * @param fileName    the name of the file you are running from
 	 * @param fileContent the Arucas code you want to execute
 	 */
-	public Value<?> runOnMainThreadAndWait(Context context, String fileName, String fileContent) throws CodeError {
+	public Value runOnMainThreadAndWait(Context context, String fileName, String fileContent) throws CodeError {
 		// Make sure that this handler belongs to the provided context
 		// Cannot have two main threads for the same program
 		if (context.getThreadHandler() != this) {
@@ -190,10 +190,10 @@ public final class ArucasThreadHandler {
 		this.isRunning = true;
 
 		CompletableFuture<Throwable> futureThrowable = new CompletableFuture<>();
-		CompletableFuture<Value<?>> futureValue = new CompletableFuture<>();
+		CompletableFuture<Value> futureValue = new CompletableFuture<>();
 
 		new ArucasThread(this.arucasThreadGroup, () -> {
-			Value<?> value;
+			Value value;
 			try {
 				value = Run.run(context, fileName, fileContent);
 			}
@@ -205,7 +205,7 @@ public final class ArucasThreadHandler {
 			futureValue.complete(value);
 		}, "Arucas Main Thread").start(context);
 
-		Value<?> value = ExceptionUtils.catchAsNull(futureValue::get);
+		Value value = ExceptionUtils.catchAsNull(futureValue::get);
 		if (value != null) {
 			return value;
 		}
@@ -223,7 +223,7 @@ public final class ArucasThreadHandler {
 	}
 
 	/**
-	 * @see #runAsyncFunctionInContext(Context, ThrowableConsumer, String) 
+	 * @see #runAsyncFunctionInContext(Context, ThrowableConsumer, String)
 	 */
 	public ArucasThread runAsyncFunctionInContext(Context context, ThrowableConsumer<Context> consumer) {
 		return this.runAsyncFunction(context, consumer, "Arucas Async Thread");
@@ -232,8 +232,9 @@ public final class ArucasThreadHandler {
 	/**
 	 * This lets you run something on a different thread with
 	 * a passed in context, this context is used in the consumer
-	 * @param context the context you want to use in the consumer
-	 * @param consumer the code you want to execute on the thread
+	 *
+	 * @param context    the context you want to use in the consumer
+	 * @param consumer   the code you want to execute on the thread
 	 * @param threadName the name of the thread
 	 */
 	public ArucasThread runAsyncFunctionInContext(Context context, ThrowableConsumer<Context> consumer, String threadName) {
@@ -286,12 +287,12 @@ public final class ArucasThreadHandler {
 			this.currentFileContent = "";
 		}
 	}
-	
+
 	@FunctionalInterface
 	public interface TriConsumer<A, B, C> {
 		void accept(A a, B b, C c);
 	}
-	
+
 	@FunctionalInterface
 	public interface ThrowableConsumer<T> {
 		void accept(T obj) throws Throwable;

@@ -5,12 +5,13 @@ import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.NumberValue;
+import me.senseiwells.arucas.values.GenericValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.ArucasClassValue;
 
 import java.util.ArrayList;
 
-public class UnaryOperatorNode extends DirectAccessNode<Value<?>> {
+public class UnaryOperatorNode extends DirectAccessNode<Value> {
 	private final Node node;
 
 	public UnaryOperatorNode(Token token, Node node) {
@@ -19,8 +20,8 @@ public class UnaryOperatorNode extends DirectAccessNode<Value<?>> {
 	}
 
 	@Override
-	public Value<?> visit(Context context) throws CodeError, ThrowValue {
-		Value<?> value = this.node.visit(context);
+	public Value visit(Context context) throws CodeError, ThrowValue {
+		Value value = this.node.visit(context);
 		if (value instanceof ArucasClassValue classValue && classValue.hasOperatorMethod(this.token.type, 1)) {
 			return classValue.getOperatorMethod(this.token.type, 1).call(context, new ArrayList<>(1));
 		}
@@ -38,14 +39,14 @@ public class UnaryOperatorNode extends DirectAccessNode<Value<?>> {
 	}
 
 	@Override
-	public Value<?> getValue() {
+	public Value getValue() {
 		// Technically we could also return booleans here, but why would you write !false instead of true?
 		if (this.node instanceof NumberNode numberNode) {
 			NumberValue number = numberNode.getValue();
 			return this.token.type == Token.Type.MINUS ? NumberValue.of(number.value * -1) : number;
 		}
 		if (this.node instanceof UnaryOperatorNode unaryNode) {
-			Value<?> value = unaryNode.getValue();
+			Value value = unaryNode.getValue();
 			if (value instanceof NumberValue number) {
 				return this.token.type == Token.Type.MINUS ? NumberValue.of(number.value * -1) : number;
 			}

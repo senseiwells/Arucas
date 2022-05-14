@@ -17,7 +17,7 @@ import java.util.Locale;
 import static me.senseiwells.arucas.utils.ValueTypes.BOOLEAN;
 import static me.senseiwells.arucas.utils.ValueTypes.NUMBER;
 
-public class NumberValue extends Value<Double> {
+public class NumberValue extends GenericValue<Double> {
 	private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.############", DecimalFormatSymbols.getInstance(Locale.US));
 
 	private NumberValue(double value) {
@@ -29,7 +29,7 @@ public class NumberValue extends Value<Double> {
 	}
 
 	@Override
-	public Value<?> addTo(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
+	public Value addTo(Context context, Value other, ISyntax syntaxPosition) throws CodeError {
 		if (other instanceof NumberValue otherValue) {
 			return new NumberValue(this.value + otherValue.value);
 		}
@@ -37,7 +37,7 @@ public class NumberValue extends Value<Double> {
 	}
 
 	@Override
-	public Value<?> subtractBy(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
+	public Value subtractBy(Context context, Value other, ISyntax syntaxPosition) throws CodeError {
 		if (other instanceof NumberValue otherValue) {
 			return new NumberValue(this.value - otherValue.value);
 		}
@@ -45,7 +45,7 @@ public class NumberValue extends Value<Double> {
 	}
 
 	@Override
-	public Value<?> multiplyBy(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
+	public Value multiplyBy(Context context, Value other, ISyntax syntaxPosition) throws CodeError {
 		if (other instanceof NumberValue otherValue) {
 			return new NumberValue(this.value * otherValue.value);
 		}
@@ -53,7 +53,7 @@ public class NumberValue extends Value<Double> {
 	}
 
 	@Override
-	public Value<?> divideBy(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
+	public Value divideBy(Context context, Value other, ISyntax syntaxPosition) throws CodeError {
 		if (other instanceof NumberValue otherValue) {
 			return new NumberValue(this.value / otherValue.value);
 		}
@@ -61,7 +61,7 @@ public class NumberValue extends Value<Double> {
 	}
 
 	@Override
-	public Value<?> powerBy(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
+	public Value powerBy(Context context, Value other, ISyntax syntaxPosition) throws CodeError {
 		if (other instanceof NumberValue otherValue) {
 			return new NumberValue(Math.pow(this.value, otherValue.value));
 		}
@@ -69,7 +69,7 @@ public class NumberValue extends Value<Double> {
 	}
 
 	@Override
-	public Value<?> compareNumber(Context context, Value<?> other, Token.Type type, ISyntax syntaxPosition) throws CodeError {
+	public Value compareNumber(Context context, Value other, Token.Type type, ISyntax syntaxPosition) throws CodeError {
 		if (other instanceof NumberValue otherValue) {
 			boolean bool = switch (type) {
 				case LESS_THAN -> this.value < otherValue.value;
@@ -84,7 +84,7 @@ public class NumberValue extends Value<Double> {
 	}
 
 	@Override
-	public Value<?> shiftLeft(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
+	public Value shiftLeft(Context context, Value other, ISyntax syntaxPosition) throws CodeError {
 		if (other instanceof NumberValue otherValue) {
 			return new NumberValue(this.value.longValue() << otherValue.value.longValue());
 		}
@@ -92,7 +92,7 @@ public class NumberValue extends Value<Double> {
 	}
 
 	@Override
-	public Value<?> shiftRight(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
+	public Value shiftRight(Context context, Value other, ISyntax syntaxPosition) throws CodeError {
 		if (other instanceof NumberValue otherValue) {
 			return new NumberValue(this.value.longValue() >> otherValue.value.longValue());
 		}
@@ -100,7 +100,7 @@ public class NumberValue extends Value<Double> {
 	}
 
 	@Override
-	public Value<?> bitAnd(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
+	public Value bitAnd(Context context, Value other, ISyntax syntaxPosition) throws CodeError {
 		if (other instanceof NumberValue otherValue) {
 			return new NumberValue(this.value.longValue() & otherValue.value.longValue());
 		}
@@ -108,7 +108,7 @@ public class NumberValue extends Value<Double> {
 	}
 
 	@Override
-	public Value<?> bitOr(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
+	public Value bitOr(Context context, Value other, ISyntax syntaxPosition) throws CodeError {
 		if (other instanceof NumberValue otherValue) {
 			return new NumberValue(this.value.longValue() | otherValue.value.longValue());
 		}
@@ -121,17 +121,17 @@ public class NumberValue extends Value<Double> {
 	}
 
 	@Override
-	public Value<?> unaryPlus(Context context, ISyntax syntaxPosition) {
+	public Value unaryPlus(Context context, ISyntax syntaxPosition) {
 		return this;
 	}
 
 	@Override
-	public Value<?> unaryMinus(Context context, ISyntax syntaxPosition) {
+	public Value unaryMinus(Context context, ISyntax syntaxPosition) {
 		return new NumberValue(-this.value);
 	}
 
 	@Override
-	public Value<?> xor(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
+	public Value xor(Context context, Value other, ISyntax syntaxPosition) throws CodeError {
 		if (other instanceof NumberValue otherValue) {
 			return NumberValue.of(this.value.longValue() ^ otherValue.value.longValue());
 		}
@@ -155,7 +155,7 @@ public class NumberValue extends Value<Double> {
 	}
 
 	@Override
-	public boolean isEquals(Context context, Value<?> other) {
+	public boolean isEquals(Context context, Value other) {
 		return other instanceof NumberValue numberValue && this.value.equals(numberValue.value);
 	}
 

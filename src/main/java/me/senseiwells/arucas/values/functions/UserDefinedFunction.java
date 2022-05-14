@@ -1,9 +1,9 @@
 package me.senseiwells.arucas.values.functions;
 
 import me.senseiwells.arucas.api.ISyntax;
+import me.senseiwells.arucas.nodes.Node;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
-import me.senseiwells.arucas.nodes.Node;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.values.ListValue;
@@ -19,7 +19,7 @@ public class UserDefinedFunction extends FunctionValue {
 	public UserDefinedFunction(String name, List<String> argumentNames, ISyntax syntaxPosition) {
 		super(name, syntaxPosition, argumentNames, null);
 	}
-	
+
 	public void complete(Node bodyNode) {
 		this.bodyNode = bodyNode;
 	}
@@ -28,7 +28,8 @@ public class UserDefinedFunction extends FunctionValue {
 		this.localContext = context.createBranch();
 	}
 
-	protected Value<?> execute(Context context, List<Value<?>> arguments) throws CodeError, ThrowValue {
+	@Override
+	protected Value execute(Context context, List<Value> arguments) throws CodeError, ThrowValue {
 		if (this.localContext != null) {
 			context = this.localContext.createBranch();
 		}
@@ -50,7 +51,7 @@ public class UserDefinedFunction extends FunctionValue {
 		}
 
 		@Override
-		public void checkAndPopulateArguments(Context context, List<Value<?>> arguments, List<String> argumentNames) {
+		public void checkAndPopulateArguments(Context context, List<Value> arguments, List<String> argumentNames) {
 			ArucasList list = new ArucasList();
 			// This can be empty
 			if (arguments != null && !arguments.isEmpty()) {

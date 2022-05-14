@@ -1,12 +1,11 @@
 package me.senseiwells.arucas.nodes;
 
-import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.tokens.Token;
+import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.MutableSyntaxImpl;
-import me.senseiwells.arucas.values.functions.FunctionValue;
-import me.senseiwells.arucas.values.functions.UserDefinedFunction;
 import me.senseiwells.arucas.values.Value;
+import me.senseiwells.arucas.values.functions.UserDefinedFunction;
 
 import java.util.List;
 
@@ -23,20 +22,20 @@ public class FunctionNode extends Node {
 		this.variableNameToken = varNameToken;
 		this.functionValue = functionValue;
 	}
-	
+
 	public void complete(Node bodyNode) {
 		// Because recursive calls need access to the node before
 		// it's complete we need to initialize some values later
 		((MutableSyntaxImpl) this.syntaxPosition).end = bodyNode.syntaxPosition.getEndPos();
 		this.functionValue.complete(bodyNode);
 	}
-	
+
 	public UserDefinedFunction getFunctionValue() {
 		return this.functionValue;
 	}
 
 	@Override
-	public Value<?> visit(Context context) throws CodeError {
+	public Value visit(Context context) throws CodeError {
 		String functionName = this.variableNameToken.content;
 		context.throwIfStackNameTaken(null, this.syntaxPosition);
 

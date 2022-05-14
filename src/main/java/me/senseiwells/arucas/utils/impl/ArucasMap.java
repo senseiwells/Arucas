@@ -5,6 +5,7 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.StringUtils;
 import me.senseiwells.arucas.utils.ValuePair;
+import me.senseiwells.arucas.values.GenericValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.ValueIdentifier;
 
@@ -62,8 +63,8 @@ public class ArucasMap implements IArucasCollection, ValueIdentifier {
 				}
 				this.deadlockSafe(otherMap, map -> {
 					for (ValuePair valuePair : map.pairSet()) {
-						Value<?> key = valuePair.getKey();
-						Value<?> value = valuePair.getValue();
+						Value key = valuePair.getKey();
+						Value value = valuePair.getValue();
 						this.putVal(context, hash(context, key), key, value, false, evict);
 					}
 				});
@@ -85,12 +86,12 @@ public class ArucasMap implements IArucasCollection, ValueIdentifier {
 		return this.size == 0;
 	}
 
-	public Value<?> get(Context context, Value<?> key) throws CodeError {
+	public Value get(Context context, Value key) throws CodeError {
 		Node node = this.getNode(context, key);
 		return node == null ? null : node.value;
 	}
 
-	Node getNode(Context context, Value<?> key) throws CodeError {
+	Node getNode(Context context, Value key) throws CodeError {
 		// This map doesn't allow null keys
 		Objects.requireNonNull(key);
 		synchronized (this.LOCK) {
@@ -102,7 +103,7 @@ public class ArucasMap implements IArucasCollection, ValueIdentifier {
 				if (first == null) {
 					return null;
 				}
-				Value<?> k;
+				Value k;
 				if (first.hash == hash && ((k = first.key) == key || key.isEquals(context, k))) {
 					return first;
 				}
@@ -123,24 +124,24 @@ public class ArucasMap implements IArucasCollection, ValueIdentifier {
 		}
 	}
 
-	public boolean containsKey(Context context, Value<?> key) throws CodeError {
+	public boolean containsKey(Context context, Value key) throws CodeError {
 		return this.getNode(context, key) != null;
 	}
 
-	public Value<?> getKey(Context context, Value<?> key) throws CodeError {
+	public Value getKey(Context context, Value key) throws CodeError {
 		Node node = this.getNode(context, key);
 		return node == null ? null : node.key;
 	}
 
-	public Value<?> put(Context context, Value<?> key, Value<?> value) throws CodeError {
+	public Value put(Context context, Value key, Value value) throws CodeError {
 		return this.putVal(context, hash(context, key), key, value, false, true);
 	}
 
-	public Value<?> putIfAbsent(Context context, Value<?> key, Value<?> value) throws CodeError {
+	public Value putIfAbsent(Context context, Value key, Value value) throws CodeError {
 		return this.putVal(context, hash(context, key), key, value, true, true);
 	}
 
-	Value<?> putVal(Context context, int hash, Value<?> key, Value<?> value, boolean onlyIfAbsent, boolean evict) throws CodeError {
+	Value putVal(Context context, int hash, Value key, Value value, boolean onlyIfAbsent, boolean evict) throws CodeError {
 		// This map doesn't allow any null values
 		Objects.requireNonNull(key);
 		Objects.requireNonNull(value);
@@ -156,7 +157,7 @@ public class ArucasMap implements IArucasCollection, ValueIdentifier {
 			}
 			else {
 				Node e;
-				Value<?> k;
+				Value k;
 				if (p.hash == hash && ((k = p.key) == key || key.isEquals(context, k))) {
 					e = p;
 				}
@@ -179,7 +180,7 @@ public class ArucasMap implements IArucasCollection, ValueIdentifier {
 					}
 				}
 				if (e != null) {
-					Value<?> oldValue = e.value;
+					Value oldValue = e.value;
 					if (!onlyIfAbsent || oldValue == null) {
 						e.value = value;
 					}
@@ -310,17 +311,17 @@ public class ArucasMap implements IArucasCollection, ValueIdentifier {
 		this.putMapEntries(context, map, true);
 	}
 
-	public Value<?> remove(Context context, Value<?> key) throws CodeError {
+	public Value remove(Context context, Value key) throws CodeError {
 		Node e = this.removeNode(context, hash(context, key), key, null, false, true);
 		return e == null ? null : e.value;
 	}
 
-	public boolean remove(Context context, Value<?> key, Value<?> value) throws CodeError {
+	public boolean remove(Context context, Value key, Value value) throws CodeError {
 		return this.removeNode(context, hash(context, key), key, value, true, true) != null;
 	}
 
 	@SuppressWarnings("SameParameterValue")
-	Node removeNode(Context context, int hash, Value<?> key, Value<?> value, boolean matchValue, boolean movable) throws CodeError {
+	Node removeNode(Context context, int hash, Value key, Value value, boolean matchValue, boolean movable) throws CodeError {
 		Objects.requireNonNull(key);
 		synchronized (this.LOCK) {
 			Node[] tab;
@@ -329,8 +330,8 @@ public class ArucasMap implements IArucasCollection, ValueIdentifier {
 			if ((tab = this.table) != null && (n = tab.length) > 0 &&
 				(p = tab[index = (n - 1) & hash]) != null) {
 				Node node = null, e;
-				Value<?> k;
-				Value<?> v;
+				Value k;
+				Value v;
 				if (p.hash == hash && ((k = p.key) == key || key.isEquals(context, k))) {
 					node = p;
 				}
@@ -380,13 +381,13 @@ public class ArucasMap implements IArucasCollection, ValueIdentifier {
 	}
 
 	@SuppressWarnings("unused")
-	public boolean containsValue(Context context, Value<?> value) throws CodeError {
+	public boolean containsValue(Context context, Value value) throws CodeError {
 		if (value == null) {
 			return false;
 		}
 		synchronized (this.LOCK) {
 			Node[] table = this.table;
-			Value<?> v;
+			Value v;
 			if (table != null && this.size > 0) {
 				for (Node e : table) {
 					for (; e != null; e = e.next) {
@@ -401,7 +402,7 @@ public class ArucasMap implements IArucasCollection, ValueIdentifier {
 	}
 
 	@Override
-	public Collection<? extends Value<?>> asCollection() {
+	public Collection<? extends Value> asCollection() {
 		return this.keys();
 	}
 
@@ -412,11 +413,11 @@ public class ArucasMap implements IArucasCollection, ValueIdentifier {
 			sb.append("{");
 
 			for (ValuePair pair : this.pairSet()) {
-				String key = pair.getKey().value instanceof IArucasCollection collection ?
+				String key = pair.getKey().getValue() instanceof IArucasCollection collection ?
 					collection.getAsStringUnsafe(context, position) : pair.getKey().getAsString(context);
 				sb.append(key).append(": ");
 
-				String value = pair.getValue().value instanceof IArucasCollection collection ?
+				String value = pair.getValue().getValue() instanceof IArucasCollection collection ?
 					collection.getAsStringUnsafe(context, position) : pair.getValue().getAsString(context);
 				sb.append(value).append(", ");
 			}
@@ -493,7 +494,7 @@ public class ArucasMap implements IArucasCollection, ValueIdentifier {
 	}
 
 	@SuppressWarnings("SameParameterValue")
-	Node newNode(int hash, Value<?> key, Value<?> value, TreeNode next) {
+	Node newNode(int hash, Value key, Value value, TreeNode next) {
 		return new Node(hash, key, value, next);
 	}
 
@@ -502,7 +503,7 @@ public class ArucasMap implements IArucasCollection, ValueIdentifier {
 		return new Node(node.hash, node.key, node.value, next);
 	}
 
-	TreeNode newTreeNode(int hash, Value<?> key, Value<?> value, Node next) {
+	TreeNode newTreeNode(int hash, Value key, Value value, Node next) {
 		return new TreeNode(hash, key, value, next);
 	}
 
@@ -561,8 +562,8 @@ public class ArucasMap implements IArucasCollection, ValueIdentifier {
 	}
 
 	@Override
-	public boolean isEquals(Context context, Value<?> other) throws CodeError {
-		if (!(other.value instanceof ArucasMap that)) {
+	public boolean isEquals(Context context, Value other) throws CodeError {
+		if (!(other.getValue() instanceof ArucasMap that)) {
 			return false;
 		}
 
@@ -593,7 +594,7 @@ public class ArucasMap implements IArucasCollection, ValueIdentifier {
 		return returnBoolean.get();
 	}
 
-	static int hash(Context context, Value<?> key) throws CodeError {
+	static int hash(Context context, Value key) throws CodeError {
 		int hash = key.getHashCode(context);
 		return hash ^ hash >>> 16;
 	}
@@ -605,11 +606,11 @@ public class ArucasMap implements IArucasCollection, ValueIdentifier {
 
 	static class Node implements ValueIdentifier {
 		final int hash;
-		final Value<?> key;
-		Value<?> value;
+		final Value key;
+		Value value;
 		Node next;
 
-		Node(int hash, Value<?> key, Value<?> value, Node next) {
+		Node(int hash, Value key, Value value, Node next) {
 			Objects.requireNonNull(key);
 			Objects.requireNonNull(value);
 			this.hash = hash;
@@ -619,11 +620,11 @@ public class ArucasMap implements IArucasCollection, ValueIdentifier {
 		}
 
 		@SuppressWarnings("unused")
-		public Value<?> getKey() {
+		public Value getKey() {
 			return this.key;
 		}
 
-		public Value<?> getValue() {
+		public Value getValue() {
 			return this.value;
 		}
 
@@ -646,7 +647,7 @@ public class ArucasMap implements IArucasCollection, ValueIdentifier {
 
 		@Deprecated
 		@Override
-		public boolean isEquals(Context context, Value<?> other) {
+		public boolean isEquals(Context context, Value other) {
 			return false;
 		}
 
@@ -676,7 +677,7 @@ public class ArucasMap implements IArucasCollection, ValueIdentifier {
 		TreeNode previous;
 		boolean red;
 
-		TreeNode(int hash, Value<?> key, Value<?> value, Node next) {
+		TreeNode(int hash, Value key, Value value, Node next) {
 			super(hash, key, value, next);
 		}
 
@@ -715,11 +716,11 @@ public class ArucasMap implements IArucasCollection, ValueIdentifier {
 			}
 		}
 
-		TreeNode find(Context context, int hash, Value<?> key) throws CodeError {
+		TreeNode find(Context context, int hash, Value key) throws CodeError {
 			TreeNode current = this;
 			do {
 				int currentHash;
-				Value<?> currentKey;
+				Value currentKey;
 				TreeNode pl = current.left, pr = current.right, q;
 				if ((currentHash = current.hash) > hash) {
 					current = pl;
@@ -747,11 +748,11 @@ public class ArucasMap implements IArucasCollection, ValueIdentifier {
 			return null;
 		}
 
-		TreeNode getTreeNode(Context context, int hash, Value<?> key) throws CodeError {
+		TreeNode getTreeNode(Context context, int hash, Value key) throws CodeError {
 			return ((this.parent != null) ? this.root() : this).find(context, hash, key);
 		}
 
-		static int tieBreakOrder(Value<?> a, Value<?> b) {
+		static int tieBreakOrder(Value a, Value b) {
 			int d;
 			if (a == null || b == null || (d = a.getClass().getName().compareTo(b.getClass().getName())) == 0) {
 				d = System.identityHashCode(a) <= System.identityHashCode(b) ? -1 : 1;
@@ -774,7 +775,7 @@ public class ArucasMap implements IArucasCollection, ValueIdentifier {
 				TreeNode p = root;
 				while (true) {
 					int dir, ph = p.hash;
-					Value<?> pk = p.key;
+					Value pk = p.key;
 					dir = ph > h ? -1 : ph < h ? 1 : tieBreakOrder(x.key, pk);
 					TreeNode xp = p;
 					p = dir <= 0 ? p.left : p.right;
@@ -809,13 +810,13 @@ public class ArucasMap implements IArucasCollection, ValueIdentifier {
 			return returnNode;
 		}
 
-		TreeNode putTreeVal(Context context, ArucasMap map, Node[] table, int h, Value<?> k, Value<?> v) throws CodeError {
+		TreeNode putTreeVal(Context context, ArucasMap map, Node[] table, int h, Value k, Value v) throws CodeError {
 			boolean searched = false;
 			TreeNode root = this.parent != null ? this.root() : this;
 			TreeNode p = root;
 			while (true) {
 				int dir, ph = p.hash;
-				Value<?> pk;
+				Value pk;
 				if (ph > h) {
 					dir = -1;
 				}

@@ -8,7 +8,7 @@ import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.ValueTypes;
 
-public class BooleanValue extends Value<Boolean> {
+public class BooleanValue extends GenericValue<Boolean> {
 	public static final BooleanValue TRUE = new BooleanValue(true);
 	public static final BooleanValue FALSE = new BooleanValue(false);
 
@@ -21,7 +21,7 @@ public class BooleanValue extends Value<Boolean> {
 	}
 
 	@Override
-	public BooleanValue isAnd(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
+	public BooleanValue isAnd(Context context, Value other, ISyntax syntaxPosition) throws CodeError {
 		if (other instanceof BooleanValue booleanValue) {
 			return BooleanValue.of(this.value && booleanValue.value);
 		}
@@ -29,7 +29,7 @@ public class BooleanValue extends Value<Boolean> {
 	}
 
 	@Override
-	public BooleanValue isOr(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
+	public BooleanValue isOr(Context context, Value other, ISyntax syntaxPosition) throws CodeError {
 		if (other instanceof BooleanValue booleanValue) {
 			return BooleanValue.of(this.value || booleanValue.value);
 		}
@@ -37,7 +37,7 @@ public class BooleanValue extends Value<Boolean> {
 	}
 
 	@Override
-	public Value<?> xor(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
+	public Value xor(Context context, Value other, ISyntax syntaxPosition) throws CodeError {
 		if (other instanceof BooleanValue booleanValue) {
 			return BooleanValue.of(this.value ^ booleanValue.value);
 		}
@@ -45,12 +45,12 @@ public class BooleanValue extends Value<Boolean> {
 	}
 
 	@Override
-	public Value<?> bitAnd(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
+	public Value bitAnd(Context context, Value other, ISyntax syntaxPosition) throws CodeError {
 		return this.isAnd(context, other, syntaxPosition);
 	}
 
 	@Override
-	public Value<?> bitOr(Context context, Value<?> other, ISyntax syntaxPosition) throws CodeError {
+	public Value bitOr(Context context, Value other, ISyntax syntaxPosition) throws CodeError {
 		return this.isOr(context, other, syntaxPosition);
 	}
 
@@ -79,7 +79,7 @@ public class BooleanValue extends Value<Boolean> {
 	}
 
 	@Override
-	public boolean isEquals(Context context, Value<?> other) {
+	public boolean isEquals(Context context, Value other) {
 		return (other instanceof BooleanValue that) && this.value == that.value;
 	}
 

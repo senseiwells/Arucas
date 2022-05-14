@@ -8,16 +8,17 @@ import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.ArucasClassDefinitionMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.NullValue;
+import me.senseiwells.arucas.values.GenericValue;
 import me.senseiwells.arucas.values.Value;
 
 import java.util.List;
 
 public class Run {
-	public static Value<?> run(Context context, String fileName, String fileContent) throws CodeError {
+	public static Value run(Context context, String fileName, String fileContent) throws CodeError {
 		context = context.createChildContext(fileName);
 		Node nodeResult = compile(context, fileName, fileContent);
 		long startTime = System.nanoTime();
-		Value<?> returnValue = null;
+		Value returnValue = null;
 		try {
 			context.pushRunScope();
 			returnValue = nodeResult.visit(context);

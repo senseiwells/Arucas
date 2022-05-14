@@ -29,9 +29,9 @@ public class SwitchNode extends Node {
 	}
 
 	@Override
-	public Value<?> visit(Context context) throws CodeError, ThrowValue {
+	public Value visit(Context context) throws CodeError, ThrowValue {
 		context.pushSwitchScope(this.syntaxPosition);
-		Value<?> value = this.valueNode.visit(context);
+		Value value = this.valueNode.visit(context);
 
 		try {
 			for (int i = 0; i < this.nodeCases.size(); i++) {
@@ -48,7 +48,7 @@ public class SwitchNode extends Node {
 					continue;
 				}
 				for (Node node : nodes) {
-					Value<?> nodeValue = node.visit(context);
+					Value nodeValue = node.visit(context);
 					if (!value.isEquals(context, nodeValue)) {
 						continue;
 					}

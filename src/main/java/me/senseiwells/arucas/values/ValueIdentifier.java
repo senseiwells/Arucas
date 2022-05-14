@@ -27,12 +27,12 @@ public interface ValueIdentifier {
 	/**
 	 * This method returns whether this object equals another object
 	 */
-	boolean isEquals(Context context, Value<?> other) throws CodeError;
+	boolean isEquals(Context context, Value other) throws CodeError;
 
 	/**
 	 * This method returns whether this object is not equal to another
 	 */
-	default boolean isNotEquals(Context context, Value<?> other) throws CodeError {
+	default boolean isNotEquals(Context context, Value other) throws CodeError {
 		return !this.isEquals(context, other);
 	}
 }

@@ -15,7 +15,7 @@ import java.util.List;
 
 import static me.senseiwells.arucas.utils.ValueTypes.*;
 
-public class ListValue extends Value<ArucasList> {
+public class ListValue extends GenericValue<ArucasList> {
 	public ListValue(ArucasList value) {
 		super(value);
 	}
@@ -41,7 +41,7 @@ public class ListValue extends Value<ArucasList> {
 	}
 
 	@Override
-	public boolean isEquals(Context context, Value<?> other) throws CodeError {
+	public boolean isEquals(Context context, Value other) throws CodeError {
 		return this.value.isEquals(context, other);
 	}
 
@@ -92,7 +92,7 @@ public class ListValue extends Value<ArucasList> {
 			throwMsgs = "Index is out of bounds",
 			example = "`['object', 81, 96, 'case'].get(1);`"
 		)
-		private Value<?> getListIndex(Context context, MemberFunction function) throws CodeError {
+		private Value getListIndex(Context context, MemberFunction function) throws CodeError {
 			ListValue thisValue = function.getThis(context, ListValue.class);
 			NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 1);
 			int index = numberValue.value.intValue();
@@ -110,7 +110,7 @@ public class ListValue extends Value<ArucasList> {
 			throwMsgs = "Index is out of bounds",
 			example = "`['object', 81, 96, 'case'].remove(1);`"
 		)
-		private Value<?> removeListIndex(Context context, MemberFunction function) throws CodeError {
+		private Value removeListIndex(Context context, MemberFunction function) throws CodeError {
 			ListValue thisValue = function.getThis(context, ListValue.class);
 			NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 1);
 			int index = numberValue.value.intValue();
@@ -127,9 +127,9 @@ public class ListValue extends Value<ArucasList> {
 			returns = {LIST, "the list"},
 			example = "`['object', 81, 96, 'case'].append('foo');`"
 		)
-		private Value<?> appendList(Context context, MemberFunction function) throws CodeError {
+		private Value appendList(Context context, MemberFunction function) throws CodeError {
 			ListValue thisValue = function.getThis(context, ListValue.class);
-			Value<?> value = function.getParameterValue(context, 1);
+			Value value = function.getParameterValue(context, 1);
 			thisValue.value.add(value);
 			return thisValue;
 		}
@@ -145,9 +145,9 @@ public class ListValue extends Value<ArucasList> {
 			throwMsgs = "Index is out of bounds",
 			example = "`['object', 81, 96, 'case'].insert('foo', 1);`"
 		)
-		private Value<?> insertList(Context context, MemberFunction function) throws CodeError {
+		private Value insertList(Context context, MemberFunction function) throws CodeError {
 			ListValue thisValue = function.getThis(context, ListValue.class);
-			Value<?> value = function.getParameterValue(context, 1);
+			Value value = function.getParameterValue(context, 1);
 			int index = function.getParameterValueOfType(context, NumberValue.class, 2).value.intValue();
 			int len = thisValue.value.size();
 			if (index > len || index < 0) {
@@ -165,10 +165,10 @@ public class ListValue extends Value<ArucasList> {
 			throwMsgs = "... is not a collection",
 			example = "`['object', 81, 96, 'case'].addAll(['foo', 'bar']);`"
 		)
-		private Value<?> addAll(Context context, MemberFunction function) throws CodeError {
+		private Value addAll(Context context, MemberFunction function) throws CodeError {
 			ListValue thisValue = function.getThis(context, ListValue.class);
-			Value<?> value = function.getParameterValue(context, 1);
-			if (value.value instanceof IArucasCollection collection) {
+			Value value = function.getParameterValue(context, 1);
+			if (value.getValue() instanceof IArucasCollection collection) {
 				thisValue.value.addAll(collection.asCollection());
 				return thisValue;
 			}
@@ -183,7 +183,7 @@ public class ListValue extends Value<ArucasList> {
 			returns = {LIST, "the concatenated list"},
 			example = "`['object', 81, 96, 'case'].concat(['foo', 'bar']);`"
 		)
-		private Value<?> concatList(Context context, MemberFunction function) throws CodeError {
+		private Value concatList(Context context, MemberFunction function) throws CodeError {
 			ListValue thisValue = function.getThis(context, ListValue.class);
 			ListValue list2 = function.getParameterValueOfType(context, ListValue.class, 1);
 			thisValue.value.addAll(list2.value);
@@ -199,7 +199,7 @@ public class ListValue extends Value<ArucasList> {
 		)
 		private BooleanValue listContains(Context context, MemberFunction function) throws CodeError {
 			ListValue thisValue = function.getThis(context, ListValue.class);
-			Value<?> value = function.getParameterValue(context, 1);
+			Value value = function.getParameterValue(context, 1);
 			return BooleanValue.of(thisValue.value.contains(context, value));
 		}
 
@@ -213,8 +213,8 @@ public class ListValue extends Value<ArucasList> {
 		)
 		private BooleanValue containsAll(Context context, MemberFunction function) throws CodeError {
 			ListValue thisValue = function.getThis(context, ListValue.class);
-			Value<?> value = function.getParameterValue(context, 1);
-			if (value.value instanceof IArucasCollection collection) {
+			Value value = function.getParameterValue(context, 1);
+			if (value.getValue() instanceof IArucasCollection collection) {
 				return BooleanValue.of(thisValue.value.containsAll(context, collection.asCollection()));
 			}
 			throw new RuntimeError("'%s' is not a collection".formatted(value.getAsString(context)), function.syntaxPosition, context);
@@ -236,7 +236,7 @@ public class ListValue extends Value<ArucasList> {
 			desc = "This allows you to clear all the values the list",
 			example = "`['object', 81, 96, 'case'].clear();`"
 		)
-		private Value<?> clear(Context context, MemberFunction function) throws CodeError {
+		private Value clear(Context context, MemberFunction function) throws CodeError {
 			ListValue thisValue = function.getThis(context, ListValue.class);
 			thisValue.value.clear();
 			return NullValue.NULL;
@@ -249,9 +249,9 @@ public class ListValue extends Value<ArucasList> {
 			returns = {NUMBER, "the index of the value, -1 if the value is not in the list"},
 			example = "`['object', 81, 96, 'case'].indexOf('case');`"
 		)
-		private Value<?> indexOf(Context context, MemberFunction function) throws CodeError {
+		private Value indexOf(Context context, MemberFunction function) throws CodeError {
 			ListValue thisValue = function.getThis(context, ListValue.class);
-			Value<?> value = function.getParameterValue(context, 1);
+			Value value = function.getParameterValue(context, 1);
 			return NumberValue.of(thisValue.value.indexOf(context, value));
 		}
 
@@ -261,7 +261,7 @@ public class ListValue extends Value<ArucasList> {
 			returns = {STRING, "the string representation of the set"},
 			example = "`['object', 81, 96, 'case'].toString();`"
 		)
-		private Value<?> toString(Context context, MemberFunction function) throws CodeError {
+		private Value toString(Context context, MemberFunction function) throws CodeError {
 			ListValue thisValue = function.getThis(context, ListValue.class);
 			return StringValue.of(thisValue.value.getAsStringUnsafe(context, function.syntaxPosition));
 		}

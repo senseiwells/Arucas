@@ -1,8 +1,8 @@
 package me.senseiwells.arucas.nodes;
 
-import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
+import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.BooleanValue;
 import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
@@ -20,22 +20,22 @@ public class IfNode extends Node {
 	}
 
 	@Override
-	public Value<?> visit(Context context) throws CodeError, ThrowValue {
+	public Value visit(Context context) throws CodeError, ThrowValue {
 		context.pushScope(this.syntaxPosition);
-		
-		Value<?> conditionalValue = this.conditionNode.visit(context);
+
+		Value conditionalValue = this.conditionNode.visit(context);
 		if (!(conditionalValue instanceof BooleanValue booleanValue)) {
 			context.popScope();
 			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "Condition must result in either 'true' or 'false'", this.syntaxPosition);
 		}
-		
+
 		if (booleanValue.value) {
 			this.bodyNode.visit(context);
 		}
 		else if (!(this.elseNode instanceof NullNode)) {
 			this.elseNode.visit(context);
 		}
-		
+
 		context.popScope();
 		return NullValue.NULL;
 	}

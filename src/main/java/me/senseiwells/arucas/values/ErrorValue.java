@@ -18,10 +18,10 @@ import java.util.List;
 
 import static me.senseiwells.arucas.utils.ValueTypes.*;
 
-public class ErrorValue extends Value<Value<?>> {
+public class ErrorValue extends GenericValue<Value> {
 	private final RuntimeError runtimeError;
 
-	public ErrorValue(String details, ISyntax syntaxPosition, Context context, Value<?> value) {
+	public ErrorValue(String details, ISyntax syntaxPosition, Context context, Value value) {
 		super(value);
 		this.runtimeError = new ArucasRuntimeError(details, syntaxPosition, context, this);
 	}
@@ -46,7 +46,7 @@ public class ErrorValue extends Value<Value<?>> {
 	}
 
 	@Override
-	public boolean isEquals(Context context, Value<?> other) throws CodeError {
+	public boolean isEquals(Context context, Value other) throws CodeError {
 		return other == this;
 	}
 
@@ -56,7 +56,7 @@ public class ErrorValue extends Value<Value<?>> {
 	}
 
 	@Override
-	public Value<Value<?>> copy(Context context) throws CodeError {
+	public GenericValue<Value> copy(Context context) throws CodeError {
 		return this;
 	}
 
@@ -75,7 +75,7 @@ public class ErrorValue extends Value<Value<?>> {
 		}
 
 		@Override
-		public Class<? extends BaseValue> getValueClass() {
+		public Class<? extends Value> getValueClass() {
 			return ErrorValue.class;
 		}
 
@@ -92,7 +92,7 @@ public class ErrorValue extends Value<Value<?>> {
 			desc = "This creates a new Error value with no message",
 			example = "new Error();"
 		)
-		private Value<?> newError(Context context, BuiltInFunction function) {
+		private Value newError(Context context, BuiltInFunction function) {
 			return new ErrorValue("", function.syntaxPosition, context, NullValue.NULL);
 		}
 
@@ -101,7 +101,7 @@ public class ErrorValue extends Value<Value<?>> {
 			params = {STRING, "details", "the details of the error"},
 			example = "new Error('This is an error');"
 		)
-		private Value<?> newError1(Context context, BuiltInFunction function) throws CodeError {
+		private Value newError1(Context context, BuiltInFunction function) throws CodeError {
 			StringValue details = function.getParameterValueOfType(context, StringValue.class, 0);
 			return new ErrorValue(details.value, function.syntaxPosition, context, NullValue.NULL);
 		}
@@ -114,9 +114,9 @@ public class ErrorValue extends Value<Value<?>> {
 			},
 			example = "new Error('This is an error', [1, 2, 3]);"
 		)
-		private Value<?> newError2(Context context, BuiltInFunction function) throws CodeError {
+		private Value newError2(Context context, BuiltInFunction function) throws CodeError {
 			StringValue details = function.getParameterValueOfType(context, StringValue.class, 0);
-			Value<?> value = function.getParameterValue(context, 1);
+			Value value = function.getParameterValue(context, 1);
 			return new ErrorValue(details.value, function.syntaxPosition, context, value);
 		}
 
@@ -135,7 +135,7 @@ public class ErrorValue extends Value<Value<?>> {
 			returns = {STRING, "the details of the error"},
 			example = "error.getFormattedDetails();"
 		)
-		private Value<?> getFormattedDetails(Context context, MemberFunction function) throws CodeError {
+		private Value getFormattedDetails(Context context, MemberFunction function) throws CodeError {
 			ErrorValue error = function.getThis(context, ErrorValue.class);
 			return StringValue.of(error.runtimeError.toString(context));
 		}
@@ -146,7 +146,7 @@ public class ErrorValue extends Value<Value<?>> {
 			returns = {STRING, "the details of the error"},
 			example = "error.getDetails();"
 		)
-		private Value<?> getDetails(Context context, MemberFunction function) throws CodeError {
+		private Value getDetails(Context context, MemberFunction function) throws CodeError {
 			ErrorValue error = function.getThis(context, ErrorValue.class);
 			return StringValue.of(error.runtimeError.toString(context, true));
 		}
@@ -157,7 +157,7 @@ public class ErrorValue extends Value<Value<?>> {
 			returns = {ANY, "the value that is related to the error"},
 			example = "error.getValue();"
 		)
-		private Value<?> getValue(Context context, MemberFunction function) throws CodeError {
+		private Value getValue(Context context, MemberFunction function) throws CodeError {
 			ErrorValue error = function.getThis(context, ErrorValue.class);
 			return error.value;
 		}

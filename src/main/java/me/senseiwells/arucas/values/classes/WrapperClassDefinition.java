@@ -78,19 +78,19 @@ public class WrapperClassDefinition extends AbstractClassDefinition {
 	}
 
 	@Override
-	public WrapperClassValue createNewDefinition(Context context, List<Value<?>> parameters, ISyntax syntaxPosition) throws CodeError {
+	public WrapperClassValue createNewDefinition(Context context, List<Value> parameters, ISyntax syntaxPosition) throws CodeError {
 		return this.createDefinition(this.supplier.get(), context, parameters, syntaxPosition);
 	}
 
 	@SuppressWarnings("unused")
-	public WrapperClassValue createNewDefinition(IArucasWrappedClass wrappedClass, Context context, List<Value<?>> parameters) throws CodeError {
+	public WrapperClassValue createNewDefinition(IArucasWrappedClass wrappedClass, Context context, List<Value> parameters) throws CodeError {
 		if (this.supplier.get().getClass() != wrappedClass.getClass()) {
 			throw new RuntimeException("Wrong wrapper class passed in");
 		}
 		return this.createDefinition(wrappedClass, context, parameters, null);
 	}
 
-	private WrapperClassValue createDefinition(IArucasWrappedClass wrappedClass, Context context, List<Value<?>> parameters, ISyntax syntaxPosition) throws CodeError {
+	private WrapperClassValue createDefinition(IArucasWrappedClass wrappedClass, Context context, List<Value> parameters, ISyntax syntaxPosition) throws CodeError {
 		WrapperClassValue thisValue = new WrapperClassValue(this, wrappedClass);
 
 		for (WrapperClassMemberFunction function : this.methods) {
@@ -123,7 +123,7 @@ public class WrapperClassDefinition extends AbstractClassDefinition {
 	}
 
 	@Override
-	public boolean setMember(String name, Value<?> value) {
+	public boolean setMember(String name, Value value) {
 		if (this.staticFieldMap.containsKey(name)) {
 			return this.staticFieldMap.get(name).set(null, value);
 		}
@@ -132,7 +132,7 @@ public class WrapperClassDefinition extends AbstractClassDefinition {
 	}
 
 	@Override
-	public Value<?> getMember(String name) {
+	public Value getMember(String name) {
 		if (name.equals("type")) {
 			return this.getType();
 		}

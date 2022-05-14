@@ -36,13 +36,13 @@ public class ArucasEnumDefinition extends ArucasClassDefinition {
 		return this.enumInitializerMap == null ? this.enums.containsKey(enumName) : this.enumInitializerMap.containsKey(enumName);
 	}
 
-	public Value<?> fromString(Context context, BuiltInFunction function) throws CodeError {
+	public Value fromString(Context context, BuiltInFunction function) throws CodeError {
 		StringValue stringValue = function.getFirstParameter(context, StringValue.class);
 		EnumValue enumValue = this.getEnumValue(stringValue.value);
 		return enumValue == null ? NullValue.NULL : enumValue;
 	}
 
-	public Value<?> values(Context context, BuiltInFunction function) {
+	public Value values(Context context, BuiltInFunction function) {
 		ArucasList list = new ArucasList();
 		list.addAll(this.enums.values());
 		return new ListValue(list);
@@ -57,7 +57,7 @@ public class ArucasEnumDefinition extends ArucasClassDefinition {
 		return this.enums.get(name);
 	}
 
-	private EnumValue createEnumValue(String enumName, Context ctx, List<Value<?>> parameters, ISyntax syntaxPosition) throws CodeError, ThrowValue {
+	private EnumValue createEnumValue(String enumName, Context ctx, List<Value> parameters, ISyntax syntaxPosition) throws CodeError, ThrowValue {
 		Context context = this.getLocalContext(ctx);
 
 		EnumValue thisValue = new EnumValue(this, enumName, this.enums.size());
@@ -81,7 +81,7 @@ public class ArucasEnumDefinition extends ArucasClassDefinition {
 
 	@Override
 	protected void initialiseStatics(Context context) throws CodeError, ThrowValue {
-		Map<String, Value<?>> staticMap = this.getStaticMemberVariables();
+		Map<String, Value> staticMap = this.getStaticMemberVariables();
 		for (Map.Entry<String, ListNode> entry : this.enumInitializerMap.entrySet()) {
 			String name = entry.getKey();
 			ListNode node = entry.getValue();
@@ -105,7 +105,7 @@ public class ArucasEnumDefinition extends ArucasClassDefinition {
 	}
 
 	@Override
-	public ArucasClassValue createNewDefinition(Context context, List<Value<?>> parameters, ISyntax syntaxPosition) throws CodeError {
+	public ArucasClassValue createNewDefinition(Context context, List<Value> parameters, ISyntax syntaxPosition) throws CodeError {
 		throw new RuntimeError("Enums cannot be constructed", syntaxPosition, context);
 	}
 }

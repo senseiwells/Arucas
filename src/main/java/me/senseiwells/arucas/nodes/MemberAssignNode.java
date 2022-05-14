@@ -7,6 +7,7 @@ import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.ReflectionUtils;
 import me.senseiwells.arucas.values.StringValue;
+import me.senseiwells.arucas.values.GenericValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.ArucasClassValue;
 
@@ -21,15 +22,15 @@ public class MemberAssignNode extends VariableAssignNode {
 	}
 
 	@Override
-	public Value<?> visit(Context context) throws CodeError, ThrowValue {
+	public Value visit(Context context) throws CodeError, ThrowValue {
 		// The leftNode holds the Value that contains the member
-		Value<?> memberValue = this.leftNode.visit(context);
+		Value memberValue = this.leftNode.visit(context);
 		
 		// The memberNameNode is the MemberAccessNode that contains the name of the member
 		StringValue memberName = (StringValue) this.memberNameNode.visit(context);
 
 		if (memberValue instanceof ArucasClassValue classValue) {
-			Value<?> newValue = this.getNewValue(context);
+			Value newValue = this.getNewValue(context);
 
 			if (!classValue.hasMember(memberName.value) || !classValue.setMember(memberName.value, newValue)) {
 				throw new RuntimeError(
@@ -42,7 +43,7 @@ public class MemberAssignNode extends VariableAssignNode {
 			return newValue;
 		}
 		if (memberValue instanceof JavaValue javaValue) {
-			Value<?> newValue = this.getNewValue(context);
+			Value newValue = this.getNewValue(context);
 			String obfuscatedFieldName = JavaValue.getObfuscatedFieldName(context, javaValue.asJavaValue().getClass(), memberName.value);
 			if (ReflectionUtils.setFieldFromJavaValue(javaValue, newValue, obfuscatedFieldName, this.syntaxPosition, context)) {
 				return newValue;

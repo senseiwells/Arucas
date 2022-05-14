@@ -57,7 +57,7 @@ public class ArucasOrderedMap extends ArucasMap {
 	}
 
 	@Override
-	Node newNode(int hash, Value<?> key, Value<?> value, TreeNode next) {
+	Node newNode(int hash, Value key, Value value, TreeNode next) {
 		Entry entry = new Entry(hash, key, value, next);
 		this.linkNodeLast(entry);
 		return entry;
@@ -72,7 +72,7 @@ public class ArucasOrderedMap extends ArucasMap {
 	}
 
 	@Override
-	TreeNode newTreeNode(int hash, Value<?> key, Value<?> value, Node next) {
+	TreeNode newTreeNode(int hash, Value key, Value value, Node next) {
 		TreeNode p = new TreeNode(hash, key, value, next);
 		this.linkNodeLast(p);
 		return p;
@@ -120,13 +120,13 @@ public class ArucasOrderedMap extends ArucasMap {
 	}
 
 	@Override
-	public boolean containsValue(Context context, Value<?> value) throws CodeError {
+	public boolean containsValue(Context context, Value value) throws CodeError {
 		if (value == null) {
 			return false;
 		}
 		synchronized (this.LOCK) {
 			for (Entry e = this.head; e != null; e = e.after) {
-				Value<?> v = e.value;
+				Value v = e.value;
 				if (v == value || value.isEquals(context, v)) {
 					return true;
 				}
@@ -136,7 +136,7 @@ public class ArucasOrderedMap extends ArucasMap {
 	}
 
 	@Override
-	public Value<?> get(Context context, Value<?> key) throws CodeError {
+	public Value get(Context context, Value key) throws CodeError {
 		synchronized (this.LOCK) {
 			Node e = this.getNode(context, key);
 			if (e == null) {
@@ -199,7 +199,7 @@ public class ArucasOrderedMap extends ArucasMap {
 	void afterNodeInsertion(Context context, boolean evict) throws CodeError {
 		Entry first;
 		if (evict && (first = this.head) != null && this.removeEldestEntry(first)) {
-			Value<?> key = first.key;
+			Value key = first.key;
 			this.removeNode(context, hash(context, key), key, null, false, true);
 		}
 	}
@@ -226,7 +226,7 @@ public class ArucasOrderedMap extends ArucasMap {
 	static class Entry extends Node {
 		Entry before, after;
 
-		Entry(int hash, Value<?> key, Value<?> value, Node next) {
+		Entry(int hash, Value key, Value value, Node next) {
 			super(hash, key, value, next);
 		}
 	}

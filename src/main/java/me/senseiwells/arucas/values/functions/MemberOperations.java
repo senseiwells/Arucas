@@ -27,12 +27,12 @@ public interface MemberOperations {
 	/**
 	 * Change the value of a member inside this object
 	 */
-	boolean setMember(String name, Value<?> value);
+	boolean setMember(String name, Value value);
 
 	/**
 	 * Returns a member of this object
 	 */
-	Value<?> getMember(String name);
+	Value getMember(String name);
 
 	/**
 	 * Returns a member of this object with the specified amount of parameters

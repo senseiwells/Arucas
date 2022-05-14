@@ -17,7 +17,7 @@ import java.util.List;
 
 import static me.senseiwells.arucas.utils.ValueTypes.*;
 
-public class ThreadValue extends Value<ArucasThread> {
+public class ThreadValue extends GenericValue<ArucasThread> {
 	private final StringValue name;
 
 	private ThreadValue(ArucasThread value) {
@@ -45,7 +45,7 @@ public class ThreadValue extends Value<ArucasThread> {
 	}
 
 	@Override
-	public boolean isEquals(Context context, Value<?> other) {
+	public boolean isEquals(Context context, Value other) {
 		return other instanceof ThreadValue that && this.value == that.value;
 	}
 
@@ -86,7 +86,7 @@ public class ThreadValue extends Value<ArucasThread> {
 			throwMsgs = "Thread is not safe to get",
 			example = "Thread.getCurrentThread();"
 		)
-		private Value<?> getCurrentThread(Context context, BuiltInFunction function) throws RuntimeError {
+		private Value getCurrentThread(Context context, BuiltInFunction function) throws RuntimeError {
 			Thread currentThread = Thread.currentThread();
 			if (currentThread instanceof ArucasThread arucasValueThread) {
 				return ThreadValue.of(arucasValueThread);
@@ -110,7 +110,7 @@ public class ThreadValue extends Value<ArucasThread> {
 			});
 			"""
 		)
-		private Value<?> runThreaded1(Context context, BuiltInFunction function) throws CodeError {
+		private Value runThreaded1(Context context, BuiltInFunction function) throws CodeError {
 			FunctionValue functionValue = function.getParameterValueOfType(context, FunctionValue.class, 0);
 			ArucasThread thread = context.getThreadHandler().runAsyncFunctionInContext(
 				context.createBranch(), branchContext -> functionValue.call(branchContext, new ArucasList()),
@@ -134,7 +134,7 @@ public class ThreadValue extends Value<ArucasThread> {
 			});
 			"""
 		)
-		private Value<?> runThreaded2(Context context, BuiltInFunction function) throws CodeError {
+		private Value runThreaded2(Context context, BuiltInFunction function) throws CodeError {
 			StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
 			FunctionValue functionValue = function.getParameterValueOfType(context, FunctionValue.class, 1);
 			ArucasThread thread = context.getThreadHandler().runAsyncFunctionInContext(
@@ -150,7 +150,7 @@ public class ThreadValue extends Value<ArucasThread> {
 			desc = "This freezes the current thread, stops anything else from executing on the thread",
 			example = "Thread.freeze();"
 		)
-		private Value<?> freeze(Context context, BuiltInFunction function) throws CodeError {
+		private Value freeze(Context context, BuiltInFunction function) throws CodeError {
 			Thread currentThread = Thread.currentThread();
 			if (!(currentThread instanceof ArucasThread)) {
 				throw new RuntimeError("Thread is not safe to freeze", function.syntaxPosition, context);
@@ -180,7 +180,7 @@ public class ThreadValue extends Value<ArucasThread> {
 			returns = {BOOLEAN, "true if the thread is alive, false if not"},
 			example = "Thread.getCurrentThread().isAlive();"
 		)
-		private Value<?> isAlive(Context context, MemberFunction function) throws CodeError {
+		private Value isAlive(Context context, MemberFunction function) throws CodeError {
 			ThreadValue thisValue = function.getParameterValueOfType(context, ThreadValue.class, 0);
 			return BooleanValue.of(thisValue.value.isAlive());
 		}
@@ -191,7 +191,7 @@ public class ThreadValue extends Value<ArucasThread> {
 			returns = {NUMBER, "the age of the thread"},
 			example = "Thread.getCurrentThread().getAge();"
 		)
-		private Value<?> getAge(Context context, MemberFunction function) throws CodeError {
+		private Value getAge(Context context, MemberFunction function) throws CodeError {
 			ThreadValue thisValue = function.getParameterValueOfType(context, ThreadValue.class, 0);
 			return NumberValue.of(System.currentTimeMillis() - thisValue.value.getStartTime());
 		}
@@ -202,7 +202,7 @@ public class ThreadValue extends Value<ArucasThread> {
 			returns = {STRING, "the name of the thread"},
 			example = "Thread.getCurrentThread().getName();"
 		)
-		private Value<?> getName(Context context, MemberFunction function) throws CodeError {
+		private Value getName(Context context, MemberFunction function) throws CodeError {
 			ThreadValue thisValue = function.getParameterValueOfType(context, ThreadValue.class, 0);
 			return thisValue.name;
 		}
@@ -213,7 +213,7 @@ public class ThreadValue extends Value<ArucasThread> {
 			throwMsgs = "Thread is not alive",
 			example = "Thread.getCurrentThread().stop();"
 		)
-		private Value<?> stop(Context context, MemberFunction function) throws CodeError {
+		private Value stop(Context context, MemberFunction function) throws CodeError {
 			ThreadValue thisValue = function.getParameterValueOfType(context, ThreadValue.class, 0);
 			if (!thisValue.value.isAlive()) {
 				throw new RuntimeError("Thread is not alive", function.syntaxPosition, context);

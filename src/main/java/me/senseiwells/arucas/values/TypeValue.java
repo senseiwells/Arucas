@@ -18,7 +18,7 @@ import java.util.List;
 
 import static me.senseiwells.arucas.utils.ValueTypes.*;
 
-public class TypeValue extends Value<AbstractClassDefinition> {
+public class TypeValue extends GenericValue<AbstractClassDefinition> {
 	public TypeValue(AbstractClassDefinition definition) {
 		super(definition);
 	}
@@ -34,7 +34,7 @@ public class TypeValue extends Value<AbstractClassDefinition> {
 	}
 
 	@Override
-	public boolean isEquals(Context context, Value<?> other) throws CodeError {
+	public boolean isEquals(Context context, Value other) throws CodeError {
 		return other == this;
 	}
 
@@ -72,8 +72,8 @@ public class TypeValue extends Value<AbstractClassDefinition> {
 			returns = {TYPE, "the type of the value"},
 			example = "Type.of(0);"
 		)
-		private Value<?> of(Context context, BuiltInFunction function) throws CodeError {
-			Value<?> object = function.getParameterValue(context, 0);
+		private Value of(Context context, BuiltInFunction function) throws CodeError {
+			Value object = function.getParameterValue(context, 0);
 			return object.getType(context, function.syntaxPosition);
 		}
 
@@ -94,7 +94,7 @@ public class TypeValue extends Value<AbstractClassDefinition> {
 			returns = {BOOLEAN, "whether the type is of that type"},
 			example = "Type.of('').instanceOf(Number.type);"
 		)
-		private Value<?> instanceOf(Context context, MemberFunction function) throws CodeError {
+		private Value instanceOf(Context context, MemberFunction function) throws CodeError {
 			TypeValue thisValue = function.getThis(context, TypeValue.class);
 			TypeValue otherType = function.getParameterValueOfType(context, TypeValue.class, 1);
 
@@ -110,7 +110,7 @@ public class TypeValue extends Value<AbstractClassDefinition> {
 			returns = {STRING, "the name of the type"},
 			example = "String.type.getName();"
 		)
-		private Value<?> getName(Context context, MemberFunction function) throws CodeError {
+		private Value getName(Context context, MemberFunction function) throws CodeError {
 			TypeValue thisValue = function.getThis(context, TypeValue.class);
 			return StringValue.of(thisValue.value.getName());
 		}
@@ -122,7 +122,7 @@ public class TypeValue extends Value<AbstractClassDefinition> {
 			returns = {FUNCTION, "the constructor of the type"},
 			example = "String.type.getConstructor(0);"
 		)
-		private Value<?> getConstructor(Context context, MemberFunction function) throws CodeError {
+		private Value getConstructor(Context context, MemberFunction function) throws CodeError {
 			TypeValue thisValue = function.getThis(context, TypeValue.class);
 			StringValue methodNameValue = function.getParameterValueOfType(context, StringValue.class, 1);
 			NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 2);
@@ -148,7 +148,7 @@ public class TypeValue extends Value<AbstractClassDefinition> {
 			returns = {FUNCTION, "the static method of the type"},
 			example = "String.type.getStaticMethod('nonExistent', 0);"
 		)
-		private Value<?> getStaticMethod(Context context, MemberFunction function) throws CodeError {
+		private Value getStaticMethod(Context context, MemberFunction function) throws CodeError {
 			TypeValue typeValue = function.getThis(context, TypeValue.class);
 			StringValue methodNameValue = function.getParameterValueOfType(context, StringValue.class, 1);
 			NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 2);

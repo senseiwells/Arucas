@@ -4,6 +4,7 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.values.GenericValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
@@ -63,7 +64,7 @@ public abstract class ArucasClassExtension extends AbstractClassDefinition {
 	/**
 	 * This lets you define static variables for a Class.
 	 */
-	public Map<String, Value<?>> getDefinedStaticVariables() {
+	public Map<String, Value> getDefinedStaticVariables() {
 		return Map.of();
 	}
 
@@ -78,7 +79,7 @@ public abstract class ArucasClassExtension extends AbstractClassDefinition {
 	 * This returns the new value that was returned inside the constructor.
 	 */
 	@Override
-	public Value<?> createNewDefinition(Context context, List<Value<?>> parameters, ISyntax syntaxPosition) throws CodeError {
+	public Value createNewDefinition(Context context, List<Value> parameters, ISyntax syntaxPosition) throws CodeError {
 		// We don't need to get local context because this isn't user defined
 		if (this.constructors.isEmpty()) {
 			throw new RuntimeError("%s cannot be constructed".formatted(this.getName()), syntaxPosition, context);

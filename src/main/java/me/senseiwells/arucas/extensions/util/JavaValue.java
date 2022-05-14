@@ -27,12 +27,12 @@ import java.util.function.Supplier;
 
 import static me.senseiwells.arucas.utils.ValueTypes.*;
 
-public class JavaValue extends Value<Object> {
+public class JavaValue extends GenericValue<Object> {
 	private JavaValue(Object value) {
 		super(value);
 	}
 
-	public static Value<?> of(Object value) {
+	public static Value of(Object value) {
 		return value == null ? NullValue.NULL : new JavaValue(value);
 	}
 
@@ -47,7 +47,7 @@ public class JavaValue extends Value<Object> {
 	}
 
 	@Override
-	public boolean isEquals(Context context, Value<?> other) throws CodeError {
+	public boolean isEquals(Context context, Value other) throws CodeError {
 		return other instanceof JavaValue value && this.value.equals(value.value);
 	}
 
@@ -57,7 +57,7 @@ public class JavaValue extends Value<Object> {
 	}
 
 	@Override
-	public Value<Object> copy(Context context) throws CodeError {
+	public GenericValue<Object> copy(Context context) throws CodeError {
 		return new JavaValue(this.value);
 	}
 
@@ -153,7 +153,7 @@ public class JavaValue extends Value<Object> {
 			returns = {JAVA, "the double in Java wrapper"},
 			example = "Java.doubleOf(1.0);"
 		)
-		private Value<?> doubleOf(Context context, BuiltInFunction function) throws CodeError {
+		private Value doubleOf(Context context, BuiltInFunction function) throws CodeError {
 			NumberValue numberValue = function.getFirstParameter(context, NumberValue.class);
 			return new JavaValue(numberValue.value);
 		}
@@ -166,7 +166,7 @@ public class JavaValue extends Value<Object> {
 			returns = {JAVA, "the float in Java wrapper"},
 			example = "Java.floatOf(1.0);"
 		)
-		private Value<?> floatOf(Context context, BuiltInFunction function) throws CodeError {
+		private Value floatOf(Context context, BuiltInFunction function) throws CodeError {
 			NumberValue numberValue = function.getFirstParameter(context, NumberValue.class);
 			return new JavaValue(numberValue.value.floatValue());
 		}
@@ -179,7 +179,7 @@ public class JavaValue extends Value<Object> {
 			returns = {JAVA, "the long in Java wrapper"},
 			example = "Java.longOf(1000000000.0);"
 		)
-		private Value<?> longOf(Context context, BuiltInFunction function) throws CodeError {
+		private Value longOf(Context context, BuiltInFunction function) throws CodeError {
 			NumberValue numberValue = function.getFirstParameter(context, NumberValue.class);
 			return new JavaValue(numberValue.value.longValue());
 		}
@@ -192,7 +192,7 @@ public class JavaValue extends Value<Object> {
 			returns = {JAVA, "the int in Java wrapper"},
 			example = "Java.intOf(0xFF);"
 		)
-		private Value<?> intOf(Context context, BuiltInFunction function) throws CodeError {
+		private Value intOf(Context context, BuiltInFunction function) throws CodeError {
 			NumberValue numberValue = function.getFirstParameter(context, NumberValue.class);
 			return new JavaValue(numberValue.value.intValue());
 		}
@@ -205,7 +205,7 @@ public class JavaValue extends Value<Object> {
 			returns = {JAVA, "the short in Java wrapper"},
 			example = "Java.shortOf(0xFF);"
 		)
-		private Value<?> shortOf(Context context, BuiltInFunction function) throws CodeError {
+		private Value shortOf(Context context, BuiltInFunction function) throws CodeError {
 			NumberValue numberValue = function.getFirstParameter(context, NumberValue.class);
 			return new JavaValue(numberValue.value.shortValue());
 		}
@@ -218,7 +218,7 @@ public class JavaValue extends Value<Object> {
 			returns = {JAVA, "the byte in Java wrapper"},
 			example = "Java.byteOf(0xFF);"
 		)
-		private Value<?> byteOf(Context context, BuiltInFunction function) throws CodeError {
+		private Value byteOf(Context context, BuiltInFunction function) throws CodeError {
 			NumberValue numberValue = function.getFirstParameter(context, NumberValue.class);
 			return new JavaValue(numberValue.value.byteValue());
 		}
@@ -232,7 +232,7 @@ public class JavaValue extends Value<Object> {
 			throwMsgs = "String must be 1 character long",
 			example = "Java.charOf('f');"
 		)
-		private Value<?> charOf(Context context, BuiltInFunction function) throws CodeError {
+		private Value charOf(Context context, BuiltInFunction function) throws CodeError {
 			StringValue charValue = function.getFirstParameter(context, StringValue.class);
 			if (charValue.value.length() != 1) {
 				throw new RuntimeError("String must be 1 character long", function.syntaxPosition, context);
@@ -248,7 +248,7 @@ public class JavaValue extends Value<Object> {
 			returns = {JAVA, "the boolean in Java wrapper"},
 			example = "Java.booleanOf(true);"
 		)
-		private Value<?> booleanOf(Context context, BuiltInFunction function) throws CodeError {
+		private Value booleanOf(Context context, BuiltInFunction function) throws CodeError {
 			BooleanValue booleanValue = function.getFirstParameter(context, BooleanValue.class);
 			return new JavaValue(booleanValue.value);
 		}
@@ -261,8 +261,8 @@ public class JavaValue extends Value<Object> {
 			returns = {JAVA, "the Java wrapper value", "null if argument was null"},
 			example = "Java.valueOf('Hello World!');"
 		)
-		private Value<?> of(Context context, BuiltInFunction function) {
-			Value<?> value = function.getParameterValue(context, 0);
+		private Value of(Context context, BuiltInFunction function) {
+			Value value = function.getParameterValue(context, 0);
 			return JavaValue.of(value.asJavaValue());
 		}
 
@@ -275,7 +275,7 @@ public class JavaValue extends Value<Object> {
 			throwMsgs = "No such class with ...",
 			example = "Java.classFromName('java.util.ArrayList');"
 		)
-		private Value<?> classFromName(Context context, BuiltInFunction function) throws CodeError {
+		private Value classFromName(Context context, BuiltInFunction function) throws CodeError {
 			String name = function.getFirstParameter(context, StringValue.class).value;
 			return new JavaValue(JavaValue.getObfuscatedClass(context, function.syntaxPosition, name));
 		}
@@ -292,7 +292,7 @@ public class JavaValue extends Value<Object> {
 			throwMsgs = "No such class with ...",
 			example = "Java.getStaticField('java.lang.Integer', 'MAX_VALUE');"
 		)
-		private Value<?> getStaticField(Context context, BuiltInFunction function) throws CodeError {
+		private Value getStaticField(Context context, BuiltInFunction function) throws CodeError {
 			String className = function.getFirstParameter(context, StringValue.class).value;
 			String fieldName = function.getParameterValueOfType(context, StringValue.class, 1).value;
 			Class<?> clazz = JavaValue.getObfuscatedClass(context, function.syntaxPosition, className);
@@ -318,10 +318,10 @@ public class JavaValue extends Value<Object> {
 			Java.setStaticField('java.lang.Integer', 'MAX_VALUE', Java.intOf(100));"
 			"""
 		)
-		private Value<?> setStaticField(Context context, BuiltInFunction function) throws CodeError {
+		private Value setStaticField(Context context, BuiltInFunction function) throws CodeError {
 			String className = function.getFirstParameter(context, StringValue.class).value;
 			String fieldName = function.getParameterValueOfType(context, StringValue.class, 1).value;
-			Value<?> value = function.getParameterValue(context, 2);
+			Value value = function.getParameterValue(context, 2);
 			Class<?> clazz = JavaValue.getObfuscatedClass(context, function.syntaxPosition, className);
 			fieldName = JavaValue.getObfuscatedFieldName(context, clazz, fieldName);
 			ReflectionUtils.setFieldFromName(clazz, null, value.asJavaValue(), fieldName, function.syntaxPosition, context);
@@ -347,7 +347,7 @@ public class JavaValue extends Value<Object> {
 			},
 			example = "Java.getStaticMethodDelegate('java.lang.Integer', 'parseInt', 1);"
 		)
-		private Value<?> getStaticMethodDelegate(Context context, BuiltInFunction function) throws CodeError {
+		private Value getStaticMethodDelegate(Context context, BuiltInFunction function) throws CodeError {
 			String className = function.getFirstParameter(context, StringValue.class).value;
 			String methodName = function.getParameterValueOfType(context, StringValue.class, 1).value;
 			int parameters = function.getParameterValueOfType(context, NumberValue.class, 2).value.intValue();
@@ -375,7 +375,7 @@ public class JavaValue extends Value<Object> {
 			returns = {JAVA, "the Java Object array"},
 			example = "Java.arrayWithSize(10);"
 		)
-		private Value<?> arrayWithSize(Context context, BuiltInFunction function) throws CodeError {
+		private Value arrayWithSize(Context context, BuiltInFunction function) throws CodeError {
 			int size = function.getFirstParameter(context, NumberValue.class).value.intValue();
 			this.checkArraySize(context, function.syntaxPosition, size);
 			return new JavaValue(new Object[size]);
@@ -392,7 +392,7 @@ public class JavaValue extends Value<Object> {
 			returns = {JAVA, "the Java double array"},
 			example = "Java.doubleArray(10);"
 		)
-		private Value<?> doubleArray(Context context, BuiltInFunction function) throws CodeError {
+		private Value doubleArray(Context context, BuiltInFunction function) throws CodeError {
 			int size = function.getFirstParameter(context, NumberValue.class).value.intValue();
 			this.checkArraySize(context, function.syntaxPosition, size);
 			return new JavaValue(new double[size]);
@@ -409,7 +409,7 @@ public class JavaValue extends Value<Object> {
 			returns = {JAVA, "the Java float array"},
 			example = "Java.floatArray(10);"
 		)
-		private Value<?> floatArray(Context context, BuiltInFunction function) throws CodeError {
+		private Value floatArray(Context context, BuiltInFunction function) throws CodeError {
 			int size = function.getFirstParameter(context, NumberValue.class).value.intValue();
 			this.checkArraySize(context, function.syntaxPosition, size);
 			return new JavaValue(new float[size]);
@@ -426,7 +426,7 @@ public class JavaValue extends Value<Object> {
 			returns = {JAVA, "the Java long array"},
 			example = "Java.longArray(10);"
 		)
-		private Value<?> longArray(Context context, BuiltInFunction function) throws CodeError {
+		private Value longArray(Context context, BuiltInFunction function) throws CodeError {
 			int size = function.getFirstParameter(context, NumberValue.class).value.intValue();
 			this.checkArraySize(context, function.syntaxPosition, size);
 			return new JavaValue(new long[size]);
@@ -443,7 +443,7 @@ public class JavaValue extends Value<Object> {
 			returns = {JAVA, "the Java int array"},
 			example = "Java.intArray(10);"
 		)
-		private Value<?> intArray(Context context, BuiltInFunction function) throws CodeError {
+		private Value intArray(Context context, BuiltInFunction function) throws CodeError {
 			int size = function.getFirstParameter(context, NumberValue.class).value.intValue();
 			this.checkArraySize(context, function.syntaxPosition, size);
 			return new JavaValue(new int[size]);
@@ -460,7 +460,7 @@ public class JavaValue extends Value<Object> {
 			returns = {JAVA, "the Java short array"},
 			example = "Java.shortArray(10);"
 		)
-		private Value<?> shortArray(Context context, BuiltInFunction function) throws CodeError {
+		private Value shortArray(Context context, BuiltInFunction function) throws CodeError {
 			int size = function.getFirstParameter(context, NumberValue.class).value.intValue();
 			this.checkArraySize(context, function.syntaxPosition, size);
 			return new JavaValue(new short[size]);
@@ -477,7 +477,7 @@ public class JavaValue extends Value<Object> {
 			returns = {JAVA, "the Java byte array"},
 			example = "Java.byteArray(10);"
 		)
-		private Value<?> byteArray(Context context, BuiltInFunction function) throws CodeError {
+		private Value byteArray(Context context, BuiltInFunction function) throws CodeError {
 			int size = function.getFirstParameter(context, NumberValue.class).value.intValue();
 			this.checkArraySize(context, function.syntaxPosition, size);
 			return new JavaValue(new byte[size]);
@@ -494,7 +494,7 @@ public class JavaValue extends Value<Object> {
 			returns = {JAVA, "the Java char array"},
 			example = "Java.charArray(10);"
 		)
-		private Value<?> charArray(Context context, BuiltInFunction function) throws CodeError {
+		private Value charArray(Context context, BuiltInFunction function) throws CodeError {
 			int size = function.getFirstParameter(context, NumberValue.class).value.intValue();
 			this.checkArraySize(context, function.syntaxPosition, size);
 			return new JavaValue(new char[size]);
@@ -511,7 +511,7 @@ public class JavaValue extends Value<Object> {
 			returns = {JAVA, "the Java boolean array"},
 			example = "Java.booleanArray(10);"
 		)
-		private Value<?> booleanArray(Context context, BuiltInFunction function) throws CodeError {
+		private Value booleanArray(Context context, BuiltInFunction function) throws CodeError {
 			int size = function.getFirstParameter(context, NumberValue.class).value.intValue();
 			this.checkArraySize(context, function.syntaxPosition, size);
 			return new JavaValue(new boolean[size]);
@@ -531,7 +531,7 @@ public class JavaValue extends Value<Object> {
 			});
 			"""
 		)
-		private Value<?> runnableOf(Context context, BuiltInFunction function) throws CodeError {
+		private Value runnableOf(Context context, BuiltInFunction function) throws CodeError {
 			FunctionValue functionValue = function.getFirstParameter(context, FunctionValue.class);
 			Context branchContext = context.createBranch();
 			return new JavaValue((Runnable) () -> {
@@ -554,7 +554,7 @@ public class JavaValue extends Value<Object> {
 			});
 			"""
 		)
-		private Value<?> consumerOf(Context context, BuiltInFunction function) throws CodeError {
+		private Value consumerOf(Context context, BuiltInFunction function) throws CodeError {
 			FunctionValue functionValue = function.getFirstParameter(context, FunctionValue.class);
 			Context branchContext = context.createBranch();
 			return new JavaValue((Consumer<Object>) o -> {
@@ -576,11 +576,11 @@ public class JavaValue extends Value<Object> {
 			});
 			"""
 		)
-		private Value<?> supplierOf(Context context, BuiltInFunction function) throws CodeError {
+		private Value supplierOf(Context context, BuiltInFunction function) throws CodeError {
 			FunctionValue functionValue = function.getFirstParameter(context, FunctionValue.class);
 			Context branchContext = context.createBranch();
 			return new JavaValue((Supplier<Object>) () -> {
-				Value<?> returnValue = functionValue.safeCall(branchContext, ArrayList::new);
+				Value returnValue = functionValue.safeCall(branchContext, ArrayList::new);
 				return returnValue == null ? null : returnValue.asJavaValue();
 			});
 		}
@@ -599,11 +599,11 @@ public class JavaValue extends Value<Object> {
 			});
 			"""
 		)
-		private Value<?> functionOf(Context context, BuiltInFunction function) throws CodeError {
+		private Value functionOf(Context context, BuiltInFunction function) throws CodeError {
 			FunctionValue functionValue = function.getFirstParameter(context, FunctionValue.class);
 			Context branchContext = context.createBranch();
 			return new JavaValue((Function<Object, Object>) o -> {
-				Value<?> returnValue = functionValue.safeCall(context, () -> ArucasList.arrayListOf(branchContext.convertValue(o)));
+				Value returnValue = functionValue.safeCall(context, () -> ArucasList.arrayListOf(branchContext.convertValue(o)));
 				return returnValue == null ? null : returnValue.asJavaValue();
 			});
 		}
@@ -620,7 +620,7 @@ public class JavaValue extends Value<Object> {
 			returns = {JAVA, "the Java Object array"},
 			example = "Java.arrayOf(1, 2, 3, 'string!', false);"
 		)
-		private Value<?> arrayOf(Context context, BuiltInFunction function) throws CodeError {
+		private Value arrayOf(Context context, BuiltInFunction function) throws CodeError {
 			ArucasList arucasList = function.getFirstParameter(context, ListValue.class).value;
 			Object[] array = new Object[arucasList.size()];
 			for (int i = 0; i < arucasList.size(); i++) {
@@ -648,7 +648,7 @@ public class JavaValue extends Value<Object> {
 			},
 			example = "Java.callStaticMethod('java.lang.Integer', 'parseInt', '123');"
 		)
-		private Value<?> callStaticMethod(Context context, BuiltInFunction function) throws CodeError {
+		private Value callStaticMethod(Context context, BuiltInFunction function) throws CodeError {
 			ArucasList arguments = function.getFirstParameter(context, ListValue.class).value;
 			if (arguments.size() < 2 || !(arguments.get(0) instanceof StringValue className) || !(arguments.get(1) instanceof StringValue methodName)) {
 				throw new RuntimeError(
@@ -681,7 +681,7 @@ public class JavaValue extends Value<Object> {
 			},
 			example = "Java.constructClass('java.util.ArrayList');"
 		)
-		private Value<?> constructClass(Context context, BuiltInFunction function) throws CodeError {
+		private Value constructClass(Context context, BuiltInFunction function) throws CodeError {
 			ArucasList arguments = function.getFirstParameter(context, ListValue.class).value;
 			if (arguments.size() < 1 || !(arguments.get(0) instanceof StringValue className)) {
 				throw new RuntimeError(
@@ -714,7 +714,7 @@ public class JavaValue extends Value<Object> {
 			},
 			example = "Java.valueOf([1, 2, 3]).toArucas();"
 		)
-		private Value<?> toValue(Context context, MemberFunction function) throws CodeError {
+		private Value toValue(Context context, MemberFunction function) throws CodeError {
 			JavaValue thisValue = function.getThis(context, JavaValue.class);
 			return context.convertValue(thisValue.asJavaValue());
 		}
@@ -734,7 +734,7 @@ public class JavaValue extends Value<Object> {
 			throwMsgs = "No such method ... with ... parameters can be found",
 			example = "Java.valueOf('string!').getMethodDelegate('isBlank', 0);"
 		)
-		private Value<?> getMethodDelegate(Context context, MemberFunction function) throws CodeError {
+		private Value getMethodDelegate(Context context, MemberFunction function) throws CodeError {
 			JavaValue thisValue = function.getThis(context, JavaValue.class);
 			String methodName = function.getParameterValueOfType(context, StringValue.class, 1).value;
 			int parameters = function.getParameterValueOfType(context, NumberValue.class, 2).value.intValue();
@@ -773,7 +773,7 @@ public class JavaValue extends Value<Object> {
 			},
 			example = "Java.valueOf('').callMethod('isBlank');"
 		)
-		private Value<?> callMethodArbitrary(Context context, MemberFunction function) throws CodeError {
+		private Value callMethodArbitrary(Context context, MemberFunction function) throws CodeError {
 			JavaValue thisValue = function.getThis(context, JavaValue.class);
 			ArucasList arguments = function.getParameterValueOfType(context, ListValue.class, 1).value;
 			if (arguments.size() < 1 || !(arguments.get(0) instanceof StringValue methodName)) {
@@ -799,7 +799,7 @@ public class JavaValue extends Value<Object> {
 			returns = {JAVA, "the Java wrapped value of the field"},
 			example = "Java.constructClass('me.senseiwells.impl.Test').getField('A');"
 		)
-		private Value<?> getJavaField(Context context, MemberFunction function) throws CodeError {
+		private Value getJavaField(Context context, MemberFunction function) throws CodeError {
 			JavaValue thisValue = function.getThis(context, JavaValue.class);
 			String fieldName = function.getParameterValueOfType(context, StringValue.class, 1).value;
 			Object callingObject = thisValue.asJavaValue();
@@ -817,10 +817,10 @@ public class JavaValue extends Value<Object> {
 			},
 			example = "Java.constructClass('me.senseiwells.impl.Test').setField('A', 'Hello');"
 		)
-		private Value<?> setJavaField(Context context, MemberFunction function) throws CodeError {
+		private Value setJavaField(Context context, MemberFunction function) throws CodeError {
 			JavaValue thisValue = function.getThis(context, JavaValue.class);
 			String fieldName = function.getParameterValueOfType(context, StringValue.class, 1).value;
-			Value<?> newValue = function.getParameterValue(context, 2);
+			Value newValue = function.getParameterValue(context, 2);
 			Object callingObject = thisValue.asJavaValue();
 			fieldName = getObfuscatedFieldName(context, callingObject.getClass(), fieldName);
 			ReflectionUtils.setFieldFromName(callingObject.getClass(), callingObject, newValue.asJavaValue(), fieldName, function.syntaxPosition, context);

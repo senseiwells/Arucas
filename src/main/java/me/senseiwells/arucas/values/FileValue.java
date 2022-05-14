@@ -24,7 +24,7 @@ import java.nio.file.InvalidPathException;
 
 import static me.senseiwells.arucas.utils.ValueTypes.*;
 
-public class FileValue extends Value<File> {
+public class FileValue extends GenericValue<File> {
 	private FileValue(File value) {
 		super(value);
 	}
@@ -34,7 +34,7 @@ public class FileValue extends Value<File> {
 	}
 
 	@Override
-	public Value<File> copy(Context context) {
+	public GenericValue<File> copy(Context context) {
 		return this;
 	}
 
@@ -49,7 +49,7 @@ public class FileValue extends Value<File> {
 	}
 
 	@Override
-	public boolean isEquals(Context context, Value<?> other) throws CodeError {
+	public boolean isEquals(Context context, Value other) throws CodeError {
 		return (other instanceof FileValue that) && this.value.equals(that.value);
 	}
 
@@ -103,7 +103,7 @@ public class FileValue extends Value<File> {
 			returns = {FILE, "the file of the working directory"},
 			example = "File.getDirectory()"
 		)
-		private Value<?> getDirectory(Context context, BuiltInFunction function) {
+		private Value getDirectory(Context context, BuiltInFunction function) {
 			String filePath = System.getProperty("user.dir");
 			return FileValue.of(new File(filePath));
 		}
@@ -130,7 +130,7 @@ public class FileValue extends Value<File> {
 			returns = {STRING, "the name of the file"},
 			example = "File.getName()"
 		)
-		private Value<?> getName(Context context, MemberFunction function) throws CodeError {
+		private Value getName(Context context, MemberFunction function) throws CodeError {
 			FileValue thisValue = function.getThis(context, FileValue.class);
 			return StringValue.of(thisValue.value.getName());
 		}
@@ -145,7 +145,7 @@ public class FileValue extends Value<File> {
 			},
 			example = "file.read()"
 		)
-		private Value<?> readFile(Context context, MemberFunction function) throws CodeError {
+		private Value readFile(Context context, MemberFunction function) throws CodeError {
 			FileValue thisValue = function.getThis(context, FileValue.class);
 			try {
 				return StringValue.of(Files.readString(thisValue.value.toPath()));
@@ -172,7 +172,7 @@ public class FileValue extends Value<File> {
 			throwMsgs = "There was an error writing the file: ...",
 			example = "file.write('Hello World!')"
 		)
-		private Value<?> writeFile(Context context, MemberFunction function) throws CodeError {
+		private Value writeFile(Context context, MemberFunction function) throws CodeError {
 			FileValue thisValue = function.getThis(context, FileValue.class);
 			StringValue writeValue = function.getParameterValueOfType(context, StringValue.class, 1);
 
@@ -196,7 +196,7 @@ public class FileValue extends Value<File> {
 			throwMsgs = "Could not find any files",
 			example = "file.getSubFiles()"
 		)
-		private Value<?> getSubFiles(Context context, MemberFunction function) throws CodeError {
+		private Value getSubFiles(Context context, MemberFunction function) throws CodeError {
 			FileValue thisValue = function.getThis(context, FileValue.class);
 			try {
 				File[] files = thisValue.value.listFiles();
@@ -221,7 +221,7 @@ public class FileValue extends Value<File> {
 			throwMsgs = "Could not delete file: ...",
 			example = "file.delete()"
 		)
-		private Value<?> deleteFile(Context context, MemberFunction function) throws CodeError {
+		private Value deleteFile(Context context, MemberFunction function) throws CodeError {
 			FileValue thisValue = function.getThis(context, FileValue.class);
 			try {
 				return BooleanValue.of(thisValue.value.delete());
@@ -242,7 +242,7 @@ public class FileValue extends Value<File> {
 			throwMsgs = "Could not check file: ...",
 			example = "file.exists()"
 		)
-		private Value<?> exists(Context context, MemberFunction function) throws CodeError {
+		private Value exists(Context context, MemberFunction function) throws CodeError {
 			FileValue thisValue = function.getThis(context, FileValue.class);
 			try {
 				return BooleanValue.of(thisValue.value.exists());
@@ -263,7 +263,7 @@ public class FileValue extends Value<File> {
 			throwMsgs = "...",
 			example = "file.createDirectory()"
 		)
-		private Value<?> createDirectory(Context context, MemberFunction function) throws CodeError {
+		private Value createDirectory(Context context, MemberFunction function) throws CodeError {
 			FileValue thisValue = function.getThis(context, FileValue.class);
 			try {
 				return BooleanValue.of(thisValue.value.mkdirs());
@@ -279,7 +279,7 @@ public class FileValue extends Value<File> {
 			returns = {STRING, "the path of the file"},
 			example = "file.getPath()"
 		)
-		private Value<?> getPath(Context context, MemberFunction function) throws CodeError {
+		private Value getPath(Context context, MemberFunction function) throws CodeError {
 			FileValue thisValue = function.getThis(context, FileValue.class);
 			return StringValue.of(thisValue.value.getPath());
 		}
@@ -290,7 +290,7 @@ public class FileValue extends Value<File> {
 			returns = {STRING, "the absolute path of the file"},
 			example = "file.getAbsolutePath()"
 		)
-		private Value<?> getAbsolutePath(Context context, MemberFunction function) throws CodeError {
+		private Value getAbsolutePath(Context context, MemberFunction function) throws CodeError {
 			FileValue thisValue = function.getThis(context, FileValue.class);
 			try {
 				return StringValue.of(thisValue.value.getAbsolutePath());
@@ -305,7 +305,7 @@ public class FileValue extends Value<File> {
 			desc = "This opens the file (as in opens it on your os)",
 			example = "file.open()"
 		)
-		private Value<?> open(Context context, MemberFunction function) throws CodeError {
+		private Value open(Context context, MemberFunction function) throws CodeError {
 			FileValue thisValue = function.getThis(context, FileValue.class);
 			try {
 				Desktop.getDesktop().open(thisValue.value);

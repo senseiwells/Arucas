@@ -6,6 +6,7 @@ import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.BooleanValue;
+import me.senseiwells.arucas.values.GenericValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.ArucasClassValue;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
@@ -24,10 +25,10 @@ public class BinaryOperatorNode extends Node {
 	}
 
 	@Override
-	public Value<?> visit(Context context) throws CodeError, ThrowValue {
-		Value<?> left = this.leftNode.visit(context);
-		Value<?> right = null;
-		Value<?> result = null;
+	public Value visit(Context context) throws CodeError, ThrowValue {
+		Value left = this.leftNode.visit(context);
+		Value right = null;
+		Value result = null;
 
 		if (left instanceof ArucasClassValue classValue && classValue.hasOperatorMethod(this.token.type, 2)) {
 			// If you override the && or || operators there's no way to short circuit
@@ -45,7 +46,7 @@ public class BinaryOperatorNode extends Node {
 			else {
 				right = this.rightNode.visit(context);
 			}
-			List<Value<?>> parameters = new ArrayList<>();
+			List<Value> parameters = new ArrayList<>();
 			parameters.add(right);
 			return classValue.getOperatorMethod(this.token.type, 2).copy(classValue).call(context, parameters);
 		}

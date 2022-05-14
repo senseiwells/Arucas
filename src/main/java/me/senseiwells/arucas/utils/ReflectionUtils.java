@@ -15,7 +15,7 @@ import java.lang.reflect.*;
 import java.util.List;
 
 public class ReflectionUtils {
-	public static Value<?> callMethodFromNameAndArgs(Class<?> callingClass, Object callingObject, String methodName, List<Value<?>> arguments, ISyntax syntaxPosition, Context context) throws CodeError {
+	public static Value callMethodFromNameAndArgs(Class<?> callingClass, Object callingObject, String methodName, List<Value> arguments, ISyntax syntaxPosition, Context context) throws CodeError {
 		Object[] objects = new Object[arguments.size()];
 		Class<?>[] parameters = new Class[arguments.size()];
 
@@ -47,7 +47,7 @@ public class ReflectionUtils {
 		return invokeMethod(context, syntaxPosition, wantedMethod, callingObject, objects);
 	}
 
-	public static Value<?> callMethodFromJavaValue(JavaValue javaValue, String methodName, List<Node> argumentNodes, ISyntax syntaxPosition, Context context) throws CodeError {
+	public static Value callMethodFromJavaValue(JavaValue javaValue, String methodName, List<Node> argumentNodes, ISyntax syntaxPosition, Context context) throws CodeError {
 		Object callingObject = javaValue.asJavaValue();
 		Class<?> callingClass = callingObject.getClass();
 
@@ -77,7 +77,7 @@ public class ReflectionUtils {
 		});
 	}
 
-	public static Value<?> constructFromArgs(Class<?> constructingClass, ArucasList arguments, ISyntax syntaxPosition, Context context) throws CodeError {
+	public static Value constructFromArgs(Class<?> constructingClass, ArucasList arguments, ISyntax syntaxPosition, Context context) throws CodeError {
 		Object[] objects = new Object[arguments.size()];
 		Class<?>[] parameters = new Class[arguments.size()];
 
@@ -107,7 +107,7 @@ public class ReflectionUtils {
 		return invokeConstructor(context, syntaxPosition, constructor, objects);
 	}
 
-	public static Value<?> getFieldFromName(Class<?> callingClass, Object callingObject, String fieldName, ISyntax syntaxPosition, Context context) throws RuntimeError {
+	public static Value getFieldFromName(Class<?> callingClass, Object callingObject, String fieldName, ISyntax syntaxPosition, Context context) throws RuntimeError {
 		Field field = ExceptionUtils.catchAsNull(() -> callingClass.getField(fieldName));
 		if (field != null) {
 			return getField(context, syntaxPosition, field, callingObject);
@@ -118,7 +118,7 @@ public class ReflectionUtils {
 		);
 	}
 
-	public static Value<?> getFieldFromJavaValue(JavaValue javaValue, String fieldName, ISyntax syntaxPosition, Context context) {
+	public static Value getFieldFromJavaValue(JavaValue javaValue, String fieldName, ISyntax syntaxPosition, Context context) {
 		Object callingObject = javaValue.asJavaValue();
 		Class<?> callingClass = callingObject.getClass();
 		Field field = ExceptionUtils.catchAsNull(() -> callingClass.getField(fieldName));
@@ -140,7 +140,7 @@ public class ReflectionUtils {
 		);
 	}
 
-	public static boolean setFieldFromJavaValue(JavaValue javaValue, Value<?> newValue, String fieldName, ISyntax syntaxPosition, Context context) {
+	public static boolean setFieldFromJavaValue(JavaValue javaValue, Value newValue, String fieldName, ISyntax syntaxPosition, Context context) {
 		Object callingObject = javaValue.asJavaValue();
 		Class<?> callingClass = callingObject.getClass();
 		Field field = ExceptionUtils.catchAsNull(() -> callingClass.getField(fieldName));
@@ -170,7 +170,7 @@ public class ReflectionUtils {
 		return null;
 	}
 
-	private static Value<?> invokeMethod(Context context, ISyntax syntaxPosition, Method method, Object object, Object... arguments) throws CodeError {
+	private static Value invokeMethod(Context context, ISyntax syntaxPosition, Method method, Object object, Object... arguments) throws CodeError {
 		try {
 			return JavaValue.of(method.invoke(object, arguments));
 		}
@@ -198,7 +198,7 @@ public class ReflectionUtils {
 		}
 	}
 
-	private static Value<?> invokeConstructor(Context context, ISyntax syntaxPosition, Constructor<?> constructor, Object... arguments) throws CodeError {
+	private static Value invokeConstructor(Context context, ISyntax syntaxPosition, Constructor<?> constructor, Object... arguments) throws CodeError {
 		try {
 			return JavaValue.of(constructor.newInstance(arguments));
 		}
@@ -232,7 +232,7 @@ public class ReflectionUtils {
 		}
 	}
 
-	private static Value<?> getField(Context context, ISyntax syntaxPosition, Field field, Object object) throws RuntimeError {
+	private static Value getField(Context context, ISyntax syntaxPosition, Field field, Object object) throws RuntimeError {
 		try {
 			// Cannot do catchAsNull since actual return value may be null
 			return JavaValue.of(field.get(object));

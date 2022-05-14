@@ -11,7 +11,7 @@ import java.util.Collection;
 public interface IArucasCollection {
 	String COLLECTION = "<collection>";
 
-	Collection<? extends Value<?>> asCollection();
+	Collection<? extends Value> asCollection();
 	int size();
 
 	default String getAsStringSafe() {
@@ -22,10 +22,10 @@ public interface IArucasCollection {
 		try {
 			StringBuilder builder = new StringBuilder();
 
-			Collection<? extends Value<?>> values = this.asCollection();
+			Collection<? extends Value> values = this.asCollection();
 
-			for (Value<?> value : values) {
-				String valueAsString = value.value instanceof IArucasCollection collection ?
+			for (Value value : values) {
+				String valueAsString = value.getValue() instanceof IArucasCollection collection ?
 					collection.getAsStringUnsafe(context, position) : value.getAsString(context);
 				builder.append(valueAsString).append(", ");
 			}

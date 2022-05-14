@@ -73,7 +73,7 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 			String name = entry.getKey();
 			Node node = entry.getValue();
 
-			Value<?> value = node.visit(context);
+			Value value = node.visit(context);
 			thisValue.addMemberVariable(name, value);
 		}
 
@@ -108,7 +108,7 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 	}
 
 	@Override
-	public ArucasClassValue createNewDefinition(Context ctx, List<Value<?>> parameters, ISyntax syntaxPosition) throws CodeError, ThrowValue {
+	public ArucasClassValue createNewDefinition(Context ctx, List<Value> parameters, ISyntax syntaxPosition) throws CodeError, ThrowValue {
 		Context context = this.getLocalContext(ctx);
 
 		ArucasClassValue thisValue = new ArucasClassValue(this);

@@ -45,7 +45,7 @@ public class ArucasNetworkClass extends ArucasClassExtension {
 		throwMsgs = "Failed to request data from ...",
 		example = "Network.requestUrl('https://google.com');"
 	)
-	private Value<?> requestUrl(Context context, BuiltInFunction function) throws CodeError {
+	private Value requestUrl(Context context, BuiltInFunction function) throws CodeError {
 		String url = function.getFirstParameter(context, StringValue.class).value;
 		String response = NetworkUtils.getStringFromUrl(url);
 		if (response == null) {
@@ -65,7 +65,7 @@ public class ArucasNetworkClass extends ArucasClassExtension {
 		returns = {BOOLEAN, "whether the download was successful"},
 		example = "Network.downloadFile('https://arucas.com', new File('dir/downloads'));"
 	)
-	private Value<?> downloadFile(Context context, BuiltInFunction function) throws CodeError {
+	private Value downloadFile(Context context, BuiltInFunction function) throws CodeError {
 		String url = function.getFirstParameter(context, StringValue.class).value;
 		File file = function.getParameterValueOfType(context, FileValue.class, 1).value;
 		return BooleanValue.of(NetworkUtils.downloadFile(url, file));
@@ -79,7 +79,7 @@ public class ArucasNetworkClass extends ArucasClassExtension {
 		throwMsgs = "Failed to open url ...",
 		example = "Network.openUrl('https://google.com');"
 	)
-	private Value<?> openUrl(Context context, BuiltInFunction function) throws CodeError {
+	private Value openUrl(Context context, BuiltInFunction function) throws CodeError {
 		String url = function.getFirstParameter(context, StringValue.class).value;
 		if (!NetworkUtils.openUrl(url)) {
 			throw new RuntimeError("Failed to open url '%s'".formatted(url), function.syntaxPosition, context);
@@ -88,7 +88,7 @@ public class ArucasNetworkClass extends ArucasClassExtension {
 	}
 
 	@Override
-	public Class<? extends BaseValue> getValueClass() {
+	public Class<? extends Value> getValueClass() {
 		return null;
 	}
 }

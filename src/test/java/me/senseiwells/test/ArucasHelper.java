@@ -8,12 +8,10 @@ import me.senseiwells.arucas.extensions.util.ArucasNetworkClass;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.utils.ExceptionUtils;
 import me.senseiwells.arucas.values.*;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 
 import java.util.List;
-import java.util.concurrent.Future;
 
 public class ArucasHelper {
 	public static Context createContext() {
@@ -28,7 +26,7 @@ public class ArucasHelper {
 			.setDisplayName("root")
 			.addClasses(
 				"NoBuiltIn",
-				Value.ArucasBaseClass::new,
+				GenericValue.ArucasBaseClass::new,
 				TypeValue.ArucasTypeClass::new,
 				EnumValue.ArucasEnumClass::new,
 				FunctionValue.ArucasFunctionClass::new,
@@ -63,7 +61,7 @@ public class ArucasHelper {
 	}
 
 	public static String runUnsafe(String syntax, Context context) throws CodeError {
-		Value<?> value = context.getThreadHandler().runOnMainThreadAndWait(context, "Test", syntax);
+		Value value = context.getThreadHandler().runOnMainThreadAndWait(context, "Test", syntax);
 		return value.getAsString(context);
 	}
 
