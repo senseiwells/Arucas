@@ -15,8 +15,8 @@ public class Main {
 		Context context = new ContextBuilder()
 			.setDisplayName("System.in")
 			.addDefault()
-			.generateArucasFiles()
 			.addWrappers("test", ChildWrapper::new)
+			.generateArucasFiles()
 			.build();
 
 		ArgumentParser parser = new ArgumentParser()

@@ -1,5 +1,7 @@
 package me.senseiwells.arucas.api;
 
+import me.senseiwells.arucas.api.docs.parser.ClassDocParser;
+import me.senseiwells.arucas.api.docs.parser.ExtensionDocParser;
 import me.senseiwells.arucas.api.impl.DefaultArucasAPI;
 import me.senseiwells.arucas.api.wrappers.IArucasWrappedClass;
 import me.senseiwells.arucas.extensions.ArucasBuiltInExtension;
@@ -229,6 +231,7 @@ public class ContextBuilder {
 
 	public ContextBuilder generateArucasFiles() throws IOException {
 		ArucasClassDefinitionMap classDefinitions = new ArucasClassDefinitionMap();
+
 		for (Supplier<ArucasClassExtension> supplier : this.builtInClasses) {
 			classDefinitions.add(supplier.get());
 		}
@@ -258,9 +261,19 @@ public class ContextBuilder {
 				Files.createDirectories(parent);
 			}
 			for (AbstractClassDefinition definition : entry.getValue()) {
-				builder.append(definition.toString()).append("\n\n");
+				builder.append(new ClassDocParser(definition).parse()).append("\n\n");
 			}
 			Files.write(generationPath, Collections.singleton(builder.toString()));
+		}
+
+		if (!this.extensions.isEmpty()) {
+			Path generationPath = this.arucasAPI.getImportPath().resolve("Extensions.arucas");
+			Path parent = generationPath.getParent();
+			if (!Files.exists(parent)) {
+				Files.createDirectories(parent);
+			}
+			String documentation = new ExtensionDocParser(this.extensions.stream().map(Supplier::get).toList()).parse();
+			Files.write(generationPath, Collections.singleton(documentation));
 		}
 
 		return this;

@@ -1,6 +1,7 @@
 package me.senseiwells.arucas.extensions;
 
 import me.senseiwells.arucas.api.IArucasExtension;
+import me.senseiwells.arucas.api.docs.FunctionDoc;
 import me.senseiwells.arucas.core.Arucas;
 import me.senseiwells.arucas.core.Run;
 import me.senseiwells.arucas.throwables.CodeError;
@@ -26,6 +27,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
+
+import static me.senseiwells.arucas.utils.ValueTypes.*;
 
 /**
  * Built-in extension for Arucas. Provides many standard functions. <br>
@@ -70,14 +73,14 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		new BuiltInFunction("runFromString", "string", this::runFromString)
 	);
 
-	/**
-	 * Name: <code>run(path)</code> <br>
-	 * Description: This is used to run a <code>.arucas</code> file, you can use on script to run other scripts <br>
-	 * Parameter - String: as a file path <br>
-	 * Returns - Value: any value that the file returns <br>
-	 * Throws: Error: <code>"Failed to execute script..."</code> if the file fails to execute <br>
-	 * Example: <code>run("/home/user/script.arucas");</code> 
-	 */
+	@FunctionDoc(
+		name = "run",
+		desc = "This is used to run a .arucas file, you can use on script to run other scripts",
+		params = {STRING, "path", "as a file path"},
+		returns = {ANY, "any value that the file returns"},
+		throwMsgs = "Failed to execute script...",
+		example = "run('/home/user/script.arucas')"
+	)
 	private Value<?> run(Context context, BuiltInFunction function) throws CodeError {
 		StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
 		String filePath = new File(stringValue.value).getAbsolutePath();
@@ -91,21 +94,21 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		}
 	}
 
-	/**
-	 * Name: <code>stop()</code> <br>
-	 * Description: This is used to stop a script <br>
-	 * Example: <code>stop();</code> 
-	 */
+	@FunctionDoc(
+		name = "stop",
+		desc = "This is used to stop a script",
+		example = "stop()"
+	)
 	private Value<?> stop(Context context, BuiltInFunction function) throws CodeError {
 		throw new ThrowStop();
 	}
 
-	/**
-	 * Name: <code>sleep(milliseconds)</code> <br>
-	 * Description: This pauses your program for a certain amount of milliseconds <br>
-	 * Parameter - Number: milliseconds to sleep <br>
-	 * Example: <code>sleep(1000);</code> 
-	 */
+	@FunctionDoc(
+		name = "sleep",
+		desc = "This pauses your program for a certain amount of milliseconds",
+		params = {NUMBER, "milliseconds", "milliseconds to sleep"},
+		example = "sleep(1000)"
+	)
 	private Value<?> sleep(Context context, BuiltInFunction function) throws CodeError {
 		NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 0);
 		try {
@@ -117,23 +120,24 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		return NullValue.NULL;
 	}
 
-	/**
-	 * Name: <code>print(printValue)</code> <br>
-	 * Description: This prints a value to the console <br>
-	 * Parameter - Value: the value to print <br>
-	 * Example: <code>print("Hello World");</code> 
-	 */
+	@FunctionDoc(
+		name = "print",
+		desc = "This prints a value to the console",
+		params = {ANY, "printValue", "the value to print"},
+		example = "print('Hello World')"
+	)
 	private Value<?> print(Context context, BuiltInFunction function) throws CodeError {
 		context.getOutput().println(function.getParameterValue(context, 0).getAsString(context));
 		return NullValue.NULL;
 	}
 
-	/**
-	 * Name: <code>fullPrint(printValue)</code> <br>
-	 * Description: This prints a number of values to the console <br>
-	 * Parameters - Arbitrary: any number of values to print <br>
-	 * Example: <code>print("Hello World", "This is a test", 123);</code> 
-	 */
+	@FunctionDoc(
+		isVarArgs = true,
+		name = "print",
+		desc = "This prints a number of values to the console",
+		params = {ANY, "printValue...", "the value to print"},
+		example = "print('Hello World', 'This is a test', 123)"
+	)
 	private Value<?> fullPrint(Context context, BuiltInFunction function) throws CodeError {
 		ListValue listValue = function.getParameterValueOfType(context, ListValue.class, 0);
 
@@ -150,141 +154,142 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		return NullValue.NULL;
 	}
 
-	/**
-	 * Name: <code>input(prompt)</code> <br>
-	 * Description: This is used to take an input from the user <br>
-	 * Parameter - String: the prompt to show the user <br>
-	 * Returns - String: the input from the user <br>
-	 * Example: <code>input("What is your name?");</code> 
-	 */
+	@FunctionDoc(
+		name = "input",
+		desc = "This is used to take an input from the user",
+		params = {STRING, "prompt", "the prompt to show the user"},
+		returns = {STRING, "the input from the user"},
+		example = "input('What is your name?')"
+	)
 	private synchronized Value<?> input(Context context, BuiltInFunction function) throws CodeError {
 		StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
 		context.getOutput().println(stringValue.value);
 		return StringValue.of(this.scanner.nextLine());
 	}
 
-	/**
-	 * Name: <code>debug(bool)</code> <br>
-	 * Description: This is used to enable or disable debug mode <br>
-	 * Parameter - Boolean: true to enable debug mode, false to disable debug mode <br>
-	 * Example: <code>debug(true);</code> 
-	 */
+	@FunctionDoc(
+		name = "debug",
+		desc = "This is used to enable or disable debug mode",
+		params = {BOOLEAN, "bool", "true to enable debug mode, false to disable debug mode"},
+		example = "debug(true)"
+	)
 	private Value<?> debug(Context context, BuiltInFunction function) throws CodeError {
 		context.setDebug(function.getParameterValueOfType(context, BooleanValue.class, 0).value);
 		return NullValue.NULL;
 	}
 
-	/**
-	 * Name: <code>experimental(bool)</code> <br>
-	 * Description: This is used to enable or disable experimental mode <br>
-	 * Parameter - Boolean: true to enable experimental mode, false to disable experimental mode <br>
-	 * Example: <code>experimental(true);</code> 
-	 */
+	@FunctionDoc(
+		name = "experimental",
+		desc = "This is used to enable or disable experimental mode",
+		params = {BOOLEAN, "bool", "true to enable experimental mode, false to disable experimental mode"},
+		example = "experimental(true)"
+	)
 	private Value<?> experimental(Context context, BuiltInFunction function) throws CodeError {
 		context.setExperimental(function.getParameterValueOfType(context, BooleanValue.class, 0).value);
 		return NullValue.NULL;
 	}
 
-	/**
-	 * Name: <code>suppressDeprecated(bool)</code> <br>
-	 * Description: This is used to enable or disable suppressing deprecation warnings <br>
-	 * Parameter - Boolean: true to enable suppressing deprecation warnings, false to disable suppressing deprecation warnings <br>
-	 * Example: <code>suppressDeprecated(true);</code> 
-	 */
+	@FunctionDoc(
+		name = "suppressDeprecated",
+		desc = "This is used to enable or disable suppressing deprecation warnings",
+		params = {BOOLEAN, "bool", "true to enable suppressing deprecation warnings, false to disable suppressing deprecation warnings"},
+		example = "suppressDeprecated(true)"
+	)
 	private Value<?> suppressDeprecated(Context context, BuiltInFunction function) throws CodeError {
 		context.setSuppressDeprecated(function.getParameterValueOfType(context, BooleanValue.class, 0).value);
 		return NullValue.NULL;
 	}
 
-	/**
-	 * Name: <code>isMain()</code> <br>
-	 * Description: This is used to check whether the script is the main script <br>
-	 * Returns - Boolean: true if the script is the main script, false if it is not <br>
-	 * Example: <code>isMain();</code> 
-	 */
+	@FunctionDoc(
+		name = "isMain",
+		desc = "This is used to check whether the script is the main script",
+		returns = {BOOLEAN, "true if the script is the main script, false if it is not"},
+		example = "isMain()"
+	)
 	private Value<?> isMain(Context context, BuiltInFunction function) {
 		return BooleanValue.of(context.isMain());
 	}
 
-	/**
-	 * Name: <code>getArucasVersion()</code> <br>
-	 * Description: This is used to get the version of Arucas that is currently running <br>
-	 * Returns - String: the version of Arucas that is currently running <br>
-	 * Example: <code>getArucasVersion();</code> 
-	 */
+	@FunctionDoc(
+		name = "getArucasVersion",
+		desc = "This is used to get the version of Arucas that is currently running",
+		returns = {STRING, "the version of Arucas that is currently running"},
+		example = "getArucasVersion()"
+	)
 	private Value<?> getArucasVersion(Context context, BuiltInFunction function) {
 		return StringValue.of(Arucas.VERSION);
 	}
 
-	/**
-	 * Name: <code>random(bound)</code> <br>
-	 * Description: This is used to generate a random integer between 0 and the bound <br>
-	 * Parameter - Number: the maximum bound (exclusive) <br>
-	 * Returns - Number: the random integer <br>
-	 * Example: <code>random(10);</code> 
-	 */
+
+	@FunctionDoc(
+		name = "random",
+		desc = "This is used to generate a random integer between 0 and the bound",
+		params = {NUMBER, "bound", "the maximum bound (exclusive)"},
+		returns = {NUMBER, "the random integer"},
+		example = "random(10)"
+	)
 	private Value<?> random(Context context, BuiltInFunction function) throws CodeError {
 		NumberValue numValue = function.getParameterValueOfType(context, NumberValue.class, 0);
 		return NumberValue.of(this.random.nextInt(numValue.value.intValue()));
 	}
 
-	/**
-	 * Name: <code>getTime()</code> <br>
-	 * Description: This is used to get the current time formatted with HH:mm:ss in your local time <br>
-	 * Returns - String: the current time formatted with HH:mm:ss <br>
-	 * Example: <code>getTime();</code> 
-	 */
+	@FunctionDoc(
+		name = "getTime",
+		desc = "This is used to get the current time formatted with HH:mm:ss in your local time",
+		returns = {STRING, "the current time formatted with HH:mm:ss"},
+		example = "getTime()"
+	)
 	private Value<?> getTime(Context context, BuiltInFunction function) {
 		return StringValue.of(DateTimeFormatter.ofPattern("HH:mm:ss").format(LocalTime.now()));
 	}
 
-	/**
-	 * Name: <code>getNanoTime()</code> <br>
-	 * Description: This is used to get the current time in nanoseconds <br>
-	 * Returns - Number: the current time in nanoseconds <br>
-	 * Example: <code>getNanoTime();</code> 
-	 */
+	@FunctionDoc(
+		name = "getNanoTime",
+		desc = "This is used to get the current time in nanoseconds",
+		returns = {NUMBER, "the current time in nanoseconds"},
+		example = "getNanoTime()"
+	)
 	private Value<?> getNanoTime(Context context, BuiltInFunction function) {
 		return NumberValue.of(System.nanoTime());
 	}
 
-	/**
-	 * Name: <code>getMilliTime()</code> <br>
-	 * Description: This is used to get the current time in milliseconds <br>
-	 * Returns - Number: the current time in milliseconds <br>
-	 * Example: <code>getMilliTime();</code> 
-	 */
+	@FunctionDoc(
+		name = "getMilliTime",
+		desc = "This is used to get the current time in milliseconds",
+		returns = {NUMBER, "the current time in milliseconds"},
+		example = "getMilliTime()"
+	)
 	private Value<?> getMilliTime(Context context, BuiltInFunction function) {
 		return NumberValue.of(System.currentTimeMillis());
 	}
 
-	/**
-	 * Name: <code>getUnixTime()</code> <br>
-	 * Description: This is used to get the current time in seconds since the Unix epoch <br>
-	 * Returns - Number: the current time in seconds since the Unix epoch <br>
-	 * Example: <code>getUnixTime();</code> 
-	 */
+	@FunctionDoc(
+		name = "getUnixTime",
+		desc = "This is used to get the current time in seconds since the Unix epoch",
+		returns = {NUMBER, "the current time in seconds since the Unix epoch"},
+		example = "getUnixTime()"
+	)
 	private Value<?> getUnixTime(Context context, BuiltInFunction function) {
 		return NumberValue.of(System.currentTimeMillis() / 1000F);
 	}
 
-	/**
-	 * Name: <code>getDate()</code> <br>
-	 * Description: This is used to get the current date formatted with dd/MM/yyyy in your local time <br>
-	 * Returns - String: the current date formatted with dd/MM/yyyy <br>
-	 * Example: <code>getDate();</code> 
-	 */
+	@FunctionDoc(
+		name = "getDate",
+		desc = "This is used to get the current date formatted with dd/MM/yyyy in your local time",
+		returns = {STRING, "the current date formatted with dd/MM/yyyy"},
+		example = "getDate()"
+	)
 	private Value<?> getDate(Context context, BuiltInFunction function) {
 		return StringValue.of(DateTimeFormatter.ofPattern("dd/MM/yyyy").format(LocalDate.now()));
 	}
 
-	/**
-	 * Name: <code>len(collection)</code> <br>
-	 * Description: This is used to get the length of a collection or string <br>
-	 * Parameter - String/Collection/Function: the collection or string <br>
-	 * Throws - Error: <code>"Cannot pass ... into len()"</code> if the parameter is not a collection or string <br>
-	 * Example: <code>len("Hello World");</code> 
-	 */
+	@FunctionDoc(
+		name = "len",
+		desc = "This is used to get the length of a collection or string",
+		params = {STRING, "collection", "the collection or string"},
+		throwMsgs = "Cannot pass ... into len()",
+		example = "len(\"Hello World\")"
+	)
 	private Value<?> len(Context context, BuiltInFunction function) throws CodeError {
 		Value<?> value = function.getParameterValue(context, 0);
 		if (value instanceof StringValue stringValue) {
@@ -303,28 +308,31 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		throw new RuntimeError("Cannot pass %s into len()".formatted(value), function.syntaxPosition, context);
 	}
 
-	/**
-	 * Deprecated: You should use the <code>throw</code> keyword <br>
-	 * Name: <code>throwRuntimeError(message)</code> <br>
-	 * Description: This is used to throw a runtime error <br>
-	 * Parameter - String: the message of the error <br>
-	 * Throws - Error: the error with the message <br>
-	 * Example: <code>throwRuntimeError("I'm throwing this error");</code> 
-	 */
+	@FunctionDoc(
+		deprecated = "You should use the `throw` keyword",
+		name = "throwRuntimeError",
+		desc = "This is used to throw a runtime error",
+		params = {STRING, "message", "the message of the error"},
+		throwMsgs = "the error with the message",
+		example = "throwRuntimeError('I'm throwing this error')"
+	)
 	@Deprecated
 	private Value<?> throwRuntimeError(Context context, BuiltInFunction function) throws CodeError {
 		StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
 		throw new RuntimeError(stringValue.value, function.syntaxPosition, context);
 	}
 
-	/**
-	 * Deprecated: You should use Function class <code>Function.callWithList(fun() {}, [])</code> <br>
-	 * Name: <code>callFunctionWithList(function, list)</code> <br>
-	 * Description: This is used to call a function with a list of arguments <br>
-	 * Parameters - Function, List: the function and the list of arguments <br>
-	 * Returns - Value: the return value of the function <br>
-	 * Example: <code>callFunctionWithList(fun(n1, n2, n3) {}, [1, 2, 3]);</code>
-	 */
+	@FunctionDoc(
+		deprecated = "You should use Function class `Function.callWithList(fun() {}, [])`",
+		name = "callFunctionWithList",
+		desc = "This is used to call a function with a list of arguments",
+		params = {
+			FUNCTION, "function", "the function",
+			LIST, "list", "the list of arguments"
+		},
+		returns = {ANY, "the return value of the function"},
+		example = "callFunctionWithList(fun(n1, n2, n3) {}, [1, 2, 3])"
+	)
 	@Deprecated
 	private Value<?> callFunctionWithList(Context context, BuiltInFunction function) throws CodeError {
 		FunctionValue functionValue = function.getParameterValueOfType(context, FunctionValue.class, 0);
@@ -332,13 +340,13 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		return functionValue.call(context, listValue);
 	}
 
-	/**
-	 * Name: <code>runFromString(string)</code> <br>
-	 * Description: This is used to evaluate a string as a script <br>
-	 * Parameter - String: the string to evaluate <br>
-	 * Returns - Value: the return value of the script <br>
-	 * Example: <code>runFromString("return 1;");</code>
-	 */
+	@FunctionDoc(
+		name = "runFromString",
+		desc = "This is used to evaluate a string as a script",
+		params = {STRING, "string", "the string to evaluate"},
+		returns = {ANY, "the return value of the script"},
+		example = "runFromString('return 1;')"
+	)
 	private Value<?> runFromString(Context context, BuiltInFunction function) throws CodeError {
 		StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
 		return Run.run(context.createBranch(), "string-run", stringValue.value);

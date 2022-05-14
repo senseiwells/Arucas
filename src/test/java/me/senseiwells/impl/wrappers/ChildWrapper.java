@@ -1,5 +1,6 @@
 package me.senseiwells.impl.wrappers;
 
+import me.senseiwells.arucas.api.docs.FunctionDoc;
 import me.senseiwells.arucas.api.wrappers.ArucasClass;
 import me.senseiwells.arucas.api.wrappers.ArucasConstructor;
 import me.senseiwells.arucas.api.wrappers.ArucasFunction;
@@ -12,6 +13,11 @@ public class ChildWrapper extends BaseWrapper {
 
 	}
 
+	@FunctionDoc(
+		name = "doSomethingElse",
+		desc = "Does something",
+		example = "child.doSomethingElse();"
+	)
 	@ArucasFunction
 	public void doSomethingElse(Context context) {
 		System.out.println("Did something else!");
