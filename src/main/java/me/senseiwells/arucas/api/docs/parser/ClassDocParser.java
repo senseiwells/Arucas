@@ -55,7 +55,7 @@ public class ClassDocParser extends DocParser {
 		for (Method method : this.isWrapper ? this.definitionClass.getMethods() : this.definitionClass.getDeclaredMethods()) {
 			ConstructorDoc constructorDoc = method.getAnnotation(ConstructorDoc.class);
 			if (constructorDoc != null) {
-				constructorDocMap.put(constructorDoc.params().length, constructorDoc);
+				constructorDocMap.put(constructorDoc.params().length / 3, constructorDoc);
 				continue;
 			}
 			FunctionDoc functionDoc = method.getAnnotation(FunctionDoc.class);

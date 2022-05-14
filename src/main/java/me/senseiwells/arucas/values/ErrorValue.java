@@ -2,17 +2,21 @@ package me.senseiwells.arucas.values;
 
 import me.senseiwells.arucas.api.ArucasClassExtension;
 import me.senseiwells.arucas.api.ISyntax;
+import me.senseiwells.arucas.api.docs.ClassDoc;
+import me.senseiwells.arucas.api.docs.ConstructorDoc;
+import me.senseiwells.arucas.api.docs.FunctionDoc;
 import me.senseiwells.arucas.throwables.ArucasRuntimeError;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.utils.ValueTypes;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
 import me.senseiwells.arucas.values.functions.ConstructorFunction;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
 import java.util.List;
+
+import static me.senseiwells.arucas.utils.ValueTypes.*;
 
 public class ErrorValue extends Value<Value<?>> {
 	private final RuntimeError runtimeError;
@@ -48,7 +52,7 @@ public class ErrorValue extends Value<Value<?>> {
 
 	@Override
 	public String getTypeName() {
-		return ValueTypes.ERROR;
+		return ERROR;
 	}
 
 	@Override
@@ -61,14 +65,13 @@ public class ErrorValue extends Value<Value<?>> {
 		return this.runtimeError;
 	}
 
-	/**
-	 * Error class for Arucas. <br>
-	 * Fully Documented.
-	 * @author senseiwells
-	 */
+	@ClassDoc(
+		name = ERROR,
+		desc = "This class is the only type that can be thrown"
+	)
 	public static class ArucasErrorClass extends ArucasClassExtension {
 		public ArucasErrorClass() {
-			super(ValueTypes.ERROR);
+			super(ERROR);
 		}
 
 		@Override
@@ -85,35 +88,32 @@ public class ErrorValue extends Value<Value<?>> {
 			);
 		}
 
-		/**
-		 * Name: <code>new Error()</code> <br>
-		 * Description: This creates a new Error object with no message <br>
-		 * Returns - Error: the new Error object <br>
-		 * Example: <code>new Error();</code>
-		 */
+		@ConstructorDoc(
+			desc = "This creates a new Error value with no message",
+			example = "new Error();"
+		)
 		private Value<?> newError(Context context, BuiltInFunction function) {
 			return new ErrorValue("", function.syntaxPosition, context, NullValue.NULL);
 		}
 
-		/**
-		 * Name: <code>new Error(details)</code> <br>
-		 * Description: This creates a new Error object with the given details as a message <br>
-		 * Parameter - String: the details of the error <br>
-		 * Returns - Error: the new Error object <br>
-		 * Example: <code>new Error("This is an error");</code>
-		 */
+		@ConstructorDoc(
+			desc = "This creates a new Error value with the given details as a message",
+			params = {STRING, "details", "the details of the error"},
+			example = "new Error('This is an error');"
+		)
 		private Value<?> newError1(Context context, BuiltInFunction function) throws CodeError {
 			StringValue details = function.getParameterValueOfType(context, StringValue.class, 0);
 			return new ErrorValue(details.value, function.syntaxPosition, context, NullValue.NULL);
 		}
 
-		/**
-		 * Name: <code>new Error(details, value)</code> <br>
-		 * Description: This creates a new Error object with the given details as a message and the given value <br>
-		 * Parameter - String, Value: the details of the error, the value that is related to the error <br>
-		 * Returns - Error: the new Error object <br>
-		 * Example: <code>new Error("This is an error", "object");</code>
-		 */
+		@ConstructorDoc(
+			desc = "This creates a new Error value with the given details as a message and the given value",
+			params = {
+				STRING, "details", "the details of the error",
+				ANY, "value", "the value that is related to the error"
+			},
+			example = "new Error('This is an error', [1, 2, 3]);"
+		)
 		private Value<?> newError2(Context context, BuiltInFunction function) throws CodeError {
 			StringValue details = function.getParameterValueOfType(context, StringValue.class, 0);
 			Value<?> value = function.getParameterValue(context, 1);
@@ -129,34 +129,34 @@ public class ErrorValue extends Value<Value<?>> {
 			);
 		}
 
-		/**
-		 * Name: <code>&lt;Error>.getFormattedDetails()</code> <br>
-		 * Description: This returns the message of the error in a formatted string <br>
-		 * Returns - String: the details of the error <br>
-		 * Example: <code>new Error("Error!").getFormattedDetails();</code>
-		 */
+		@FunctionDoc(
+			name = "getFormattedDetails",
+			desc = "This returns the message of the error in a formatted string",
+			returns = {STRING, "the details of the error"},
+			example = "error.getFormattedDetails();"
+		)
 		private Value<?> getFormattedDetails(Context context, MemberFunction function) throws CodeError {
 			ErrorValue error = function.getThis(context, ErrorValue.class);
 			return StringValue.of(error.runtimeError.toString(context));
 		}
 
-		/**
-		 * Name: <code>&lt;Error>.getDetails()</code> <br>
-		 * Description: This returns the raw message of the error <br>
-		 * Returns - String: the details of the error <br>
-		 * Example: <code>new Error("Error!").getDetails();</code>
-		 */
+		@FunctionDoc(
+			name = "getDetails",
+			desc = "This returns the raw message of the error",
+			returns = {STRING, "the details of the error"},
+			example = "error.getDetails();"
+		)
 		private Value<?> getDetails(Context context, MemberFunction function) throws CodeError {
 			ErrorValue error = function.getThis(context, ErrorValue.class);
 			return StringValue.of(error.runtimeError.toString(context, true));
 		}
 
-		/**
-		 * Name: <code>&lt;Error>.getValue()</code> <br>
-		 * Description: This returns the value that is related to the error <br>
-		 * Returns - Value: the value that is related to the error <br>
-		 * Example: <code>new Error("Error!", "object").getValue();</code>
-		 */
+		@FunctionDoc(
+			name = "getValue",
+			desc = "This returns the value that is related to the error",
+			returns = {ANY, "the value that is related to the error"},
+			example = "error.getValue();"
+		)
 		private Value<?> getValue(Context context, MemberFunction function) throws CodeError {
 			ErrorValue error = function.getThis(context, ErrorValue.class);
 			return error.value;

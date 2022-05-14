@@ -13,6 +13,7 @@ import java.util.List;
 
 public abstract class AbstractBuiltInFunction<T extends AbstractBuiltInFunction<?>> extends FunctionValue {
 	public final FunctionDefinition<T> function;
+	private boolean hasBeenWarned = false;
 
 	public AbstractBuiltInFunction(String name, List<String> argumentNames, FunctionDefinition<T> function, String isDeprecated) {
 		super(name, ISyntax.emptyOf("Arucas/" + name), argumentNames, isDeprecated);
@@ -25,8 +26,9 @@ public abstract class AbstractBuiltInFunction<T extends AbstractBuiltInFunction<
 	}
 
 	public void checkDeprecated(Context context) {
-		if (this.deprecatedMessage != null && !context.isSuppressDeprecated()) {
+		if (this.deprecatedMessage != null && !this.hasBeenWarned && !context.isSuppressDeprecated()) {
 			context.printDeprecated("The function %s() is deprecated and will be removed in the future! %s".formatted(this.value, this.deprecatedMessage));
+			this.hasBeenWarned = true;
 		}
 	}
 
@@ -37,6 +39,7 @@ public abstract class AbstractBuiltInFunction<T extends AbstractBuiltInFunction<
 		return this.getParameterValueOfType(context, clazz, 0);
 	}
 
+	@SuppressWarnings("unused")
 	public <E extends IArucasWrappedClass> E getWrapperParameter(Context context, Class<E> clazz, int index) throws CodeError {
 		WrapperClassValue wrapperClassValue = this.getParameterValueOfType(context, WrapperClassValue.class, index);
 		return wrapperClassValue.getWrapper(clazz, this.syntaxPosition, context);

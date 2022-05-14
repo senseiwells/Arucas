@@ -2,6 +2,8 @@ package me.senseiwells.arucas.values.functions;
 
 import me.senseiwells.arucas.api.ArucasClassExtension;
 import me.senseiwells.arucas.api.ISyntax;
+import me.senseiwells.arucas.api.docs.ClassDoc;
+import me.senseiwells.arucas.api.docs.FunctionDoc;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
@@ -17,6 +19,8 @@ import me.senseiwells.arucas.values.classes.ArucasClassValue;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
+
+import static me.senseiwells.arucas.utils.ValueTypes.*;
 
 public abstract class FunctionValue extends Value<String> {
 	public final List<String> argumentNames;
@@ -165,17 +169,16 @@ public abstract class FunctionValue extends Value<String> {
 
 	@Override
 	public String getTypeName() {
-		return ValueTypes.FUNCTION;
+		return FUNCTION;
 	}
 
-	/**
-	 * Function class for Arucas. <br>
-	 * Fully Documented.
-	 * @author senseiwells
-	 */
+	@ClassDoc(
+		name = FUNCTION,
+		desc = "Adds utilities for delegating and calling functions."
+	)
 	public static class ArucasFunctionClass extends ArucasClassExtension {
 		public ArucasFunctionClass() {
-			super(ValueTypes.FUNCTION);
+			super(FUNCTION);
 		}
 
 		@Override
@@ -188,13 +191,17 @@ public abstract class FunctionValue extends Value<String> {
 			);
 		}
 
-		/**
-		 * Name: <code>Function.getBuiltIn(functionName, parameterCount)</code> <br>
-		 * Description: Returns a built-in function delegate with the given name and parameter count. <br>
-		 * Parameters: String, Number: the name of the function, the parameter count of the function <br>
-		 * Returns - Function: the built-in function delegate <br>
-		 * Example: <code>Function.getBuiltIn("print", 1);</code>
-		 */
+		@FunctionDoc(
+			isStatic = true,
+			name = "getBuiltIn",
+			desc = "Returns a built-in function delegate with the given name and parameter count",
+			params = {
+				STRING, "functionName", "the name of the function",
+				NUMBER, "parameterCount", "the parameter count of the function"
+			},
+			returns = {FUNCTION, "the built-in function delegate"},
+			example = "Function.getBuiltIn('print', 1);"
+		)
 		private Value<?> getBuiltInDelegate(Context context, BuiltInFunction function) throws CodeError {
 			StringValue functionName = function.getParameterValueOfType(context, StringValue.class, 0);
 			NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 1);
@@ -209,13 +216,18 @@ public abstract class FunctionValue extends Value<String> {
 			return functionValue;
 		}
 
-		/**
-		 * Name: <code>Function.getMethod(object, methodName, parameterCount)</code> <br>
-		 * Description: Returns a method delegate with the given name and parameter count. <br>
-		 * Parameters: Value, String, Number: the object to call the method on, the name of the method, the parameter count of the method <br>
-		 * Returns - Function: the method delegate <br>
-		 * Example: <code>Function.getMethod(this, "print", 1);</code>
-		 */
+		@FunctionDoc(
+			isStatic = true,
+			name = "getMethod",
+			desc = "Returns a method delegate with the given name and parameter count",
+			params = {
+				ANY, "value", "the value to call the method on",
+				STRING, "methodName", "the name of the method",
+				NUMBER, "parameterCount", "the parameter count of the method"
+			},
+			returns = {FUNCTION, "the method delegate"},
+			example = "Function.getMethod('String', 'contains', 1);"
+		)
 		private Value<?> getMethodDelegate(Context context, BuiltInFunction function) throws CodeError {
 			Value<?> callingValue = function.getParameterValue(context, 0);
 			StringValue methodNameValue = function.getParameterValueOfType(context, StringValue.class, 1);
@@ -238,26 +250,35 @@ public abstract class FunctionValue extends Value<String> {
 			return delegate;
 		}
 
-		/**
-		 * Name: <code>Function.callWithList(delegate, parameters)</code> <br>
-		 * Description: Calls the given delegate with the given parameters. <br>
-		 * Parameters: Function, List: the delegate to call, the parameters to pass to the delegate <br>
-		 * Returns - Value: the return value of the delegate <br>
-		 * Example: <code>Function.callWithList(this.print, List.of("Hello World!"));</code>
-		 */
+		@FunctionDoc(
+			isStatic = true,
+			name = "callWithList",
+			desc = "Calls the given delegate with the given parameters",
+			params = {
+				FUNCTION, "delegate", "the delegate to call",
+				LIST, "parameters", "the parameters to pass to the delegate"
+			},
+			returns = {ANY, "the return value of the delegate"},
+			example = "Function.callWithList(fun(m1, m2) { }, ['Hello', 'World']);"
+		)
 		private Value<?> callDelegateWithList(Context context, BuiltInFunction function) throws CodeError {
 			FunctionValue delegate = function.getParameterValueOfType(context, FunctionValue.class, 0);
 			ListValue listValue = function.getParameterValueOfType(context, ListValue.class, 1);
 			return delegate.call(context, listValue.value);
 		}
 
-		/**
-		 * Name: <code>Function.call(delegate, parameters)</code> <br>
-		 * Description: Calls the given delegate with the given arbitrary parameters. <br>
-		 * Parameters: Function, Value...: the delegate to call, the parameters to pass to the delegate <br>
-		 * Returns - Value: the return value of the delegate <br>
-		 * Example: <code>Function.call(Function.getBuiltIn("print", 1), "Hello World!");</code>
-		 */
+		@FunctionDoc(
+			isVarArgs = true,
+			isStatic = true,
+			name = "call",
+			desc = "Calls the given delegate with the given arbitrary parameters",
+			params = {
+				FUNCTION, "delegate", "the delegate to call",
+				ANY, "parameters...", "the parameters to pass to the delegate"
+			},
+			returns = {ANY, "the return value of the delegate"},
+			example = "Function.call(Function.getBuiltIn('print', 1), 'Hello World!');"
+		)
 		private Value<?> callDelegate(Context context, BuiltInFunction function) throws CodeError {
 			ListValue arguments = function.getParameterValueOfType(context, ListValue.class, 0);
 			ArucasList list = arguments.value;

@@ -2,7 +2,8 @@ package me.senseiwells.arucas.utils;
 
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.utils.impl.IArucasCollection;
-import me.senseiwells.arucas.values.*;
+import me.senseiwells.arucas.values.StringValue;
+import me.senseiwells.arucas.values.Value;
 
 public class StringUtils {
 	/**
@@ -19,10 +20,10 @@ public class StringUtils {
 		for (Object arg : args) {
 			sb.append(arg);
 		}
-		
+
 		return sb.toString();
 	}
-	
+
 	/**
 	 * Converts all instances of <code>[\'] [\"] [\\] [\r] [\n] [\b] [\t] [\x..] [&bsol;u....]</code> to the correct character.
 	 */
@@ -33,10 +34,10 @@ public class StringUtils {
 
 		StringBuilder sb = new StringBuilder();
 		boolean escape = false;
-		
+
 		for (int i = 0, len = string.length(); i < len; i++) {
 			char c = string.charAt(i);
-			
+
 			if (escape) {
 				escape = false;
 
@@ -63,7 +64,7 @@ public class StringUtils {
 
 						i += 2;
 					}
-					
+
 					case 'u' -> {
 						if (i + 5 > string.length()) {
 							throw new RuntimeException("(index:%d) Not enough characters for '\\u....' escape.".formatted(i));
@@ -91,10 +92,10 @@ public class StringUtils {
 				sb.append(c);
 			}
 		}
-		
+
 		return sb.toString();
 	}
-	
+
 	/**
 	 * Escapes a string to convert all control characters into their escaped form.
 	 */
@@ -103,38 +104,59 @@ public class StringUtils {
 		if (string == null) {
 			return null;
 		}
-		
+
 		StringBuilder sb = new StringBuilder();
-		
+
 		for (int i = 0, len = string.length(); i < len; i++) {
 			char c = string.charAt(i);
 
 			switch (c) { // Normal escapes
-				case '\r' -> { sb.append("\\r"); continue; }
-				case '\n' -> { sb.append("\\n"); continue; }
-				case '\b' -> { sb.append("\\b"); continue; }
-				case '\t' -> { sb.append("\\t"); continue; }
-				case '\'' -> { sb.append("\\'"); continue; }
-				case '\"' -> { sb.append("\\\""); continue; }
-				case '\\' -> { sb.append("\\\\"); continue; }
+				case '\r' -> {
+					sb.append("\\r");
+					continue;
+				}
+				case '\n' -> {
+					sb.append("\\n");
+					continue;
+				}
+				case '\b' -> {
+					sb.append("\\b");
+					continue;
+				}
+				case '\t' -> {
+					sb.append("\\t");
+					continue;
+				}
+				case '\'' -> {
+					sb.append("\\'");
+					continue;
+				}
+				case '\"' -> {
+					sb.append("\\\"");
+					continue;
+				}
+				case '\\' -> {
+					sb.append("\\\\");
+					continue;
+				}
 			}
-			
+
 			if (c > 0xff) { // Unicode
 				sb.append("\\u").append(toHexString(c, 4));
 				continue;
 			}
-			
+
 			if (Character.isISOControl(c)) { // Control character
 				sb.append("\\x").append(toHexString(c, 2));
 				continue;
 			}
-			
+
 			sb.append(c);
 		}
-		
+
 		return sb.toString();
 	}
-	
+
 	/**
 	 * Escapes a string so that it can safely be placed inside a regex expression.
 	 */
@@ -142,46 +164,61 @@ public class StringUtils {
 		if (string == null) {
 			return null;
 		}
-		
+
 		StringBuilder sb = new StringBuilder();
-		
+
 		for (int i = 0, len = string.length(); i < len; i++) {
 			char c = string.charAt(i);
 
 			switch (c) { // Normal escapes
-				case '\0' -> { sb.append("\\0"); continue; }
-				case '\n' -> { sb.append("\\n"); continue; }
-				case '\r' -> { sb.append("\\r"); continue; }
-				case '\t' -> { sb.append("\\t"); continue; }
-				case '\\' -> { sb.append("\\\\"); continue; }
+				case '\0' -> {
+					sb.append("\\0");
+					continue;
+				}
+				case '\n' -> {
+					sb.append("\\n");
+					continue;
+				}
+				case '\r' -> {
+					sb.append("\\r");
+					continue;
+				}
+				case '\t' -> {
+					sb.append("\\t");
+					continue;
+				}
+				case '\\' -> {
+					sb.append("\\\\");
+					continue;
+				}
 				case '^', '$', '?', '|', '*', '/', '+', '.', '(', ')', '[', ']', '{', '}' -> {
 					sb.append("\\").append(c);
 					continue;
 				}
 			}
-			
+
 			if (c > 0xff) { // Unicode
 				sb.append("\\u").append(toHexString(c, 4));
 				continue;
 			}
-			
+
 			if (Character.isISOControl(c)) { // Control character
 				sb.append("\\x").append(toHexString(c, 2));
 				continue;
 			}
-			
+
 			sb.append(c);
 		}
-		
+
 		return sb.toString();
 	}
-	
+
 	/**
 	 * Converts a number into a hex string with a given minimum length.
 	 *
-	 * @param	value	the value to be converted to a hex string
-	 * @param	length	the minimum length of that hex string
-	 * @return	a hex string
+	 * @param value  the value to be converted to a hex string
+	 * @param length the minimum length of that hex string
+	 * @return a hex string
 	 */
 	public static String toHexString(long value, int length) {
 		if (length < 1) {
@@ -189,7 +226,7 @@ public class StringUtils {
 		}
 		return String.format("%0" + length + "x", value);
 	}
-	
+
 	/**
 	 * Converts a string into a number</br>
 	 * If the input string has a negative sign it will be handled correctly.
@@ -212,15 +249,15 @@ public class StringUtils {
 		if (string == null || string.isBlank()) {
 			throw new IllegalArgumentException("The input string must not be null or empty");
 		}
-		
+
 		// First check if the value is negative.
 		boolean isNegative = string.charAt(0) == '-';
-		
+
 		if (isNegative) {
 			// If the string is negative we remove the first character.
 			string = string.substring(1);
 		}
-		
+
 		double result;
 		try {
 			// Hexadecimal or denary
@@ -231,7 +268,7 @@ public class StringUtils {
 			throw new IllegalArgumentException("Invalid input string. '%s' is not a number".formatted(string));
 		}
 	}
-	
+
 	/**
 	 * Convert value objects into their simple form.
 	 */

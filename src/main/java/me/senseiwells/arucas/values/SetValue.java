@@ -1,15 +1,18 @@
 package me.senseiwells.arucas.values;
 
 import me.senseiwells.arucas.api.ArucasClassExtension;
+import me.senseiwells.arucas.api.docs.ClassDoc;
+import me.senseiwells.arucas.api.docs.FunctionDoc;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.utils.ValueTypes;
 import me.senseiwells.arucas.utils.impl.ArucasSet;
 import me.senseiwells.arucas.utils.impl.IArucasCollection;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
 import me.senseiwells.arucas.values.functions.MemberFunction;
+
+import static me.senseiwells.arucas.utils.ValueTypes.*;
 
 public class SetValue extends Value<ArucasSet> {
 
@@ -44,18 +47,19 @@ public class SetValue extends Value<ArucasSet> {
 
 	@Override
 	public String getTypeName() {
-		return ValueTypes.SET;
+		return SET;
 	}
 
-	/**
-	 * Set class for Arucas. <br>
-	 * An instance of the class can be created by using <code>Set.of(values...)</code> <br>
-	 * Fully Documented.
-	 * @author senseiwells
-	 */
+	@ClassDoc(
+		name = SET,
+		desc = {
+			"Sets are collections of unique values. Similar to maps, without the values.",
+			"An instance of the class can be created by using `Set.of(values...)`"
+		}
+	)
 	public static class ArucasSetClass extends ArucasClassExtension {
 		public ArucasSetClass() {
-			super(ValueTypes.SET);
+			super(SET);
 		}
 
 		@Override
@@ -66,17 +70,31 @@ public class SetValue extends Value<ArucasSet> {
 		@Override
 		public ArucasFunctionMap<BuiltInFunction> getDefinedStaticMethods() {
 			return ArucasFunctionMap.of(
+				new BuiltInFunction("unordered", this::unordered),
 				new BuiltInFunction.Arbitrary("of", this::of)
 			);
 		}
 
-		/**
-		 * Name: <code>Set.of(values...)</code> <br>
-		 * Description: this allows you to create a set with an arbitrary number of values <br>
-		 * Parameters - Value...: the values you want to add to the set <br>
-		 * Returns - Set: the set you created <br>
-		 * Example: <code>Set.of("object", 81, 96, "case");</code>
-		 */
+		@FunctionDoc(
+			isStatic = true,
+			name = "unordered",
+			desc = "This creates an unordered set",
+			returns = {SET, "the unordered set"},
+			example = "Set.unordered();"
+		)
+		private Value<?> unordered(Context context, BuiltInFunction function) {
+			return new SetValue(new ArucasSet());
+		}
+
+		@FunctionDoc(
+			isVarArgs = true,
+			isStatic = true,
+			name = "of",
+			desc = "This allows you to create a set with an arbitrary number of values",
+			params = {ANY, "values...", "the values you want to add to the set"},
+			returns = {SET, "the set you created"},
+			example = "Set.of('object', 81, 96, 'case');"
+		)
 		private Value<?> of(Context context, BuiltInFunction function) throws CodeError {
 			ListValue arguments = function.getFirstParameter(context, ListValue.class);
 			ArucasSet set = new ArucasSet();
@@ -99,54 +117,59 @@ public class SetValue extends Value<ArucasSet> {
 			);
 		}
 
-		/**
-		 * Name: <code>&lt;Set>.get(object)</code> <br>
-		 * Description: This allows you to get a value from in the set <br>
-		 * Parameter - Value: the value you want to get from the set <br>
-		 * Returns - Value/Null: the value you wanted to get, null if it wasn't in the set <br>
-		 * Example: <code>Set.of("object").get("object");</code>
-		 */
-		private synchronized Value<?> get(Context context, MemberFunction function) throws CodeError {
+		@FunctionDoc(
+			name = "get",
+			desc = {
+				"This allows you to get a value from in the set.",
+				"The reason this might be useful is if you want to retrieve something",
+				"from the set that will have the same hashcode but be in a different state",
+				"as the value you are passing in"
+			},
+			params = {ANY, "value", "the value you want to get from the set"},
+			returns = {ANY, "the value you wanted to get, null if it wasn't in the set"},
+			example = "Set.of('object').get('object');"
+		)
+		private Value<?> get(Context context, MemberFunction function) throws CodeError {
 			SetValue thisValue = function.getThis(context, SetValue.class);
 			Value<?> value = function.getParameterValue(context, 1);
 			return thisValue.value.get(context, value);
 		}
 
-		/**
-		 * Name: <code>&lt;Set>.remove(object)</code> <br>
-		 * Description: This allows you to remove a value from the set <br>
-		 * Parameter - Value: the value you want to remove from the set <br>
-		 * Returns - Boolean: whether the value was removed from the set <br>
-		 * Example: <code>Set.of("object").remove("object");</code>
-		 */
-		private synchronized Value<?> remove(Context context, MemberFunction function) throws CodeError {
+		@FunctionDoc(
+			name = "remove",
+			desc = "This allows you to remove a value from the set",
+			params = {ANY, "value", "the value you want to remove from the set"},
+			returns = {BOOLEAN, "whether the value was removed from the set"},
+			example = "Set.of('object').remove('object');"
+		)
+		private Value<?> remove(Context context, MemberFunction function) throws CodeError {
 			SetValue thisValue = function.getThis(context, SetValue.class);
 			Value<?> value = function.getParameterValue(context, 1);
 			return BooleanValue.of(thisValue.value.remove(context, value));
 		}
 
-		/**
-		 * Name: <code>&lt;Set>.add(value)</code> <br>
-		 * Description: This allows you to add a value to the set <br>
-		 * Parameter - Value: the value you want to add to the set <br>
-		 * Returns - Boolean: whether the value was successfully added to the set <br>
-		 * Example: <code>Set.of().add("object");</code>
-		 */
-		private synchronized Value<?> add(Context context, MemberFunction function) throws CodeError {
+		@FunctionDoc(
+			name = "add",
+			desc = "This allows you to add a value to the set",
+			params = {ANY, "value", "the value you want to add to the set"},
+			returns = {BOOLEAN, "whether the value was successfully added to the set"},
+			example = "Set.of().add('object');"
+		)
+		private Value<?> add(Context context, MemberFunction function) throws CodeError {
 			SetValue thisValue = function.getThis(context, SetValue.class);
 			Value<?> value = function.getParameterValue(context, 1);
 			return BooleanValue.of(thisValue.value.add(context, value));
 		}
 
-		/**
-		 * Name: <code>&lt;Set>.addAll(otherCollection)</code> <br>
-		 * Description: This allows you to add all the values in a collection into the set <br>
-		 * Parameter - Collection: the collection of values you want to add <br>
-		 * Returns - Set: the modified set <br>
-		 * Throws - Error: <code>"'...' is not a collection"</code> if the parameter isn't a collection <br>
-		 * Example: <code>Set.of().addAll(Set.of("object", 81, 96, "case"));</code>
-		 */
-		private synchronized Value<?> addAll(Context context, MemberFunction function) throws CodeError {
+		@FunctionDoc(
+			name = "addAll",
+			desc = "This allows you to add all the values in a collection into the set",
+			params = {COLLECTION, "collection", "the collection of values you want to add"},
+			returns = {SET, "the modified set"},
+			throwMsgs = "... is not a collection",
+			example = "Set.of().addAll(Set.of('object', 81, 96, 'case'));"
+		)
+		private Value<?> addAll(Context context, MemberFunction function) throws CodeError {
 			SetValue thisValue = function.getThis(context, SetValue.class);
 			Value<?> value = function.getParameterValue(context, 1);
 			if (value.value instanceof IArucasCollection collection) {
@@ -156,28 +179,28 @@ public class SetValue extends Value<ArucasSet> {
 			throw new RuntimeError("'%s' is not a collection".formatted(value.getAsString(context)), function.syntaxPosition, context);
 		}
 
-		/**
-		 * Name: <code>&lt;Set>.contains(value)</code> <br>
-		 * Description: This allows you to check whether a value is in the set <br>
-		 * Parameter - Value: the value that you want to check in the set <br>
-		 * Returns - Boolean: whether the value is in the set <br>
-		 * Example: <code>Set.of("object").contains("object");</code>
-		 */
-		private synchronized BooleanValue contains(Context context, MemberFunction function) throws CodeError {
+		@FunctionDoc(
+			name = "contains",
+			desc = "This allows you to check whether a value is in the set",
+			params = {ANY, "value", "the value that you want to check in the set"},
+			returns = {BOOLEAN, "whether the value is in the set"},
+			example = "Set.of('object').contains('object');"
+		)
+		private BooleanValue contains(Context context, MemberFunction function) throws CodeError {
 			SetValue thisValue = function.getThis(context, SetValue.class);
 			Value<?> value = function.getParameterValue(context, 1);
 			return BooleanValue.of(thisValue.value.contains(context, value));
 		}
 
-		/**
-		 * Name: <code>&lt;Set>.containsAll(otherCollection)</code> <br>
-		 * Description: This allows you to check whether a collection of values are all in the set <br>
-		 * Parameter - Collection: the collection of values you want to check in the set <br>
-		 * Returns - Boolean: whether all the values are in the set <br>
-		 * Throws - Error: <code>"'...' is not a collection"</code> if the parameter isn't a collection <br>
-		 * Example: <code>Set.of("object").containsAll(Set.of("object", 81, 96, "case"));</code>
-		 */
-		private synchronized BooleanValue containsAll(Context context, MemberFunction function) throws CodeError {
+		@FunctionDoc(
+			name = "containsAll",
+			desc = "This allows you to check whether a collection of values are all in the set",
+			params = {COLLECTION, "collection", "the collection of values you want to check in the set"},
+			returns = {BOOLEAN, "whether all the values are in the set"},
+			throwMsgs = "... is not a collection",
+			example = "Set.of('object').containsAll(Set.of('object', 81, 96, 'case'));"
+		)
+		private BooleanValue containsAll(Context context, MemberFunction function) throws CodeError {
 			SetValue thisValue = function.getThis(context, SetValue.class);
 			Value<?> value = function.getParameterValue(context, 1);
 			if (value.value instanceof IArucasCollection collection) {
@@ -186,35 +209,35 @@ public class SetValue extends Value<ArucasSet> {
 			throw new RuntimeError("'%s' is not a collection".formatted(value.getAsString(context)), function.syntaxPosition, context);
 		}
 
-		/**
-		 * Name: <code>&lt;Set>.isEmpty()</code> <br>
-		 * Description: This allows you to check whether the set has no values <br>
-		 * Returns - Boolean: whether the set is empty <br>
-		 * Example: <code>Set.of().isEmpty();</code>
-		 */
-		private synchronized BooleanValue isEmpty(Context context, MemberFunction function) throws CodeError {
+		@FunctionDoc(
+			name = "isEmpty",
+			desc = "This allows you to check whether the set has no values",
+			returns = {BOOLEAN, "whether the set is empty"},
+			example = "Set.of().isEmpty();"
+		)
+		private BooleanValue isEmpty(Context context, MemberFunction function) throws CodeError {
 			SetValue thisValue = function.getThis(context, SetValue.class);
 			return BooleanValue.of(thisValue.value.isEmpty());
 		}
 
-		/**
-		 * Name: <code>&lt;Set>.clear()</code> <br>
-		 * Description: This removes all values from inside the set <br>
-		 * Example: <code>Set.of("object").clear();</code>
-		 */
-		private synchronized Value<?> clear(Context context, MemberFunction function) throws CodeError {
+		@FunctionDoc(
+			name = "clear",
+			desc = "This removes all values from inside the set",
+			example = "Set.of('object').clear();"
+		)
+		private Value<?> clear(Context context, MemberFunction function) throws CodeError {
 			SetValue thisValue = function.getThis(context, SetValue.class);
 			thisValue.value.clear();
 			return NullValue.NULL;
 		}
 
-		/**
-		 * Name: <code>&lt;Set>.toString()</code> <br>
-		 * Description: This converts the set to a string and evaluating any collections inside it <br>
-		 * Returns - String: the string representation of the set <br>
-		 * Example: <code>Set.of("object").toString();</code>
-		 */
-		private synchronized Value<?> toString(Context context, MemberFunction function) throws CodeError {
+		@FunctionDoc(
+			name = "toString",
+			desc = "This converts the set to a string and evaluating any collections inside it",
+			returns = {STRING, "the string representation of the set"},
+			example = "Set.of('object').toString();"
+		)
+		private Value<?> toString(Context context, MemberFunction function) throws CodeError {
 			SetValue thisValue = function.getThis(context, SetValue.class);
 			return StringValue.of(thisValue.value.getAsStringUnsafe(context, function.syntaxPosition));
 		}

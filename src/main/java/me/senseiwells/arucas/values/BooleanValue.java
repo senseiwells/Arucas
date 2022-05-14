@@ -2,6 +2,7 @@ package me.senseiwells.arucas.values;
 
 import me.senseiwells.arucas.api.ArucasClassExtension;
 import me.senseiwells.arucas.api.ISyntax;
+import me.senseiwells.arucas.api.docs.ClassDoc;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.Context;
@@ -87,12 +88,10 @@ public class BooleanValue extends Value<Boolean> {
 		return ValueTypes.BOOLEAN;
 	}
 
-	/**
-	 * Boolean class for Arucas. <br>
-	 * This class cannot be constructed since Booleans have literals. <br>
-	 * No Documentation.
-	 * @author senseiwells
-	 */
+	@ClassDoc(
+		name = ValueTypes.BOOLEAN,
+		desc = "This class cannot be constructed since Booleans have literals."
+	)
 	public static class ArucasBooleanClass extends ArucasClassExtension {
 		public ArucasBooleanClass() {
 			super(ValueTypes.BOOLEAN);

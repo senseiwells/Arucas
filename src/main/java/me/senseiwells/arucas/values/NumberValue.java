@@ -2,16 +2,20 @@ package me.senseiwells.arucas.values;
 
 import me.senseiwells.arucas.api.ArucasClassExtension;
 import me.senseiwells.arucas.api.ISyntax;
+import me.senseiwells.arucas.api.docs.ClassDoc;
+import me.senseiwells.arucas.api.docs.FunctionDoc;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.utils.ValueTypes;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
+
+import static me.senseiwells.arucas.utils.ValueTypes.BOOLEAN;
+import static me.senseiwells.arucas.utils.ValueTypes.NUMBER;
 
 public class NumberValue extends Value<Double> {
 	private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.############", DecimalFormatSymbols.getInstance(Locale.US));
@@ -157,19 +161,16 @@ public class NumberValue extends Value<Double> {
 
 	@Override
 	public String getTypeName() {
-		return ValueTypes.NUMBER;
+		return NUMBER;
 	}
 
-	/**
-	 * Number class for Arucas. <br>
-	 * This class cannot be constructed as it has a literal representation. <br>
-	 * For math related functions see the Math class. <br>
-	 * Fully Documented.
-	 * @author senseiwells
-	 */
+	@ClassDoc(
+		name = NUMBER,
+		desc = "This class cannot be constructed as it has a literal representation. For math related functions see the Math class."
+	)
 	public static class ArucasNumberClass extends ArucasClassExtension {
 		public ArucasNumberClass() {
-			super(ValueTypes.NUMBER);
+			super(NUMBER);
 		}
 
 		@Override
@@ -192,47 +193,47 @@ public class NumberValue extends Value<Double> {
 			);
 		}
 
-		/**
-		 * Name: <code>&lt;Number>.round()</code> <br>
-		 * Description: this allows you to round a number to the nearest integer <br>
-		 * Returns - Number: the rounded number <br>
-		 * Example: <code>3.5.round();</code>
-		 */
+		@FunctionDoc(
+			name = "round",
+			desc = "This allows you to round a number to the nearest integer",
+			returns = {NUMBER, "the rounded number"},
+			example = "3.5.round();"
+		)
 		private NumberValue round(Context context, MemberFunction function) throws CodeError {
 			NumberValue thisValue = function.getParameterValueOfType(context, NumberValue.class, 0);
 			return new NumberValue(Math.round(thisValue.value));
 		}
 
-		/**
-		 * Name: <code>&lt;Number>.ceil()</code> <br>
-		 * Description: this allows you to round a number up to the nearest integer <br>
-		 * Returns - Number: the rounded number <br>
-		 * Example: <code>3.5.ceil();</code>
-		 */
+		@FunctionDoc(
+			name = "ceil",
+			desc = "This allows you to round a number up to the nearest integer",
+			returns = {NUMBER, "the rounded number"},
+			example = "3.5.ceil();"
+		)
 		private NumberValue ceil(Context context, MemberFunction function) throws CodeError {
 			NumberValue thisValue = function.getParameterValueOfType(context, NumberValue.class, 0);
 			return new NumberValue(Math.ceil(thisValue.value));
 		}
 
-		/**
-		 * Name: <code>&lt;Number>.floor()</code> <br>
-		 * Description: this allows you to round a number down to the nearest integer <br>
-		 * Returns - Number: the rounded number <br>
-		 * Example: <code>3.5.floor();</code>
-		 */
+		@FunctionDoc(
+			name = "floor",
+			desc = "This allows you to round a number down to the nearest integer",
+			returns = {NUMBER, "the rounded number"},
+			example = "3.5.floor();"
+		)
 		private NumberValue floor(Context context, MemberFunction function) throws CodeError {
 			NumberValue thisValue = function.getParameterValueOfType(context, NumberValue.class, 0);
 			return new NumberValue(Math.floor(thisValue.value));
 		}
 
-		/**
-		 * Deprecated: You should use <code>Math.mod(num1, num2)</code> <br>
-		 * Name: <code>&lt;Number>.modulus(otherNumber)</code> <br>
-		 * Description: this allows you to get the modulus of two numbers <br>
-		 * Parameter - Number: the divisor <br>
-		 * Returns - Number: the modulus of the two numbers <br>
-		 * Example: <code>5.modulus(2);</code>
-		 */
+		@FunctionDoc(
+			deprecated = "You should use `Math.mod(num1, num2)`",
+			name = "modulus",
+			desc = "This allows you to get the modulus of two numbers",
+			params = {NUMBER, "otherNumber", "the divisor"},
+			returns = {NUMBER, "the modulus of the two numbers"},
+			example = "5.modulus(2);"
+		)
 		@Deprecated
 		private NumberValue modulus(Context context, MemberFunction function) throws CodeError {
 			NumberValue thisValue = function.getParameterValueOfType(context, NumberValue.class, 0);
@@ -240,62 +241,62 @@ public class NumberValue extends Value<Double> {
 			return new NumberValue(thisValue.value % otherNumber.value);
 		}
 
-		/**
-		 * Deprecated: You should use <code>Math.abs(num)</code> <br>
-		 * Name: <code>&lt;Number>.absolute()</code> <br>
-		 * Description: this allows you to get the absolute value of a number <br>
-		 * Returns - Number: the absolute value of the number <br>
-		 * Example: <code>-5.absolute();</code>
-		 */
+		@FunctionDoc(
+			deprecated = "You should use `Math.abs(num)`",
+			name = "absolute",
+			desc = "This allows you to get the absolute value of a number",
+			returns = {NUMBER, "the absolute value of the number"},
+			example = "(-5).absolute();"
+		)
 		@Deprecated
 		private NumberValue absolute(Context context, MemberFunction function) throws CodeError {
 			NumberValue thisValue = function.getParameterValueOfType(context, NumberValue.class, 0);
 			return new NumberValue(Math.abs(thisValue.value));
 		}
 
-		/**
-		 * Deprecated: You should use <code>Math.toRadians(num)</code> <br>
-		 * Name: <code>&lt;Number>.toRadians()</code> <br>
-		 * Description: this allows you to convert a number in degrees to radians <br>
-		 * Returns - Number: the number in radians <br>
-		 * Example: <code>5.toRadians();</code>
-		 */
+		@FunctionDoc(
+			deprecated = "You should use `Math.toRadians(num)`",
+			name = "toRadians",
+			desc = "This allows you to convert a number in degrees to radians",
+			returns = {NUMBER, "the number in radians"},
+			example = "5.toRadians();"
+		)
 		@Deprecated
 		private NumberValue toRadians(Context context, MemberFunction function) throws CodeError {
 			NumberValue thisValue = function.getParameterValueOfType(context, NumberValue.class, 0);
 			return new NumberValue(Math.toRadians(thisValue.value));
 		}
 
-		/**
-		 * Deprecated: You should use <code>Math.toDegrees(num)</code> <br>
-		 * Name: <code>&lt;Number>.toDegrees()</code> <br>
-		 * Description: this allows you to convert a number in radians to degrees <br>
-		 * Returns - Number: the number in degrees <br>
-		 * Example: <code>Math.PI.toDegrees();</code>
-		 */
+		@FunctionDoc(
+			deprecated = "You should use `Math.toDegrees(num)`",
+			name = "toDegrees",
+			desc = "This allows you to convert a number in radians to degrees",
+			returns = {NUMBER, "the number in degrees"},
+			example = "Math.pi.toDegrees();"
+		)
 		@Deprecated
 		private NumberValue toDegrees(Context context, MemberFunction function) throws CodeError {
 			NumberValue thisValue = function.getParameterValueOfType(context, NumberValue.class, 0);
 			return new NumberValue(Math.toDegrees(thisValue.value));
 		}
 
-		/**
-		 * Name: <code>&lt;Number>.isInfinite()</code> <br>
-		 * Description: this allows you to check if a number is infinite <br>
-		 * Returns - Boolean: true if the number is infinite <br>
-		 * Example: <code>(0/0).isInfinite();</code>
-		 */
+		@FunctionDoc(
+			name = "isInfinite",
+			desc = "This allows you to check if a number is infinite",
+			returns = {BOOLEAN, "true if the number is infinite"},
+			example = "(1/0).isInfinite();"
+		)
 		private BooleanValue isInfinite(Context context, MemberFunction function) throws CodeError {
 			NumberValue thisValue = function.getParameterValueOfType(context, NumberValue.class, 0);
 			return BooleanValue.of(thisValue.value.isInfinite());
 		}
 
-		/**
-		 * Name: <code>&lt;Number>.isNaN()</code> <br>
-		 * Description: this allows you to check if a number is not a number <br>
-		 * Returns - Boolean: true if the number is not a number <br>
-		 * Example: <code>(0/0).isNaN();</code>
-		 */
+		@FunctionDoc(
+			name = "isNaN",
+			desc = "This allows you to check if a number is not a number",
+			returns = {BOOLEAN, "true if the number is not a number"},
+			example = "(0/0).isNaN();"
+		)
 		private BooleanValue isNan(Context context, MemberFunction function) throws CodeError {
 			NumberValue thisValue = function.getParameterValueOfType(context, NumberValue.class, 0);
 			return BooleanValue.of(thisValue.value.isNaN());

@@ -1,16 +1,19 @@
 package me.senseiwells.arucas.values;
 
 import me.senseiwells.arucas.api.ArucasClassExtension;
+import me.senseiwells.arucas.api.docs.ClassDoc;
+import me.senseiwells.arucas.api.docs.FunctionDoc;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.utils.ValueTypes;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.values.classes.ArucasClassValue;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
 import java.util.ArrayList;
+
+import static me.senseiwells.arucas.utils.ValueTypes.*;
 
 public class EnumValue extends ArucasClassValue {
 	private final String enumName;
@@ -47,14 +50,13 @@ public class EnumValue extends ArucasClassValue {
 		return this == other;
 	}
 
-	/**
-	 * Enum class for Arucas. <br>
-	 * Fully Documented.
-	 * @author senseiwells
-	 */
+	@ClassDoc(
+		name = ENUM,
+		desc = "All enums extends this class."
+	)
 	public static class ArucasEnumClass extends ArucasClassExtension {
 		public ArucasEnumClass() {
-			super(ValueTypes.ENUM);
+			super(ENUM);
 		}
 
 		@Override
@@ -70,23 +72,23 @@ public class EnumValue extends ArucasClassValue {
 			);
 		}
 
-		/**
-		 * Name: <code>&lt;Enum>.getName()</code> <br>
-		 * Description: this allows you to get the name of the enum value <br>
-		 * Returns - String: the name of the enum value <br>
-		 * Example: <code>enum.getName();</code>
-		 */
+		@FunctionDoc(
+			name = "getName",
+			desc = "This allows you to get the name of the enum value",
+			returns = {STRING, "the name of the enum value"},
+			example = "enum.getName();"
+		)
 		private Value<?> getName(Context context, MemberFunction function) throws CodeError {
 			EnumValue enumValue = function.getThis(context, EnumValue.class);
 			return StringValue.of(enumValue.enumName);
 		}
 
-		/**
-		 * Name: <code>&lt;Enum>.ordinal()</code> <br>
-		 * Description: this allows you to get the ordinal of the enum value <br>
-		 * Returns - Number: the ordinal of the enum value <br>
-		 * Example: <code>enum.ordinal();</code>
-		 */
+		@FunctionDoc(
+			name = "ordinal",
+			desc = "This allows you to get the ordinal of the enum value",
+			returns = {NUMBER, "the ordinal of the enum value"},
+			example = "enum.ordinal();"
+		)
 		private Value<?> ordinal(Context context, MemberFunction function) throws CodeError {
 			EnumValue enumValue = function.getThis(context, EnumValue.class);
 			return NumberValue.of(enumValue.ordinal);

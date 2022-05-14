@@ -2,20 +2,22 @@ package me.senseiwells.arucas.values;
 
 import me.senseiwells.arucas.api.ArucasClassExtension;
 import me.senseiwells.arucas.api.ISyntax;
+import me.senseiwells.arucas.api.docs.ClassDoc;
+import me.senseiwells.arucas.api.docs.FunctionDoc;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.StringUtils;
-import me.senseiwells.arucas.utils.ValueTypes;
 import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static me.senseiwells.arucas.utils.ValueTypes.*;
 
 public class StringValue extends Value<String> {
 	private StringValue(String value) {
@@ -53,19 +55,16 @@ public class StringValue extends Value<String> {
 
 	@Override
 	public String getTypeName() {
-		return ValueTypes.STRING;
+		return STRING;
 	}
 
-	/**
-	 * String class for Arucas. <br>
-	 * This class cannot be constructed since strings have a literal. <br>
-	 * Strings are immutable. <br>
-	 * Fully Documented.
-	 * @author senseiwells
-	 */
+	@ClassDoc(
+		name = STRING,
+		desc = "This class cannot be constructed since strings have a literal. Strings are immutable."
+	)
 	public static class ArucasStringClass extends ArucasClassExtension {
 		public ArucasStringClass() {
-			super(ValueTypes.STRING);
+			super(STRING);
 		}
 
 		@Override
@@ -96,12 +95,12 @@ public class StringValue extends Value<String> {
 			);
 		}
 
-		/**
-		 * Name: <code>&lt;String>.toList()</code> <br>
-		 * Description: This makes a list of all the characters in the string <br>
-		 * Returns - List: the list of characters <br>
-		 * Example: <code>"hello".toList();</code>
-		 */
+		@FunctionDoc(
+			name = "toList",
+			desc = "This makes a list of all the characters in the string",
+			returns = {LIST, "the list of characters"},
+			example = "'hello'.toList();"
+		)
 		private Value<?> stringToList(Context context, MemberFunction function) throws CodeError {
 			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
 			ArucasList stringList = new ArucasList();
@@ -111,13 +110,16 @@ public class StringValue extends Value<String> {
 			return new ListValue(stringList);
 		}
 
-		/**
-		 * Name: <code>&lt;String>.replaceAll(regex, replace)</code> <br>
-		 * Description: This replaces all the instances of a regex with the replace string <br>
-		 * Parameter - String, String: the regex you want to replace, the string you want to replace it with <br>
-		 * Returns - String: the modified string <br>
-		 * Example: <code>"hello".replaceAll("l", "x");</code>
-		 */
+		@FunctionDoc(
+			name = "replaceAll",
+			desc = "This replaces all the instances of a regex with the replace string",
+			params = {
+				STRING, "regex", "the regex you want to replace",
+				STRING, "replace", "the string you want to replace it with"
+			},
+			returns = {STRING, "the modified string"},
+			example = "'hello'.replaceAll('l', 'x');"
+		)
 		private Value<?> stringReplaceAll(Context context, MemberFunction function) throws CodeError {
 			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
 			StringValue remove = function.getParameterValueOfType(context, StringValue.class, 1);
@@ -125,34 +127,35 @@ public class StringValue extends Value<String> {
 			return new StringValue(thisValue.value.replaceAll(remove.value, replace.value));
 		}
 
-		/**
-		 * Name: <code>&lt;String>.uppercase()</code> <br>
-		 * Description: This makes the string uppercase <br>
-		 * Returns - String: the uppercase string <br>
-		 * Example: <code>"hello".uppercase();</code>
-		 */
+		@FunctionDoc(
+			name = "uppercase",
+			desc = "This makes the string uppercase",
+			returns = {STRING, "the uppercase string"},
+			example = "'hello'.uppercase();"
+		)
 		private Value<?> stringUppercase(Context context, MemberFunction function) throws CodeError {
 			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
 			return new StringValue(thisValue.value.toUpperCase(Locale.ROOT));
 		}
 
-		/**
-		 * Name: <code>&lt;String>.lowercase()</code> <br>
-		 * Description: This makes the string lowercase <br>
-		 * Returns - String: the lowercase string <br>
-		 * Example: <code>"HELLO".lowercase();</code>
-		 */
+		@FunctionDoc(
+			name = "lowercase",
+			desc = "This makes the string lowercase",
+			returns = {STRING, "the lowercase string"},
+			example = "'HELLO'.lowercase();"
+		)
 		private Value<?> stringLowercase(Context context, MemberFunction function) throws CodeError {
 			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
 			return new StringValue(thisValue.value.toLowerCase(Locale.ROOT));
 		}
 
-		/**
-		 * Name: <code>&lt;String>.toNumber()</code> <br>
-		 * Description: This tries to convert the string to a number <br>
-		 * Returns - Number: the number value <br>
-		 * Example: <code>"0xFF".toNumber();</code>
-		 */
+		@FunctionDoc(
+			name = "toNumber",
+			desc = "This tries to convert the string to a number",
+			throwMsgs = "Cannor parse ... as a number",
+			returns = {NUMBER, "the number value"},
+			example = "'0xFF'.toNumber();"
+		)
 		private Value<?> stringToNumber(Context context, MemberFunction function) throws CodeError {
 			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
 			try {
@@ -160,21 +163,22 @@ public class StringValue extends Value<String> {
 			}
 			catch (NumberFormatException e) {
 				throw new RuntimeError(
-					"Cannot parse %s as a NumberValue".formatted(thisValue.getAsString(context)),
+					"Cannot parse %s as a number".formatted(thisValue.getAsString(context)),
 					function.syntaxPosition,
 					context
 				);
 			}
 		}
 
-		/**
-		 * Name: <code>&lt;String>.format(strings...)</code> <br>
-		 * Description: This formats the string with the given parameters <br>
-		 * Parameter - String...: the strings to add <br>
-		 * Returns - String: the formatted string <br>
-		 * Throws - Error: <code>"You are missing values to be formatted!"</code> if there are not enough parameters <br>
-		 * Example: <code>"%s %s".format("hello", "world");</code>
-		 */
+		@FunctionDoc(
+			isVarArgs = true,
+			name = "format",
+			desc = "This formats the string with the given parameters, which replace '%s' in the string",
+			params = {ANY, "values...", "the values to add, these will be converted to strings"},
+			returns = {STRING, "the formatted string"},
+			throwMsgs = "You are missing values to be formatted",
+			example = "'%s %s'.format('hello', 'world');"
+		)
 		private Value<?> stringFormatted(Context context, MemberFunction function) throws CodeError {
 			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
 			final Value<?>[] array = function.getParameterValueOfType(context, ListValue.class, 1).value.toArray();
@@ -182,7 +186,7 @@ public class StringValue extends Value<String> {
 			String string = thisValue.value;
 			while (string.contains("%s")) {
 				if (i >= array.length) {
-					throw new RuntimeError("You are missing values to be formatted!", function.syntaxPosition, context);
+					throw new RuntimeError("You are missing values to be formatted", function.syntaxPosition, context);
 				}
 				string = string.replaceFirst("%s", array[i].getAsString(context));
 				i++;
@@ -190,36 +194,36 @@ public class StringValue extends Value<String> {
 			return new StringValue(string);
 		}
 
-		/**
-		 * Name: <code>&lt;String>.contains(string)</code> <br>
-		 * Description: This checks if the string contains the given string <br>
-		 * Parameter - String: the string you want to check for <br>
-		 * Returns - Boolean: true if the string contains the given string <br>
-		 * Example: <code>"hello".contains("he");</code>
-		 */
+		@FunctionDoc(
+			name = "contains",
+			desc = "This checks if the string contains the given string",
+			params = {STRING, "string", "the string you want to check for"},
+			returns = {BOOLEAN, "true if the string contains the given string"},
+			example = "'hello'.contains('he');"
+		)
 		private Value<?> stringContainsString(Context context, MemberFunction function) throws CodeError {
 			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
 			String otherString = function.getParameterValueOfType(context, StringValue.class, 1).value;
 			return BooleanValue.of(thisValue.value.contains(otherString));
 		}
 
-		/**
-		 * Name: <code>&lt;String>.strip()</code> <br>
-		 * Description: This strips the whitespace from the string <br>
-		 * Returns - String: the stripped string <br>
-		 * Example: <code>"  hello  ".strip();</code>
-		 */
+		@FunctionDoc(
+			name = "strip",
+			desc = "This strips the whitespace from the string",
+			returns = {STRING, "the stripped string"},
+			example = "'  hello  '.strip();"
+		)
 		private Value<?> strip(Context context, MemberFunction function) throws CodeError {
 			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
 			return new StringValue(thisValue.value.strip());
 		}
 
-		/**
-		 * Name: <code>&lt;String>.capitalise()</code> <br>
-		 * Description: This capitalises the first letter of the string <br>
-		 * Returns - String: the capitalised string <br>
-		 * Example: <code>"foo".capitalise();</code>
-		 */
+		@FunctionDoc(
+			name = "capitalise",
+			desc = "This capitalises the first letter of the string",
+			returns = {STRING, "the capitalised string"},
+			example = "'foo'.capitalise();"
+		)
 		private Value<?> capitalise(Context context, MemberFunction function) throws CodeError {
 			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
 			if (thisValue.value.isEmpty()) {
@@ -230,13 +234,13 @@ public class StringValue extends Value<String> {
 			return new StringValue(new String(chars));
 		}
 
-		/**
-		 * Name: <code>&lt;String>.split(regex)</code> <br>
-		 * Description: This splits the string into a list of strings based on a regex <br>
-		 * Parameter - String: the regex to split the string with <br>
-		 * Returns - List: the list of strings <br>
-		 * Example: <code>"foo/bar/baz".split("/");</code>
-		 */
+		@FunctionDoc(
+			name = "split",
+			desc = "This splits the string into a list of strings based on a regex",
+			params = {STRING, "regex", "the regex to split the string with"},
+			returns = {LIST, "the list of strings"},
+			example = "'foo/bar/baz'.split('/');"
+		)
 		private Value<?> split(Context context, MemberFunction function) throws CodeError {
 			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
 			String otherString = function.getParameterValueOfType(context, StringValue.class, 1).value;
@@ -247,13 +251,16 @@ public class StringValue extends Value<String> {
 			return new ListValue(list);
 		}
 
-		/**
-		 * Name: <code>&lt;String>.subString(from, to)</code> <br>
-		 * Description: This returns a substring of the string <br>
-		 * Parameters - Number, Number: the start index, the end index <br>
-		 * Returns - String: the substring <br>
-		 * Example: <code>"hello".subString(1, 3);</code>
-		 */
+		@FunctionDoc(
+			name = "subString",
+			desc = "This returns a substring of the string",
+			params = {
+				NUMBER, "from", "the start index",
+				NUMBER, "to", "the end index"
+			},
+			returns = {STRING, "the substring"},
+			example = "'hello'.subString(1, 3);"
+		)
 		private Value<?> subString(Context context, MemberFunction function) throws CodeError {
 			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
 			int fromIndex = function.getParameterValueOfType(context, NumberValue.class, 1).value.intValue();
@@ -264,26 +271,26 @@ public class StringValue extends Value<String> {
 			return StringValue.of(thisValue.value.substring(fromIndex, toIndex));
 		}
 
-		/**
-		 * Name: <code>&lt;String>.matches(regex)</code> <br>
-		 * Description: This checks if the string matches the given regex <br>
-		 * Parameter - String: the regex to check the string with <br>
-		 * Returns - Boolean: true if the string matches the given regex <br>
-		 * Example: <code>"hello".matches("[a-z]*");</code>
-		 */
+		@FunctionDoc(
+			name = "matches",
+			desc = "This checks if the string matches the given regex",
+			params = {STRING, "regex", "the regex to check the string with"},
+			returns = {BOOLEAN, "true if the string matches the given regex"},
+			example = "'hello'.matches('[a-z]*');"
+		)
 		private Value<?> matches(Context context, MemberFunction function) throws CodeError {
 			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
 			StringValue regex = function.getParameterValueOfType(context, StringValue.class, 1);
 			return BooleanValue.of(thisValue.value.matches(regex.value));
 		}
 
-		/**
-		 * Name: <code>&lt;String>.find(regex)</code> <br>
-		 * Description: This finds all instances of the regex in the string <br>
-		 * Parameter - String: the regex to search the string with <br>
-		 * Returns - List: the list of all instances of the regex in the string <br>
-		 * Example: <code>"hello".find("[a-z]*");</code>
-		 */
+		@FunctionDoc(
+			name = "find",
+			desc = "This finds all instances of the regex in the string",
+			params = {STRING, "regex", "the regex to search the string with"},
+			returns = {LIST, "the list of all instances of the regex in the string"},
+			example = "'hello'.find('[a-z]*');"
+		)
 		private Value<?> find(Context context, MemberFunction function) throws CodeError {
 			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
 			StringValue regex = function.getParameterValueOfType(context, StringValue.class, 1);
@@ -295,26 +302,26 @@ public class StringValue extends Value<String> {
 			return new ListValue(arucasList);
 		}
 
-		/**
-		 * Name: <code>&lt;String>.startsWith(string)</code> <br>
-		 * Description: This checks if the string starts with the given string <br>
-		 * Parameter - String: the string to check the string with <br>
-		 * Returns - Boolean: true if the string starts with the given string <br>
-		 * Example: <code>"hello".startsWith("he");</code>
-		 */
+		@FunctionDoc(
+			name = "startsWith",
+			desc = "This checks if the string starts with the given string",
+			params = {STRING, "string", "the string to check the string with"},
+			returns = {BOOLEAN, "true if the string starts with the given string"},
+			example = "'hello'.startsWith('he');"
+		)
 		private Value<?> startsWith(Context context, MemberFunction function) throws CodeError {
 			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
 			StringValue otherString = function.getParameterValueOfType(context, StringValue.class, 1);
 			return BooleanValue.of(thisValue.value.startsWith(otherString.value));
 		}
 
-		/**
-		 * Name: <code>&lt;String>.endsWith(string)</code> <br>
-		 * Description: This checks if the string ends with the given string <br>
-		 * Parameter - String: the string to check the string with <br>
-		 * Returns - Boolean: true if the string ends with the given string <br>
-		 * Example: <code>"hello".endsWith("he");</code>
-		 */
+		@FunctionDoc(
+			name = "endsWith",
+			desc = "This checks if the string ends with the given string",
+			params = {STRING, "string", "the string to check the string with"},
+			returns = {BOOLEAN, "true if the string ends with the given string"},
+			example = "'hello'.endsWith('he');"
+		)
 		private Value<?> endsWith(Context context, MemberFunction function) throws CodeError {
 			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
 			StringValue otherString = function.getParameterValueOfType(context, StringValue.class, 1);

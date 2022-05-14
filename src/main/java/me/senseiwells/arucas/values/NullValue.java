@@ -1,8 +1,11 @@
 package me.senseiwells.arucas.values;
 
 import me.senseiwells.arucas.api.ArucasClassExtension;
+import me.senseiwells.arucas.api.docs.ClassDoc;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.ValueTypes;
+
+import static me.senseiwells.arucas.utils.ValueTypes.NULL;
 
 public class NullValue extends Value<Object> {
 	public static final NullValue NULL = new NullValue();
@@ -36,12 +39,10 @@ public class NullValue extends Value<Object> {
 		return ValueTypes.NULL;
 	}
 
-	/**
-	 * Null class for Arucas. <br>
-	 * This class cannot be constructed since null has a literal <code>null</code> <br>
-	 * No Documentation.
-	 * @author senseiwells
-	 */
+	@ClassDoc(
+		name = ValueTypes.NULL,
+		desc = "This class cannot be constructed since null has a literal `null`."
+	)
 	public static class ArucasNullClass extends ArucasClassExtension {
 		public ArucasNullClass() {
 			super(ValueTypes.NULL);
