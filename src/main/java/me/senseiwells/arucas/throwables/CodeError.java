@@ -8,7 +8,6 @@ import me.senseiwells.arucas.utils.Position;
 import java.util.Objects;
 
 public class CodeError extends Exception {
-
 	public final ErrorType errorType;
 	public final ISyntax syntaxPosition;
 

@@ -1,14 +1,12 @@
 package me.senseiwells.arucas.nodes;
 
-import me.senseiwells.arucas.extensions.util.JavaValue;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.utils.ReflectionUtils;
+import me.senseiwells.arucas.utils.ValueRef;
 import me.senseiwells.arucas.values.StringValue;
 import me.senseiwells.arucas.values.Value;
-import me.senseiwells.arucas.values.classes.ArucasClassValue;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 
 import java.util.ArrayList;
@@ -34,43 +32,14 @@ public class MemberCallNode extends CallNode {
 		StringValue memberFunctionName = (StringValue) this.callNode.visit(context);
 
 		List<Value> argumentValues = new ArrayList<>();
-		FunctionValue function;
-		String customClassName = null;
-		if (memberValue instanceof ArucasClassValue classValue) {
-			customClassName = classValue.getName();
-			// Get the class method from the value
-			function = classValue.getMember(memberFunctionName.value, this.argumentNodes.size() + 1);
-
-			if (function == null) {
-				// If we had a class value, but we didn't find the member we should search its built in members
-				function = context.getMemberFunction(classValue.getClass(), memberFunctionName.value, this.argumentNodes.size() + 1);
-
-				// As a last resort we check members
-				if (function == null && classValue.getMember(memberFunctionName.value) instanceof FunctionValue functionValue) {
-					function = functionValue;
-				}
-				else {
-					argumentValues.add(classValue);
-				}
-			}
+		for (Node node : this.argumentNodes) {
+			argumentValues.add(node.visit(context));
 		}
-		else if (memberValue instanceof JavaValue javaValue) {
-			function = context.getMemberFunction(memberValue.getClass(), memberFunctionName.value, this.argumentNodes.size() + 1);
 
-			if (function == null) {
-				// We check if there are any Java methods, we check this AFTER Arucas methods since
-				// it's possible to call JavaMethods by using the Arucas function 'callJavaMethod'.
-				String obfuscatedName = JavaValue.getObfuscatedMethodName(context, javaValue.asJavaValue().getClass(), memberFunctionName.value);
-				Value returnValue = ReflectionUtils.callMethodFromJavaValue(javaValue, obfuscatedName, this.argumentNodes, this.syntaxPosition, context);
-				if (returnValue != null) {
-					return returnValue;
-				}
-			}
-			argumentValues.add(memberValue);
-		}
-		else {
-			function = context.getMemberFunction(memberValue.getClass(), memberFunctionName.value, this.argumentNodes.size() + 1);
-			argumentValues.add(memberValue);
+		ValueRef reference = new ValueRef();
+		FunctionValue function = memberValue.onMemberCall(context, memberFunctionName.value, argumentValues, reference, this.syntaxPosition);
+		if (reference.get() != null) {
+			return reference.get();
 		}
 
 		if (function == null) {
@@ -79,12 +48,8 @@ public class MemberCallNode extends CallNode {
 			throw new RuntimeError("Member function '%s'%s was not defined for the type '%s'".formatted(
 				memberFunctionName,
 				parameters,
-				customClassName != null ? customClassName : memberValue.getClass().getSimpleName()
+				memberValue.getTypeName()
 			), this.syntaxPosition, context);
-		}
-
-		for (Node node : this.argumentNodes) {
-			argumentValues.add(node.visit(context));
 		}
 
 		// We push a new scope to make StackTraces easier to read

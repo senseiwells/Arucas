@@ -9,7 +9,7 @@ import me.senseiwells.arucas.utils.StackTable;
 import java.util.Iterator;
 
 public class RuntimeError extends CodeError {
-	private final Context context;
+	private Context context;
 
 	public RuntimeError(String details, ISyntax syntaxHolder, Context context) {
 		super(ErrorType.RUNTIME_ERROR, details, syntaxHolder);
@@ -18,6 +18,16 @@ public class RuntimeError extends CodeError {
 
 	public RuntimeError(String details, ISyntax syntaxHolder) {
 		this(details, syntaxHolder, null);
+	}
+
+	public boolean hasContext() {
+		return this.context != null;
+	}
+
+	public void setContext(Context context) {
+		if (!this.hasContext()) {
+			this.context = context;
+		}
 	}
 
 	private String generateTraceback(Context context, IArucasOutput output) {
@@ -54,10 +64,10 @@ public class RuntimeError extends CodeError {
 
 	@Override
 	public String toString(Context context, boolean raw) {
-		context = this.context != null ? this.context : context;
-		IArucasOutput output = raw ? IArucasOutput.DUMMY : context.getOutput();
-		return context != null ? "%s%s%s - '%s'%s".formatted(
-			this.generateTraceback(context, output),
+		this.setContext(context);
+		IArucasOutput output = raw ? IArucasOutput.DUMMY : this.context.getOutput();
+		return this.context != null ? "%s%s%s - '%s'%s".formatted(
+			this.generateTraceback(this.context, output),
 			output.getErrorFormattingBold(),
 			this.errorType.stringName, this.getMessage(),
 			output.getResetFormatting()

@@ -14,18 +14,20 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public class WrapperClassMemberFunction extends ClassMemberFunction {
+public class WrapperClassMemberFunction extends UserDefinedFunction implements IMemberFunction {
 	private final IArucasWrappedClass classValue;
 	private final ArucasMethodHandle methodHandle;
 	private final boolean isStatic;
 	private final int parameters;
+	private final WrapperClassValue thisValue;
 
 	private WrapperClassMemberFunction(WrapperClassValue thisValue, IArucasWrappedClass classValue, String name, int parameters, boolean isStatic, ArucasMethodHandle methodHandle) {
-		super(thisValue, name, createParameters(parameters), ISyntax.empty());
+		super(name, createParameters(parameters), ISyntax.empty());
 		this.classValue = classValue;
 		this.methodHandle = methodHandle;
 		this.isStatic = isStatic;
 		this.parameters = parameters;
+		this.thisValue = thisValue;
 	}
 
 	public WrapperClassMemberFunction(String name, int parameters, boolean isStatic, ArucasMethodHandle methodHandle) {
@@ -34,12 +36,6 @@ public class WrapperClassMemberFunction extends ClassMemberFunction {
 
 	private static List<String> createParameters(int count) {
 		return Collections.nCopies(count, "");
-	}
-
-	@Override
-	@Deprecated
-	public WrapperClassMemberFunction copy(ArucasClassValue value) {
-		throw new UnsupportedOperationException();
 	}
 
 	public WrapperClassMemberFunction copy(WrapperClassValue thisValue, IArucasWrappedClass wrappedClass) {
@@ -82,5 +78,10 @@ public class WrapperClassMemberFunction extends ClassMemberFunction {
 	@Override
 	public String getAsString(Context context) throws CodeError {
 		return "<class " + this.thisValue.getName() + "::" + this.getName() + "@" + Integer.toHexString(Objects.hashCode(this)) + ">";
+	}
+
+	@Override
+	public FunctionValue setThisAndGet(Value thisValue) {
+		return this;
 	}
 }

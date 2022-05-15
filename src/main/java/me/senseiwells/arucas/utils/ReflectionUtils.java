@@ -47,20 +47,20 @@ public class ReflectionUtils {
 		return invokeMethod(context, syntaxPosition, wantedMethod, callingObject, objects);
 	}
 
-	public static Value callMethodFromJavaValue(JavaValue javaValue, String methodName, List<Node> argumentNodes, ISyntax syntaxPosition, Context context) throws CodeError {
+	public static Value callMethodFromJavaValue(JavaValue javaValue, String methodName, List<Value> arguments, ISyntax syntaxPosition, Context context) throws CodeError {
 		Object callingObject = javaValue.asJavaValue();
 		Class<?> callingClass = callingObject.getClass();
 
-		Method wantedMethod = getMethodSlow(callingClass, callingObject, methodName, argumentNodes.size());
+		Method wantedMethod = getMethodSlow(callingClass, callingObject, methodName, arguments.size());
 		if (wantedMethod == null) {
 			return null;
 		}
 
 		// This method doesn't visit arguments unless it knows that there is a valid method
 		// that can be called, we don't want arguments to be visited for no reason
-		Object[] objects = new Object[argumentNodes.size()];
-		for (int i = 0; i < argumentNodes.size(); i++) {
-			objects[i] = argumentNodes.get(i).visit(context).asJavaValue();
+		Object[] objects = new Object[arguments.size()];
+		for (int i = 0; i < arguments.size(); i++) {
+			objects[i] = arguments.get(i).asJavaValue();
 		}
 
 		return invokeMethod(context, syntaxPosition, wantedMethod, callingObject, objects);

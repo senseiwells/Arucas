@@ -7,6 +7,7 @@ import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.ArucasOperatorMap;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.ValueRef;
 import me.senseiwells.arucas.values.*;
 import me.senseiwells.arucas.values.functions.ClassMemberFunction;
 import me.senseiwells.arucas.values.functions.FunctionValue;
@@ -14,12 +15,12 @@ import me.senseiwells.arucas.values.functions.MemberOperations;
 
 import java.util.*;
 
-public class ArucasClassValue extends GenericValue<AbstractClassDefinition> implements MemberOperations {
+public class ArucasClassValue extends GenericValue<ArucasClassDefinition> implements MemberOperations {
 	private final ArucasFunctionMap<FunctionValue> methods;
 	private final Map<String, Value> members;
 	private final ArucasOperatorMap<ClassMemberFunction> operatorMap;
 
-	public ArucasClassValue(AbstractClassDefinition arucasClass) {
+	public ArucasClassValue(ArucasClassDefinition arucasClass) {
 		super(arucasClass);
 		this.methods = new ArucasFunctionMap<>();
 		this.members = new HashMap<>();
@@ -119,11 +120,7 @@ public class ArucasClassValue extends GenericValue<AbstractClassDefinition> impl
 
 	@Override
 	public boolean isEquals(Context context, Value other) throws CodeError {
-		// If 'equals' is overridden we should use that here
 		FunctionValue equalsMethod = this.getOperatorMethod(Token.Type.EQUALS, 2);
-		/*if (equalsMethod == null) {
-			equalsMethod = this.getMember("equals", 2);
-		}*/
 		if (equalsMethod != null) {
 			List<Value> parameters = new ArrayList<>();
 			parameters.add(other);
@@ -135,6 +132,23 @@ public class ArucasClassValue extends GenericValue<AbstractClassDefinition> impl
 		}
 
 		return this == other;
+	}
+
+	@Override
+	public FunctionValue onMemberCall(Context context, String name, List<Value> arguments, ValueRef reference, ISyntax position) {
+		// Get the class method
+		FunctionValue function = this.getMember(name, arguments.size() + 1);
+		if (function == null) {
+			// If null get built in member
+			function = context.getMemberFunction(this.getClass(), name, arguments.size() + 1);
+
+			// We check fields as a last resort
+			if (function == null && this.getMember(name) instanceof FunctionValue delegate) {
+				return delegate;
+			}
+			arguments.add(0, this);
+		}
+		return function;
 	}
 
 	@Override

@@ -11,10 +11,7 @@ import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.GenericValue;
 import me.senseiwells.arucas.values.Value;
-import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
-import me.senseiwells.arucas.values.classes.ArucasClassValue;
-import me.senseiwells.arucas.values.classes.ArucasWrapperExtension;
-import me.senseiwells.arucas.values.classes.WrapperClassDefinition;
+import me.senseiwells.arucas.values.classes.*;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 
 import java.io.IOException;
@@ -293,14 +290,14 @@ public class Context {
 		return this.stackTable.get(name);
 	}
 
-	public void printDeprecated(String message) {
+	public void printDeprecated(String message, Object... objects) {
 		if (!this.suppressDeprecated) {
-			this.getOutput().println(this.arucasAPI.getOutput().addErrorFormattingBold(message));
+			this.getOutput().println(this.arucasAPI.getOutput().addErrorFormattingBold(message.formatted(objects)));
 		}
 	}
 
 	@SuppressWarnings("unused")
-	public ArucasClassValue createWrapperClass(Class<? extends IArucasWrappedClass> clazz, List<Value> parameters, ISyntax syntaxPosition) throws CodeError {
+	public WrapperClassValue createWrapperClass(Class<? extends IArucasWrappedClass> clazz, List<Value> parameters, ISyntax syntaxPosition) throws CodeError {
 		String wrapperName = ArucasWrapperExtension.getWrapperName(clazz);
 		
 		if (wrapperName == null) {

@@ -43,7 +43,7 @@ public abstract class AbstractBuiltInFunction<T extends AbstractBuiltInFunction<
 	@SuppressWarnings("unused")
 	public <E extends IArucasWrappedClass> E getWrapperParameter(Context context, Class<E> clazz, int index) throws CodeError {
 		WrapperClassValue wrapperClassValue = this.getParameterValueOfType(context, WrapperClassValue.class, index);
-		return wrapperClassValue.getWrapper(clazz, this.syntaxPosition, context);
+		return wrapperClassValue.getWrapper(clazz);
 	}
 
 	public <E extends Value> E getParameterValueOfType(Context context, Class<E> clazz, int index) throws CodeError {

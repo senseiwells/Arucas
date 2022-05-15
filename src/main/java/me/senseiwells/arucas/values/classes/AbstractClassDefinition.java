@@ -5,9 +5,8 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.TypeValue;
-import me.senseiwells.arucas.values.GenericValue;
+import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.functions.MemberOperations;
 

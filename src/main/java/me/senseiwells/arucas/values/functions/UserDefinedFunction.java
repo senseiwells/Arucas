@@ -33,7 +33,7 @@ public class UserDefinedFunction extends FunctionValue {
 		if (this.localContext != null) {
 			context = this.localContext.createBranch();
 		}
-		context.pushFunctionScope(this.syntaxPosition);
+		context.pushScope(this.syntaxPosition);
 		this.checkAndPopulateArguments(context, arguments, this.argumentNames);
 		this.bodyNode.visit(context);
 		context.popScope();

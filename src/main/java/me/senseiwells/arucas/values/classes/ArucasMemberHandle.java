@@ -35,14 +35,7 @@ public class ArucasMemberHandle {
 
 	public Value get(IArucasWrappedClass parent) {
 		try {
-			Value value;
-			if (this.isStatic) {
-				value = (Value) this.getter.invoke();
-			}
-			else {
-				value = (Value) this.getter.invoke(parent);
-			}
-
+			Value value = (Value) (this.isStatic ? this.getter.invoke() : this.getter.invoke(parent));
 			return value == null ? NullValue.NULL : value;
 		}
 		catch (Throwable ignore) {

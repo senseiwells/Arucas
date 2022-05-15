@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class ClassMemberFunction extends UserDefinedFunction implements IMemberFunction {
-	protected ArucasClassValue thisValue;
+	private final ArucasClassValue thisValue;
 	
 	public ClassMemberFunction(ArucasClassValue thisValue, String name, List<String> argumentNames, ISyntax syntaxPosition) {
 		super(name, argumentNames, syntaxPosition);

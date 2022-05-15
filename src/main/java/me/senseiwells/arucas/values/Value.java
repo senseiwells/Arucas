@@ -5,7 +5,11 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.ValueRef;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
+import me.senseiwells.arucas.values.functions.FunctionValue;
+
+import java.util.List;
 
 /**
  * This class should only be extended by {@link GenericValue}.
@@ -272,6 +276,23 @@ public abstract class Value implements ValueIdentifier {
 	@Override
 	public boolean isNotEquals(Context context, Value other) throws CodeError {
 		return ValueIdentifier.super.isNotEquals(context, other);
+	}
+
+	/**
+	 * This is called when a value calls a member on itself
+	 *
+	 * @param context   The current context
+	 * @param name      The name of the member it's calling
+	 * @param arguments The arguments that are being passed into the function
+	 * @param reference A reference that is null, if the reference is not null
+	 *                  after then function has returns that reference will be
+	 *                  used instead of the normal function return value
+	 * @param position The current syntax position
+	 * @return The function value to be called
+	 */
+	public FunctionValue onMemberCall(Context context, String name, List<Value> arguments, ValueRef reference, ISyntax position) throws CodeError {
+		arguments.add(0, this);
+		return context.getMemberFunction(this.getClass(), name, arguments.size());
 	}
 
 	/**

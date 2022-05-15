@@ -21,7 +21,7 @@ public class ArucasMethodHandle {
 		this.returnType = returnType == null ? ReturnType.VALUE : returnType;
 	}
 
-	public Value call(Object[] args, ArucasClassValue thisValue, ISyntax syntaxPosition, Context context) throws CodeError {
+	public Value call(Object[] args, WrapperClassValue thisValue, ISyntax syntaxPosition, Context context) throws CodeError {
 		return invokeMethodHandle(() -> {
 			switch (this.returnType) {
 				case THIS -> {

@@ -7,10 +7,7 @@ import me.senseiwells.arucas.api.docs.ClassDoc;
 import me.senseiwells.arucas.api.docs.FunctionDoc;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
-import me.senseiwells.arucas.utils.ArucasFunctionMap;
-import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.utils.ExceptionUtils;
-import me.senseiwells.arucas.utils.ReflectionUtils;
+import me.senseiwells.arucas.utils.*;
 import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.values.*;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
@@ -49,6 +46,23 @@ public class JavaValue extends GenericValue<Object> {
 	@Override
 	public boolean isEquals(Context context, Value other) throws CodeError {
 		return other instanceof JavaValue value && this.value.equals(value.value);
+	}
+
+	@Override
+	public FunctionValue onMemberCall(Context context, String name, List<Value> arguments, ValueRef reference, ISyntax position) throws CodeError {
+		FunctionValue function = context.getMemberFunction(this.getClass(), name, arguments.size() + 1);
+		if (function == null) {
+			// We check if there are any Java methods, we check this AFTER Arucas methods since
+			// it's possible to call JavaMethods by using the Arucas function 'callJavaMethod'.
+			String obfuscatedName = getObfuscatedMethodName(context, this.asJavaValue().getClass(), name);
+			Value returnValue = ReflectionUtils.callMethodFromJavaValue(this, obfuscatedName, arguments, position, context);
+			if (returnValue != null) {
+				reference.set(returnValue);
+				return null;
+			}
+		}
+		arguments.add(0, this);
+		return function;
 	}
 
 	@Override
