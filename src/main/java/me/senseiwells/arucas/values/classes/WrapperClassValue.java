@@ -114,7 +114,7 @@ public class WrapperClassValue extends GenericValue<WrapperClassDefinition> impl
 		if (memberFunction != null) {
 			Value value = memberFunction.call(context, new ArrayList<>());
 			if (!(value instanceof NumberValue numberValue)) {
-				throw new RuntimeError("hashCode() must return a number", memberFunction.syntaxPosition, context);
+				throw new RuntimeError("hashCode() must return a number", memberFunction.getPosition(), context);
 			}
 			return numberValue.value.intValue();
 		}
@@ -130,7 +130,7 @@ public class WrapperClassValue extends GenericValue<WrapperClassDefinition> impl
 			parameters.add(other);
 			Value value = equalsMethod.call(context, parameters);
 			if (!(value instanceof BooleanValue booleanValue)) {
-				throw new RuntimeError("operator '==' must return a boolean", equalsMethod.syntaxPosition, context);
+				throw new RuntimeError("operator '==' must return a boolean", equalsMethod.getPosition(), context);
 			}
 			return booleanValue.value;
 		}

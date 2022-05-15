@@ -103,7 +103,7 @@ public class ClassDocParser extends DocParser {
 		}
 
 		for (FunctionValue function : this.definition.getConstructors()) {
-			int parameterCount = this.isWrapper ? function.getParameterCount() - 1 : function.getParameterCount();
+			int parameterCount = this.isWrapper ? function.getCount() - 1 : function.getCount();
 			ConstructorDoc doc = constructorDocMap.get(parameterCount);
 			List<String> parameterNames = null;
 			if (doc != null) {
@@ -121,19 +121,19 @@ public class ClassDocParser extends DocParser {
 
 
 		for (FunctionValue function : this.definition.getMethods()) {
-			String functionId = function.getName() + (function.getParameterCount() == -1 ? "-1" : function.getParameterCount() - 1);
+			String functionId = function.getName() + (function.getCount() == -1 ? "-1" : function.getCount() - 1);
 			FunctionDoc doc = functionDocMap.get(functionId);
 			List<String> parameterNames = this.addFunctionDoc(builder, doc);
 			builder.append(INDENT).append("fun ").append(function.getName()).append("(");
-			this.addArgumentsToBuilder(builder, parameterNames, function.getParameterCount() - 1);
+			this.addArgumentsToBuilder(builder, parameterNames, function.getCount() - 1);
 			builder.append(");\n\n");
 		}
 
 		for (FunctionValue function : this.definition.getStaticMethods()) {
-			FunctionDoc doc = functionDocMap.get("$" + function.getName() + function.getParameterCount());
+			FunctionDoc doc = functionDocMap.get("$" + function.getName() + function.getCount());
 			List<String> parameterNames = this.addFunctionDoc(builder, doc);
 			builder.append(INDENT).append("static fun ").append(function.getName()).append("(");
-			this.addArgumentsToBuilder(builder, parameterNames, function.getParameterCount());
+			this.addArgumentsToBuilder(builder, parameterNames, function.getCount());
 			builder.append(");\n\n");
 		}
 

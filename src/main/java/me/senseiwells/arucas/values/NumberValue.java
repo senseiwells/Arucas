@@ -6,6 +6,7 @@ import me.senseiwells.arucas.api.docs.ClassDoc;
 import me.senseiwells.arucas.api.docs.FunctionDoc;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.tokens.Token;
+import me.senseiwells.arucas.utils.Arguments;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.functions.MemberFunction;
@@ -181,15 +182,15 @@ public class NumberValue extends GenericValue<Double> {
 		@Override
 		public ArucasFunctionMap<MemberFunction> getDefinedMethods() {
 			return ArucasFunctionMap.of(
-				new MemberFunction("round", this::round),
-				new MemberFunction("ceil", this::ceil),
-				new MemberFunction("floor", this::floor),
-				new MemberFunction("modulus", "otherNumber", this::modulus, "Use 'Math.mod(num1, num2)'"),
-				new MemberFunction("toRadians", this::toRadians, "Use 'Math.toRadians(num)'"),
-				new MemberFunction("toDegrees", this::toDegrees, "Use 'Math.toDegrees(num)'"),
-				new MemberFunction("absolute", this::absolute, "Use 'Math.abs(num)'"),
-				new MemberFunction("isInfinite", this::isInfinite),
-				new MemberFunction("isNaN", this::isNan)
+				MemberFunction.of("round", this::round),
+				MemberFunction.of("ceil", this::ceil),
+				MemberFunction.of("floor", this::floor),
+				MemberFunction.of("modulus", 1, this::modulus, "Use 'Math.mod(num1, num2)'"),
+				MemberFunction.of("toRadians", this::toRadians, "Use 'Math.toRadians(num)'"),
+				MemberFunction.of("toDegrees", this::toDegrees, "Use 'Math.toDegrees(num)'"),
+				MemberFunction.of("absolute", this::absolute, "Use 'Math.abs(num)'"),
+				MemberFunction.of("isInfinite", this::isInfinite),
+				MemberFunction.of("isNaN", this::isNan)
 			);
 		}
 
@@ -199,8 +200,8 @@ public class NumberValue extends GenericValue<Double> {
 			returns = {NUMBER, "the rounded number"},
 			example = "3.5.round();"
 		)
-		private NumberValue round(Context context, MemberFunction function) throws CodeError {
-			NumberValue thisValue = function.getParameterValueOfType(context, NumberValue.class, 0);
+		private NumberValue round(Arguments arguments) throws CodeError {
+			NumberValue thisValue = arguments.getNext(NumberValue.class);
 			return new NumberValue(Math.round(thisValue.value));
 		}
 
@@ -210,8 +211,8 @@ public class NumberValue extends GenericValue<Double> {
 			returns = {NUMBER, "the rounded number"},
 			example = "3.5.ceil();"
 		)
-		private NumberValue ceil(Context context, MemberFunction function) throws CodeError {
-			NumberValue thisValue = function.getParameterValueOfType(context, NumberValue.class, 0);
+		private NumberValue ceil(Arguments arguments) throws CodeError {
+			NumberValue thisValue = arguments.getNext(NumberValue.class);
 			return new NumberValue(Math.ceil(thisValue.value));
 		}
 
@@ -221,8 +222,8 @@ public class NumberValue extends GenericValue<Double> {
 			returns = {NUMBER, "the rounded number"},
 			example = "3.5.floor();"
 		)
-		private NumberValue floor(Context context, MemberFunction function) throws CodeError {
-			NumberValue thisValue = function.getParameterValueOfType(context, NumberValue.class, 0);
+		private NumberValue floor(Arguments arguments) throws CodeError {
+			NumberValue thisValue = arguments.getNext(NumberValue.class);
 			return new NumberValue(Math.floor(thisValue.value));
 		}
 
@@ -234,10 +235,9 @@ public class NumberValue extends GenericValue<Double> {
 			returns = {NUMBER, "the modulus of the two numbers"},
 			example = "5.modulus(2);"
 		)
-		@Deprecated
-		private NumberValue modulus(Context context, MemberFunction function) throws CodeError {
-			NumberValue thisValue = function.getParameterValueOfType(context, NumberValue.class, 0);
-			NumberValue otherNumber = function.getParameterValueOfType(context, NumberValue.class, 1);
+		private NumberValue modulus(Arguments arguments) throws CodeError {
+			NumberValue thisValue = arguments.getNext(NumberValue.class);
+			NumberValue otherNumber = arguments.getNext(NumberValue.class);
 			return new NumberValue(thisValue.value % otherNumber.value);
 		}
 
@@ -248,9 +248,8 @@ public class NumberValue extends GenericValue<Double> {
 			returns = {NUMBER, "the absolute value of the number"},
 			example = "(-5).absolute();"
 		)
-		@Deprecated
-		private NumberValue absolute(Context context, MemberFunction function) throws CodeError {
-			NumberValue thisValue = function.getParameterValueOfType(context, NumberValue.class, 0);
+		private NumberValue absolute(Arguments arguments) throws CodeError {
+			NumberValue thisValue = arguments.getNext(NumberValue.class);
 			return new NumberValue(Math.abs(thisValue.value));
 		}
 
@@ -261,9 +260,8 @@ public class NumberValue extends GenericValue<Double> {
 			returns = {NUMBER, "the number in radians"},
 			example = "5.toRadians();"
 		)
-		@Deprecated
-		private NumberValue toRadians(Context context, MemberFunction function) throws CodeError {
-			NumberValue thisValue = function.getParameterValueOfType(context, NumberValue.class, 0);
+		private NumberValue toRadians(Arguments arguments) throws CodeError {
+			NumberValue thisValue = arguments.getNext(NumberValue.class);
 			return new NumberValue(Math.toRadians(thisValue.value));
 		}
 
@@ -274,9 +272,8 @@ public class NumberValue extends GenericValue<Double> {
 			returns = {NUMBER, "the number in degrees"},
 			example = "Math.pi.toDegrees();"
 		)
-		@Deprecated
-		private NumberValue toDegrees(Context context, MemberFunction function) throws CodeError {
-			NumberValue thisValue = function.getParameterValueOfType(context, NumberValue.class, 0);
+		private NumberValue toDegrees(Arguments arguments) throws CodeError {
+			NumberValue thisValue = arguments.getNext(NumberValue.class);
 			return new NumberValue(Math.toDegrees(thisValue.value));
 		}
 
@@ -286,8 +283,8 @@ public class NumberValue extends GenericValue<Double> {
 			returns = {BOOLEAN, "true if the number is infinite"},
 			example = "(1/0).isInfinite();"
 		)
-		private BooleanValue isInfinite(Context context, MemberFunction function) throws CodeError {
-			NumberValue thisValue = function.getParameterValueOfType(context, NumberValue.class, 0);
+		private BooleanValue isInfinite(Arguments arguments) throws CodeError {
+			NumberValue thisValue = arguments.getNext(NumberValue.class);
 			return BooleanValue.of(thisValue.value.isInfinite());
 		}
 
@@ -297,8 +294,8 @@ public class NumberValue extends GenericValue<Double> {
 			returns = {BOOLEAN, "true if the number is not a number"},
 			example = "(0/0).isNaN();"
 		)
-		private BooleanValue isNan(Context context, MemberFunction function) throws CodeError {
-			NumberValue thisValue = function.getParameterValueOfType(context, NumberValue.class, 0);
+		private BooleanValue isNan(Arguments arguments) throws CodeError {
+			NumberValue thisValue = arguments.getNext(NumberValue.class);
 			return BooleanValue.of(thisValue.value.isNaN());
 		}
 	}

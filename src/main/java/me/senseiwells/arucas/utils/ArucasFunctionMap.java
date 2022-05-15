@@ -21,7 +21,7 @@ public class ArucasFunctionMap<T extends FunctionValue> implements Iterable<T> {
 	 */
 	public boolean add(T value) {
 		// If the value is a member value it still has the `this`. We need to get the true argument count
-		int parameters = value.getParameterCount();
+		int parameters = value.getCount();
 		
 		// Get or calculate the map that this function belongs to
 		Map<Integer, T> map = this.map.computeIfAbsent(value.getName(), (name) -> new HashMap<>());

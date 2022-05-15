@@ -8,13 +8,11 @@ import me.senseiwells.arucas.api.docs.FunctionDoc;
 import me.senseiwells.arucas.throwables.ArucasRuntimeError;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
+import me.senseiwells.arucas.utils.Arguments;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.values.functions.BuiltInFunction;
 import me.senseiwells.arucas.values.functions.ConstructorFunction;
 import me.senseiwells.arucas.values.functions.MemberFunction;
-
-import java.util.List;
 
 import static me.senseiwells.arucas.utils.ValueTypes.*;
 
@@ -82,9 +80,9 @@ public class ErrorValue extends GenericValue<Value> {
 		@Override
 		public ArucasFunctionMap<ConstructorFunction> getDefinedConstructors() {
 			return ArucasFunctionMap.of(
-				new ConstructorFunction(this::newError),
-				new ConstructorFunction(List.of("details"), this::newError1),
-				new ConstructorFunction(List.of("details", "value"), this::newError2)
+				ConstructorFunction.of(this::newError),
+				ConstructorFunction.of(1, this::newError1),
+				ConstructorFunction.of(2, this::newError2)
 			);
 		}
 
@@ -92,8 +90,8 @@ public class ErrorValue extends GenericValue<Value> {
 			desc = "This creates a new Error value with no message",
 			example = "new Error();"
 		)
-		private Value newError(Context context, BuiltInFunction function) {
-			return new ErrorValue("", function.syntaxPosition, context, NullValue.NULL);
+		private Value newError(Arguments arguments) {
+			return new ErrorValue("", arguments.getPosition(), arguments.getContext(), NullValue.NULL);
 		}
 
 		@ConstructorDoc(
@@ -101,9 +99,9 @@ public class ErrorValue extends GenericValue<Value> {
 			params = {STRING, "details", "the details of the error"},
 			example = "new Error('This is an error');"
 		)
-		private Value newError1(Context context, BuiltInFunction function) throws CodeError {
-			StringValue details = function.getParameterValueOfType(context, StringValue.class, 0);
-			return new ErrorValue(details.value, function.syntaxPosition, context, NullValue.NULL);
+		private Value newError1(Arguments arguments) throws CodeError {
+			StringValue details = arguments.getNext(StringValue.class);
+			return new ErrorValue(details.value, arguments.getPosition(), arguments.getContext(), NullValue.NULL);
 		}
 
 		@ConstructorDoc(
@@ -114,18 +112,18 @@ public class ErrorValue extends GenericValue<Value> {
 			},
 			example = "new Error('This is an error', [1, 2, 3]);"
 		)
-		private Value newError2(Context context, BuiltInFunction function) throws CodeError {
-			StringValue details = function.getParameterValueOfType(context, StringValue.class, 0);
-			Value value = function.getParameterValue(context, 1);
-			return new ErrorValue(details.value, function.syntaxPosition, context, value);
+		private Value newError2(Arguments arguments) throws CodeError {
+			StringValue details = arguments.getNext(StringValue.class);
+			Value value = arguments.getNext();
+			return new ErrorValue(details.value, arguments.getPosition(), arguments.getContext(), value);
 		}
 
 		@Override
 		public ArucasFunctionMap<MemberFunction> getDefinedMethods() {
 			return ArucasFunctionMap.of(
-				new MemberFunction("getFormattedDetails", this::getFormattedDetails),
-				new MemberFunction("getDetails", this::getDetails),
-				new MemberFunction("getValue", this::getValue)
+				MemberFunction.of("getFormattedDetails", this::getFormattedDetails),
+				MemberFunction.of("getDetails", this::getDetails),
+				MemberFunction.of("getValue", this::getValue)
 			);
 		}
 
@@ -135,9 +133,9 @@ public class ErrorValue extends GenericValue<Value> {
 			returns = {STRING, "the details of the error"},
 			example = "error.getFormattedDetails();"
 		)
-		private Value getFormattedDetails(Context context, MemberFunction function) throws CodeError {
-			ErrorValue error = function.getThis(context, ErrorValue.class);
-			return StringValue.of(error.runtimeError.toString(context));
+		private Value getFormattedDetails(Arguments arguments) throws CodeError {
+			ErrorValue error = arguments.getNext(ErrorValue.class);
+			return StringValue.of(error.runtimeError.toString(arguments.getContext()));
 		}
 
 		@FunctionDoc(
@@ -146,9 +144,9 @@ public class ErrorValue extends GenericValue<Value> {
 			returns = {STRING, "the details of the error"},
 			example = "error.getDetails();"
 		)
-		private Value getDetails(Context context, MemberFunction function) throws CodeError {
-			ErrorValue error = function.getThis(context, ErrorValue.class);
-			return StringValue.of(error.runtimeError.toString(context, true));
+		private Value getDetails(Arguments arguments) throws CodeError {
+			ErrorValue error = arguments.getNext(ErrorValue.class);
+			return StringValue.of(error.runtimeError.toString(arguments.getContext(), true));
 		}
 
 		@FunctionDoc(
@@ -157,8 +155,8 @@ public class ErrorValue extends GenericValue<Value> {
 			returns = {ANY, "the value that is related to the error"},
 			example = "error.getValue();"
 		)
-		private Value getValue(Context context, MemberFunction function) throws CodeError {
-			ErrorValue error = function.getThis(context, ErrorValue.class);
+		private Value getValue(Arguments arguments) throws CodeError {
+			ErrorValue error = arguments.getNext(ErrorValue.class);
 			return error.value;
 		}
 	}

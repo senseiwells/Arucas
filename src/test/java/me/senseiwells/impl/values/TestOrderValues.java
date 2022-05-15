@@ -52,12 +52,12 @@ public class TestOrderValues {
 
 			@Override
 			public ArucasFunctionMap<ConstructorFunction> getDefinedConstructors() {
-				return ArucasFunctionMap.of(new ConstructorFunction((a, b) -> new AValue()));
+				return ArucasFunctionMap.of(ConstructorFunction.of((args) -> new AValue()));
 			}
 
 			@Override
 			public ArucasFunctionMap<MemberFunction> getDefinedMethods() {
-				return ArucasFunctionMap.of(new MemberFunction("test", (a, b) -> StringValue.of("(A)")));
+				return ArucasFunctionMap.of(MemberFunction.of("test", (args) -> StringValue.of("(A)")));
 			}
 		}
 	}
@@ -100,13 +100,13 @@ public class TestOrderValues {
 
 			@Override
 			public ArucasFunctionMap<ConstructorFunction> getDefinedConstructors() {
-				return ArucasFunctionMap.of(new ConstructorFunction((a, b) -> new BValue()));
+				return ArucasFunctionMap.of(ConstructorFunction.of((args) -> new BValue()));
 			}
 
 			@Override
 			public ArucasFunctionMap<MemberFunction> getDefinedMethods() {
 				return ArucasFunctionMap.of(
-					new MemberFunction("test", (a, b) -> StringValue.of("(B)"))
+					MemberFunction.of("test", (args) -> StringValue.of("(B)"))
 				);
 			}
 		}
@@ -154,13 +154,13 @@ public class TestOrderValues {
 
 			@Override
 			public ArucasFunctionMap<ConstructorFunction> getDefinedConstructors() {
-				return ArucasFunctionMap.of(new ConstructorFunction((a, b) -> new DValue()));
+				return ArucasFunctionMap.of(ConstructorFunction.of((args) -> new DValue()));
 			}
 
 			@Override
 			public ArucasFunctionMap<MemberFunction> getDefinedMethods() {
 				return ArucasFunctionMap.of(
-					new MemberFunction("tes2", (a, b) -> StringValue.of("(D)"))
+					MemberFunction.of("tes2", (args) -> StringValue.of("(D)"))
 				);
 			}
 		}

@@ -13,7 +13,7 @@ public class ArucasOperatorMap<T extends FunctionValue> {
 	private Map<Token.Type, T> binaryOperatorMap;
 
 	public void add(Token.Type type, T function) {
-		switch (function.getParameterCount()) {
+		switch (function.getCount()) {
 			case 1 -> {
 				if (this.unaryOperatorMap == null) {
 					this.unaryOperatorMap = new HashMap<>();

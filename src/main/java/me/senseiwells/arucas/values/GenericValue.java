@@ -4,6 +4,8 @@ import me.senseiwells.arucas.api.ArucasClassExtension;
 import me.senseiwells.arucas.api.docs.ClassDoc;
 import me.senseiwells.arucas.api.docs.FunctionDoc;
 import me.senseiwells.arucas.throwables.CodeError;
+import me.senseiwells.arucas.throwables.RuntimeError;
+import me.senseiwells.arucas.utils.Arguments;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
@@ -49,12 +51,12 @@ public abstract class GenericValue<T> extends Value {
 		@Override
 		public ArucasFunctionMap<MemberFunction> getDefinedMethods() {
 			return ArucasFunctionMap.of(
-				new MemberFunction("instanceOf", "class", this::instanceOf),
-				new MemberFunction("getValueType", this::getValueType, "Use 'Type.of(<Value>).getName()'"),
-				new MemberFunction("copy", this::newCopy),
-				new MemberFunction("hashCode", this::hashCode),
-				new MemberFunction("equals", "other", this::equals, "Use the '==' operator"),
-				new MemberFunction("toString", this::toString)
+				MemberFunction.of("instanceOf", 1, this::instanceOf),
+				MemberFunction.of("getValueType", this::getValueType, "Use 'Type.of(<Value>).getName()'"),
+				MemberFunction.of("copy", this::newCopy),
+				MemberFunction.of("hashCode", this::hashCode),
+				MemberFunction.of("equals", 1, this::equals, "Use the '==' operator"),
+				MemberFunction.of("toString", this::toString)
 			);
 		}
 
@@ -66,13 +68,13 @@ public abstract class GenericValue<T> extends Value {
 			returns = {BOOLEAN, "whether the value is of that type"},
 			example = "10.instanceOf(String.type);"
 		)
-		private Value instanceOf(Context context, MemberFunction function) {
-			Value thisValue = function.getParameterValue(context, 0);
-			Value ofValue = function.getParameterValue(context, 1);
+		private Value instanceOf(Arguments arguments) throws RuntimeError {
+			Value thisValue = arguments.getNext();
+			Value ofValue = arguments.getNext();
 
 			AbstractClassDefinition classDefinition = null;
 			if (ofValue instanceof StringValue stringValue) {
-				classDefinition = context.getClassDefinition(stringValue.value);
+				classDefinition = arguments.getContext().getClassDefinition(stringValue.value);
 
 			}
 			else if (ofValue instanceof TypeValue typeValue) {
@@ -95,9 +97,8 @@ public abstract class GenericValue<T> extends Value {
 			returns = {STRING, "the name of the type of value"},
 			example = "10.getValueType();"
 		)
-		@Deprecated
-		private Value getValueType(Context context, MemberFunction function) {
-			Value thisValue = function.getParameterValue(context, 0);
+		private Value getValueType(Arguments arguments) throws RuntimeError {
+			Value thisValue = arguments.getNext();
 			if (thisValue instanceof ArucasClassValue classValue) {
 				return StringValue.of(classValue.getName());
 			}
@@ -112,9 +113,9 @@ public abstract class GenericValue<T> extends Value {
 			returns = {ANY, "the copy of the value"},
 			example = "10.copy();"
 		)
-		private Value newCopy(Context context, MemberFunction function) throws CodeError {
-			Value thisValue = function.getParameterValue(context, 0);
-			return thisValue.newCopy(context);
+		private Value newCopy(Arguments arguments) throws CodeError {
+			Value thisValue = arguments.getNext();
+			return thisValue.newCopy(arguments.getContext());
 		}
 
 		@FunctionDoc(
@@ -123,9 +124,9 @@ public abstract class GenericValue<T> extends Value {
 			returns = {NUMBER, "the hashcode of the value"},
 			example = "'thing'.hashCode();"
 		)
-		private NumberValue hashCode(Context context, MemberFunction function) throws CodeError {
-			Value thisValue = function.getParameterValue(context, 0);
-			return NumberValue.of(thisValue.getHashCode(context));
+		private NumberValue hashCode(Arguments arguments) throws CodeError {
+			Value thisValue = arguments.getNext();
+			return NumberValue.of(thisValue.getHashCode(arguments.getContext()));
 		}
 
 		@FunctionDoc(
@@ -136,11 +137,10 @@ public abstract class GenericValue<T> extends Value {
 			returns = {BOOLEAN, "whether the values are equal"},
 			example = "10.equals(20);"
 		)
-		@Deprecated
-		private BooleanValue equals(Context context, MemberFunction function) throws CodeError {
-			Value thisValue = function.getParameterValue(context, 0);
-			Value otherValue = function.getParameterValue(context, 1);
-			return BooleanValue.of(thisValue.isEquals(context, otherValue));
+		private BooleanValue equals(Arguments arguments) throws CodeError {
+			Value thisValue = arguments.getNext();
+			Value otherValue = arguments.getNext();
+			return BooleanValue.of(thisValue.isEquals(arguments.getContext(), otherValue));
 		}
 
 		@FunctionDoc(
@@ -149,9 +149,9 @@ public abstract class GenericValue<T> extends Value {
 			returns = {STRING, "the string representation of the value"},
 			example = "[10, 11, 12].toString();"
 		)
-		private StringValue toString(Context context, MemberFunction function) throws CodeError {
-			Value thisValue = function.getParameterValue(context, 0);
-			return StringValue.of(thisValue.getAsString(context));
+		private StringValue toString(Arguments arguments) throws CodeError {
+			Value thisValue = arguments.get(0);
+			return StringValue.of(thisValue.getAsString(arguments.getContext()));
 		}
 	}
 }

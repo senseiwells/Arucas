@@ -11,7 +11,6 @@ import me.senseiwells.arucas.values.classes.ArucasMethodHandle;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
-import java.util.Collections;
 import java.util.List;
 
 public class JavaFunction extends FunctionValue {
@@ -19,7 +18,7 @@ public class JavaFunction extends FunctionValue {
 	private final MethodHandle handle;
 
 	private JavaFunction(String functionName, Object callingObject, MethodHandle handle, ISyntax syntaxPosition, int arguments) {
-		super("$" + functionName, syntaxPosition, Collections.nCopies(arguments, ""), null);
+		super("$" + functionName, syntaxPosition, arguments, null);
 		this.callingObject = callingObject;
 		this.handle = handle;
 	}
@@ -33,12 +32,9 @@ public class JavaFunction extends FunctionValue {
 	}
 
 	@Override
-	protected void populateArguments(Context context, List<Value> arguments, List<String> argumentNames) { }
-
-	@Override
 	protected Value execute(Context context, List<Value> arguments) throws CodeError, ThrowValue {
 		boolean isStatic = this.callingObject == null;
-		Object[] parameters = new Object[this.getParameterCount() + (isStatic ? 0 : 1)];
+		Object[] parameters = new Object[this.getCount() + (isStatic ? 0 : 1)];
 		for (int i = 0; i < arguments.size(); i++) {
 			parameters[i + (isStatic ? 0 : 1)] = arguments.get(i).asJavaValue();
 		}
@@ -48,6 +44,6 @@ public class JavaFunction extends FunctionValue {
 
 		return ArucasMethodHandle.invokeMethodHandle(() -> {
 			return JavaValue.of(this.handle.invokeWithArguments(parameters));
-		}, this.syntaxPosition, context);
+		}, this.getPosition(), context);
 	}
 }

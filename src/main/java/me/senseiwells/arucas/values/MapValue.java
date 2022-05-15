@@ -4,14 +4,13 @@ import me.senseiwells.arucas.api.ArucasClassExtension;
 import me.senseiwells.arucas.api.docs.ClassDoc;
 import me.senseiwells.arucas.api.docs.FunctionDoc;
 import me.senseiwells.arucas.throwables.CodeError;
+import me.senseiwells.arucas.utils.Arguments;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.impl.ArucasMap;
 import me.senseiwells.arucas.utils.impl.ArucasOrderedMap;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
 import me.senseiwells.arucas.values.functions.MemberFunction;
-
-import java.util.List;
 
 import static me.senseiwells.arucas.utils.ValueTypes.*;
 
@@ -67,7 +66,7 @@ public class MapValue extends GenericValue<ArucasMap> {
 		@Override
 		public ArucasFunctionMap<BuiltInFunction> getDefinedStaticMethods() {
 			return ArucasFunctionMap.of(
-				new BuiltInFunction("unordered", this::unordered)
+				BuiltInFunction.of("unordered", this::unordered)
 			);
 		}
 
@@ -78,24 +77,24 @@ public class MapValue extends GenericValue<ArucasMap> {
 			returns = {MAP, "an unordered map"},
 			example = "Map.unordered();"
 		)
-		private Value unordered(Context context, BuiltInFunction function) {
+		private Value unordered(Arguments arguments) {
 			return new MapValue(new ArucasMap());
 		}
 
 		@Override
 		public ArucasFunctionMap<MemberFunction> getDefinedMethods() {
 			return ArucasFunctionMap.of(
-				new MemberFunction("get", "key", this::mapGet),
-				new MemberFunction("getKeys", this::mapGetKeys),
-				new MemberFunction("getValues", this::mapGetValues),
-				new MemberFunction("put", List.of("key", "value"), this::mapPut),
-				new MemberFunction("putIfAbsent", List.of("key", "value"), this::mapPutIfAbsent),
-				new MemberFunction("putAll", "anotherMap", this::mapPutAll),
-				new MemberFunction("remove", "key", this::mapRemove),
-				new MemberFunction("clear", this::mapClear),
-				new MemberFunction("isEmpty", this::isEmpty),
-				new MemberFunction("containsKey", "key", this::mapContainsKey),
-				new MemberFunction("toString", this::toString)
+				MemberFunction.of("get", 1, this::mapGet),
+				MemberFunction.of("getKeys", this::mapGetKeys),
+				MemberFunction.of("getValues", this::mapGetValues),
+				MemberFunction.of("put", 2, this::mapPut),
+				MemberFunction.of("putIfAbsent", 2, this::mapPutIfAbsent),
+				MemberFunction.of("putAll", 1, this::mapPutAll),
+				MemberFunction.of("remove", 1, this::mapRemove),
+				MemberFunction.of("clear", this::mapClear),
+				MemberFunction.of("isEmpty", this::isEmpty),
+				MemberFunction.of("containsKey", 1, this::mapContainsKey),
+				MemberFunction.of("toString", this::toString)
 			);
 		}
 
@@ -106,10 +105,10 @@ public class MapValue extends GenericValue<ArucasMap> {
 			returns = {ANY, "the value of the key, will return null if non-existent"},
 			example = "{'key': 'value'}.get('key');"
 		)
-		private Value mapGet(Context context, MemberFunction function) throws CodeError {
-			MapValue thisValue = function.getParameterValueOfType(context, MapValue.class, 0);
-			Value key = function.getParameterValue(context, 1);
-			Value value = thisValue.value.get(context, key);
+		private Value mapGet(Arguments arguments) throws CodeError {
+			MapValue thisValue = arguments.getNext(MapValue.class);
+			Value key = arguments.getNext();
+			Value value = thisValue.value.get(arguments.getContext(), key);
 			return value == null ? NullValue.NULL : value;
 		}
 
@@ -119,8 +118,8 @@ public class MapValue extends GenericValue<ArucasMap> {
 			returns = {LIST, "a complete list of all the keys"},
 			example = "{'key': 'value', 'key2', 'value2'}.getKeys();"
 		)
-		private Value mapGetKeys(Context context, MemberFunction function) throws CodeError {
-			MapValue thisValue = function.getParameterValueOfType(context, MapValue.class, 0);
+		private Value mapGetKeys(Arguments arguments) throws CodeError {
+			MapValue thisValue = arguments.getNext(MapValue.class);
 			return new ListValue(thisValue.value.keys());
 		}
 
@@ -130,8 +129,8 @@ public class MapValue extends GenericValue<ArucasMap> {
 			returns = {LIST, "a complete list of all the values"},
 			example = "{'key': 'value', 'key2', 'value2'}.getValues();"
 		)
-		private Value mapGetValues(Context context, MemberFunction function) throws CodeError {
-			MapValue thisValue = function.getParameterValueOfType(context, MapValue.class, 0);
+		private Value mapGetValues(Arguments arguments) throws CodeError {
+			MapValue thisValue = arguments.getNext(MapValue.class);
 			return new ListValue(thisValue.value.values());
 		}
 
@@ -145,11 +144,11 @@ public class MapValue extends GenericValue<ArucasMap> {
 			returns = {ANY, "the previous value associated with the key, null if none"},
 			example = "{'key': 'value'}.put('key2', 'value2');"
 		)
-		private Value mapPut(Context context, MemberFunction function) throws CodeError {
-			MapValue thisValue = function.getParameterValueOfType(context, MapValue.class, 0);
-			Value key = function.getParameterValue(context, 1);
-			Value value = function.getParameterValue(context, 2);
-			Value returnValue = thisValue.value.put(context, key, value);
+		private Value mapPut(Arguments arguments) throws CodeError {
+			MapValue thisValue = arguments.getNext(MapValue.class);
+			Value key = arguments.getNext();
+			Value value = arguments.getNext();
+			Value returnValue = thisValue.value.put(arguments.getContext(), key, value);
 			return returnValue == null ? NullValue.NULL : returnValue;
 		}
 
@@ -163,11 +162,11 @@ public class MapValue extends GenericValue<ArucasMap> {
 			returns = {ANY, "the previous value associated with the key, null if none"},
 			example = "{'key': 'value'}.putIfAbsent('key2', 'value2');"
 		)
-		private Value mapPutIfAbsent(Context context, MemberFunction function) throws CodeError {
-			MapValue thisValue = function.getParameterValueOfType(context, MapValue.class, 0);
-			Value key = function.getParameterValue(context, 1);
-			Value value = function.getParameterValue(context, 2);
-			Value returnValue = thisValue.value.putIfAbsent(context, key, value);
+		private Value mapPutIfAbsent(Arguments arguments) throws CodeError {
+			MapValue thisValue = arguments.getNext(MapValue.class);
+			Value key = arguments.getNext();
+			Value value = arguments.getNext();
+			Value returnValue = thisValue.value.putIfAbsent(arguments.getContext(), key, value);
 			return returnValue == null ? NullValue.NULL : returnValue;
 		}
 
@@ -177,10 +176,10 @@ public class MapValue extends GenericValue<ArucasMap> {
 			params = {MAP, "another map", "the map you want to merge into this map"},
 			example = "{'key': 'value'}.putAll({'key2': 'value2'});"
 		)
-		private Value mapPutAll(Context context, MemberFunction function) throws CodeError {
-			MapValue thisValue = function.getParameterValueOfType(context, MapValue.class, 0);
-			MapValue anotherMapValue = function.getParameterValueOfType(context, MapValue.class, 1);
-			thisValue.value.putAll(context, anotherMapValue.value);
+		private Value mapPutAll(Arguments arguments) throws CodeError {
+			MapValue thisValue = arguments.getNext(MapValue.class);
+			MapValue anotherMapValue = arguments.getNext(MapValue.class);
+			thisValue.value.putAll(arguments.getContext(), anotherMapValue.value);
 			return NullValue.NULL;
 		}
 
@@ -191,10 +190,10 @@ public class MapValue extends GenericValue<ArucasMap> {
 			returns = {ANY, "the value associated with the key, null if none"},
 			example = "{'key': 'value'}.remove('key');"
 		)
-		private Value mapRemove(Context context, MemberFunction function) throws CodeError {
-			MapValue thisValue = function.getParameterValueOfType(context, MapValue.class, 0);
-			Value key = function.getParameterValue(context, 1);
-			Value removedValue = thisValue.value.remove(context, key);
+		private Value mapRemove(Arguments arguments) throws CodeError {
+			MapValue thisValue = arguments.getNext(MapValue.class);
+			Value key = arguments.getNext();
+			Value removedValue = thisValue.value.remove(arguments.getContext(), key);
 			return removedValue == null ? NullValue.NULL : removedValue;
 		}
 
@@ -203,8 +202,8 @@ public class MapValue extends GenericValue<ArucasMap> {
 			desc = "This allows you to clear the map of all the keys and values",
 			example = "{'key': 'value'}.clear();"
 		)
-		private Value mapClear(Context context, MemberFunction function) throws CodeError {
-			MapValue thisValue = function.getParameterValueOfType(context, MapValue.class, 0);
+		private Value mapClear(Arguments arguments) throws CodeError {
+			MapValue thisValue = arguments.getNext(MapValue.class);
 			thisValue.value.clear();
 			return NullValue.NULL;
 		}
@@ -215,8 +214,8 @@ public class MapValue extends GenericValue<ArucasMap> {
 			returns = {BOOLEAN, "true if the map is empty, false otherwise"},
 			example = "{'key': 'value'}.isEmpty();"
 		)
-		private BooleanValue isEmpty(Context context, MemberFunction function) throws CodeError {
-			MapValue thisValue = function.getParameterValueOfType(context, MapValue.class, 0);
+		private BooleanValue isEmpty(Arguments arguments) throws CodeError {
+			MapValue thisValue = arguments.getNext(MapValue.class);
 			return BooleanValue.of(thisValue.value.isEmpty());
 		}
 
@@ -227,10 +226,10 @@ public class MapValue extends GenericValue<ArucasMap> {
 			returns = {BOOLEAN, "true if the map contains the key, false otherwise"},
 			example = "{'key': 'value'}.containsKey('key');"
 		)
-		private BooleanValue mapContainsKey(Context context, MemberFunction function) throws CodeError {
-			MapValue thisValue = function.getParameterValueOfType(context, MapValue.class, 0);
-			Value key = function.getParameterValue(context, 1);
-			return BooleanValue.of(thisValue.value.containsKey(context, key));
+		private BooleanValue mapContainsKey(Arguments arguments) throws CodeError {
+			MapValue thisValue = arguments.getNext(MapValue.class);
+			Value key = arguments.getNext();
+			return BooleanValue.of(thisValue.value.containsKey(arguments.getContext(), key));
 		}
 
 		@FunctionDoc(
@@ -239,9 +238,9 @@ public class MapValue extends GenericValue<ArucasMap> {
 			returns = {STRING, "the string representation of the map"},
 			example = "{'key': []}.toString();"
 		)
-		private Value toString(Context context, MemberFunction function) throws CodeError {
-			MapValue thisValue = function.getParameterValueOfType(context, MapValue.class, 0);
-			return StringValue.of(thisValue.value.getAsStringUnsafe(context, function.syntaxPosition));
+		private Value toString(Arguments arguments) throws CodeError {
+			MapValue thisValue = arguments.getNext(MapValue.class);
+			return StringValue.of(thisValue.value.getAsStringUnsafe(arguments.getContext(), arguments.getPosition()));
 		}
 	}
 }

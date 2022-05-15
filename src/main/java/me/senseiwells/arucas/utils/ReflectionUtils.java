@@ -77,7 +77,7 @@ public class ReflectionUtils {
 		});
 	}
 
-	public static Value constructFromArgs(Class<?> constructingClass, ArucasList arguments, ISyntax syntaxPosition, Context context) throws CodeError {
+	public static Value constructFromArgs(Class<?> constructingClass, List<Value> arguments, ISyntax syntaxPosition, Context context) throws CodeError {
 		Object[] objects = new Object[arguments.size()];
 		Class<?>[] parameters = new Class[arguments.size()];
 

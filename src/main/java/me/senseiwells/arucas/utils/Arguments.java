@@ -1,11 +1,13 @@
 package me.senseiwells.arucas.utils;
 
+import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.api.docs.ClassDoc;
 import me.senseiwells.arucas.api.wrappers.IArucasWrappedClass;
+import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
-import me.senseiwells.arucas.values.Value;
+import me.senseiwells.arucas.values.*;
 import me.senseiwells.arucas.values.classes.WrapperClassValue;
-import me.senseiwells.arucas.values.functions.mod.FunctionValue;
+import me.senseiwells.arucas.values.functions.FunctionValue;
 
 import java.util.List;
 
@@ -14,35 +16,57 @@ public class Arguments {
 	private final Context context;
 	private final FunctionValue function;
 	private final List<Value> arguments;
+	private int index;
 
 	public Arguments(Context context, FunctionValue function, List<Value> arguments) {
 		this.context = context;
 		this.function = function;
 		this.arguments = arguments;
+		this.index = 0;
 	}
 
 	public Context getContext() {
 		return this.context;
 	}
 
-	public FunctionValue getFunction() {
-		return this.function;
+	public ISyntax getPosition() {
+		return this.function.getPosition();
 	}
 
 	public List<Value> getAll() {
 		return this.arguments;
 	}
 
+	public RuntimeError getError(String details) {
+		return this.function.getError(this.context, details);
+	}
+
+	public RuntimeError getError(String details, Object... objects) {
+		return this.function.getError(this.context, details, objects);
+	}
+
+	public RuntimeError getError(String details, Value... values) throws CodeError {
+		Object[] strings = new String[values.length];
+		for (int i = 0; i < values.length; i++) {
+			strings[i] = values[i].getAsString(this.context);
+		}
+		return this.getError(details, strings);
+	}
+
 	public Value get(int index) throws RuntimeError {
 		if (index < 0 || index >= this.size()) {
-			throw this.function.getError(this.context, "Index %d out of bounds", index);
+			throw this.function.getError(this.context, "Index %d out of bounds, incorrect amount of parameters", index);
 		}
 		return this.arguments.get(index);
 	}
 
+	public Object getVal(int index) throws RuntimeError {
+		return this.get(index).getValue();
+	}
+
 	public <T extends Value> T get(int index, Class<T> type) throws RuntimeError {
 		Value value = this.get(index);
-		if (type.isInstance(value)) {
+		if (!type.isInstance(value)) {
 			ClassDoc doc = type.getAnnotation(ClassDoc.class);
 			String className = doc == null ? type.getSimpleName() : doc.name();
 			throw this.function.getError(
@@ -55,49 +79,61 @@ public class Arguments {
 		return typedValue;
 	}
 
+	public <S, T extends GenericValue<S>> S getVal(int index, Class<T> type) throws RuntimeError {
+		return this.get(index, type).getValue();
+	}
+
 	public <T extends IArucasWrappedClass> T getWrapper(int index, Class<T> type) throws RuntimeError {
 		WrapperClassValue wrapperValue = this.get(index, WrapperClassValue.class);
 		return wrapperValue.getWrapper(type);
 	}
 
-	public Value getFirst() throws RuntimeError {
-		return this.get(0);
+	public Value getNext() throws RuntimeError {
+		return this.get(this.index++);
 	}
 
-	public <T extends Value> T getFirst(Class<T> type) throws RuntimeError {
-		return this.get(0, type);
+	public <T extends Value> T getNext(Class<T> type) throws RuntimeError {
+		return this.get(this.index++, type);
 	}
 
-	public Value getSecond() throws RuntimeError {
-		return this.get(1);
+	public BooleanValue getNextBoolean() throws RuntimeError {
+		return this.getNext(BooleanValue.class);
 	}
 
-	public <T extends Value> T getSecond(Class<T> type) throws RuntimeError {
-		return this.get(1, type);
+	public StringValue getNextString() throws RuntimeError {
+		return this.getNext(StringValue.class);
 	}
 
-	public Value getThird() throws RuntimeError {
-		return this.get(2);
+	public NumberValue getNextNumber() throws RuntimeError {
+		return this.getNext(NumberValue.class);
 	}
 
-	public <T extends Value> T getThird(Class<T> type) throws RuntimeError {
-		return this.get(2, type);
+	public ListValue getNextList() throws RuntimeError {
+		return this.getNext(ListValue.class);
+	}
+	
+	public MapValue getNextMap() throws RuntimeError {
+		return this.getNext(MapValue.class);
+	}
+	
+	public SetValue getNextSet() throws RuntimeError {
+		return this.getNext(SetValue.class);
+	}
+	
+	public FunctionValue getNextFunction() throws RuntimeError {
+		return this.getNext(FunctionValue.class);
 	}
 
-	public Value getFourth() throws RuntimeError {
-		return this.get(3);
+	public <S, T extends GenericValue<S>> S getNextVal(Class<T> type) throws RuntimeError {
+		return this.getNext(type).getValue();
 	}
 
-	public <T extends Value> T getFourth(Class<T> type) throws RuntimeError {
-		return this.get(3, type);
+	public List<Value> getRemaining() {
+		return this.arguments.subList(this.index, this.size());
 	}
 
-	public Value getFifth() throws RuntimeError {
-		return this.get(4);
-	}
-
-	public <T extends Value> T getFifth(Class<T> type) throws RuntimeError {
-		return this.get(4, type);
+	public void resetNext() {
+		this.index = 0;
 	}
 
 	public int size() {

@@ -9,7 +9,7 @@ import me.senseiwells.arucas.utils.ArucasOperatorMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.ValueRef;
 import me.senseiwells.arucas.values.*;
-import me.senseiwells.arucas.values.functions.ClassMemberFunction;
+import me.senseiwells.arucas.values.functions.UserDefinedClassFunction;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.functions.MemberOperations;
 
@@ -18,7 +18,7 @@ import java.util.*;
 public class ArucasClassValue extends GenericValue<ArucasClassDefinition> implements MemberOperations {
 	private final ArucasFunctionMap<FunctionValue> methods;
 	private final Map<String, Value> members;
-	private final ArucasOperatorMap<ClassMemberFunction> operatorMap;
+	private final ArucasOperatorMap<UserDefinedClassFunction> operatorMap;
 
 	public ArucasClassValue(ArucasClassDefinition arucasClass) {
 		super(arucasClass);
@@ -39,7 +39,7 @@ public class ArucasClassValue extends GenericValue<ArucasClassDefinition> implem
 		this.members.put(name, value);
 	}
 
-	public void addOperatorMethod(Token.Type type, ClassMemberFunction method) {
+	public void addOperatorMethod(Token.Type type, UserDefinedClassFunction method) {
 		this.operatorMap.add(type, method);
 	}
 
@@ -47,7 +47,7 @@ public class ArucasClassValue extends GenericValue<ArucasClassDefinition> implem
 		return this.operatorMap.hasOperator(type, parameters);
 	}
 
-	public ClassMemberFunction getOperatorMethod(Token.Type type, int parameters) {
+	public UserDefinedClassFunction getOperatorMethod(Token.Type type, int parameters) {
 		return this.operatorMap.get(type, parameters);
 	}
 
@@ -99,7 +99,7 @@ public class ArucasClassValue extends GenericValue<ArucasClassDefinition> implem
 		if (memberFunction != null) {
 			Value value = memberFunction.call(context, new ArrayList<>());
 			if (!(value instanceof NumberValue numberValue)) {
-				throw new RuntimeError("hashCode() must return a number", memberFunction.syntaxPosition, context);
+				throw new RuntimeError("hashCode() must return a number", memberFunction.getPosition(), context);
 			}
 			return numberValue.value.intValue();
 		}
@@ -126,7 +126,7 @@ public class ArucasClassValue extends GenericValue<ArucasClassDefinition> implem
 			parameters.add(other);
 			Value value = equalsMethod.call(context, parameters);
 			if (!(value instanceof BooleanValue booleanValue)) {
-				throw new RuntimeError("operator '==' must return a boolean", equalsMethod.syntaxPosition, context);
+				throw new RuntimeError("operator '==' must return a boolean", equalsMethod.getPosition(), context);
 			}
 			return booleanValue.value;
 		}

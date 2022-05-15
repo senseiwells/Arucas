@@ -4,9 +4,9 @@ import me.senseiwells.arucas.api.ArucasClassExtension;
 import me.senseiwells.arucas.api.docs.ClassDoc;
 import me.senseiwells.arucas.api.docs.FunctionDoc;
 import me.senseiwells.arucas.throwables.CodeError;
+import me.senseiwells.arucas.utils.Arguments;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.values.classes.ArucasClassDefinition;
 import me.senseiwells.arucas.values.classes.ArucasClassValue;
 import me.senseiwells.arucas.values.functions.FunctionValue;
@@ -68,8 +68,8 @@ public class EnumValue extends ArucasClassValue {
 		@Override
 		public ArucasFunctionMap<MemberFunction> getDefinedMethods() {
 			return ArucasFunctionMap.of(
-				new MemberFunction("getName", this::getName),
-				new MemberFunction("ordinal", this::ordinal)
+				MemberFunction.of("getName", this::getName),
+				MemberFunction.of("ordinal", this::ordinal)
 			);
 		}
 
@@ -79,8 +79,8 @@ public class EnumValue extends ArucasClassValue {
 			returns = {STRING, "the name of the enum value"},
 			example = "enum.getName();"
 		)
-		private Value getName(Context context, MemberFunction function) throws CodeError {
-			EnumValue enumValue = function.getThis(context, EnumValue.class);
+		private Value getName(Arguments arguments) throws CodeError {
+			EnumValue enumValue = arguments.getNext(EnumValue.class);
 			return StringValue.of(enumValue.enumName);
 		}
 
@@ -90,8 +90,8 @@ public class EnumValue extends ArucasClassValue {
 			returns = {NUMBER, "the ordinal of the enum value"},
 			example = "enum.ordinal();"
 		)
-		private Value ordinal(Context context, MemberFunction function) throws CodeError {
-			EnumValue enumValue = function.getThis(context, EnumValue.class);
+		private Value ordinal(Arguments arguments) throws CodeError {
+			EnumValue enumValue = arguments.getNext(EnumValue.class);
 			return NumberValue.of(enumValue.ordinal);
 		}
 	}

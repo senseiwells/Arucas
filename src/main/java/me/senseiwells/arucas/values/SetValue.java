@@ -4,7 +4,7 @@ import me.senseiwells.arucas.api.ArucasClassExtension;
 import me.senseiwells.arucas.api.docs.ClassDoc;
 import me.senseiwells.arucas.api.docs.FunctionDoc;
 import me.senseiwells.arucas.throwables.CodeError;
-import me.senseiwells.arucas.throwables.RuntimeError;
+import me.senseiwells.arucas.utils.Arguments;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.impl.ArucasSet;
@@ -70,8 +70,8 @@ public class SetValue extends GenericValue<ArucasSet> {
 		@Override
 		public ArucasFunctionMap<BuiltInFunction> getDefinedStaticMethods() {
 			return ArucasFunctionMap.of(
-				new BuiltInFunction("unordered", this::unordered),
-				new BuiltInFunction.Arbitrary("of", this::of)
+				BuiltInFunction.of("unordered", this::unordered),
+				BuiltInFunction.arbitrary("of", this::of)
 			);
 		}
 
@@ -82,7 +82,7 @@ public class SetValue extends GenericValue<ArucasSet> {
 			returns = {SET, "the unordered set"},
 			example = "Set.unordered();"
 		)
-		private Value unordered(Context context, BuiltInFunction function) {
+		private Value unordered(Arguments arguments) {
 			return new SetValue(new ArucasSet());
 		}
 
@@ -95,25 +95,24 @@ public class SetValue extends GenericValue<ArucasSet> {
 			returns = {SET, "the set you created"},
 			example = "Set.of('object', 81, 96, 'case');"
 		)
-		private Value of(Context context, BuiltInFunction function) throws CodeError {
-			ListValue arguments = function.getFirstParameter(context, ListValue.class);
+		private Value of(Arguments arguments) throws CodeError {
 			ArucasSet set = new ArucasSet();
-			set.addAll(context, arguments.value);
+			set.addAll(arguments.getContext(), arguments.getAll());
 			return new SetValue(set);
 		}
 
 		@Override
 		public ArucasFunctionMap<MemberFunction> getDefinedMethods() {
 			return ArucasFunctionMap.of(
-				new MemberFunction("get", "object", this::get),
-				new MemberFunction("remove", "index", this::remove),
-				new MemberFunction("add", "value", this::add),
-				new MemberFunction("addAll", "otherList", this::addAll),
-				new MemberFunction("contains", "value", this::contains),
-				new MemberFunction("containsAll", "otherList", this::containsAll),
-				new MemberFunction("isEmpty", this::isEmpty),
-				new MemberFunction("clear", this::clear),
-				new MemberFunction("toString", this::toString)
+				MemberFunction.of("get", 1, this::get),
+				MemberFunction.of("remove", 1, this::remove),
+				MemberFunction.of("add", 1, this::add),
+				MemberFunction.of("addAll", 1, this::addAll),
+				MemberFunction.of("contains", 1, this::contains),
+				MemberFunction.of("containsAll", 1, this::containsAll),
+				MemberFunction.of("isEmpty", this::isEmpty),
+				MemberFunction.of("clear", this::clear),
+				MemberFunction.of("toString", this::toString)
 			);
 		}
 
@@ -129,10 +128,10 @@ public class SetValue extends GenericValue<ArucasSet> {
 			returns = {ANY, "the value you wanted to get, null if it wasn't in the set"},
 			example = "Set.of('object').get('object');"
 		)
-		private Value get(Context context, MemberFunction function) throws CodeError {
-			SetValue thisValue = function.getThis(context, SetValue.class);
-			Value value = function.getParameterValue(context, 1);
-			return thisValue.value.get(context, value);
+		private Value get(Arguments arguments) throws CodeError {
+			SetValue thisValue = arguments.getNextSet();
+			Value value = arguments.getNext();
+			return thisValue.value.get(arguments.getContext(), value);
 		}
 
 		@FunctionDoc(
@@ -142,10 +141,10 @@ public class SetValue extends GenericValue<ArucasSet> {
 			returns = {BOOLEAN, "whether the value was removed from the set"},
 			example = "Set.of('object').remove('object');"
 		)
-		private Value remove(Context context, MemberFunction function) throws CodeError {
-			SetValue thisValue = function.getThis(context, SetValue.class);
-			Value value = function.getParameterValue(context, 1);
-			return BooleanValue.of(thisValue.value.remove(context, value));
+		private Value remove(Arguments arguments) throws CodeError {
+			SetValue thisValue = arguments.getNextSet();
+			Value value = arguments.getNext();
+			return BooleanValue.of(thisValue.value.remove(arguments.getContext(), value));
 		}
 
 		@FunctionDoc(
@@ -155,10 +154,10 @@ public class SetValue extends GenericValue<ArucasSet> {
 			returns = {BOOLEAN, "whether the value was successfully added to the set"},
 			example = "Set.of().add('object');"
 		)
-		private Value add(Context context, MemberFunction function) throws CodeError {
-			SetValue thisValue = function.getThis(context, SetValue.class);
-			Value value = function.getParameterValue(context, 1);
-			return BooleanValue.of(thisValue.value.add(context, value));
+		private Value add(Arguments arguments) throws CodeError {
+			SetValue thisValue = arguments.getNextSet();
+			Value value = arguments.getNext();
+			return BooleanValue.of(thisValue.value.add(arguments.getContext(), value));
 		}
 
 		@FunctionDoc(
@@ -169,14 +168,14 @@ public class SetValue extends GenericValue<ArucasSet> {
 			throwMsgs = "... is not a collection",
 			example = "Set.of().addAll(Set.of('object', 81, 96, 'case'));"
 		)
-		private Value addAll(Context context, MemberFunction function) throws CodeError {
-			SetValue thisValue = function.getThis(context, SetValue.class);
-			Value value = function.getParameterValue(context, 1);
+		private Value addAll(Arguments arguments) throws CodeError {
+			SetValue thisValue = arguments.getNextSet();
+			Value value = arguments.getNext();
 			if (value.getValue() instanceof IArucasCollection collection) {
-				thisValue.value.addAll(context, collection.asCollection());
+				thisValue.value.addAll(arguments.getContext(), collection.asCollection());
 				return thisValue;
 			}
-			throw new RuntimeError("'%s' is not a collection".formatted(value.getAsString(context)), function.syntaxPosition, context);
+			throw arguments.getError("'%s' is not a collection", value);
 		}
 
 		@FunctionDoc(
@@ -186,10 +185,10 @@ public class SetValue extends GenericValue<ArucasSet> {
 			returns = {BOOLEAN, "whether the value is in the set"},
 			example = "Set.of('object').contains('object');"
 		)
-		private BooleanValue contains(Context context, MemberFunction function) throws CodeError {
-			SetValue thisValue = function.getThis(context, SetValue.class);
-			Value value = function.getParameterValue(context, 1);
-			return BooleanValue.of(thisValue.value.contains(context, value));
+		private BooleanValue contains(Arguments arguments) throws CodeError {
+			SetValue thisValue = arguments.getNextSet();
+			Value value = arguments.getNext();
+			return BooleanValue.of(thisValue.value.contains(arguments.getContext(), value));
 		}
 
 		@FunctionDoc(
@@ -200,13 +199,13 @@ public class SetValue extends GenericValue<ArucasSet> {
 			throwMsgs = "... is not a collection",
 			example = "Set.of('object').containsAll(Set.of('object', 81, 96, 'case'));"
 		)
-		private BooleanValue containsAll(Context context, MemberFunction function) throws CodeError {
-			SetValue thisValue = function.getThis(context, SetValue.class);
-			Value value = function.getParameterValue(context, 1);
+		private BooleanValue containsAll(Arguments arguments) throws CodeError {
+			SetValue thisValue = arguments.getNextSet();
+			Value value = arguments.getNext();
 			if (value.getValue() instanceof IArucasCollection collection) {
-				return BooleanValue.of(thisValue.value.containsAll(context, collection.asCollection()));
+				return BooleanValue.of(thisValue.value.containsAll(arguments.getContext(), collection.asCollection()));
 			}
-			throw new RuntimeError("'%s' is not a collection".formatted(value.getAsString(context)), function.syntaxPosition, context);
+			throw arguments.getError("'%s' is not a collection", value);
 		}
 
 		@FunctionDoc(
@@ -215,8 +214,8 @@ public class SetValue extends GenericValue<ArucasSet> {
 			returns = {BOOLEAN, "whether the set is empty"},
 			example = "Set.of().isEmpty();"
 		)
-		private BooleanValue isEmpty(Context context, MemberFunction function) throws CodeError {
-			SetValue thisValue = function.getThis(context, SetValue.class);
+		private BooleanValue isEmpty(Arguments arguments) throws CodeError {
+			SetValue thisValue = arguments.getNextSet();
 			return BooleanValue.of(thisValue.value.isEmpty());
 		}
 
@@ -225,8 +224,8 @@ public class SetValue extends GenericValue<ArucasSet> {
 			desc = "This removes all values from inside the set",
 			example = "Set.of('object').clear();"
 		)
-		private Value clear(Context context, MemberFunction function) throws CodeError {
-			SetValue thisValue = function.getThis(context, SetValue.class);
+		private Value clear(Arguments arguments) throws CodeError {
+			SetValue thisValue = arguments.getNextSet();
 			thisValue.value.clear();
 			return NullValue.NULL;
 		}
@@ -237,9 +236,9 @@ public class SetValue extends GenericValue<ArucasSet> {
 			returns = {STRING, "the string representation of the set"},
 			example = "Set.of('object').toString();"
 		)
-		private Value toString(Context context, MemberFunction function) throws CodeError {
-			SetValue thisValue = function.getThis(context, SetValue.class);
-			return StringValue.of(thisValue.value.getAsStringUnsafe(context, function.syntaxPosition));
+		private Value toString(Arguments arguments) throws CodeError {
+			SetValue thisValue = arguments.getNextSet();
+			return StringValue.of(thisValue.value.getAsStringUnsafe(arguments.getContext(), arguments.getPosition()));
 		}
 	}
 }

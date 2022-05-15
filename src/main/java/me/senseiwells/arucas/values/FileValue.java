@@ -5,7 +5,7 @@ import me.senseiwells.arucas.api.docs.ClassDoc;
 import me.senseiwells.arucas.api.docs.ConstructorDoc;
 import me.senseiwells.arucas.api.docs.FunctionDoc;
 import me.senseiwells.arucas.throwables.CodeError;
-import me.senseiwells.arucas.throwables.RuntimeError;
+import me.senseiwells.arucas.utils.Arguments;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.ExceptionUtils;
@@ -75,7 +75,7 @@ public class FileValue extends GenericValue<File> {
 		@Override
 		public ArucasFunctionMap<ConstructorFunction> getDefinedConstructors() {
 			return ArucasFunctionMap.of(
-				new ConstructorFunction("path", this::newFile)
+				ConstructorFunction.of(1, this::newFile)
 			);
 		}
 
@@ -84,15 +84,15 @@ public class FileValue extends GenericValue<File> {
 			params = {STRING, "path", "the path of the file"},
 			example = "new File('foo/bar/script.arucas')"
 		)
-		private FileValue newFile(Context context, BuiltInFunction function) throws CodeError {
-			StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
+		private FileValue newFile(Arguments arguments) throws CodeError {
+			StringValue stringValue = arguments.getNext(StringValue.class);
 			return FileValue.of(new File(stringValue.value));
 		}
 
 		@Override
 		public ArucasFunctionMap<BuiltInFunction> getDefinedStaticMethods() {
 			return ArucasFunctionMap.of(
-				new BuiltInFunction("getDirectory", this::getDirectory)
+				BuiltInFunction.of("getDirectory", this::getDirectory)
 			);
 		}
 
@@ -103,7 +103,7 @@ public class FileValue extends GenericValue<File> {
 			returns = {FILE, "the file of the working directory"},
 			example = "File.getDirectory()"
 		)
-		private Value getDirectory(Context context, BuiltInFunction function) {
+		private Value getDirectory(Arguments arguments) {
 			String filePath = System.getProperty("user.dir");
 			return FileValue.of(new File(filePath));
 		}
@@ -111,16 +111,16 @@ public class FileValue extends GenericValue<File> {
 		@Override
 		public ArucasFunctionMap<MemberFunction> getDefinedMethods() {
 			return ArucasFunctionMap.of(
-				new MemberFunction("getName", this::getName),
-				new MemberFunction("read", this::readFile),
-				new MemberFunction("write", "string", this::writeFile),
-				new MemberFunction("delete", this::deleteFile),
-				new MemberFunction("exists", this::exists),
-				new MemberFunction("getSubFiles", this::getSubFiles),
-				new MemberFunction("createDirectory", this::createDirectory),
-				new MemberFunction("getPath", this::getPath),
-				new MemberFunction("getAbsolutePath", this::getAbsolutePath),
-				new MemberFunction("open", this::open)
+				MemberFunction.of("getName", this::getName),
+				MemberFunction.of("read", this::readFile),
+				MemberFunction.of("write", 1, this::writeFile),
+				MemberFunction.of("delete", this::deleteFile),
+				MemberFunction.of("exists", this::exists),
+				MemberFunction.of("getSubFiles", this::getSubFiles),
+				MemberFunction.of("createDirectory", this::createDirectory),
+				MemberFunction.of("getPath", this::getPath),
+				MemberFunction.of("getAbsolutePath", this::getAbsolutePath),
+				MemberFunction.of("open", this::open)
 			);
 		}
 
@@ -130,8 +130,8 @@ public class FileValue extends GenericValue<File> {
 			returns = {STRING, "the name of the file"},
 			example = "File.getName()"
 		)
-		private Value getName(Context context, MemberFunction function) throws CodeError {
-			FileValue thisValue = function.getThis(context, FileValue.class);
+		private Value getName(Arguments arguments) throws CodeError {
+			FileValue thisValue = arguments.getNext(FileValue.class);
 			return StringValue.of(thisValue.value.getName());
 		}
 
@@ -145,22 +145,22 @@ public class FileValue extends GenericValue<File> {
 			},
 			example = "file.read()"
 		)
-		private Value readFile(Context context, MemberFunction function) throws CodeError {
-			FileValue thisValue = function.getThis(context, FileValue.class);
+		private Value readFile(Arguments arguments) throws CodeError {
+			FileValue thisValue = arguments.getNext(FileValue.class);
 			try {
 				return StringValue.of(Files.readString(thisValue.value.toPath()));
 			}
 			catch (OutOfMemoryError e) {
-				throw new RuntimeError("Out of Memory - The file you are trying to read is too large", function.syntaxPosition, context);
+				throw arguments.getError("Out of Memory - The file you are trying to read is too large");
 			}
 			catch (InvalidPathException e) {
-				throw new RuntimeError(e.getMessage(), function.syntaxPosition, context);
+				throw arguments.getError(e.getMessage());
 			}
 			catch (IOException | SecurityException e) {
-				throw new RuntimeError(
-					"There was an error reading the file: \"%s\"\n%s".formatted(thisValue.getAsString(context), ExceptionUtils.getStackTrace(e)),
-					function.syntaxPosition,
-					context
+				throw arguments.getError(
+					"There was an error reading the file '%s'\n%s",
+					thisValue.getAsString(arguments.getContext()),
+					ExceptionUtils.getStackTrace(e)
 				);
 			}
 		}
@@ -172,19 +172,19 @@ public class FileValue extends GenericValue<File> {
 			throwMsgs = "There was an error writing the file: ...",
 			example = "file.write('Hello World!')"
 		)
-		private Value writeFile(Context context, MemberFunction function) throws CodeError {
-			FileValue thisValue = function.getThis(context, FileValue.class);
-			StringValue writeValue = function.getParameterValueOfType(context, StringValue.class, 1);
+		private Value writeFile(Arguments arguments) throws CodeError {
+			FileValue thisValue = arguments.getNext(FileValue.class);
+			StringValue writeValue = arguments.getNext(StringValue.class);
 
 			try (PrintWriter printWriter = new PrintWriter(thisValue.value)) {
 				printWriter.println(writeValue.value);
 				return NullValue.NULL;
 			}
 			catch (FileNotFoundException | SecurityException e) {
-				throw new RuntimeError(
-					"There was an error writing the file: \"%s\"\n%s".formatted(thisValue.getAsString(context), ExceptionUtils.getStackTrace(e)),
-					function.syntaxPosition,
-					context
+				throw arguments.getError(
+					"There was an error writing the file '%s'\n%s",
+					thisValue.getAsString(arguments.getContext()),
+					ExceptionUtils.getStackTrace(e)
 				);
 			}
 		}
@@ -196,12 +196,12 @@ public class FileValue extends GenericValue<File> {
 			throwMsgs = "Could not find any files",
 			example = "file.getSubFiles()"
 		)
-		private Value getSubFiles(Context context, MemberFunction function) throws CodeError {
-			FileValue thisValue = function.getThis(context, FileValue.class);
+		private Value getSubFiles(Arguments arguments) throws CodeError {
+			FileValue thisValue = arguments.getNext(FileValue.class);
 			try {
 				File[] files = thisValue.value.listFiles();
 				if (files == null) {
-					throw new RuntimeError("Could not find any files", function.syntaxPosition, context);
+					throw arguments.getError("Could not find any files");
 				}
 				ArucasList fileList = new ArucasList();
 				for (File file : files) {
@@ -210,7 +210,7 @@ public class FileValue extends GenericValue<File> {
 				return new ListValue(fileList);
 			}
 			catch (SecurityException e) {
-				throw new RuntimeError(e.getMessage(), function.syntaxPosition, context);
+				throw arguments.getError(e.getMessage());
 			}
 		}
 
@@ -221,17 +221,13 @@ public class FileValue extends GenericValue<File> {
 			throwMsgs = "Could not delete file: ...",
 			example = "file.delete()"
 		)
-		private Value deleteFile(Context context, MemberFunction function) throws CodeError {
-			FileValue thisValue = function.getThis(context, FileValue.class);
+		private Value deleteFile(Arguments arguments) throws CodeError {
+			FileValue thisValue = arguments.getNext(FileValue.class);
 			try {
 				return BooleanValue.of(thisValue.value.delete());
 			}
 			catch (SecurityException exception) {
-				throw new RuntimeError(
-					"Could not delete file: %s".formatted(thisValue.getAsString(context)),
-					function.syntaxPosition,
-					context
-				);
+				throw arguments.getError("Could not delete file '%s'", thisValue);
 			}
 		}
 
@@ -242,17 +238,13 @@ public class FileValue extends GenericValue<File> {
 			throwMsgs = "Could not check file: ...",
 			example = "file.exists()"
 		)
-		private Value exists(Context context, MemberFunction function) throws CodeError {
-			FileValue thisValue = function.getThis(context, FileValue.class);
+		private Value exists(Arguments arguments) throws CodeError {
+			FileValue thisValue = arguments.getNext(FileValue.class);
 			try {
 				return BooleanValue.of(thisValue.value.exists());
 			}
 			catch (SecurityException exception) {
-				throw new RuntimeError(
-					"Could not check file: %s".formatted(thisValue.getAsString(context)),
-					function.syntaxPosition,
-					context
-				);
+				throw arguments.getError("Could not check file '%s'", thisValue);
 			}
 		}
 
@@ -263,13 +255,13 @@ public class FileValue extends GenericValue<File> {
 			throwMsgs = "...",
 			example = "file.createDirectory()"
 		)
-		private Value createDirectory(Context context, MemberFunction function) throws CodeError {
-			FileValue thisValue = function.getThis(context, FileValue.class);
+		private Value createDirectory(Arguments arguments) throws CodeError {
+			FileValue thisValue = arguments.getNext(FileValue.class);
 			try {
 				return BooleanValue.of(thisValue.value.mkdirs());
 			}
 			catch (InvalidPathException e) {
-				throw new RuntimeError(e.getMessage(), function.syntaxPosition, context);
+				throw arguments.getError(e.getMessage());
 			}
 		}
 
@@ -279,8 +271,8 @@ public class FileValue extends GenericValue<File> {
 			returns = {STRING, "the path of the file"},
 			example = "file.getPath()"
 		)
-		private Value getPath(Context context, MemberFunction function) throws CodeError {
-			FileValue thisValue = function.getThis(context, FileValue.class);
+		private Value getPath(Arguments arguments) throws CodeError {
+			FileValue thisValue = arguments.getNext(FileValue.class);
 			return StringValue.of(thisValue.value.getPath());
 		}
 
@@ -290,13 +282,13 @@ public class FileValue extends GenericValue<File> {
 			returns = {STRING, "the absolute path of the file"},
 			example = "file.getAbsolutePath()"
 		)
-		private Value getAbsolutePath(Context context, MemberFunction function) throws CodeError {
-			FileValue thisValue = function.getThis(context, FileValue.class);
+		private Value getAbsolutePath(Arguments arguments) throws CodeError {
+			FileValue thisValue = arguments.getNext(FileValue.class);
 			try {
 				return StringValue.of(thisValue.value.getAbsolutePath());
 			}
 			catch (SecurityException e) {
-				throw new RuntimeError(e.getMessage(), function.syntaxPosition, context);
+				throw arguments.getError(e.getMessage());
 			}
 		}
 
@@ -305,17 +297,13 @@ public class FileValue extends GenericValue<File> {
 			desc = "This opens the file (as in opens it on your os)",
 			example = "file.open()"
 		)
-		private Value open(Context context, MemberFunction function) throws CodeError {
-			FileValue thisValue = function.getThis(context, FileValue.class);
+		private Value open(Arguments arguments) throws CodeError {
+			FileValue thisValue = arguments.getNext(FileValue.class);
 			try {
 				Desktop.getDesktop().open(thisValue.value);
 			}
 			catch (Exception e) {
-				throw new RuntimeError(
-					"An error occured while opening the file: %s".formatted(thisValue.getAsString(context)),
-					function.syntaxPosition,
-					context
-				);
+				throw arguments.getError("An error occurred while opening the file '%s'", thisValue);
 			}
 			return NullValue.NULL;
 		}

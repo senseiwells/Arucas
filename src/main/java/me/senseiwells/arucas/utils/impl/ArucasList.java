@@ -8,6 +8,7 @@ import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.ValueIdentifier;
 
 import java.util.*;
+import java.util.function.IntFunction;
 
 /**
  * Custom list implementation.
@@ -243,6 +244,21 @@ public class ArucasList implements IArucasCollection, List<Value>, ValueIdentifi
 		return Arrays.copyOf(this.valueData, this.size);
 	}
 
+	@Override
+	public <T> T[] toArray(T[] a) {
+		if (a instanceof Value[]) {
+			@SuppressWarnings("unchecked")
+			T[] values = (T[]) this.toArray();
+			return values;
+		}
+		throw new ArrayStoreException();
+	}
+
+	@Override
+	public synchronized ArucasList subList(int fromIndex, int toIndex) {
+		return new ArucasList(Arrays.copyOfRange(this.valueData, fromIndex, toIndex));
+	}
+
 	private synchronized Value[] grow() {
 		return this.grow(this.size + 1);
 	}
@@ -413,9 +429,6 @@ public class ArucasList implements IArucasCollection, List<Value>, ValueIdentifi
 	public boolean retainAll(Collection<?> c) { throw new UnsupportedOperationException(); }
 
 	@Override
-	public <T> T[] toArray(T[] a) { throw new UnsupportedOperationException(); }
-
-	@Override
 	public int indexOf(Object o) { throw new UnsupportedOperationException(); }
 
 	@Override
@@ -426,9 +439,6 @@ public class ArucasList implements IArucasCollection, List<Value>, ValueIdentifi
 
 	@Override
 	public ListIterator<Value> listIterator(int index) { throw new UnsupportedOperationException(); }
-
-	@Override
-	public ArucasList subList(int fromIndex, int toIndex) { throw new UnsupportedOperationException(); }
 
 
 	public static ArucasList of(Value... values) {

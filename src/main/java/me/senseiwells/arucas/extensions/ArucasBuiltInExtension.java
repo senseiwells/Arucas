@@ -5,10 +5,11 @@ import me.senseiwells.arucas.api.docs.FunctionDoc;
 import me.senseiwells.arucas.core.Arucas;
 import me.senseiwells.arucas.core.Run;
 import me.senseiwells.arucas.throwables.CodeError;
-import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowStop;
+import me.senseiwells.arucas.utils.Arguments;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.ExceptionUtils;
 import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.utils.impl.IArucasCollection;
 import me.senseiwells.arucas.values.*;
@@ -24,7 +25,6 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -33,6 +33,7 @@ import static me.senseiwells.arucas.utils.ValueTypes.*;
 /**
  * Built-in extension for Arucas. Provides many standard functions. <br>
  * Fully Documented.
+ *
  * @author senseiwells
  */
 public class ArucasBuiltInExtension implements IArucasExtension {
@@ -50,27 +51,27 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 	}
 
 	private final ArucasFunctionMap<BuiltInFunction> builtInFunctions = ArucasFunctionMap.of(
-		new BuiltInFunction("run", "path", this::run),
-		new BuiltInFunction("stop", this::stop),
-		new BuiltInFunction("sleep", "milliseconds", this::sleep),
-		new BuiltInFunction("print", "printValue", this::print),
-		new BuiltInFunction.Arbitrary("print", this::fullPrint),
-		new BuiltInFunction("input", "prompt", this::input),
-		new BuiltInFunction("debug", "boolean", this::debug),
-		new BuiltInFunction("experimental", "boolean", this::experimental),
-		new BuiltInFunction("suppressDeprecated", "boolean", this::suppressDeprecated),
-		new BuiltInFunction("isMain", this::isMain),
-		new BuiltInFunction("getArucasVersion", this::getArucasVersion),
-		new BuiltInFunction("random", "bound", this::random),
-		new BuiltInFunction("getTime", this::getTime),
-		new BuiltInFunction("getNanoTime", this::getNanoTime),
-		new BuiltInFunction("getMilliTime", this::getMilliTime),
-		new BuiltInFunction("getUnixTime", this::getUnixTime),
-		new BuiltInFunction("getDate", this::getDate),
-		new BuiltInFunction("len", "value", this::len),
-		new BuiltInFunction("throwRuntimeError", "message", this::throwRuntimeError, "Use 'throw new Error()'"),
-		new BuiltInFunction("callFunctionWithList", List.of("function", "argList"), this::callFunctionWithList, "Use 'Function.callWithList()'"),
-		new BuiltInFunction("runFromString", "string", this::runFromString)
+		BuiltInFunction.of("run", 1, this::run),
+		BuiltInFunction.of("stop", this::stop),
+		BuiltInFunction.of("sleep", 1, this::sleep),
+		BuiltInFunction.of("print", 1, this::print),
+		BuiltInFunction.arbitrary("print", this::fullPrint),
+		BuiltInFunction.of("input", 1, this::input),
+		BuiltInFunction.of("debug", 1, this::debug),
+		BuiltInFunction.of("experimental", 1, this::experimental),
+		BuiltInFunction.of("suppressDeprecated", 1, this::suppressDeprecated),
+		BuiltInFunction.of("isMain", this::isMain),
+		BuiltInFunction.of("getArucasVersion", this::getArucasVersion),
+		BuiltInFunction.of("random", 1, this::random),
+		BuiltInFunction.of("getTime", this::getTime),
+		BuiltInFunction.of("getNanoTime", this::getNanoTime),
+		BuiltInFunction.of("getMilliTime", this::getMilliTime),
+		BuiltInFunction.of("getUnixTime", this::getUnixTime),
+		BuiltInFunction.of("getDate", this::getDate),
+		BuiltInFunction.of("len", 1, this::len),
+		BuiltInFunction.of("throwRuntimeError", 1, this::throwRuntimeError, "Use 'throw new Error()'"),
+		BuiltInFunction.of("callFunctionWithList", 2, this::callFunctionWithList, "Use 'Function.callWithList()'"),
+		BuiltInFunction.of("runFromString", 1, this::runFromString)
 	);
 
 	@FunctionDoc(
@@ -81,16 +82,16 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		throwMsgs = "Failed to execute script...",
 		example = "run('/home/user/script.arucas')"
 	)
-	private Value run(Context context, BuiltInFunction function) throws CodeError {
-		StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
+	private Value run(Arguments arguments) throws CodeError {
+		StringValue stringValue = arguments.getNext(StringValue.class);
 		String filePath = new File(stringValue.value).getAbsolutePath();
 		try {
-			Context childContext = context.createChildContext(filePath);
+			Context childContext = arguments.getContext().createChildContext(filePath);
 			String fileContent = Files.readString(Path.of(filePath));
 			return Run.run(childContext, filePath, fileContent);
 		}
 		catch (IOException | OutOfMemoryError | InvalidPathException e) {
-			throw new RuntimeError("Failed to execute script '%s' \n%s".formatted(filePath, e), function.syntaxPosition, context);
+			throw arguments.getError("Failed to execute script '%s'\n%s", filePath, ExceptionUtils.getStackTrace(e));
 		}
 	}
 
@@ -99,7 +100,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		desc = "This is used to stop a script",
 		example = "stop()"
 	)
-	private Value stop(Context context, BuiltInFunction function) throws CodeError {
+	private Value stop(Arguments arguments) throws CodeError {
 		throw new ThrowStop();
 	}
 
@@ -109,13 +110,13 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		params = {NUMBER, "milliseconds", "milliseconds to sleep"},
 		example = "sleep(1000)"
 	)
-	private Value sleep(Context context, BuiltInFunction function) throws CodeError {
-		NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 0);
+	private Value sleep(Arguments arguments) throws CodeError {
+		NumberValue numberValue = arguments.getNext(NumberValue.class);
 		try {
 			Thread.sleep(numberValue.value.longValue());
 		}
 		catch (InterruptedException e) {
-			throw new CodeError(CodeError.ErrorType.INTERRUPTED_ERROR, "", function.syntaxPosition);
+			throw new CodeError(CodeError.ErrorType.INTERRUPTED_ERROR, "", arguments.getPosition());
 		}
 		return NullValue.NULL;
 	}
@@ -126,8 +127,9 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		params = {ANY, "printValue", "the value to print"},
 		example = "print('Hello World')"
 	)
-	private Value print(Context context, BuiltInFunction function) throws CodeError {
-		context.getOutput().println(function.getParameterValue(context, 0).getAsString(context));
+	private Value print(Arguments arguments) throws CodeError {
+		Context context = arguments.getContext();
+		context.getOutput().println(arguments.getNext().getAsString(context));
 		return NullValue.NULL;
 	}
 
@@ -138,16 +140,15 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		params = {ANY, "printValue...", "the value to print"},
 		example = "print('Hello World', 'This is a test', 123)"
 	)
-	private Value fullPrint(Context context, BuiltInFunction function) throws CodeError {
-		ListValue listValue = function.getParameterValueOfType(context, ListValue.class, 0);
-
-		if (listValue.value.isEmpty()) {
+	private Value fullPrint(Arguments arguments) throws CodeError {
+		Context context = arguments.getContext();
+		if (arguments.size() == 0) {
 			context.getOutput().println();
 			return NullValue.NULL;
 		}
 
 		StringBuilder builder = new StringBuilder();
-		for (Value value : listValue.value) {
+		for (Value value : arguments.getAll()) {
 			builder.append(value.getAsString(context));
 		}
 		context.getOutput().print(builder.toString());
@@ -161,9 +162,9 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		returns = {STRING, "the input from the user"},
 		example = "input('What is your name?')"
 	)
-	private synchronized Value input(Context context, BuiltInFunction function) throws CodeError {
-		StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
-		context.getOutput().println(stringValue.value);
+	private synchronized Value input(Arguments arguments) throws CodeError {
+		StringValue stringValue = arguments.getNext(StringValue.class);
+		arguments.getContext().getOutput().println(stringValue.value);
 		return StringValue.of(this.scanner.nextLine());
 	}
 
@@ -173,8 +174,8 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		params = {BOOLEAN, "bool", "true to enable debug mode, false to disable debug mode"},
 		example = "debug(true)"
 	)
-	private Value debug(Context context, BuiltInFunction function) throws CodeError {
-		context.setDebug(function.getParameterValueOfType(context, BooleanValue.class, 0).value);
+	private Value debug(Arguments arguments) throws CodeError {
+		arguments.getContext().setDebug(arguments.getNextVal(BooleanValue.class));
 		return NullValue.NULL;
 	}
 
@@ -184,8 +185,8 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		params = {BOOLEAN, "bool", "true to enable experimental mode, false to disable experimental mode"},
 		example = "experimental(true)"
 	)
-	private Value experimental(Context context, BuiltInFunction function) throws CodeError {
-		context.setExperimental(function.getParameterValueOfType(context, BooleanValue.class, 0).value);
+	private Value experimental(Arguments arguments) throws CodeError {
+		arguments.getContext().setExperimental(arguments.getNextVal(BooleanValue.class));
 		return NullValue.NULL;
 	}
 
@@ -195,8 +196,8 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		params = {BOOLEAN, "bool", "true to enable suppressing deprecation warnings, false to disable suppressing deprecation warnings"},
 		example = "suppressDeprecated(true)"
 	)
-	private Value suppressDeprecated(Context context, BuiltInFunction function) throws CodeError {
-		context.setSuppressDeprecated(function.getParameterValueOfType(context, BooleanValue.class, 0).value);
+	private Value suppressDeprecated(Arguments arguments) throws CodeError {
+		arguments.getContext().setSuppressDeprecated(arguments.getNextVal(BooleanValue.class));
 		return NullValue.NULL;
 	}
 
@@ -206,8 +207,8 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		returns = {BOOLEAN, "true if the script is the main script, false if it is not"},
 		example = "isMain()"
 	)
-	private Value isMain(Context context, BuiltInFunction function) {
-		return BooleanValue.of(context.isMain());
+	private Value isMain(Arguments arguments) {
+		return BooleanValue.of(arguments.getContext().isMain());
 	}
 
 	@FunctionDoc(
@@ -216,7 +217,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		returns = {STRING, "the version of Arucas that is currently running"},
 		example = "getArucasVersion()"
 	)
-	private Value getArucasVersion(Context context, BuiltInFunction function) {
+	private Value getArucasVersion(Arguments arguments) {
 		return StringValue.of(Arucas.VERSION);
 	}
 
@@ -228,8 +229,8 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		returns = {NUMBER, "the random integer"},
 		example = "random(10)"
 	)
-	private Value random(Context context, BuiltInFunction function) throws CodeError {
-		NumberValue numValue = function.getParameterValueOfType(context, NumberValue.class, 0);
+	private Value random(Arguments arguments) throws CodeError {
+		NumberValue numValue = arguments.getNext(NumberValue.class);
 		return NumberValue.of(this.random.nextInt(numValue.value.intValue()));
 	}
 
@@ -239,7 +240,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		returns = {STRING, "the current time formatted with HH:mm:ss"},
 		example = "getTime()"
 	)
-	private Value getTime(Context context, BuiltInFunction function) {
+	private Value getTime(Arguments arguments) {
 		return StringValue.of(DateTimeFormatter.ofPattern("HH:mm:ss").format(LocalTime.now()));
 	}
 
@@ -249,7 +250,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		returns = {NUMBER, "the current time in nanoseconds"},
 		example = "getNanoTime()"
 	)
-	private Value getNanoTime(Context context, BuiltInFunction function) {
+	private Value getNanoTime(Arguments arguments) {
 		return NumberValue.of(System.nanoTime());
 	}
 
@@ -259,7 +260,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		returns = {NUMBER, "the current time in milliseconds"},
 		example = "getMilliTime()"
 	)
-	private Value getMilliTime(Context context, BuiltInFunction function) {
+	private Value getMilliTime(Arguments arguments) {
 		return NumberValue.of(System.currentTimeMillis());
 	}
 
@@ -269,7 +270,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		returns = {NUMBER, "the current time in seconds since the Unix epoch"},
 		example = "getUnixTime()"
 	)
-	private Value getUnixTime(Context context, BuiltInFunction function) {
+	private Value getUnixTime(Arguments arguments) {
 		return NumberValue.of(System.currentTimeMillis() / 1000F);
 	}
 
@@ -279,7 +280,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		returns = {STRING, "the current date formatted with dd/MM/yyyy"},
 		example = "getDate()"
 	)
-	private Value getDate(Context context, BuiltInFunction function) {
+	private Value getDate(Arguments arguments) {
 		return StringValue.of(DateTimeFormatter.ofPattern("dd/MM/yyyy").format(LocalDate.now()));
 	}
 
@@ -290,8 +291,8 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		throwMsgs = "Cannot pass ... into len()",
 		example = "len(\"Hello World\")"
 	)
-	private Value len(Context context, BuiltInFunction function) throws CodeError {
-		Value value = function.getParameterValue(context, 0);
+	private Value len(Arguments arguments) throws CodeError {
+		Value value = arguments.getNext();
 		if (value instanceof StringValue stringValue) {
 			return NumberValue.of(stringValue.value.length());
 		}
@@ -301,11 +302,11 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		if (value instanceof FunctionValue functionValue) {
 			// If the function is a member we don't include itself in the length
 			if (value instanceof IMemberFunction) {
-				return NumberValue.of(functionValue.getParameterCount() - 1);
+				return NumberValue.of(functionValue.getCount() - 1);
 			}
-			return NumberValue.of(functionValue.getParameterCount());
+			return NumberValue.of(functionValue.getCount());
 		}
-		throw new RuntimeError("Cannot pass %s into len()".formatted(value), function.syntaxPosition, context);
+		throw arguments.getError("Cannot pass %s into len()", value);
 	}
 
 	@FunctionDoc(
@@ -316,10 +317,9 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		throwMsgs = "the error with the message",
 		example = "throwRuntimeError('I'm throwing this error')"
 	)
-	@Deprecated
-	private Value throwRuntimeError(Context context, BuiltInFunction function) throws CodeError {
-		StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
-		throw new RuntimeError(stringValue.value, function.syntaxPosition, context);
+	private Value throwRuntimeError(Arguments arguments) throws CodeError {
+		StringValue stringValue = arguments.getNext(StringValue.class);
+		throw arguments.getError(stringValue.value);
 	}
 
 	@FunctionDoc(
@@ -333,11 +333,10 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		returns = {ANY, "the return value of the function"},
 		example = "callFunctionWithList(fun(n1, n2, n3) {}, [1, 2, 3])"
 	)
-	@Deprecated
-	private Value callFunctionWithList(Context context, BuiltInFunction function) throws CodeError {
-		FunctionValue functionValue = function.getParameterValueOfType(context, FunctionValue.class, 0);
-		ArucasList listValue = function.getParameterValueOfType(context, ListValue.class, 1).value;
-		return functionValue.call(context, listValue);
+	private Value callFunctionWithList(Arguments arguments) throws CodeError {
+		FunctionValue functionValue = arguments.getNext(FunctionValue.class);
+		ArucasList listValue = arguments.getNextVal(ListValue.class);
+		return functionValue.call(arguments.getContext(), listValue);
 	}
 
 	@FunctionDoc(
@@ -347,8 +346,8 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		returns = {ANY, "the return value of the script"},
 		example = "runFromString('return 1;')"
 	)
-	private Value runFromString(Context context, BuiltInFunction function) throws CodeError {
-		StringValue stringValue = function.getParameterValueOfType(context, StringValue.class, 0);
-		return Run.run(context.createBranch(), "string-run", stringValue.value);
+	private Value runFromString(Arguments arguments) throws CodeError {
+		StringValue stringValue = arguments.getNext(StringValue.class);
+		return Run.run(arguments.getContext().createBranch(), "string-run", stringValue.value);
 	}
 }

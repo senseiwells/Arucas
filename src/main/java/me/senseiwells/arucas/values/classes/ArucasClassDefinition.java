@@ -10,17 +10,17 @@ import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.ArucasOperatorMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.Value;
-import me.senseiwells.arucas.values.functions.ClassMemberFunction;
+import me.senseiwells.arucas.values.functions.UserDefinedClassFunction;
 
 import java.util.*;
 
 public class ArucasClassDefinition extends AbstractClassDefinition {
-	private final ArucasFunctionMap<ClassMemberFunction> methods;
+	private final ArucasFunctionMap<UserDefinedClassFunction> methods;
 	private final Map<String, Node> staticMemberVariableNodes;
 	private final List<Node> staticInitializers;
 	private final Map<String, Node> memberVariables;
-	protected final ArucasFunctionMap<ClassMemberFunction> constructors;
-	protected final ArucasOperatorMap<ClassMemberFunction> operatorMap;
+	protected final ArucasFunctionMap<UserDefinedClassFunction> constructors;
+	protected final ArucasOperatorMap<UserDefinedClassFunction> operatorMap;
 
 	public ArucasClassDefinition(String name) {
 		super(name);
@@ -32,11 +32,11 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 		this.operatorMap = new ArucasOperatorMap<>();
 	}
 
-	public void addMethod(ClassMemberFunction method) {
+	public void addMethod(UserDefinedClassFunction method) {
 		this.methods.add(method);
 	}
 
-	public void addConstructor(ClassMemberFunction constructor) {
+	public void addConstructor(UserDefinedClassFunction constructor) {
 		this.constructors.add(constructor);
 	}
 
@@ -44,7 +44,7 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 		this.staticInitializers.add(node);
 	}
 
-	public void addOperatorMethod(Token.Type tokenType, ClassMemberFunction method) {
+	public void addOperatorMethod(Token.Type tokenType, UserDefinedClassFunction method) {
 		this.operatorMap.add(tokenType, method);
 	}
 
@@ -62,7 +62,7 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 
 	protected void addClassProperties(ArucasClassValue thisValue, Context context) throws ThrowValue, CodeError {
 		// Add methods
-		for (ClassMemberFunction function : this.getMethods()) {
+		for (UserDefinedClassFunction function : this.getMethods()) {
 			function = function.copy(thisValue);
 			function.setLocalContext(context);
 			thisValue.addMethod(function);
@@ -85,12 +85,12 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 	}
 
 	@Override
-	public ArucasFunctionMap<ClassMemberFunction> getMethods() {
+	public ArucasFunctionMap<UserDefinedClassFunction> getMethods() {
 		return this.methods;
 	}
 
 	@Override
-	public ArucasFunctionMap<ClassMemberFunction> getConstructors() {
+	public ArucasFunctionMap<UserDefinedClassFunction> getConstructors() {
 		return this.constructors;
 	}
 
@@ -120,7 +120,7 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 			return thisValue;
 		}
 
-		ClassMemberFunction constructor = this.constructors.get(this.getName(), parameterCount);
+		UserDefinedClassFunction constructor = this.constructors.get(this.getName(), parameterCount);
 		if (constructor == null) {
 			throw new RuntimeError("No such constructor for %s".formatted(this.getName()), syntaxPosition, context);
 		}

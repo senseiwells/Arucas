@@ -6,7 +6,6 @@ import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.BooleanValue;
-import me.senseiwells.arucas.values.GenericValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.ArucasClassValue;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
@@ -41,7 +40,8 @@ public class BinaryOperatorNode extends Node {
 						context
 					);
 				}
-				right = new BuiltInFunction("$", (ctx, fun) -> this.rightNode.visit(context));
+				Context branchContext = context.createBranch();
+				right = BuiltInFunction.of("$", (args) -> this.rightNode.visit(branchContext.createBranch()));
 			}
 			else {
 				right = this.rightNode.visit(context);

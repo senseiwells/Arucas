@@ -16,7 +16,7 @@ import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.values.classes.ArucasClassDefinition;
 import me.senseiwells.arucas.values.classes.ArucasEnumDefinition;
-import me.senseiwells.arucas.values.functions.ClassMemberFunction;
+import me.senseiwells.arucas.values.functions.UserDefinedClassFunction;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.functions.UserDefinedFunction;
 
@@ -413,7 +413,7 @@ public class Parser {
 								this.currentToken.syntaxPosition
 							);
 						}
-						ClassMemberFunction constructor = this.classConstructor(isStatic, token.content);
+						UserDefinedClassFunction constructor = this.classConstructor(isStatic, token.content);
 						definition.addConstructor(constructor);
 					}
 					else {
@@ -426,7 +426,7 @@ public class Parser {
 				}
 				case FUN -> {
 					if (!isStatic) {
-						ClassMemberFunction method = this.classMethod();
+						UserDefinedClassFunction method = this.classMethod();
 						definition.addMethod(method);
 					}
 					else {
@@ -437,7 +437,7 @@ public class Parser {
 				case OPERATOR -> {
 					this.advance();
 					Token token = this.currentToken;
-					ClassMemberFunction operatorMethod = this.operatorMethod(isStatic, token);
+					UserDefinedClassFunction operatorMethod = this.operatorMethod(isStatic, token);
 					definition.addOperatorMethod(token.type, operatorMethod);
 				}
 				case LEFT_CURLY_BRACKET -> {
@@ -465,7 +465,7 @@ public class Parser {
 		return new ArucasClassNode(definition, startPos, endPos);
 	}
 
-	private ClassMemberFunction classConstructor(boolean isStatic, String name) throws CodeError {
+	private UserDefinedClassFunction classConstructor(boolean isStatic, String name) throws CodeError {
 		ISyntax startPos = this.currentToken.syntaxPosition;
 		if (isStatic) {
 			throw new CodeError(
@@ -481,8 +481,8 @@ public class Parser {
 		List<String> argumentNames = this.getClassMemberArguments();
 
 		MutableSyntaxImpl syntaxPosition = new MutableSyntaxImpl(startPos.getStartPos(), null);
-		ClassMemberFunction classConstructor = this.isStackTypePop(StackType.ARBITRARY) ?
-			new ClassMemberFunction.Arbitrary(name, argumentNames, syntaxPosition) : new ClassMemberFunction(name, argumentNames, syntaxPosition);
+		UserDefinedClassFunction classConstructor = this.isStackTypePop(StackType.ARBITRARY) ?
+			new UserDefinedClassFunction.Arbitrary(name, argumentNames, syntaxPosition) : new UserDefinedClassFunction(name, argumentNames, syntaxPosition);
 		this.context.setLocal(name, classConstructor);
 
 		Node statements = this.statements();
@@ -494,7 +494,7 @@ public class Parser {
 		return classConstructor;
 	}
 
-	private ClassMemberFunction classMethod() throws CodeError {
+	private UserDefinedClassFunction classMethod() throws CodeError {
 		ISyntax startPos = this.currentToken.syntaxPosition;
 		this.advance();
 
@@ -510,8 +510,8 @@ public class Parser {
 		List<String> argumentNames = this.getClassMemberArguments();
 
 		MutableSyntaxImpl syntaxPosition = new MutableSyntaxImpl(startPos.getStartPos(), null);
-		ClassMemberFunction classMethod = this.isStackTypePop(StackType.ARBITRARY) ?
-			new ClassMemberFunction.Arbitrary(name, argumentNames, syntaxPosition) : new ClassMemberFunction(name, argumentNames, syntaxPosition);
+		UserDefinedClassFunction classMethod = this.isStackTypePop(StackType.ARBITRARY) ?
+			new UserDefinedClassFunction.Arbitrary(name, argumentNames, syntaxPosition) : new UserDefinedClassFunction(name, argumentNames, syntaxPosition);
 
 		this.context.setLocal(name, classMethod);
 
@@ -621,7 +621,7 @@ public class Parser {
 		return staticClassMethod;
 	}
 
-	private ClassMemberFunction operatorMethod(boolean isStatic, Token token) throws CodeError {
+	private UserDefinedClassFunction operatorMethod(boolean isStatic, Token token) throws CodeError {
 		ISyntax startPos = token.syntaxPosition;
 		if (isStatic) {
 			throw new CodeError(
@@ -661,7 +661,7 @@ public class Parser {
 
 
 		MutableSyntaxImpl syntaxPosition = new MutableSyntaxImpl(startPos.getStartPos(), null);
-		ClassMemberFunction operatorMethod = new ClassMemberFunction("$%s".formatted(token.type), argumentNames, syntaxPosition);
+		UserDefinedClassFunction operatorMethod = new UserDefinedClassFunction("$%s".formatted(token.type), argumentNames, syntaxPosition);
 
 		Node statements = this.statements();
 		this.context.popScope();

@@ -5,15 +5,13 @@ import me.senseiwells.arucas.api.docs.ClassDoc;
 import me.senseiwells.arucas.api.docs.FunctionDoc;
 import me.senseiwells.arucas.api.docs.MemberDoc;
 import me.senseiwells.arucas.throwables.CodeError;
+import me.senseiwells.arucas.utils.Arguments;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
-import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.ValueTypes;
-import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.NumberValue;
-import me.senseiwells.arucas.values.GenericValue;
+import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
 
-import java.util.List;
 import java.util.Map;
 
 import static me.senseiwells.arucas.utils.ValueTypes.NUMBER;
@@ -42,29 +40,29 @@ public class ArucasMathClass extends ArucasClassExtension {
 	@Override
 	public ArucasFunctionMap<BuiltInFunction> getDefinedStaticMethods() {
 		return ArucasFunctionMap.of(
-			new BuiltInFunction("round", "num", this::round),
-			new BuiltInFunction("ceil", "num", this::ceil),
-			new BuiltInFunction("floor", "num", this::floor),
-			new BuiltInFunction("sqrt", "num", this::sqrt),
-			new BuiltInFunction("abs", "num", this::abs),
-			new BuiltInFunction("mod", List.of("num1", "num2"), this::mod),
-			new BuiltInFunction("max", List.of("num1", "num2"), this::max),
-			new BuiltInFunction("min", List.of("num1", "num2"), this::min),
-			new BuiltInFunction("clamp", List.of("num", "min", "max"), this::clamp),
-			new BuiltInFunction("toRadians", "num", this::toRadians),
-			new BuiltInFunction("toDegrees", "num", this::toDegrees),
-			new BuiltInFunction("log", "num", this::log),
-			new BuiltInFunction("log", List.of("base", "num"), this::logBase),
-			new BuiltInFunction("log10", "num", this::log10),
-			new BuiltInFunction("sin", "num", this::sin),
-			new BuiltInFunction("cos", "num", this::cos),
-			new BuiltInFunction("tan", "num", this::tan),
-			new BuiltInFunction("arcsin", "num", this::arcsin),
-			new BuiltInFunction("arccos", "num", this::arccos),
-			new BuiltInFunction("arctan", "num", this::arctan),
-			new BuiltInFunction("cosec", "num", this::cosec),
-			new BuiltInFunction("sec", "num", this::sec),
-			new BuiltInFunction("cot", "num", this::cot)
+			BuiltInFunction.of("round", 1, this::round),
+			BuiltInFunction.of("ceil", 1, this::ceil),
+			BuiltInFunction.of("floor", 1, this::floor),
+			BuiltInFunction.of("sqrt", 1, this::sqrt),
+			BuiltInFunction.of("abs", 1, this::abs),
+			BuiltInFunction.of("mod", 2, this::mod),
+			BuiltInFunction.of("max", 2, this::max),
+			BuiltInFunction.of("min", 2, this::min),
+			BuiltInFunction.of("clamp", 3, this::clamp),
+			BuiltInFunction.of("toRadians", 1, this::toRadians),
+			BuiltInFunction.of("toDegrees", 1, this::toDegrees),
+			BuiltInFunction.of("log", 1, this::log),
+			BuiltInFunction.of("log", 2, this::logBase),
+			BuiltInFunction.of("log10", 1, this::log10),
+			BuiltInFunction.of("sin", 1, this::sin),
+			BuiltInFunction.of("cos", 1, this::cos),
+			BuiltInFunction.of("tan", 1, this::tan),
+			BuiltInFunction.of("arcsin", 1, this::arcsin),
+			BuiltInFunction.of("arccos", 1, this::arccos),
+			BuiltInFunction.of("arctan", 1, this::arctan),
+			BuiltInFunction.of("cosec", 1, this::cosec),
+			BuiltInFunction.of("sec", 1, this::sec),
+			BuiltInFunction.of("cot", 1, this::cot)
 		);
 	}
 
@@ -76,9 +74,9 @@ public class ArucasMathClass extends ArucasClassExtension {
 		returns = {NUMBER, "the rounded number"},
 		example = "Math.round(3.5);"
 	)
-	private NumberValue round(Context context, BuiltInFunction function) throws CodeError {
-		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
-		return NumberValue.of(Math.round(numberValue));
+	private NumberValue round(Arguments arguments) throws CodeError {
+		double number = arguments.getNextVal(NumberValue.class);
+		return NumberValue.of(Math.round(number));
 	}
 
 	@FunctionDoc(
@@ -89,9 +87,9 @@ public class ArucasMathClass extends ArucasClassExtension {
 		returns = {NUMBER, "the rounded number"},
 		example = "Math.ceil(3.5);"
 	)
-	private NumberValue ceil(Context context, BuiltInFunction function) throws CodeError {
-		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
-		return NumberValue.of(Math.ceil(numberValue));
+	private NumberValue ceil(Arguments arguments) throws CodeError {
+		double number = arguments.getNextVal(NumberValue.class);
+		return NumberValue.of(Math.ceil(number));
 	}
 
 	@FunctionDoc(
@@ -102,9 +100,9 @@ public class ArucasMathClass extends ArucasClassExtension {
 		returns = {NUMBER, "the rounded number"},
 		example = "Math.floor(3.5);"
 	)
-	private NumberValue floor(Context context, BuiltInFunction function) throws CodeError {
-		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
-		return NumberValue.of(Math.floor(numberValue));
+	private NumberValue floor(Arguments arguments) throws CodeError {
+		double number = arguments.getNextVal(NumberValue.class);
+		return NumberValue.of(Math.floor(number));
 	}
 
 	@FunctionDoc(
@@ -115,9 +113,9 @@ public class ArucasMathClass extends ArucasClassExtension {
 		returns = {NUMBER, "the square root of the number"},
 		example = "Math.sqrt(9);"
 	)
-	private Value sqrt(Context context, BuiltInFunction function) throws CodeError {
-		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
-		return NumberValue.of(Math.sqrt(numberValue));
+	private Value sqrt(Arguments arguments) throws CodeError {
+		double number = arguments.getNextVal(NumberValue.class);
+		return NumberValue.of(Math.sqrt(number));
 	}
 
 	@FunctionDoc(
@@ -128,9 +126,9 @@ public class ArucasMathClass extends ArucasClassExtension {
 		returns = {NUMBER, "the absolute value of the number"},
 		example = "Math.abs(-3);"
 	)
-	private Value abs(Context context, BuiltInFunction function) throws CodeError {
-		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
-		return NumberValue.of(Math.abs(numberValue));
+	private Value abs(Arguments arguments) throws CodeError {
+		double number = arguments.getNextVal(NumberValue.class);
+		return NumberValue.of(Math.abs(number));
 	}
 
 	@FunctionDoc(
@@ -144,10 +142,10 @@ public class ArucasMathClass extends ArucasClassExtension {
 		returns = {NUMBER, "the remainder of the division"},
 		example = "Math.mod(5, 2);"
 	)
-	private Value mod(Context context, BuiltInFunction function) throws CodeError {
-		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
-		double otherNumber = function.getParameterValueOfType(context, NumberValue.class, 1).value;
-		return NumberValue.of(numberValue % otherNumber);
+	private Value mod(Arguments arguments) throws CodeError {
+		double number = arguments.getNextVal(NumberValue.class);
+		double otherNumber = arguments.getNextVal(NumberValue.class);
+		return NumberValue.of(number % otherNumber);
 	}
 
 	@FunctionDoc(
@@ -161,10 +159,10 @@ public class ArucasMathClass extends ArucasClassExtension {
 		returns = {NUMBER, "the largest number"},
 		example = "Math.max(5, 2);"
 	)
-	private Value max(Context context, BuiltInFunction function) throws CodeError {
-		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
-		double otherNumber = function.getParameterValueOfType(context, NumberValue.class, 1).value;
-		return NumberValue.of(Math.max(numberValue, otherNumber));
+	private Value max(Arguments arguments) throws CodeError {
+		double number = arguments.getNextVal(NumberValue.class);
+		double otherNumber = arguments.getNextVal(NumberValue.class);
+		return NumberValue.of(Math.max(number, otherNumber));
 	}
 
 	@FunctionDoc(
@@ -178,10 +176,10 @@ public class ArucasMathClass extends ArucasClassExtension {
 		returns = {NUMBER, "the smallest number"},
 		example = "Math.min(5, 2);"
 	)
-	private Value min(Context context, BuiltInFunction function) throws CodeError {
-		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
-		double otherNumber = function.getParameterValueOfType(context, NumberValue.class, 1).value;
-		return NumberValue.of(Math.min(numberValue, otherNumber));
+	private Value min(Arguments arguments) throws CodeError {
+		double number = arguments.getNextVal(NumberValue.class);
+		double otherNumber = arguments.getNextVal(NumberValue.class);
+		return NumberValue.of(Math.min(number, otherNumber));
 	}
 
 	@FunctionDoc(
@@ -196,11 +194,11 @@ public class ArucasMathClass extends ArucasClassExtension {
 		returns = {NUMBER, "the clamped value"},
 		example = "Math.clamp(10, 2, 8);"
 	)
-	private Value clamp(Context context, BuiltInFunction function) throws CodeError {
-		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
-		double minNumber = function.getParameterValueOfType(context, NumberValue.class, 1).value;
-		double maxNumber = function.getParameterValueOfType(context, NumberValue.class, 2).value;
-		return NumberValue.of(numberValue < minNumber ? minNumber : Math.min(numberValue, maxNumber));
+	private Value clamp(Arguments arguments) throws CodeError {
+		double number = arguments.getNextVal(NumberValue.class);
+		double minNumber = arguments.getNextVal(NumberValue.class);
+		double maxNumber = arguments.getNextVal(NumberValue.class);
+		return NumberValue.of(number < minNumber ? minNumber : Math.min(number, maxNumber));
 	}
 
 	@FunctionDoc(
@@ -211,9 +209,9 @@ public class ArucasMathClass extends ArucasClassExtension {
 		returns = {NUMBER, "the number in radians"},
 		example = "Math.toRadians(90);"
 	)
-	private Value toRadians(Context context, BuiltInFunction function) throws CodeError {
-		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
-		return NumberValue.of(Math.toRadians(numberValue));
+	private Value toRadians(Arguments arguments) throws CodeError {
+		double number = arguments.getNextVal(NumberValue.class);
+		return NumberValue.of(Math.toRadians(number));
 	}
 
 	@FunctionDoc(
@@ -224,9 +222,9 @@ public class ArucasMathClass extends ArucasClassExtension {
 		returns = {NUMBER, "the number in degrees"},
 		example = "Math.toDegrees(Math.pi);"
 	)
-	private Value toDegrees(Context context, BuiltInFunction function) throws CodeError {
-		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
-		return NumberValue.of(Math.toDegrees(numberValue));
+	private Value toDegrees(Arguments arguments) throws CodeError {
+		double number = arguments.getNextVal(NumberValue.class);
+		return NumberValue.of(Math.toDegrees(number));
 	}
 
 	@FunctionDoc(
@@ -237,9 +235,9 @@ public class ArucasMathClass extends ArucasClassExtension {
 		returns = {NUMBER, "the natural logarithm of the number"},
 		example = "Math.log(Math.e);"
 	)
-	private Value log(Context context, BuiltInFunction function) throws CodeError {
-		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
-		return NumberValue.of(Math.log(numberValue));
+	private Value log(Arguments arguments) throws CodeError {
+		double number = arguments.getNextVal(NumberValue.class);
+		return NumberValue.of(Math.log(number));
 	}
 
 	@FunctionDoc(
@@ -253,10 +251,10 @@ public class ArucasMathClass extends ArucasClassExtension {
 		returns = {NUMBER, "the logarithm of the number"},
 		example = "Math.log(2, 4);"
 	)
-	private Value logBase(Context context, BuiltInFunction function) throws CodeError {
-		double baseNumber = function.getParameterValueOfType(context, NumberValue.class, 0).value;
-		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 1).value;
-		return NumberValue.of(Math.log(numberValue) / Math.log(baseNumber));
+	private Value logBase(Arguments arguments) throws CodeError {
+		double baseNumber = arguments.getNextVal(NumberValue.class);
+		double number = arguments.getNextVal(NumberValue.class);
+		return NumberValue.of(Math.log(number) / Math.log(baseNumber));
 	}
 
 	@FunctionDoc(
@@ -267,9 +265,9 @@ public class ArucasMathClass extends ArucasClassExtension {
 		returns = {NUMBER, "the base 10 logarithm of the number"},
 		example = "Math.log10(100);"
 	)
-	private Value log10(Context context, BuiltInFunction function) throws CodeError {
-		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
-		return NumberValue.of(Math.log10(numberValue));
+	private Value log10(Arguments arguments) throws CodeError {
+		double number = arguments.getNextVal(NumberValue.class);
+		return NumberValue.of(Math.log10(number));
 	}
 
 	@FunctionDoc(
@@ -280,9 +278,9 @@ public class ArucasMathClass extends ArucasClassExtension {
 		returns = {NUMBER, "the sine of the number"},
 		example = "Math.sin(Math.pi);"
 	)
-	private Value sin(Context context, BuiltInFunction function) throws CodeError {
-		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
-		return NumberValue.of(Math.sin(numberValue));
+	private Value sin(Arguments arguments) throws CodeError {
+		double number = arguments.getNextVal(NumberValue.class);
+		return NumberValue.of(Math.sin(number));
 	}
 
 	@FunctionDoc(
@@ -293,9 +291,9 @@ public class ArucasMathClass extends ArucasClassExtension {
 		returns = {NUMBER, "the cosine of the number"},
 		example = "Math.cos(Math.pi);"
 	)
-	private Value cos(Context context, BuiltInFunction function) throws CodeError {
-		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
-		return NumberValue.of(Math.cos(numberValue));
+	private Value cos(Arguments arguments) throws CodeError {
+		double number = arguments.getNextVal(NumberValue.class);
+		return NumberValue.of(Math.cos(number));
 	}
 
 	@FunctionDoc(
@@ -306,9 +304,9 @@ public class ArucasMathClass extends ArucasClassExtension {
 		returns = {NUMBER, "the tangent of the number"},
 		example = "Math.tan(Math.pi);"
 	)
-	private Value tan(Context context, BuiltInFunction function) throws CodeError {
-		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
-		return NumberValue.of(Math.tan(numberValue));
+	private Value tan(Arguments arguments) throws CodeError {
+		double number = arguments.getNextVal(NumberValue.class);
+		return NumberValue.of(Math.tan(number));
 	}
 
 	@FunctionDoc(
@@ -319,9 +317,9 @@ public class ArucasMathClass extends ArucasClassExtension {
 		returns = {NUMBER, "the arc sine of the number"},
 		example = "Math.arcsin(Math.sin(Math.pi));"
 	)
-	private Value arcsin(Context context, BuiltInFunction function) throws CodeError {
-		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
-		return NumberValue.of(Math.asin(numberValue));
+	private Value arcsin(Arguments arguments) throws CodeError {
+		double number = arguments.getNextVal(NumberValue.class);
+		return NumberValue.of(Math.asin(number));
 	}
 
 	@FunctionDoc(
@@ -332,9 +330,9 @@ public class ArucasMathClass extends ArucasClassExtension {
 		returns = {NUMBER, "the arc cosine of the number"},
 		example = "Math.arccos(Math.cos(Math.pi));"
 	)
-	private Value arccos(Context context, BuiltInFunction function) throws CodeError {
-		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
-		return NumberValue.of(Math.acos(numberValue));
+	private Value arccos(Arguments arguments) throws CodeError {
+		double number = arguments.getNextVal(NumberValue.class);
+		return NumberValue.of(Math.acos(number));
 	}
 
 	@FunctionDoc(
@@ -345,9 +343,9 @@ public class ArucasMathClass extends ArucasClassExtension {
 		returns = {NUMBER, "the arc tangent of the number"},
 		example = "Math.arctan(Math.tan(Math.pi));"
 	)
-	private Value arctan(Context context, BuiltInFunction function) throws CodeError {
-		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
-		return NumberValue.of(Math.atan(numberValue));
+	private Value arctan(Arguments arguments) throws CodeError {
+		double number = arguments.getNextVal(NumberValue.class);
+		return NumberValue.of(Math.atan(number));
 	}
 
 	@FunctionDoc(
@@ -358,9 +356,9 @@ public class ArucasMathClass extends ArucasClassExtension {
 		returns = {NUMBER, "the cosecant of the number"},
 		example = "Math.cosec(Math.pi);"
 	)
-	private Value cosec(Context context, BuiltInFunction function) throws CodeError {
-		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
-		return NumberValue.of(1 / Math.sin(numberValue));
+	private Value cosec(Arguments arguments) throws CodeError {
+		double number = arguments.getNextVal(NumberValue.class);
+		return NumberValue.of(1 / Math.sin(number));
 	}
 
 	@FunctionDoc(
@@ -371,9 +369,9 @@ public class ArucasMathClass extends ArucasClassExtension {
 		returns = {NUMBER, "the secant of the number"},
 		example = "Math.sec(Math.pi);"
 	)
-	private Value sec(Context context, BuiltInFunction function) throws CodeError {
-		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
-		return NumberValue.of(1 / Math.cos(numberValue));
+	private Value sec(Arguments arguments) throws CodeError {
+		double number = arguments.getNextVal(NumberValue.class);
+		return NumberValue.of(1 / Math.cos(number));
 	}
 
 	@FunctionDoc(
@@ -384,9 +382,9 @@ public class ArucasMathClass extends ArucasClassExtension {
 		returns = {NUMBER, "the cotangent of the number"},
 		example = "Math.cot(Math.pi);"
 	)
-	private Value cot(Context context, BuiltInFunction function) throws CodeError {
-		double numberValue = function.getParameterValueOfType(context, NumberValue.class, 0).value;
-		return NumberValue.of(1 / Math.tan(numberValue));
+	private Value cot(Arguments arguments) throws CodeError {
+		double number = arguments.getNextVal(NumberValue.class);
+		return NumberValue.of(1 / Math.tan(number));
 	}
 
 	@Override

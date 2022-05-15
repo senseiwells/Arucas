@@ -113,7 +113,7 @@ public class JavaValue extends GenericValue<Object> {
 		return name;
 	}
 
-	
+
 	@ClassDoc(
 		name = JAVA,
 		desc = "This allows for direct interaction from Arucas to Java",
@@ -127,35 +127,35 @@ public class JavaValue extends GenericValue<Object> {
 		@Override
 		public ArucasFunctionMap<BuiltInFunction> getDefinedStaticMethods() {
 			return ArucasFunctionMap.of(
-				new BuiltInFunction("doubleOf", "value", this::doubleOf),
-				new BuiltInFunction("floatOf", "value", this::floatOf),
-				new BuiltInFunction("longOf", "value", this::longOf),
-				new BuiltInFunction("intOf", "value", this::intOf),
-				new BuiltInFunction("shortOf", "value", this::shortOf),
-				new BuiltInFunction("byteOf", "value", this::byteOf),
-				new BuiltInFunction("charOf", "value", this::charOf),
-				new BuiltInFunction("booleanOf", "value", this::booleanOf),
-				new BuiltInFunction("valueOf", "value", this::of),
-				new BuiltInFunction("classFromName", "className", this::classFromName),
-				new BuiltInFunction("getStaticField", List.of("className", "fieldName"), this::getStaticField),
-				new BuiltInFunction("setStaticField", List.of("className", "fieldName", "value"), this::setStaticField),
-				new BuiltInFunction("getStaticMethodDelegate", List.of("className", "methodName", "parameters"), this::getStaticMethodDelegate),
-				new BuiltInFunction("arrayWithSize", "size", this::arrayWithSize),
-				new BuiltInFunction("doubleArray", "size", this::doubleArray),
-				new BuiltInFunction("floatArray", "size", this::floatArray),
-				new BuiltInFunction("longArray", "size", this::longArray),
-				new BuiltInFunction("intArray", "size", this::intArray),
-				new BuiltInFunction("shortArray", "size", this::shortArray),
-				new BuiltInFunction("byteArray", "size", this::byteArray),
-				new BuiltInFunction("charArray", "size", this::charArray),
-				new BuiltInFunction("booleanArray", "size", this::booleanArray),
-				new BuiltInFunction("runnableOf", "function", this::runnableOf),
-				new BuiltInFunction("consumerOf", "function", this::consumerOf),
-				new BuiltInFunction("supplierOf", "function", this::supplierOf),
-				new BuiltInFunction("functionOf", "function", this::functionOf),
-				new BuiltInFunction.Arbitrary("arrayOf", this::arrayOf),
-				new BuiltInFunction.Arbitrary("callStaticMethod", this::callStaticMethod),
-				new BuiltInFunction.Arbitrary("constructClass", this::constructClass)
+				BuiltInFunction.of("doubleOf", 1, this::doubleOf),
+				BuiltInFunction.of("floatOf", 1, this::floatOf),
+				BuiltInFunction.of("longOf", 1, this::longOf),
+				BuiltInFunction.of("intOf", 1, this::intOf),
+				BuiltInFunction.of("shortOf", 1, this::shortOf),
+				BuiltInFunction.of("byteOf", 1, this::byteOf),
+				BuiltInFunction.of("charOf", 1, this::charOf),
+				BuiltInFunction.of("booleanOf", 1, this::booleanOf),
+				BuiltInFunction.of("valueOf", 1, this::of),
+				BuiltInFunction.of("classFromName", 1, this::classFromName),
+				BuiltInFunction.of("getStaticField", 2, this::getStaticField),
+				BuiltInFunction.of("setStaticField", 3, this::setStaticField),
+				BuiltInFunction.of("getStaticMethodDelegate", 3, this::getStaticMethodDelegate),
+				BuiltInFunction.of("arrayWithSize", 1, this::arrayWithSize),
+				BuiltInFunction.of("doubleArray", 1, this::doubleArray),
+				BuiltInFunction.of("floatArray", 1, this::floatArray),
+				BuiltInFunction.of("longArray", 1, this::longArray),
+				BuiltInFunction.of("intArray", 1, this::intArray),
+				BuiltInFunction.of("shortArray", 1, this::shortArray),
+				BuiltInFunction.of("byteArray", 1, this::byteArray),
+				BuiltInFunction.of("charArray", 1, this::charArray),
+				BuiltInFunction.of("booleanArray", 1, this::booleanArray),
+				BuiltInFunction.of("runnableOf", 1, this::runnableOf),
+				BuiltInFunction.of("consumerOf", 1, this::consumerOf),
+				BuiltInFunction.of("supplierOf", 1, this::supplierOf),
+				BuiltInFunction.of("functionOf", 1, this::functionOf),
+				BuiltInFunction.arbitrary("arrayOf", this::arrayOf),
+				BuiltInFunction.arbitrary("callStaticMethod", this::callStaticMethod),
+				BuiltInFunction.arbitrary("constructClass", this::constructClass)
 			);
 		}
 
@@ -167,8 +167,8 @@ public class JavaValue extends GenericValue<Object> {
 			returns = {JAVA, "the double in Java wrapper"},
 			example = "Java.doubleOf(1.0);"
 		)
-		private Value doubleOf(Context context, BuiltInFunction function) throws CodeError {
-			NumberValue numberValue = function.getFirstParameter(context, NumberValue.class);
+		private Value doubleOf(Arguments arguments) throws CodeError {
+			NumberValue numberValue = arguments.getNext(NumberValue.class);
 			return new JavaValue(numberValue.value);
 		}
 
@@ -180,8 +180,8 @@ public class JavaValue extends GenericValue<Object> {
 			returns = {JAVA, "the float in Java wrapper"},
 			example = "Java.floatOf(1.0);"
 		)
-		private Value floatOf(Context context, BuiltInFunction function) throws CodeError {
-			NumberValue numberValue = function.getFirstParameter(context, NumberValue.class);
+		private Value floatOf(Arguments arguments) throws CodeError {
+			NumberValue numberValue = arguments.getNext(NumberValue.class);
 			return new JavaValue(numberValue.value.floatValue());
 		}
 
@@ -193,11 +193,11 @@ public class JavaValue extends GenericValue<Object> {
 			returns = {JAVA, "the long in Java wrapper"},
 			example = "Java.longOf(1000000000.0);"
 		)
-		private Value longOf(Context context, BuiltInFunction function) throws CodeError {
-			NumberValue numberValue = function.getFirstParameter(context, NumberValue.class);
+		private Value longOf(Arguments arguments) throws CodeError {
+			NumberValue numberValue = arguments.getNext(NumberValue.class);
 			return new JavaValue(numberValue.value.longValue());
 		}
-		
+
 		@FunctionDoc(
 			isStatic = true,
 			name = "intOf",
@@ -206,8 +206,8 @@ public class JavaValue extends GenericValue<Object> {
 			returns = {JAVA, "the int in Java wrapper"},
 			example = "Java.intOf(0xFF);"
 		)
-		private Value intOf(Context context, BuiltInFunction function) throws CodeError {
-			NumberValue numberValue = function.getFirstParameter(context, NumberValue.class);
+		private Value intOf(Arguments arguments) throws CodeError {
+			NumberValue numberValue = arguments.getNext(NumberValue.class);
 			return new JavaValue(numberValue.value.intValue());
 		}
 
@@ -219,8 +219,8 @@ public class JavaValue extends GenericValue<Object> {
 			returns = {JAVA, "the short in Java wrapper"},
 			example = "Java.shortOf(0xFF);"
 		)
-		private Value shortOf(Context context, BuiltInFunction function) throws CodeError {
-			NumberValue numberValue = function.getFirstParameter(context, NumberValue.class);
+		private Value shortOf(Arguments arguments) throws CodeError {
+			NumberValue numberValue = arguments.getNext(NumberValue.class);
 			return new JavaValue(numberValue.value.shortValue());
 		}
 
@@ -232,8 +232,8 @@ public class JavaValue extends GenericValue<Object> {
 			returns = {JAVA, "the byte in Java wrapper"},
 			example = "Java.byteOf(0xFF);"
 		)
-		private Value byteOf(Context context, BuiltInFunction function) throws CodeError {
-			NumberValue numberValue = function.getFirstParameter(context, NumberValue.class);
+		private Value byteOf(Arguments arguments) throws CodeError {
+			NumberValue numberValue = arguments.getNext(NumberValue.class);
 			return new JavaValue(numberValue.value.byteValue());
 		}
 
@@ -246,10 +246,10 @@ public class JavaValue extends GenericValue<Object> {
 			throwMsgs = "String must be 1 character long",
 			example = "Java.charOf('f');"
 		)
-		private Value charOf(Context context, BuiltInFunction function) throws CodeError {
-			StringValue charValue = function.getFirstParameter(context, StringValue.class);
+		private Value charOf(Arguments arguments) throws CodeError {
+			StringValue charValue = arguments.getNext(StringValue.class);
 			if (charValue.value.length() != 1) {
-				throw new RuntimeError("String must be 1 character long", function.syntaxPosition, context);
+				throw arguments.getError("String must be 1 character long");
 			}
 			return new JavaValue(charValue.value.charAt(0));
 		}
@@ -262,11 +262,11 @@ public class JavaValue extends GenericValue<Object> {
 			returns = {JAVA, "the boolean in Java wrapper"},
 			example = "Java.booleanOf(true);"
 		)
-		private Value booleanOf(Context context, BuiltInFunction function) throws CodeError {
-			BooleanValue booleanValue = function.getFirstParameter(context, BooleanValue.class);
+		private Value booleanOf(Arguments arguments) throws CodeError {
+			BooleanValue booleanValue = arguments.getNext(BooleanValue.class);
 			return new JavaValue(booleanValue.value);
 		}
-		
+
 		@FunctionDoc(
 			isStatic = true,
 			name = "valueOf",
@@ -275,8 +275,8 @@ public class JavaValue extends GenericValue<Object> {
 			returns = {JAVA, "the Java wrapper value", "null if argument was null"},
 			example = "Java.valueOf('Hello World!');"
 		)
-		private Value of(Context context, BuiltInFunction function) {
-			Value value = function.getParameterValue(context, 0);
+		private Value of(Arguments arguments) throws RuntimeError {
+			Value value = arguments.getNext();
 			return JavaValue.of(value.asJavaValue());
 		}
 
@@ -289,9 +289,9 @@ public class JavaValue extends GenericValue<Object> {
 			throwMsgs = "No such class with ...",
 			example = "Java.classFromName('java.util.ArrayList');"
 		)
-		private Value classFromName(Context context, BuiltInFunction function) throws CodeError {
-			String name = function.getFirstParameter(context, StringValue.class).value;
-			return new JavaValue(JavaValue.getObfuscatedClass(context, function.syntaxPosition, name));
+		private Value classFromName(Arguments arguments) throws CodeError {
+			String name = arguments.getNextVal(StringValue.class);
+			return new JavaValue(JavaValue.getObfuscatedClass(arguments.getContext(), arguments.getPosition(), name));
 		}
 
 		@FunctionDoc(
@@ -306,14 +306,16 @@ public class JavaValue extends GenericValue<Object> {
 			throwMsgs = "No such class with ...",
 			example = "Java.getStaticField('java.lang.Integer', 'MAX_VALUE');"
 		)
-		private Value getStaticField(Context context, BuiltInFunction function) throws CodeError {
-			String className = function.getFirstParameter(context, StringValue.class).value;
-			String fieldName = function.getParameterValueOfType(context, StringValue.class, 1).value;
-			Class<?> clazz = JavaValue.getObfuscatedClass(context, function.syntaxPosition, className);
+		private Value getStaticField(Arguments arguments) throws CodeError {
+			Context context = arguments.getContext();
+			ISyntax position = arguments.getPosition();
+			String className = arguments.getNextVal(StringValue.class);
+			String fieldName = arguments.getNextVal(StringValue.class);
+			Class<?> clazz = JavaValue.getObfuscatedClass(context, position, className);
 			fieldName = JavaValue.getObfuscatedFieldName(context, clazz, fieldName);
-			return ReflectionUtils.getFieldFromName(clazz, null, fieldName, function.syntaxPosition, context);
+			return ReflectionUtils.getFieldFromName(clazz, null, fieldName, position, context);
 		}
-		
+
 		@FunctionDoc(
 			isStatic = true,
 			name = "setStaticField",
@@ -328,20 +330,22 @@ public class JavaValue extends GenericValue<Object> {
 			},
 			throwMsgs = "No such class with ...",
 			example = """
-			// Obviously this won't work, but it's just an example
-			Java.setStaticField('java.lang.Integer', 'MAX_VALUE', Java.intOf(100));"
-			"""
+				// Obviously this won't work, but it's just an example
+				Java.setStaticField('java.lang.Integer', 'MAX_VALUE', Java.intOf(100));"
+				"""
 		)
-		private Value setStaticField(Context context, BuiltInFunction function) throws CodeError {
-			String className = function.getFirstParameter(context, StringValue.class).value;
-			String fieldName = function.getParameterValueOfType(context, StringValue.class, 1).value;
-			Value value = function.getParameterValue(context, 2);
-			Class<?> clazz = JavaValue.getObfuscatedClass(context, function.syntaxPosition, className);
+		private Value setStaticField(Arguments arguments) throws CodeError {
+			Context context = arguments.getContext();
+			ISyntax position = arguments.getPosition();
+			String className = arguments.getNextVal(StringValue.class);
+			String fieldName = arguments.getNextVal(StringValue.class);
+			Value value = arguments.getNext();
+			Class<?> clazz = JavaValue.getObfuscatedClass(context, position, className);
 			fieldName = JavaValue.getObfuscatedFieldName(context, clazz, fieldName);
-			ReflectionUtils.setFieldFromName(clazz, null, value.asJavaValue(), fieldName, function.syntaxPosition, context);
+			ReflectionUtils.setFieldFromName(clazz, null, value.asJavaValue(), fieldName, position, context);
 			return NullValue.NULL;
 		}
-		
+
 		@FunctionDoc(
 			isStatic = true,
 			name = "getStaticMethodDelegate",
@@ -361,23 +365,22 @@ public class JavaValue extends GenericValue<Object> {
 			},
 			example = "Java.getStaticMethodDelegate('java.lang.Integer', 'parseInt', 1);"
 		)
-		private Value getStaticMethodDelegate(Context context, BuiltInFunction function) throws CodeError {
-			String className = function.getFirstParameter(context, StringValue.class).value;
-			String methodName = function.getParameterValueOfType(context, StringValue.class, 1).value;
-			int parameters = function.getParameterValueOfType(context, NumberValue.class, 2).value.intValue();
-			Class<?> clazz = JavaValue.getObfuscatedClass(context, function.syntaxPosition, className);
+		private Value getStaticMethodDelegate(Arguments arguments) throws CodeError {
+			Context context = arguments.getContext();
+			ISyntax position = arguments.getPosition();
+			String className = arguments.getNextVal(StringValue.class);
+			String methodName = arguments.getNextVal(StringValue.class);
+			int parameters = arguments.getNextVal(NumberValue.class).intValue();
+			Class<?> clazz = JavaValue.getObfuscatedClass(context, position, className);
 			methodName = getObfuscatedMethodName(context, clazz, methodName);
 			Method method = ReflectionUtils.getMethodSlow(clazz, null, methodName, parameters);
-			JavaFunction javaFunction = JavaFunction.of(method, null, function.syntaxPosition);
+			JavaFunction javaFunction = JavaFunction.of(method, null, position);
 			if (javaFunction != null) {
 				return javaFunction;
 			}
-			throw new RuntimeError(
-				"No such method '%s' with %d parameters can be found".formatted(method, parameters),
-				function.syntaxPosition, context
-			);
+			throw arguments.getError("No such method '%s' with %d parameters can be found", method, parameters);
 		}
-		
+
 		@FunctionDoc(
 			isStatic = true,
 			name = "arrayWithSize",
@@ -389,12 +392,12 @@ public class JavaValue extends GenericValue<Object> {
 			returns = {JAVA, "the Java Object array"},
 			example = "Java.arrayWithSize(10);"
 		)
-		private Value arrayWithSize(Context context, BuiltInFunction function) throws CodeError {
-			int size = function.getFirstParameter(context, NumberValue.class).value.intValue();
-			this.checkArraySize(context, function.syntaxPosition, size);
+		private Value arrayWithSize(Arguments arguments) throws CodeError {
+			int size = arguments.getNextVal(NumberValue.class).intValue();
+			this.checkArraySize(arguments.getContext(), arguments.getPosition(), size);
 			return new JavaValue(new Object[size]);
 		}
-		
+
 		@FunctionDoc(
 			isStatic = true,
 			name = "doubleArray",
@@ -406,12 +409,12 @@ public class JavaValue extends GenericValue<Object> {
 			returns = {JAVA, "the Java double array"},
 			example = "Java.doubleArray(10);"
 		)
-		private Value doubleArray(Context context, BuiltInFunction function) throws CodeError {
-			int size = function.getFirstParameter(context, NumberValue.class).value.intValue();
-			this.checkArraySize(context, function.syntaxPosition, size);
+		private Value doubleArray(Arguments arguments) throws CodeError {
+			int size = arguments.getNextVal(NumberValue.class).intValue();
+			this.checkArraySize(arguments.getContext(), arguments.getPosition(), size);
 			return new JavaValue(new double[size]);
 		}
-		
+
 		@FunctionDoc(
 			isStatic = true,
 			name = "floatArray",
@@ -423,12 +426,12 @@ public class JavaValue extends GenericValue<Object> {
 			returns = {JAVA, "the Java float array"},
 			example = "Java.floatArray(10);"
 		)
-		private Value floatArray(Context context, BuiltInFunction function) throws CodeError {
-			int size = function.getFirstParameter(context, NumberValue.class).value.intValue();
-			this.checkArraySize(context, function.syntaxPosition, size);
+		private Value floatArray(Arguments arguments) throws CodeError {
+			int size = arguments.getNextVal(NumberValue.class).intValue();
+			this.checkArraySize(arguments.getContext(), arguments.getPosition(), size);
 			return new JavaValue(new float[size]);
 		}
-		
+
 		@FunctionDoc(
 			isStatic = true,
 			name = "longArray",
@@ -440,9 +443,9 @@ public class JavaValue extends GenericValue<Object> {
 			returns = {JAVA, "the Java long array"},
 			example = "Java.longArray(10);"
 		)
-		private Value longArray(Context context, BuiltInFunction function) throws CodeError {
-			int size = function.getFirstParameter(context, NumberValue.class).value.intValue();
-			this.checkArraySize(context, function.syntaxPosition, size);
+		private Value longArray(Arguments arguments) throws CodeError {
+			int size = arguments.getNextVal(NumberValue.class).intValue();
+			this.checkArraySize(arguments.getContext(), arguments.getPosition(), size);
 			return new JavaValue(new long[size]);
 		}
 
@@ -457,12 +460,12 @@ public class JavaValue extends GenericValue<Object> {
 			returns = {JAVA, "the Java int array"},
 			example = "Java.intArray(10);"
 		)
-		private Value intArray(Context context, BuiltInFunction function) throws CodeError {
-			int size = function.getFirstParameter(context, NumberValue.class).value.intValue();
-			this.checkArraySize(context, function.syntaxPosition, size);
+		private Value intArray(Arguments arguments) throws CodeError {
+			int size = arguments.getNextVal(NumberValue.class).intValue();
+			this.checkArraySize(arguments.getContext(), arguments.getPosition(), size);
 			return new JavaValue(new int[size]);
 		}
-		
+
 		@FunctionDoc(
 			isStatic = true,
 			name = "shortArray",
@@ -474,12 +477,12 @@ public class JavaValue extends GenericValue<Object> {
 			returns = {JAVA, "the Java short array"},
 			example = "Java.shortArray(10);"
 		)
-		private Value shortArray(Context context, BuiltInFunction function) throws CodeError {
-			int size = function.getFirstParameter(context, NumberValue.class).value.intValue();
-			this.checkArraySize(context, function.syntaxPosition, size);
+		private Value shortArray(Arguments arguments) throws CodeError {
+			int size = arguments.getNextVal(NumberValue.class).intValue();
+			this.checkArraySize(arguments.getContext(), arguments.getPosition(), size);
 			return new JavaValue(new short[size]);
 		}
-		
+
 		@FunctionDoc(
 			isStatic = true,
 			name = "byteArray",
@@ -491,12 +494,12 @@ public class JavaValue extends GenericValue<Object> {
 			returns = {JAVA, "the Java byte array"},
 			example = "Java.byteArray(10);"
 		)
-		private Value byteArray(Context context, BuiltInFunction function) throws CodeError {
-			int size = function.getFirstParameter(context, NumberValue.class).value.intValue();
-			this.checkArraySize(context, function.syntaxPosition, size);
+		private Value byteArray(Arguments arguments) throws CodeError {
+			int size = arguments.getNextVal(NumberValue.class).intValue();
+			this.checkArraySize(arguments.getContext(), arguments.getPosition(), size);
 			return new JavaValue(new byte[size]);
 		}
-		
+
 		@FunctionDoc(
 			isStatic = true,
 			name = "charArray",
@@ -508,12 +511,12 @@ public class JavaValue extends GenericValue<Object> {
 			returns = {JAVA, "the Java char array"},
 			example = "Java.charArray(10);"
 		)
-		private Value charArray(Context context, BuiltInFunction function) throws CodeError {
-			int size = function.getFirstParameter(context, NumberValue.class).value.intValue();
-			this.checkArraySize(context, function.syntaxPosition, size);
+		private Value charArray(Arguments arguments) throws CodeError {
+			int size = arguments.getNextVal(NumberValue.class).intValue();
+			this.checkArraySize(arguments.getContext(), arguments.getPosition(), size);
 			return new JavaValue(new char[size]);
 		}
-		
+
 		@FunctionDoc(
 			isStatic = true,
 			name = "booleanArray",
@@ -525,12 +528,12 @@ public class JavaValue extends GenericValue<Object> {
 			returns = {JAVA, "the Java boolean array"},
 			example = "Java.booleanArray(10);"
 		)
-		private Value booleanArray(Context context, BuiltInFunction function) throws CodeError {
-			int size = function.getFirstParameter(context, NumberValue.class).value.intValue();
-			this.checkArraySize(context, function.syntaxPosition, size);
+		private Value booleanArray(Arguments arguments) throws CodeError {
+			int size = arguments.getNextVal(NumberValue.class).intValue();
+			this.checkArraySize(arguments.getContext(), arguments.getPosition(), size);
 			return new JavaValue(new boolean[size]);
 		}
-		
+
 		@FunctionDoc(
 			isStatic = true,
 			name = "runnableOf",
@@ -540,19 +543,19 @@ public class JavaValue extends GenericValue<Object> {
 			},
 			returns = {JAVA, "the Java Runnable object"},
 			example = """
-			Java.runnableOf(fun() {
-			    print('runnable');
-			});
-			"""
+				Java.runnableOf(fun() {
+				    print('runnable');
+				});
+				"""
 		)
-		private Value runnableOf(Context context, BuiltInFunction function) throws CodeError {
-			FunctionValue functionValue = function.getFirstParameter(context, FunctionValue.class);
-			Context branchContext = context.createBranch();
+		private Value runnableOf(Arguments arguments) throws CodeError {
+			FunctionValue functionValue = arguments.getNext(FunctionValue.class);
+			Context branchContext = arguments.getContext().createBranch();
 			return new JavaValue((Runnable) () -> {
-				functionValue.safeCall(branchContext, ArrayList::new);
+				functionValue.callSafe(branchContext.createBranch(), ArrayList::new);
 			});
 		}
-		
+
 		@FunctionDoc(
 			isStatic = true,
 			name = "consumerOf",
@@ -563,19 +566,19 @@ public class JavaValue extends GenericValue<Object> {
 			},
 			returns = {JAVA, "the Java Consumer object"},
 			example = """
-			Java.consumerOf(fun(something) {
-			    print(something);
-			});
-			"""
+				Java.consumerOf(fun(something) {
+				    print(something);
+				});
+				"""
 		)
-		private Value consumerOf(Context context, BuiltInFunction function) throws CodeError {
-			FunctionValue functionValue = function.getFirstParameter(context, FunctionValue.class);
-			Context branchContext = context.createBranch();
+		private Value consumerOf(Arguments arguments) throws CodeError {
+			FunctionValue functionValue = arguments.getNext(FunctionValue.class);
+			Context branchContext = arguments.getContext().createBranch();
 			return new JavaValue((Consumer<Object>) o -> {
-				functionValue.safeCall(context, () -> ArucasList.arrayListOf(branchContext.convertValue(o)));
+				functionValue.callSafe(branchContext.createBranch(), () -> ArucasList.arrayListOf(branchContext.convertValue(o)));
 			});
 		}
-		
+
 		@FunctionDoc(
 			isStatic = true,
 			name = "supplierOf",
@@ -585,20 +588,20 @@ public class JavaValue extends GenericValue<Object> {
 			},
 			returns = {JAVA, "the Java Supplier object"},
 			example = """
-			Java.supplierOf(fun() {
-			    return "supplier";
-			});
-			"""
+				Java.supplierOf(fun() {
+				    return "supplier";
+				});
+				"""
 		)
-		private Value supplierOf(Context context, BuiltInFunction function) throws CodeError {
-			FunctionValue functionValue = function.getFirstParameter(context, FunctionValue.class);
-			Context branchContext = context.createBranch();
+		private Value supplierOf(Arguments arguments) throws CodeError {
+			FunctionValue functionValue = arguments.getNext(FunctionValue.class);
+			Context branchContext = arguments.getContext().createBranch();
 			return new JavaValue((Supplier<Object>) () -> {
-				Value returnValue = functionValue.safeCall(branchContext, ArrayList::new);
+				Value returnValue = functionValue.callSafe(branchContext.createBranch(), ArrayList::new);
 				return returnValue == null ? null : returnValue.asJavaValue();
 			});
 		}
-		
+
 		@FunctionDoc(
 			isStatic = true,
 			name = "functionOf",
@@ -608,20 +611,20 @@ public class JavaValue extends GenericValue<Object> {
 			},
 			returns = {JAVA, "the Java Function object"},
 			example = """
-			Java.functionOf(fun(num) {
-			    return num + 10;
-			});
-			"""
+				Java.functionOf(fun(num) {
+				    return num + 10;
+				});
+				"""
 		)
-		private Value functionOf(Context context, BuiltInFunction function) throws CodeError {
-			FunctionValue functionValue = function.getFirstParameter(context, FunctionValue.class);
-			Context branchContext = context.createBranch();
+		private Value functionOf(Arguments arguments) throws CodeError {
+			FunctionValue functionValue = arguments.getNext(FunctionValue.class);
+			Context branchContext = arguments.getContext().createBranch();
 			return new JavaValue((Function<Object, Object>) o -> {
-				Value returnValue = functionValue.safeCall(context, () -> ArucasList.arrayListOf(branchContext.convertValue(o)));
+				Value returnValue = functionValue.callSafe(branchContext.createBranch(), () -> ArucasList.arrayListOf(branchContext.convertValue(o)));
 				return returnValue == null ? null : returnValue.asJavaValue();
 			});
 		}
-		
+
 		@FunctionDoc(
 			isVarArgs = true,
 			isStatic = true,
@@ -634,15 +637,14 @@ public class JavaValue extends GenericValue<Object> {
 			returns = {JAVA, "the Java Object array"},
 			example = "Java.arrayOf(1, 2, 3, 'string!', false);"
 		)
-		private Value arrayOf(Context context, BuiltInFunction function) throws CodeError {
-			ArucasList arucasList = function.getFirstParameter(context, ListValue.class).value;
-			Object[] array = new Object[arucasList.size()];
-			for (int i = 0; i < arucasList.size(); i++) {
-				array[i] = arucasList.get(i).asJavaValue();
+		private Value arrayOf(Arguments arguments) throws CodeError {
+			Object[] array = new Object[arguments.size()];
+			for (int i = 0; i < arguments.size(); i++) {
+				array[i] = arguments.get(i).asJavaValue();
 			}
 			return new JavaValue(array);
 		}
-		
+
 		@FunctionDoc(
 			isVarArgs = true,
 			isStatic = true,
@@ -662,21 +664,21 @@ public class JavaValue extends GenericValue<Object> {
 			},
 			example = "Java.callStaticMethod('java.lang.Integer', 'parseInt', '123');"
 		)
-		private Value callStaticMethod(Context context, BuiltInFunction function) throws CodeError {
-			ArucasList arguments = function.getFirstParameter(context, ListValue.class).value;
-			if (arguments.size() < 2 || !(arguments.get(0) instanceof StringValue className) || !(arguments.get(1) instanceof StringValue methodName)) {
-				throw new RuntimeError(
-					"First parameter must be a class name and second parameter must be a method name",
-					function.syntaxPosition, context
-				);
+		private Value callStaticMethod(Arguments arguments) throws CodeError {
+			if (arguments.size() < 2) {
+				throw arguments.getError("First parameter must be a class name and second parameter must be a method name");
 			}
-			Class<?> clazz = JavaValue.getObfuscatedClass(context, function.syntaxPosition, className.value);
-			String name = getObfuscatedMethodName(context, clazz, methodName.value);
-			arguments.remove(0);
-			arguments.remove(0);
-			return ReflectionUtils.callMethodFromNameAndArgs(clazz, null, name, arguments, function.syntaxPosition, context);
+			Context context = arguments.getContext();
+			ISyntax position = arguments.getPosition();
+
+			String className = arguments.getNextVal(StringValue.class);
+			String methodName = arguments.getNextVal(StringValue.class);
+
+			Class<?> clazz = JavaValue.getObfuscatedClass(context, position, className);
+			String name = getObfuscatedMethodName(context, clazz, methodName);
+			return ReflectionUtils.callMethodFromNameAndArgs(clazz, null, name, arguments.getRemaining(), position, context);
 		}
-		
+
 		@FunctionDoc(
 			isVarArgs = true,
 			isStatic = true,
@@ -695,30 +697,30 @@ public class JavaValue extends GenericValue<Object> {
 			},
 			example = "Java.constructClass('java.util.ArrayList');"
 		)
-		private Value constructClass(Context context, BuiltInFunction function) throws CodeError {
-			ArucasList arguments = function.getFirstParameter(context, ListValue.class).value;
-			if (arguments.size() < 1 || !(arguments.get(0) instanceof StringValue className)) {
-				throw new RuntimeError(
-					"First parameter must be a class name",
-					function.syntaxPosition, context
-				);
+		private Value constructClass(Arguments arguments) throws CodeError {
+			if (arguments.size() < 1) {
+				throw arguments.getError("First parameter must be a class name");
 			}
-			Class<?> clazz = JavaValue.getObfuscatedClass(context, function.syntaxPosition, className.value);
-			arguments.remove(0);
-			return ReflectionUtils.constructFromArgs(clazz, arguments, function.syntaxPosition, context);
+			Context context = arguments.getContext();
+			ISyntax position = arguments.getPosition();
+
+			String className = arguments.getNextVal(StringValue.class);
+
+			Class<?> clazz = JavaValue.getObfuscatedClass(context, position, className);
+			return ReflectionUtils.constructFromArgs(clazz, arguments.getRemaining(), position, context);
 		}
 
 		@Override
 		public ArucasFunctionMap<MemberFunction> getDefinedMethods() {
 			return ArucasFunctionMap.of(
-				new MemberFunction("toArucas", this::toValue),
-				new MemberFunction("getMethodDelegate", List.of("methodName", "parameters"), this::getMethodDelegate),
-				new MemberFunction("getField", "fieldName", this::getJavaField, "You should get the field directly"),
-				new MemberFunction("setField", List.of("fieldName", "value"), this::setJavaField, "You should set the field directly"),
-				new MemberFunction.Arbitrary("callMethod", this::callMethodArbitrary, "You should call the method directly")
+				MemberFunction.of("toArucas", this::toValue),
+				MemberFunction.of("getMethodDelegate", 2, this::getMethodDelegate),
+				MemberFunction.of("getField", 1, this::getJavaField, "You should get the field directly"),
+				MemberFunction.of("setField", 2, this::setJavaField, "You should set the field directly"),
+				MemberFunction.arbitrary("callMethod", this::callMethodArbitrary, "You should call the method directly")
 			);
 		}
-		
+
 		@FunctionDoc(
 			name = "toArucas",
 			desc = "This converts the Java value to an Arucas Value",
@@ -728,11 +730,11 @@ public class JavaValue extends GenericValue<Object> {
 			},
 			example = "Java.valueOf([1, 2, 3]).toArucas();"
 		)
-		private Value toValue(Context context, MemberFunction function) throws CodeError {
-			JavaValue thisValue = function.getThis(context, JavaValue.class);
-			return context.convertValue(thisValue.asJavaValue());
+		private Value toValue(Arguments arguments) throws CodeError {
+			JavaValue thisValue = arguments.getNext(JavaValue.class);
+			return arguments.getContext().convertValue(thisValue.asJavaValue());
 		}
-		
+
 		@FunctionDoc(
 			name = "getMethodDelegate",
 			desc = {
@@ -748,22 +750,19 @@ public class JavaValue extends GenericValue<Object> {
 			throwMsgs = "No such method ... with ... parameters can be found",
 			example = "Java.valueOf('string!').getMethodDelegate('isBlank', 0);"
 		)
-		private Value getMethodDelegate(Context context, MemberFunction function) throws CodeError {
-			JavaValue thisValue = function.getThis(context, JavaValue.class);
-			String methodName = function.getParameterValueOfType(context, StringValue.class, 1).value;
-			int parameters = function.getParameterValueOfType(context, NumberValue.class, 2).value.intValue();
+		private Value getMethodDelegate(Arguments arguments) throws CodeError {
+			JavaValue thisValue = arguments.getNext(JavaValue.class);
+			String methodName = arguments.getNextVal(StringValue.class);
+			int parameters = arguments.getNextVal(NumberValue.class).intValue();
 			Object callingObject = thisValue.asJavaValue();
 			Class<?> callingClass = callingObject.getClass();
-			methodName = getObfuscatedMethodName(context, callingClass, methodName);
+			methodName = getObfuscatedMethodName(arguments.getContext(), callingClass, methodName);
 			Method method = ReflectionUtils.getMethodSlow(callingClass, callingObject, methodName, parameters);
-			JavaFunction javaFunction = JavaFunction.of(method, callingObject, function.syntaxPosition);
+			JavaFunction javaFunction = JavaFunction.of(method, callingObject, arguments.getPosition());
 			if (javaFunction != null) {
 				return javaFunction;
 			}
-			throw new RuntimeError(
-				"No such method '%s' with %d parameters can be found".formatted(method, parameters),
-				function.syntaxPosition, context
-			);
+			throw arguments.getError("No such method '%s' with %d parameters can be found", method, parameters);
 		}
 
 		@FunctionDoc(
@@ -787,22 +786,21 @@ public class JavaValue extends GenericValue<Object> {
 			},
 			example = "Java.valueOf('').callMethod('isBlank');"
 		)
-		private Value callMethodArbitrary(Context context, MemberFunction function) throws CodeError {
-			JavaValue thisValue = function.getThis(context, JavaValue.class);
-			ArucasList arguments = function.getParameterValueOfType(context, ListValue.class, 1).value;
-			if (arguments.size() < 1 || !(arguments.get(0) instanceof StringValue methodName)) {
-				throw new RuntimeError(
-					"First parameter must be name of method",
-					function.syntaxPosition, context
-				);
+		private Value callMethodArbitrary(Arguments arguments) throws CodeError {
+			JavaValue thisValue = arguments.getNext(JavaValue.class);
+			if (arguments.size() < 2) {
+				throw arguments.getError("First parameter must be name of method");
 			}
-			// We don't have to copy the list since the list was never passed in, it was generated
-			// Meaning nothing in Arucas should be pointing to this list, should be safe to just remove
-			arguments.remove(0);
+			Context context = arguments.getContext();
+			String methodName = arguments.getNextVal(StringValue.class);
 
 			Object callingObject = thisValue.asJavaValue();
-			String name = getObfuscatedMethodName(context, callingObject.getClass(), methodName.value);
-			return ReflectionUtils.callMethodFromNameAndArgs(callingObject.getClass(), callingObject, name, arguments, function.syntaxPosition, context);
+			String name = getObfuscatedMethodName(context, callingObject.getClass(), methodName);
+			return ReflectionUtils.callMethodFromNameAndArgs(
+				callingObject.getClass(), callingObject,
+				name, arguments.getRemaining(),
+				arguments.getPosition(), context
+			);
 		}
 
 		@FunctionDoc(
@@ -813,12 +811,13 @@ public class JavaValue extends GenericValue<Object> {
 			returns = {JAVA, "the Java wrapped value of the field"},
 			example = "Java.constructClass('me.senseiwells.impl.Test').getField('A');"
 		)
-		private Value getJavaField(Context context, MemberFunction function) throws CodeError {
-			JavaValue thisValue = function.getThis(context, JavaValue.class);
-			String fieldName = function.getParameterValueOfType(context, StringValue.class, 1).value;
+		private Value getJavaField(Arguments arguments) throws CodeError {
+			JavaValue thisValue = arguments.getNext(JavaValue.class);
+			String fieldName = arguments.getNextVal(StringValue.class);
+			Context context = arguments.getContext();
 			Object callingObject = thisValue.asJavaValue();
 			fieldName = getObfuscatedFieldName(context, callingObject.getClass(), fieldName);
-			return ReflectionUtils.getFieldFromName(callingObject.getClass(), callingObject, fieldName, function.syntaxPosition, context);
+			return ReflectionUtils.getFieldFromName(callingObject.getClass(), callingObject, fieldName, arguments.getPosition(), context);
 		}
 
 		@FunctionDoc(
@@ -831,13 +830,14 @@ public class JavaValue extends GenericValue<Object> {
 			},
 			example = "Java.constructClass('me.senseiwells.impl.Test').setField('A', 'Hello');"
 		)
-		private Value setJavaField(Context context, MemberFunction function) throws CodeError {
-			JavaValue thisValue = function.getThis(context, JavaValue.class);
-			String fieldName = function.getParameterValueOfType(context, StringValue.class, 1).value;
-			Value newValue = function.getParameterValue(context, 2);
+		private Value setJavaField(Arguments arguments) throws CodeError {
+			JavaValue thisValue = arguments.getNext(JavaValue.class);
+			String fieldName = arguments.getNextVal(StringValue.class);
+			Value newValue = arguments.getNext();
+			Context context = arguments.getContext();
 			Object callingObject = thisValue.asJavaValue();
 			fieldName = getObfuscatedFieldName(context, callingObject.getClass(), fieldName);
-			ReflectionUtils.setFieldFromName(callingObject.getClass(), callingObject, newValue.asJavaValue(), fieldName, function.syntaxPosition, context);
+			ReflectionUtils.setFieldFromName(callingObject.getClass(), callingObject, newValue.asJavaValue(), fieldName, arguments.getPosition(), context);
 			return NullValue.NULL;
 		}
 

@@ -36,11 +36,11 @@ public class ExtensionDocParser extends DocParser {
 			}
 
 			for (FunctionValue function : extension.getDefinedFunctions()) {
-				String functionId = function.getName() + function.getParameterCount();
+				String functionId = function.getName() + function.getCount();
 				FunctionDoc doc = functionDocMap.get(functionId);
 				List<String> parameterNames = this.addFunctionDoc(builder, doc);
 				builder.append("fun ").append(function.getName()).append("(");
-				this.addArgumentsToBuilder(builder, parameterNames, function.getParameterCount());
+				this.addArgumentsToBuilder(builder, parameterNames, function.getCount());
 				builder.append(");\n\n");
 			}
 		}

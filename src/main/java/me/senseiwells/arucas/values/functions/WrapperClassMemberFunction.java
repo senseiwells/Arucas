@@ -6,7 +6,6 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
-import me.senseiwells.arucas.values.classes.ArucasClassValue;
 import me.senseiwells.arucas.values.classes.ArucasMethodHandle;
 import me.senseiwells.arucas.values.classes.WrapperClassValue;
 
@@ -43,11 +42,8 @@ public class WrapperClassMemberFunction extends UserDefinedFunction implements I
 	}
 
 	@Override
-	protected void populateArguments(Context context, List<Value> arguments, List<String> argumentNames) { }
-
-	@Override
-	protected Value callOverride(Context context, List<Value> arguments, boolean returnable) throws CodeError {
-		context.pushFunctionScope(this.syntaxPosition);
+	public Value call(Context context, List<Value> arguments, boolean returnable) throws CodeError {
+		context.pushFunctionScope(this.getPosition());
 
 		Object[] args = new Object[1 + this.parameters];
 		int iModifier = 0;
@@ -64,10 +60,10 @@ public class WrapperClassMemberFunction extends UserDefinedFunction implements I
 
 		Value returnValue;
 		if (returnable) {
-			returnValue = this.methodHandle.call(args, this.thisValue, this.syntaxPosition, context);
+			returnValue = this.methodHandle.call(args, this.thisValue, this.getPosition(), context);
 		}
 		else {
-			this.methodHandle.call(args, this.thisValue, this.syntaxPosition, context);
+			this.methodHandle.call(args, this.thisValue, this.getPosition(), context);
 			returnValue = NullValue.NULL;
 		}
 

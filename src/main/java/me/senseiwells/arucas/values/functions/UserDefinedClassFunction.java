@@ -1,7 +1,8 @@
-package me.senseiwells.arucas.values.functions.mod;
+package me.senseiwells.arucas.values.functions;
 
 import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.throwables.CodeError;
+import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.values.ListValue;
@@ -56,6 +57,15 @@ public class UserDefinedClassFunction extends UserDefinedFunction implements IMe
 
 		public Arbitrary(String name, List<String> argumentNames, ISyntax syntaxPosition) {
 			super(name, argumentNames, syntaxPosition);
+		}
+
+		@Override
+		protected void checkAndPopulateArguments(Context context, List<Value> arguments) {
+			for (int i = 0; i < this.argumentNames.size(); i++) {
+				String argumentName = this.argumentNames.get(i);
+				Value argument = arguments.get(i);
+				context.setLocal(argumentName, argument);
+			}
 		}
 
 		@Override

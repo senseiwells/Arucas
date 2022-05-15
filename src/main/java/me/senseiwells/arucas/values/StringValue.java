@@ -5,14 +5,13 @@ import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.api.docs.ClassDoc;
 import me.senseiwells.arucas.api.docs.FunctionDoc;
 import me.senseiwells.arucas.throwables.CodeError;
-import me.senseiwells.arucas.throwables.RuntimeError;
+import me.senseiwells.arucas.utils.Arguments;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.StringUtils;
 import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
-import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -75,23 +74,22 @@ public class StringValue extends GenericValue<String> {
 		@Override
 		public ArucasFunctionMap<MemberFunction> getDefinedMethods() {
 			return ArucasFunctionMap.of(
-				new MemberFunction("toList", this::stringToList),
-				new MemberFunction("replaceAll", List.of("regex", "replace"), this::stringReplaceAll),
-				new MemberFunction("uppercase", this::stringUppercase),
-				new MemberFunction("lowercase", this::stringLowercase),
-				new MemberFunction("toNumber", this::stringToNumber),
-				new MemberFunction("formatted", "values", this::stringFormatted, "Use '<String>.format(...)'"),
-				new MemberFunction("containsString", List.of("otherString"), this::stringContainsString, "Use '<String>.contains(otherString)'"),
-				new MemberFunction("contains", "otherString", this::stringContainsString),
-				new MemberFunction("strip", this::strip),
-				new MemberFunction("capitalise", this::capitalise),
-				new MemberFunction("split", "delimiter", this::split),
-				new MemberFunction("subString", List.of("from", "to"), this::subString),
-				new MemberFunction("matches", "regex", this::matches),
-				new MemberFunction("find", "regex", this::find),
-				new MemberFunction("startsWith", "string", this::startsWith),
-				new MemberFunction("endsWith", "string", this::endsWith),
-				new MemberFunction.Arbitrary("format", this::stringFormatted)
+				MemberFunction.of("toList", this::stringToList),
+				MemberFunction.of("replaceAll", 2, this::stringReplaceAll),
+				MemberFunction.of("uppercase", this::stringUppercase),
+				MemberFunction.of("lowercase", this::stringLowercase),
+				MemberFunction.of("toNumber", this::stringToNumber),
+				MemberFunction.of("containsString", 1, this::stringContainsString, "Use '<String>.contains(otherString)'"),
+				MemberFunction.of("contains", 1, this::stringContainsString),
+				MemberFunction.of("strip", this::strip),
+				MemberFunction.of("capitalise", this::capitalise),
+				MemberFunction.of("split", 1, this::split),
+				MemberFunction.of("subString", 2, this::subString),
+				MemberFunction.of("matches", 1, this::matches),
+				MemberFunction.of("find", 1, this::find),
+				MemberFunction.of("startsWith", 1, this::startsWith),
+				MemberFunction.of("endsWith", 1, this::endsWith),
+				MemberFunction.arbitrary("format", this::stringFormatted)
 			);
 		}
 
@@ -101,8 +99,8 @@ public class StringValue extends GenericValue<String> {
 			returns = {LIST, "the list of characters"},
 			example = "'hello'.toList();"
 		)
-		private Value stringToList(Context context, MemberFunction function) throws CodeError {
-			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
+		private Value stringToList(Arguments arguments) throws CodeError {
+			StringValue thisValue = arguments.getNext(StringValue.class);
 			ArucasList stringList = new ArucasList();
 			for (char c : thisValue.value.toCharArray()) {
 				stringList.add(new StringValue(String.valueOf(c)));
@@ -120,10 +118,10 @@ public class StringValue extends GenericValue<String> {
 			returns = {STRING, "the modified string"},
 			example = "'hello'.replaceAll('l', 'x');"
 		)
-		private Value stringReplaceAll(Context context, MemberFunction function) throws CodeError {
-			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
-			StringValue remove = function.getParameterValueOfType(context, StringValue.class, 1);
-			StringValue replace = function.getParameterValueOfType(context, StringValue.class, 2);
+		private Value stringReplaceAll(Arguments arguments) throws CodeError {
+			StringValue thisValue = arguments.getNext(StringValue.class);
+			StringValue remove = arguments.getNext(StringValue.class);
+			StringValue replace = arguments.getNext(StringValue.class);
 			return new StringValue(thisValue.value.replaceAll(remove.value, replace.value));
 		}
 
@@ -133,8 +131,8 @@ public class StringValue extends GenericValue<String> {
 			returns = {STRING, "the uppercase string"},
 			example = "'hello'.uppercase();"
 		)
-		private Value stringUppercase(Context context, MemberFunction function) throws CodeError {
-			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
+		private Value stringUppercase(Arguments arguments) throws CodeError {
+			StringValue thisValue = arguments.getNext(StringValue.class);
 			return new StringValue(thisValue.value.toUpperCase(Locale.ROOT));
 		}
 
@@ -144,8 +142,8 @@ public class StringValue extends GenericValue<String> {
 			returns = {STRING, "the lowercase string"},
 			example = "'HELLO'.lowercase();"
 		)
-		private Value stringLowercase(Context context, MemberFunction function) throws CodeError {
-			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
+		private Value stringLowercase(Arguments arguments) throws CodeError {
+			StringValue thisValue = arguments.getNext(StringValue.class);
 			return new StringValue(thisValue.value.toLowerCase(Locale.ROOT));
 		}
 
@@ -156,17 +154,13 @@ public class StringValue extends GenericValue<String> {
 			returns = {NUMBER, "the number value"},
 			example = "'0xFF'.toNumber();"
 		)
-		private Value stringToNumber(Context context, MemberFunction function) throws CodeError {
-			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
+		private Value stringToNumber(Arguments arguments) throws CodeError {
+			StringValue thisValue = arguments.getNext(StringValue.class);
 			try {
 				return NumberValue.of(StringUtils.parseNumber(thisValue.value));
 			}
 			catch (NumberFormatException e) {
-				throw new RuntimeError(
-					"Cannot parse %s as a number".formatted(thisValue.getAsString(context)),
-					function.syntaxPosition,
-					context
-				);
+				throw arguments.getError("Cannot parse %s as a number", thisValue);
 			}
 		}
 
@@ -179,16 +173,16 @@ public class StringValue extends GenericValue<String> {
 			throwMsgs = "You are missing values to be formatted",
 			example = "'%s %s'.format('hello', 'world');"
 		)
-		private Value stringFormatted(Context context, MemberFunction function) throws CodeError {
-			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
-			final Value[] array = function.getParameterValueOfType(context, ListValue.class, 1).value.toArray();
-			int i = 0;
+		private Value stringFormatted(Arguments arguments) throws CodeError {
+			StringValue thisValue = arguments.getNext(StringValue.class);
+			final Value[] array = arguments.getAll().toArray(Value[]::new);
+			int i = 1;
 			String string = thisValue.value;
 			while (string.contains("%s")) {
 				if (i >= array.length) {
-					throw new RuntimeError("You are missing values to be formatted", function.syntaxPosition, context);
+					throw arguments.getError("You are missing values to be formatted");
 				}
-				string = string.replaceFirst("%s", array[i].getAsString(context));
+				string = string.replaceFirst("%s", array[i].getAsString(arguments.getContext()));
 				i++;
 			}
 			return new StringValue(string);
@@ -201,9 +195,9 @@ public class StringValue extends GenericValue<String> {
 			returns = {BOOLEAN, "true if the string contains the given string"},
 			example = "'hello'.contains('he');"
 		)
-		private Value stringContainsString(Context context, MemberFunction function) throws CodeError {
-			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
-			String otherString = function.getParameterValueOfType(context, StringValue.class, 1).value;
+		private Value stringContainsString(Arguments arguments) throws CodeError {
+			StringValue thisValue = arguments.getNext(StringValue.class);
+			String otherString = arguments.getNextVal(StringValue.class);
 			return BooleanValue.of(thisValue.value.contains(otherString));
 		}
 
@@ -213,8 +207,8 @@ public class StringValue extends GenericValue<String> {
 			returns = {STRING, "the stripped string"},
 			example = "'  hello  '.strip();"
 		)
-		private Value strip(Context context, MemberFunction function) throws CodeError {
-			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
+		private Value strip(Arguments arguments) throws CodeError {
+			StringValue thisValue = arguments.getNext(StringValue.class);
 			return new StringValue(thisValue.value.strip());
 		}
 
@@ -224,8 +218,8 @@ public class StringValue extends GenericValue<String> {
 			returns = {STRING, "the capitalised string"},
 			example = "'foo'.capitalise();"
 		)
-		private Value capitalise(Context context, MemberFunction function) throws CodeError {
-			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
+		private Value capitalise(Arguments arguments) throws CodeError {
+			StringValue thisValue = arguments.getNext(StringValue.class);
 			if (thisValue.value.isEmpty()) {
 				return thisValue;
 			}
@@ -241,9 +235,9 @@ public class StringValue extends GenericValue<String> {
 			returns = {LIST, "the list of strings"},
 			example = "'foo/bar/baz'.split('/');"
 		)
-		private Value split(Context context, MemberFunction function) throws CodeError {
-			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
-			String otherString = function.getParameterValueOfType(context, StringValue.class, 1).value;
+		private Value split(Arguments arguments) throws CodeError {
+			StringValue thisValue = arguments.getNext(StringValue.class);
+			String otherString = arguments.getNextVal(StringValue.class);
 			ArucasList list = new ArucasList();
 			for (String string : thisValue.value.split(otherString)) {
 				list.add(new StringValue(string));
@@ -261,12 +255,12 @@ public class StringValue extends GenericValue<String> {
 			returns = {STRING, "the substring"},
 			example = "'hello'.subString(1, 3);"
 		)
-		private Value subString(Context context, MemberFunction function) throws CodeError {
-			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
-			int fromIndex = function.getParameterValueOfType(context, NumberValue.class, 1).value.intValue();
-			int toIndex = function.getParameterValueOfType(context, NumberValue.class, 2).value.intValue();
+		private Value subString(Arguments arguments) throws CodeError {
+			StringValue thisValue = arguments.getNext(StringValue.class);
+			int fromIndex = arguments.getNextVal(NumberValue.class).intValue();
+			int toIndex = arguments.getNextVal(NumberValue.class).intValue();
 			if (fromIndex < 0 || toIndex > thisValue.value.length()) {
-				throw new RuntimeError("Index out of bounds", function.syntaxPosition, context);
+				throw arguments.getError("Index out of bounds");
 			}
 			return StringValue.of(thisValue.value.substring(fromIndex, toIndex));
 		}
@@ -278,9 +272,9 @@ public class StringValue extends GenericValue<String> {
 			returns = {BOOLEAN, "true if the string matches the given regex"},
 			example = "'hello'.matches('[a-z]*');"
 		)
-		private Value matches(Context context, MemberFunction function) throws CodeError {
-			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
-			StringValue regex = function.getParameterValueOfType(context, StringValue.class, 1);
+		private Value matches(Arguments arguments) throws CodeError {
+			StringValue thisValue = arguments.getNext(StringValue.class);
+			StringValue regex = arguments.getNext(StringValue.class);
 			return BooleanValue.of(thisValue.value.matches(regex.value));
 		}
 
@@ -291,9 +285,9 @@ public class StringValue extends GenericValue<String> {
 			returns = {LIST, "the list of all instances of the regex in the string"},
 			example = "'hello'.find('[a-z]*');"
 		)
-		private Value find(Context context, MemberFunction function) throws CodeError {
-			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
-			StringValue regex = function.getParameterValueOfType(context, StringValue.class, 1);
+		private Value find(Arguments arguments) throws CodeError {
+			StringValue thisValue = arguments.getNext(StringValue.class);
+			StringValue regex = arguments.getNext(StringValue.class);
 			Matcher matcher = Pattern.compile(regex.value).matcher(thisValue.value);
 			ArucasList arucasList = new ArucasList();
 			while (matcher.find()) {
@@ -309,9 +303,9 @@ public class StringValue extends GenericValue<String> {
 			returns = {BOOLEAN, "true if the string starts with the given string"},
 			example = "'hello'.startsWith('he');"
 		)
-		private Value startsWith(Context context, MemberFunction function) throws CodeError {
-			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
-			StringValue otherString = function.getParameterValueOfType(context, StringValue.class, 1);
+		private Value startsWith(Arguments arguments) throws CodeError {
+			StringValue thisValue = arguments.getNext(StringValue.class);
+			StringValue otherString = arguments.getNext(StringValue.class);
 			return BooleanValue.of(thisValue.value.startsWith(otherString.value));
 		}
 
@@ -322,9 +316,9 @@ public class StringValue extends GenericValue<String> {
 			returns = {BOOLEAN, "true if the string ends with the given string"},
 			example = "'hello'.endsWith('he');"
 		)
-		private Value endsWith(Context context, MemberFunction function) throws CodeError {
-			StringValue thisValue = function.getParameterValueOfType(context, StringValue.class, 0);
-			StringValue otherString = function.getParameterValueOfType(context, StringValue.class, 1);
+		private Value endsWith(Arguments arguments) throws CodeError {
+			StringValue thisValue = arguments.getNext(StringValue.class);
+			StringValue otherString = arguments.getNext(StringValue.class);
 			return BooleanValue.of(thisValue.value.endsWith(otherString.value));
 		}
 	}

@@ -74,8 +74,7 @@ public class WrapperClassDefinition extends AbstractClassDefinition {
 	}
 
 	@Override
-	public void initialiseStatics(Context context) {
-	}
+	public void initialiseStatics(Context context) { }
 
 	@Override
 	public WrapperClassValue createNewDefinition(Context context, List<Value> parameters, ISyntax syntaxPosition) throws CodeError {

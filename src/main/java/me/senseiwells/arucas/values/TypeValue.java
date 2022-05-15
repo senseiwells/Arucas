@@ -4,7 +4,7 @@ import me.senseiwells.arucas.api.ArucasClassExtension;
 import me.senseiwells.arucas.api.docs.ClassDoc;
 import me.senseiwells.arucas.api.docs.FunctionDoc;
 import me.senseiwells.arucas.throwables.CodeError;
-import me.senseiwells.arucas.throwables.RuntimeError;
+import me.senseiwells.arucas.utils.Arguments;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.ValueTypes;
@@ -13,8 +13,6 @@ import me.senseiwells.arucas.values.classes.ArucasClassDefinition;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.functions.MemberFunction;
-
-import java.util.List;
 
 import static me.senseiwells.arucas.utils.ValueTypes.*;
 
@@ -47,7 +45,7 @@ public class TypeValue extends GenericValue<AbstractClassDefinition> {
 	public String getTypeName() {
 		return ValueTypes.TYPE;
 	}
-	
+
 	@ClassDoc(
 		name = ValueTypes.TYPE,
 		desc = "This class lets you get the type of a class or value."
@@ -60,7 +58,7 @@ public class TypeValue extends GenericValue<AbstractClassDefinition> {
 		@Override
 		public ArucasFunctionMap<BuiltInFunction> getDefinedStaticMethods() {
 			return ArucasFunctionMap.of(
-				new BuiltInFunction("of", "object", this::of)
+				BuiltInFunction.of("of", 1, this::of)
 			);
 		}
 
@@ -72,18 +70,18 @@ public class TypeValue extends GenericValue<AbstractClassDefinition> {
 			returns = {TYPE, "the type of the value"},
 			example = "Type.of(0);"
 		)
-		private Value of(Context context, BuiltInFunction function) throws CodeError {
-			Value object = function.getParameterValue(context, 0);
-			return object.getType(context, function.syntaxPosition);
+		private Value of(Arguments arguments) throws CodeError {
+			Value object = arguments.getNext();
+			return object.getType(arguments.getContext(), arguments.getPosition());
 		}
 
 		@Override
 		public ArucasFunctionMap<MemberFunction> getDefinedMethods() {
 			return ArucasFunctionMap.of(
-				new MemberFunction("instanceOf", "type", this::instanceOf),
-				new MemberFunction("getName", this::getName),
-				new MemberFunction("getConstructor", "parameters", this::getConstructor),
-				new MemberFunction("getStaticMethod", List.of("name", "parameters"), this::getStaticMethod)
+				MemberFunction.of("instanceOf", 1, this::instanceOf),
+				MemberFunction.of("getName", this::getName),
+				MemberFunction.of("getConstructor", 1, this::getConstructor),
+				MemberFunction.of("getStaticMethod", 2, this::getStaticMethod)
 			);
 		}
 
@@ -94,9 +92,9 @@ public class TypeValue extends GenericValue<AbstractClassDefinition> {
 			returns = {BOOLEAN, "whether the type is of that type"},
 			example = "Type.of('').instanceOf(Number.type);"
 		)
-		private Value instanceOf(Context context, MemberFunction function) throws CodeError {
-			TypeValue thisValue = function.getThis(context, TypeValue.class);
-			TypeValue otherType = function.getParameterValueOfType(context, TypeValue.class, 1);
+		private Value instanceOf(Arguments arguments) throws CodeError {
+			TypeValue thisValue = arguments.getNext(TypeValue.class);
+			TypeValue otherType = arguments.getNext(TypeValue.class);
 
 			if (thisValue.value instanceof ArucasClassDefinition definition) {
 				return BooleanValue.of(definition == otherType.value);
@@ -110,8 +108,8 @@ public class TypeValue extends GenericValue<AbstractClassDefinition> {
 			returns = {STRING, "the name of the type"},
 			example = "String.type.getName();"
 		)
-		private Value getName(Context context, MemberFunction function) throws CodeError {
-			TypeValue thisValue = function.getThis(context, TypeValue.class);
+		private Value getName(Arguments arguments) throws CodeError {
+			TypeValue thisValue = arguments.getNext(TypeValue.class);
 			return StringValue.of(thisValue.value.getName());
 		}
 
@@ -122,18 +120,14 @@ public class TypeValue extends GenericValue<AbstractClassDefinition> {
 			returns = {FUNCTION, "the constructor of the type"},
 			example = "String.type.getConstructor(0);"
 		)
-		private Value getConstructor(Context context, MemberFunction function) throws CodeError {
-			TypeValue thisValue = function.getThis(context, TypeValue.class);
-			StringValue methodNameValue = function.getParameterValueOfType(context, StringValue.class, 1);
-			NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 2);
+		private Value getConstructor(Arguments arguments) throws CodeError {
+			TypeValue thisValue = arguments.getNext(TypeValue.class);
+			String methodName = arguments.getNextVal(StringValue.class);
+			int parameters = arguments.getNextVal(NumberValue.class).intValue();
 
-			FunctionValue delegate = thisValue.value.getConstructors().get(methodNameValue.value, numberValue.value.intValue());
+			FunctionValue delegate = thisValue.value.getConstructors().get(methodName, parameters);
 			if (delegate == null) {
-				throw new RuntimeError(
-					"No such method '%s' with %d parameters".formatted(methodNameValue.value, numberValue.value.intValue()),
-					function.syntaxPosition,
-					context
-				);
+				throw arguments.getError("No such method '%s' with %d parameters", methodName, parameters);
 			}
 			return delegate;
 		}
@@ -142,24 +136,20 @@ public class TypeValue extends GenericValue<AbstractClassDefinition> {
 			name = "getStaticMethod",
 			desc = "This gets the static method of the type",
 			params = {
-				STRING, "name", "the name of the method", 
+				STRING, "name", "the name of the method",
 				NUMBER, "parameters", "the number of parameters for the method"
 			},
 			returns = {FUNCTION, "the static method of the type"},
 			example = "String.type.getStaticMethod('nonExistent', 0);"
 		)
-		private Value getStaticMethod(Context context, MemberFunction function) throws CodeError {
-			TypeValue typeValue = function.getThis(context, TypeValue.class);
-			StringValue methodNameValue = function.getParameterValueOfType(context, StringValue.class, 1);
-			NumberValue numberValue = function.getParameterValueOfType(context, NumberValue.class, 2);
+		private Value getStaticMethod(Arguments arguments) throws CodeError {
+			TypeValue typeValue = arguments.getNext(TypeValue.class);
+			String methodName = arguments.getNextVal(StringValue.class);
+			int parameters = arguments.getNextVal(NumberValue.class).intValue();
 
-			FunctionValue delegate = typeValue.value.getMember(methodNameValue.value, numberValue.value.intValue());
+			FunctionValue delegate = typeValue.value.getMember(methodName, parameters);
 			if (delegate == null) {
-				throw new RuntimeError(
-					"No such method '%s' with %d parameters".formatted(methodNameValue.value, numberValue.value.intValue()),
-					function.syntaxPosition,
-					context
-				);
+				throw arguments.getError("No such method '%s' with %d parameters", methodName, parameters);
 			}
 			return delegate;
 		}

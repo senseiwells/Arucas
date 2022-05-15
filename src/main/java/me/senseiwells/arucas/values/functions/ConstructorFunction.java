@@ -1,26 +1,19 @@
 package me.senseiwells.arucas.values.functions;
 
-import java.util.List;
-
-@SuppressWarnings("unused")
 public class ConstructorFunction extends BuiltInFunction {
-	public ConstructorFunction(List<String> argumentNames, FunctionDefinition<BuiltInFunction> function, String deprecatedMessage) {
-		super("", argumentNames, function, deprecatedMessage);
+	protected ConstructorFunction(int parameters, FunctionDefinition function, String deprecationMessage) {
+		super("", parameters, function, deprecationMessage);
 	}
 
-	public ConstructorFunction(List<String> argumentNames, FunctionDefinition<BuiltInFunction> function) {
-		super("", argumentNames, function);
+	public static ConstructorFunction of(int parameters, FunctionDefinition function, String deprecationMessage) {
+		return new ConstructorFunction(parameters, function, deprecationMessage);
 	}
 
-	public ConstructorFunction(String argument, FunctionDefinition<BuiltInFunction> function) {
-		super("", argument, function);
+	public static ConstructorFunction of(int parameters, FunctionDefinition function) {
+		return of(parameters, function, null);
 	}
-
-	public ConstructorFunction(FunctionDefinition<BuiltInFunction> function) {
-		super("", function);
-	}
-
-	public ConstructorFunction(String argument, FunctionDefinition<BuiltInFunction> function, String deprecatedMessage) {
-		super("", argument, function, deprecatedMessage);
+	
+	public static ConstructorFunction of(FunctionDefinition function) {
+		return of(0, function);
 	}
 }

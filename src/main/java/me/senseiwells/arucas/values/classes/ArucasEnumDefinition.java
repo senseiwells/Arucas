@@ -5,11 +5,12 @@ import me.senseiwells.arucas.nodes.ListNode;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
+import me.senseiwells.arucas.utils.Arguments;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.values.*;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
-import me.senseiwells.arucas.values.functions.ClassMemberFunction;
+import me.senseiwells.arucas.values.functions.UserDefinedClassFunction;
 
 import java.util.*;
 
@@ -22,8 +23,8 @@ public class ArucasEnumDefinition extends ArucasClassDefinition {
 		this.enums = new LinkedHashMap<>();
 		this.enumInitializerMap = new LinkedHashMap<>();
 
-		this.addStaticMethod(new BuiltInFunction("values", this::values));
-		this.addStaticMethod(new BuiltInFunction("fromString", "string", this::fromString));
+		this.addStaticMethod(BuiltInFunction.of("values", this::values));
+		this.addStaticMethod(BuiltInFunction.of("fromString", 1, this::fromString));
 	}
 
 	public void addEnum(String enumName, ListNode node) {
@@ -36,13 +37,13 @@ public class ArucasEnumDefinition extends ArucasClassDefinition {
 		return this.enumInitializerMap == null ? this.enums.containsKey(enumName) : this.enumInitializerMap.containsKey(enumName);
 	}
 
-	public Value fromString(Context context, BuiltInFunction function) throws CodeError {
-		StringValue stringValue = function.getFirstParameter(context, StringValue.class);
+	public Value fromString(Arguments arguments) throws CodeError {
+		StringValue stringValue = arguments.getNextString();
 		EnumValue enumValue = this.getEnumValue(stringValue.value);
 		return enumValue == null ? NullValue.NULL : enumValue;
 	}
 
-	public Value values(Context context, BuiltInFunction function) {
+	public Value values(Arguments arguments) {
 		ArucasList list = new ArucasList();
 		list.addAll(this.enums.values());
 		return new ListValue(list);
@@ -69,7 +70,7 @@ public class ArucasEnumDefinition extends ArucasClassDefinition {
 			return thisValue;
 		}
 
-		ClassMemberFunction constructor = this.constructors.get(this.getName(), parameterCount);
+		UserDefinedClassFunction constructor = this.constructors.get(this.getName(), parameterCount);
 		if (constructor == null) {
 			throw new RuntimeError("No such constructor for %s".formatted(this.getName()), syntaxPosition, context);
 		}
