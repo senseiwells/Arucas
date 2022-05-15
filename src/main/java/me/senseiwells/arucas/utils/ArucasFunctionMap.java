@@ -102,6 +102,7 @@ public class ArucasFunctionMap<T extends FunctionValue> implements Iterable<T> {
 	/**
 	 * Returns all unique function names inside this map
 	 */
+	@SuppressWarnings("unused")
 	public Set<String> names() {
 		return this.map.keySet();
 	}

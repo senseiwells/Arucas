@@ -6,5 +6,5 @@ for (i = 0; i < 1000000; i++) {
     test = new Test();
 }
 
-// Old: microseconds
-// Updated: 400 000 microseconds
+// Old: 1 677 195 microseconds
+// Updated: 404 459 microseconds

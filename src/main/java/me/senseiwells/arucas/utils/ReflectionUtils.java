@@ -2,10 +2,8 @@ package me.senseiwells.arucas.utils;
 
 import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.extensions.util.JavaValue;
-import me.senseiwells.arucas.nodes.Node;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
-import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.values.Value;
 
 import java.lang.invoke.MethodHandle;

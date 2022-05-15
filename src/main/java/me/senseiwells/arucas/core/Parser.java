@@ -1487,6 +1487,7 @@ public class Parser {
 		return !this.parseStack.empty() && this.parseStack.peek() == type;
 	}
 
+	@SuppressWarnings("SameParameterValue")
 	private boolean isStackTypePop(StackType type) {
 		if (this.isStackType(type)) {
 			this.parseStack.pop();

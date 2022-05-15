@@ -4,7 +4,6 @@ import me.senseiwells.arucas.api.wrappers.*;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.ExceptionUtils;
-import me.senseiwells.arucas.values.GenericValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.functions.WrapperMemberFunction;
 

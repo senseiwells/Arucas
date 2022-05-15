@@ -15,7 +15,7 @@ public class ArucasClassDefinitionMap implements Iterable<AbstractClassDefinitio
 	private final Map<String, AbstractClassDefinition> nameMap;
 
 	private boolean isMerged;
-	
+
 	public ArucasClassDefinitionMap() {
 		this.classMap = new HashMap<>();
 		this.mergedClassMap = new HashMap<>();
@@ -37,7 +37,7 @@ public class ArucasClassDefinitionMap implements Iterable<AbstractClassDefinitio
 
 		return length;
 	}
-	
+
 	/**
 	 * This method adds the class definition value to all of its subclasses.
 	 */
@@ -75,7 +75,7 @@ public class ArucasClassDefinitionMap implements Iterable<AbstractClassDefinitio
 
 		this.merge();
 	}
-	
+
 	/**
 	 * Add all the values from the specified map without doing any hierarchy checks.
 	 */
@@ -87,7 +87,7 @@ public class ArucasClassDefinitionMap implements Iterable<AbstractClassDefinitio
 		for (Class<?> key : map.mergedClassMap.keySet()) {
 			this.mergedClassMap.put(key, map.mergedClassMap.get(key));
 		}
-		
+
 		for (String key : map.nameMap.keySet()) {
 			this.nameMap.put(key, map.nameMap.get(key));
 		}
@@ -103,6 +103,7 @@ public class ArucasClassDefinitionMap implements Iterable<AbstractClassDefinitio
 		this.isMerged = true;
 	}
 
+	@SuppressWarnings("unused")
 	@Deprecated(forRemoval = true)
 	private void debug(Class<?> added, AbstractClassDefinition value) {
 		System.out.printf("Adding: %s, %s\n", added, value);
@@ -118,7 +119,7 @@ public class ArucasClassDefinitionMap implements Iterable<AbstractClassDefinitio
 		this.nameMap.putIfAbsent(value.getName(), value);
 		this.addSubclasses(value);
 	}
-	
+
 	/**
 	 * Returns true if this map is empty.
 	 */
@@ -143,21 +144,21 @@ public class ArucasClassDefinitionMap implements Iterable<AbstractClassDefinitio
 
 		return null;
 	}
-	
+
 	/**
 	 * Returns the class definition of the specified name.
 	 */
 	public AbstractClassDefinition get(String name) {
 		return this.nameMap.get(name);
 	}
-	
+
 	/**
 	 * Returns true if this map contains the specified name.
 	 */
 	public boolean has(String name) {
 		return this.nameMap.containsKey(name);
 	}
-	
+
 	@Override
 	public Iterator<AbstractClassDefinition> iterator() {
 		// Create a non thread safe iterator of the current map

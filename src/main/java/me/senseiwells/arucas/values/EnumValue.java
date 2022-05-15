@@ -13,8 +13,6 @@ import me.senseiwells.arucas.values.classes.ArucasClassValue;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
-import java.util.ArrayList;
-
 import static me.senseiwells.arucas.utils.ValueTypes.*;
 
 public class EnumValue extends ArucasClassValue {

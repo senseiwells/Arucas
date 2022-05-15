@@ -8,7 +8,6 @@ import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.ValueIdentifier;
 
 import java.util.*;
-import java.util.function.IntFunction;
 
 /**
  * Custom list implementation.

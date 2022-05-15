@@ -1,6 +1,7 @@
 package me.senseiwells.arucas.utils;
 
 public class ValueTypes {
+	@SuppressWarnings("unused")
 	public static final String
 		BOOLEAN = "Boolean",
 		CLASS = "Class",

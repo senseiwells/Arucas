@@ -35,10 +35,6 @@ public class ArucasClassValue extends GenericValue<ArucasClassDefinition> implem
 		this.members.put(name, value);
 	}
 
-	public boolean hasOperatorMethod(Token.Type type, int parameters) {
-		return this.value.operatorMap.hasOperator(type, parameters);
-	}
-
 	public UserDefinedClassFunction getOperatorMethod(Token.Type type, int parameters) {
 		return this.value.operatorMap.get(type, parameters);
 	}

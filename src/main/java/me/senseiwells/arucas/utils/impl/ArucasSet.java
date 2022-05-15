@@ -6,7 +6,6 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.StringUtils;
 import me.senseiwells.arucas.values.NullValue;
-import me.senseiwells.arucas.values.GenericValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.ValueIdentifier;
 
@@ -18,7 +17,7 @@ public class ArucasSet implements IArucasCollection, ValueIdentifier {
 	static final Value EMPTY = NullValue.NULL;
 
 	private final ArucasMap map;
-	
+
 	public ArucasSet() {
 		this.map = new ArucasOrderedMap();
 	}
@@ -26,7 +25,7 @@ public class ArucasSet implements IArucasCollection, ValueIdentifier {
 	public ArucasSet(Context context, ArucasSet set) throws CodeError {
 		this.map = new ArucasOrderedMap(context, set.map);
 	}
-	
+
 	/**
 	 * Add an element to the set
 	 */
@@ -45,14 +44,14 @@ public class ArucasSet implements IArucasCollection, ValueIdentifier {
 		Value returnValue = this.map.getKey(context, value);
 		return returnValue == null ? NullValue.NULL : returnValue;
 	}
-	
+
 	/**
 	 * Remove an element from this set
 	 */
 	public synchronized boolean remove(Context context, Value value) throws CodeError {
 		return this.map.remove(context, value) != null;
 	}
-	
+
 	/**
 	 * Returns if this set contains the value
 	 */
@@ -72,7 +71,7 @@ public class ArucasSet implements IArucasCollection, ValueIdentifier {
 		return true;
 	}
 
-	
+
 	/**
 	 * Add all elements in the collection to this set
 	 */
@@ -88,17 +87,18 @@ public class ArucasSet implements IArucasCollection, ValueIdentifier {
 	public synchronized void clear() {
 		this.map.clear();
 	}
-	
+
 	/**
 	 * Returns if this set is empty
 	 */
 	public boolean isEmpty() {
 		return this.map.isEmpty();
 	}
-	
+
 	/**
 	 * Returns the size of this set
 	 */
+	@Override
 	public int size() {
 		return this.map.size();
 	}
@@ -117,7 +117,7 @@ public class ArucasSet implements IArucasCollection, ValueIdentifier {
 	public String getAsStringUnsafe(Context context, ISyntax position) throws CodeError {
 		return "<" + IArucasCollection.super.getAsStringUnsafe(context, position) + ">";
 	}
-	
+
 	@Override
 	public int getHashCode(Context context) throws CodeError {
 		return this.map.getHashCode(context);
@@ -127,7 +127,7 @@ public class ArucasSet implements IArucasCollection, ValueIdentifier {
 	public synchronized String getAsString(Context context) throws CodeError {
 		StringBuilder sb = new StringBuilder();
 		sb.append('<');
-		
+
 		Iterator<Value> iter = this.map.keys().iterator();
 		while (iter.hasNext()) {
 			Value value = iter.next();
@@ -137,27 +137,27 @@ public class ArucasSet implements IArucasCollection, ValueIdentifier {
 				sb.append(", ");
 			}
 		}
-		
+
 		return sb.append('>').toString();
 	}
-	
+
 	@Override
 	public boolean isEquals(Context context, Value other) throws CodeError {
 		return this.map.isEquals(context, other);
 	}
-	
+
 	@Deprecated
 	@Override
 	public final int hashCode() {
 		return super.hashCode();
 	}
-	
+
 	@Deprecated
 	@Override
 	public final boolean equals(Object obj) {
 		return super.equals(obj);
 	}
-	
+
 	@Deprecated
 	@Override
 	public final String toString() {

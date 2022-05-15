@@ -4,7 +4,7 @@ import me.senseiwells.arucas.throwables.CodeError;
 
 public final class Functions {
 	@FunctionalInterface
-	public static interface Bi<F, S, R> {
+	public interface Bi<F, S, R> {
 		R apply(F first, S second) throws CodeError;
 	}
 

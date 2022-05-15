@@ -1,7 +1,6 @@
 package me.senseiwells.arucas.utils;
 
 import me.senseiwells.arucas.api.ISyntax;
-import me.senseiwells.arucas.values.GenericValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.values.functions.FunctionValue;
@@ -35,7 +34,7 @@ public class StackTable {
 	 * These are definitions cached when importing from files
 	 */
 	protected Map<String, ArucasClassDefinitionMap> cachedDefinitions;
-	
+
 	protected final boolean canContinue;
 	protected final boolean canBreak;
 	protected final boolean canReturn;
@@ -52,14 +51,14 @@ public class StackTable {
 	public StackTable() {
 		this(null, ISyntax.empty(), false, false, false);
 	}
-	
+
 	/**
 	 * Returns the scope position that created this table.
 	 */
 	public final ISyntax getPosition() {
 		return this.syntaxPosition;
 	}
-	
+
 	/**
 	 * Returns the value of the variable name.
 	 */
@@ -70,14 +69,14 @@ public class StackTable {
 				return value;
 			}
 		}
-		
+
 		if (this.parentTable != null) {
 			return this.parentTable.get(name);
 		}
-		
+
 		return null;
 	}
-	
+
 	/**
 	 * Change the value of a variable called name.
 	 */
@@ -91,7 +90,7 @@ public class StackTable {
 			this.setLocal(name, value);
 		}
 	}
-	
+
 	/**
 	 * Change the value of a local variable called name.
 	 */
@@ -99,10 +98,10 @@ public class StackTable {
 		if (this.symbolMap == null) {
 			this.symbolMap = new HashMap<>();
 		}
-		
+
 		this.symbolMap.put(name, value);
 	}
-	
+
 	/**
 	 * Returns the first parent that contains the value name.
 	 */
@@ -111,10 +110,10 @@ public class StackTable {
 			if (this.parentTable.symbolMap == null || this.parentTable.symbolMap.get(name) == null) {
 				return this.parentTable.getParent(name);
 			}
-			
+
 			return this.parentTable;
 		}
-		
+
 		return null;
 	}
 
@@ -135,7 +134,7 @@ public class StackTable {
 				return definition;
 			}
 		}
-		
+
 		return this.parentTable != null ? this.parentTable.getClassDefinition(name) : null;
 	}
 
@@ -157,7 +156,7 @@ public class StackTable {
 		if (this.classDefinitions == null) {
 			this.classDefinitions = new ArucasClassDefinitionMap();
 		}
-		
+
 		this.classDefinitions.add(definition);
 	}
 
@@ -224,28 +223,28 @@ public class StackTable {
 	public StackTable getParentTable() {
 		return this.parentTable;
 	}
-	
+
 	public StackTable getReturnScope() {
 		return this.canReturn ? this : this.parentTable != null ? this.parentTable.getReturnScope() : null;
 	}
-	
+
 	public StackTable getBreakScope() {
 		return this.canBreak ? this : this.parentTable != null ? this.parentTable.getBreakScope() : null;
 	}
-	
+
 	public StackTable getContinueScope() {
 		return this.canContinue ? this : this.parentTable != null ? this.parentTable.getContinueScope() : null;
 	}
-	
+
 	public Iterator<StackTable> iterator() {
 		return new Iterator<>() {
 			private StackTable object = StackTable.this;
-			
+
 			@Override
 			public boolean hasNext() {
 				return this.object != null;
 			}
-			
+
 			@Override
 			public StackTable next() {
 				StackTable current = this.object;
