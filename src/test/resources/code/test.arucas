@@ -1,21 +1,10 @@
 // run(File.getDirectory().getPath() + "/src/test/resources/code/test.arucas");
 
-import Collector from util.Collection;
+import Test from test;
 
-for (j = 0; j < 1000; j++) {
-    bigList = [];
-
-    for (i = 0; i < 1000; i++) {
-        bigList.append(i);
-    }
-
-    bigList = [bigList.copy(), bigList.copy(), bigList.copy(), bigList.copy(), bigList.copy()];
-
-    c = Collector.of(bigList.copy(), bigList.copy(), bigList.copy(), bigList.copy(), bigList.copy());
-
-    c.flatten().flatten();
-
-    c.filter(fun (v) {
-        return v < 50 || v > 900;
-    });
+for (i = 0; i < 1000000; i++) {
+    test = new Test();
 }
+
+// Old: microseconds
+// Updated: 400 000 microseconds

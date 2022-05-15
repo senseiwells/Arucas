@@ -5,7 +5,9 @@ import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.api.docs.ClassDoc;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
+import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.Functions;
 import me.senseiwells.arucas.utils.ValueTypes;
 
 public class BooleanValue extends GenericValue<Boolean> {
@@ -18,6 +20,22 @@ public class BooleanValue extends GenericValue<Boolean> {
 
 	public static BooleanValue of(boolean bool) {
 		return bool ? TRUE : FALSE;
+	}
+
+	@Override
+	public Value onBinaryOperation(Context context, Functions.Uni<Context, Value> valueGetter, Token.Type type, ISyntax syntaxPosition) throws CodeError {
+		// AND, OR has a special property that the right-hand side is not evaluated
+		// unless the value we read is either true or false. This means that we need
+		// to specify this value after we have checked for AND, OR
+		switch (type) {
+			case AND -> {
+				return !this.value ? FALSE : this.isAnd(context, valueGetter.apply(context), syntaxPosition);
+			}
+			case OR -> {
+				return this.value ? TRUE : this.isOr(context, valueGetter.apply(context), syntaxPosition);
+			}
+		}
+		return super.onBinaryOperation(context, valueGetter, type, syntaxPosition);
 	}
 
 	@Override

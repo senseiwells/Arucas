@@ -3,6 +3,7 @@ package me.senseiwells;
 import me.senseiwells.arucas.api.ContextBuilder;
 import me.senseiwells.arucas.utils.ArgumentParser;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.impl.wrappers.ArucasTestWrapper;
 import me.senseiwells.impl.wrappers.ChildWrapper;
 
 import java.io.IOException;
@@ -15,7 +16,11 @@ public class Main {
 		Context context = new ContextBuilder()
 			.setDisplayName("System.in")
 			.addDefault()
-			.addWrappers("test", ChildWrapper::new)
+			.addWrappers(
+				"test",
+				ChildWrapper::new,
+				ArucasTestWrapper::new
+			)
 			.generateArucasFiles()
 			.build();
 

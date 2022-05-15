@@ -32,4 +32,9 @@ public class ChildWrapper extends BaseWrapper {
 	public void doSomething(Context context) {
 		System.out.println("Child did something");;
 	}
+
+	@ArucasFunction
+	public static void doStatic(Context context) {
+
+	}
 }

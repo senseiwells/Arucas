@@ -22,7 +22,7 @@ public class WrapperClassDefinition extends AbstractClassDefinition {
 	private final Map<String, ArucasMemberHandle> staticFieldMap;
 	private final ArucasFunctionMap<WrapperMemberFunction> methods;
 	private final ArucasFunctionMap<WrapperMemberFunction> constructors;
-	private final ArucasOperatorMap<WrapperMemberFunction> operatorMap;
+	protected final ArucasOperatorMap<WrapperMemberFunction> operatorMap;
 
 	public WrapperClassDefinition(String name, Supplier<IArucasWrappedClass> supplier) {
 		super(name);
@@ -92,12 +92,6 @@ public class WrapperClassDefinition extends AbstractClassDefinition {
 	private WrapperClassValue createDefinition(IArucasWrappedClass wrappedClass, Context context, List<Value> parameters, ISyntax syntaxPosition) throws CodeError {
 		WrapperClassValue thisValue = new WrapperClassValue(this, wrappedClass);
 
-		for (WrapperMemberFunction function : this.methods) {
-			thisValue.addMethod(function.copy(thisValue, wrappedClass));
-		}
-
-		this.operatorMap.forEach((type, function) -> thisValue.addOperatorMethod(type, function.copy(thisValue, wrappedClass)));
-
 		int parameterCount = parameters.size() + 1;
 		if (this.constructors.isEmpty() && parameterCount == 1) {
 			return thisValue;
@@ -111,7 +105,9 @@ public class WrapperClassDefinition extends AbstractClassDefinition {
 			throw new RuntimeError("No such constructor for %s".formatted(this.getName()), syntaxPosition, context);
 		}
 
-		constructor.copy(thisValue, wrappedClass).call(context, parameters, false);
+		parameters.add(0, thisValue);
+		constructor.call(context, parameters, false);
+
 		return thisValue;
 	}
 

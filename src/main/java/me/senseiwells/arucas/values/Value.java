@@ -41,6 +41,64 @@ public abstract class Value implements ValueIdentifier {
 	}
 
 	/**
+	 * This gets called when a unary operator is used on the
+	 * value, it provides the type of unary operation
+	 *
+	 * @param context The current context
+	 * @param type The type of operator
+	 * @param syntaxPosition The current position
+	 * @return The result of the operation
+	 * @throws CodeError If the value cannot use the operator
+	 */
+	public Value onUnaryOperation(Context context, Token.Type type, ISyntax syntaxPosition) throws CodeError {
+		return switch (type) {
+			case NOT -> this.not(context, syntaxPosition);
+			case MINUS -> this.unaryMinus(context, syntaxPosition);
+			case PLUS -> this.unaryPlus(context, syntaxPosition);
+			default -> throw new RuntimeError("Unknown operator '%s'".formatted(type), syntaxPosition, context);
+		};
+	}
+
+	/**
+	 * This gets called when a binary operator is used on the
+	 * value, it provides a getter function for the right value
+	 *
+	 * @param context The current context
+	 * @param valueGetter Getter for the right value
+	 * @param type The type of operation
+	 * @param syntaxPosition The current position
+	 * @return The result of the operation
+	 * @throws CodeError If the value cannot use the operator
+	 */
+	public Value onBinaryOperation(Context context, Functions.Uni<Context, Value> valueGetter, Token.Type type, ISyntax syntaxPosition) throws CodeError {
+		return this.onBinaryOperation(context, valueGetter.apply(context), type, syntaxPosition);
+	}
+
+	/**
+	 * @see #onBinaryOperation(Context, Functions.Uni, Token.Type, ISyntax)
+	 */
+	protected Value onBinaryOperation(Context context, Value other, Token.Type type, ISyntax syntaxPosition) throws CodeError {
+		return switch (type) {
+			case PLUS -> this.addTo(context, other, syntaxPosition);
+			case MINUS -> this.subtractBy(context, other, syntaxPosition);
+			case MULTIPLY -> this.multiplyBy(context, other, syntaxPosition);
+			case DIVIDE -> this.divideBy(context, other, syntaxPosition);
+			case POWER -> this.powerBy(context, other, syntaxPosition);
+			case AND -> this.isAnd(context, other, syntaxPosition);
+			case OR -> this.isOr(context, other, syntaxPosition);
+			case BIT_AND -> this.bitAnd(context, other, syntaxPosition);
+			case BIT_OR -> this.bitOr(context, other, syntaxPosition);
+			case XOR -> this.xor(context, other, syntaxPosition);
+			case SHIFT_LEFT -> this.shiftLeft(context, other, syntaxPosition);
+			case SHIFT_RIGHT -> this.shiftRight(context, other, syntaxPosition);
+			case EQUALS -> BooleanValue.of(this.isEquals(context, other));
+			case NOT_EQUALS -> BooleanValue.of(this.isNotEquals(context, other));
+			case LESS_THAN, LESS_THAN_EQUAL, MORE_THAN, MORE_THAN_EQUAL -> this.compareNumber(context, other, type, syntaxPosition);
+			default -> throw new RuntimeError("Unknown operator '%s'".formatted(type), syntaxPosition, context);
+		};
+	}
+
+	/**
 	 * This gets called when the binary operator <code>&&</code>
 	 * is used in Arucas
 	 *

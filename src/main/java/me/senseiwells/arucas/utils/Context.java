@@ -9,7 +9,6 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.values.NullValue;
-import me.senseiwells.arucas.values.GenericValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.*;
 import me.senseiwells.arucas.values.functions.FunctionValue;
@@ -298,7 +297,7 @@ public class Context {
 
 	@SuppressWarnings("unused")
 	public WrapperClassValue createWrapperClass(Class<? extends IArucasWrappedClass> clazz, List<Value> parameters, ISyntax syntaxPosition) throws CodeError {
-		String wrapperName = ArucasWrapperExtension.getWrapperName(clazz);
+		String wrapperName = ArucasWrapperCreator.getWrapperName(clazz);
 		
 		if (wrapperName == null) {
 			throw new RuntimeError("No such wrapper class exists", syntaxPosition, this);

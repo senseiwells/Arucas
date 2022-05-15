@@ -5,51 +5,40 @@ import me.senseiwells.arucas.api.wrappers.IArucasWrappedClass;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.tokens.Token;
-import me.senseiwells.arucas.utils.ArucasFunctionMap;
-import me.senseiwells.arucas.utils.ArucasOperatorMap;
-import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.*;
+import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.values.*;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.functions.MemberOperations;
 import me.senseiwells.arucas.values.functions.WrapperMemberFunction;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class WrapperClassValue extends GenericValue<WrapperClassDefinition> implements MemberOperations {
 	private final IArucasWrappedClass wrapperClass;
-	private final ArucasFunctionMap<WrapperMemberFunction> methods;
-	private final ArucasOperatorMap<WrapperMemberFunction> operatorMap;
-
 
 	public WrapperClassValue(WrapperClassDefinition arucasClass, IArucasWrappedClass wrapperClass) {
 		super(arucasClass);
 		this.wrapperClass = wrapperClass;
-		this.methods = new ArucasFunctionMap<>();
-		this.operatorMap = new ArucasOperatorMap<>();
 	}
 
 	public String getName() {
 		return this.value.getName();
 	}
 
-	protected void addMethod(WrapperMemberFunction method) {
-		this.methods.add(method);
-	}
-
-	public void addOperatorMethod(Token.Type type, WrapperMemberFunction method) {
-		this.operatorMap.add(type, method);
-	}
-
 	public WrapperMemberFunction getOperatorMethod(Token.Type type, int parameters) {
-		return this.operatorMap.get(type, parameters);
+		return this.value.operatorMap.get(type, parameters);
+	}
+
+	public IArucasWrappedClass getWrapper() {
+		return this.wrapperClass;
 	}
 
 	public <T extends IArucasWrappedClass> T getWrapper(Class<T> clazz) {
 		if (!clazz.isInstance(this.wrapperClass)) {
-			String wrapperName = ArucasWrapperExtension.getWrapperName(clazz);
-			String thisWrapperName = ArucasWrapperExtension.getWrapperName(this.wrapperClass.getClass());
+			String wrapperName = ArucasWrapperCreator.getWrapperName(clazz);
+			String thisWrapperName = ArucasWrapperCreator.getWrapperName(this.wrapperClass.getClass());
 			throw new RuntimeException("Expected %s found %s".formatted(wrapperName, thisWrapperName));
 		}
 		@SuppressWarnings("unchecked")
@@ -83,12 +72,12 @@ public class WrapperClassValue extends GenericValue<WrapperClassDefinition> impl
 		if (handle != null) {
 			return handle.get(this.wrapperClass);
 		}
-		return this.getAllMembers().get(name);
+		return null;
 	}
 
 	@Override
 	public ArucasFunctionMap<?> getAllMembers() {
-		return this.methods;
+		return this.value.getMethods();
 	}
 
 	@Override
@@ -97,11 +86,29 @@ public class WrapperClassValue extends GenericValue<WrapperClassDefinition> impl
 	}
 
 	@Override
+	public Value onUnaryOperation(Context context, Token.Type type, ISyntax syntaxPosition) throws CodeError {
+		FunctionValue function = this.getOperatorMethod(type, 1);
+		if (function != null) {
+			return function.call(context, ArucasList.arrayListOf(this));
+		}
+		return super.onUnaryOperation(context, type, syntaxPosition);
+	}
+
+	@Override
+	protected Value onBinaryOperation(Context context, Value other, Token.Type type, ISyntax syntaxPosition) throws CodeError {
+		FunctionValue function = this.getOperatorMethod(type, 2);
+		if (function != null) {
+			return function.call(context, ArucasList.arrayListOf(this, other));
+		}
+		return super.onBinaryOperation(context, other, type, syntaxPosition);
+	}
+
+	@Override
 	public String getAsString(Context context) throws CodeError {
 		// If 'toString' is overridden we should use that here
 		FunctionValue memberFunction = this.getMember("toString", 1);
 		if (memberFunction != null) {
-			return memberFunction.call(context, new ArrayList<>()).getAsString(context);
+			return memberFunction.call(context, ArucasList.arrayListOf(this)).getAsString(context);
 		}
 
 		return "<class " + this.getName() + "@" + Integer.toHexString(this.getHashCode(context)) + ">";
@@ -112,7 +119,7 @@ public class WrapperClassValue extends GenericValue<WrapperClassDefinition> impl
 		// If 'hashCode' is overridden we should use that here
 		FunctionValue memberFunction = this.getMember("hashCode", 1);
 		if (memberFunction != null) {
-			Value value = memberFunction.call(context, new ArrayList<>());
+			Value value = memberFunction.call(context, ArucasList.arrayListOf(this));
 			if (!(value instanceof NumberValue numberValue)) {
 				throw new RuntimeError("hashCode() must return a number", memberFunction.getPosition(), context);
 			}
@@ -126,8 +133,7 @@ public class WrapperClassValue extends GenericValue<WrapperClassDefinition> impl
 	public boolean isEquals(Context context, Value other) throws CodeError {
 		FunctionValue equalsMethod = this.getOperatorMethod(Token.Type.EQUALS, 2);
 		if (equalsMethod != null) {
-			List<Value> parameters = new ArrayList<>();
-			parameters.add(other);
+			List<Value> parameters = ArucasList.arrayListOf(this, other);
 			Value value = equalsMethod.call(context, parameters);
 			if (!(value instanceof BooleanValue booleanValue)) {
 				throw new RuntimeError("operator '==' must return a boolean", equalsMethod.getPosition(), context);
@@ -136,6 +142,57 @@ public class WrapperClassValue extends GenericValue<WrapperClassDefinition> impl
 		}
 
 		return this == other;
+	}
+
+	@Override
+	public FunctionValue onMemberCall(Context context, String name, List<Value> arguments, ValueRef reference, ISyntax position) {
+		// Get the class method
+		FunctionValue function = this.getMember(name, arguments.size() + 1);
+		if (function == null) {
+			// If null get built in member
+			function = context.getMemberFunction(this.getClass(), name, arguments.size() + 1);
+
+			// We check fields as a last resort
+			if (function == null && this.getMember(name) instanceof FunctionValue delegate) {
+				return delegate;
+			}
+		}
+
+		arguments.add(0, this);
+		return function;
+	}
+
+	@Override
+	public Value onMemberAccess(Context context, String name, ISyntax position) {
+		Value value = this.getMember(name);
+		if (value != null) {
+			return value;
+		}
+
+		WrapperMemberFunction function = this.value.getMethods().get(name);
+		if (function != null) {
+			return function.getDelegate(this);
+		}
+
+		return super.onMemberAccess(context, name, position);
+	}
+
+	@Override
+	public Value onMemberAssign(Context context, String name, Functions.Uni<Context, Value> valueGetter, ISyntax position) throws CodeError {
+		if (!this.hasMember(name)) {
+			throw new RuntimeError(
+				"The member '%s' does not exist for the class '%s'".formatted(name, this.getTypeName()),
+				position, context
+			);
+		}
+		Value value = valueGetter.apply(context);
+		if (!this.setMember(name, value)) {
+			throw new RuntimeError(
+				"The member '%s' cannot be set for the class '%s'".formatted(name, this.getTypeName()),
+				position, context
+			);
+		}
+		return value;
 	}
 
 	@Override

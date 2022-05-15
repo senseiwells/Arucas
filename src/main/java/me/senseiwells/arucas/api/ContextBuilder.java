@@ -16,7 +16,7 @@ import me.senseiwells.arucas.utils.impl.ArucasSet;
 import me.senseiwells.arucas.utils.impl.ArucasThread;
 import me.senseiwells.arucas.values.*;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
-import me.senseiwells.arucas.values.classes.ArucasWrapperExtension;
+import me.senseiwells.arucas.values.classes.ArucasWrapperCreator;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 
 import java.io.File;
@@ -249,7 +249,7 @@ public class ContextBuilder {
 		this.wrappers.forEach((s, suppliers) -> {
 			ArucasClassDefinitionMap definitions = importables.computeIfAbsent(s, str -> new ArucasClassDefinitionMap());
 			for (Supplier<IArucasWrappedClass> supplier : suppliers) {
-				definitions.add(ArucasWrapperExtension.createWrapper(supplier));
+				definitions.add(ArucasWrapperCreator.createWrapper(supplier));
 			}
 		});
 
@@ -304,7 +304,7 @@ public class ContextBuilder {
 		this.wrappers.forEach((s, suppliers) -> {
 			ArucasClassDefinitionMap definitions = importables.computeIfAbsent(s, str -> new ArucasClassDefinitionMap());
 			for (Supplier<IArucasWrappedClass> supplier : suppliers) {
-				definitions.add(ArucasWrapperExtension.createWrapper(supplier));
+				definitions.add(ArucasWrapperCreator.createWrapper(supplier));
 			}
 		});
 

@@ -80,6 +80,24 @@ public class ArucasClassValue extends GenericValue<ArucasClassDefinition> implem
 	}
 
 	@Override
+	public Value onUnaryOperation(Context context, Token.Type type, ISyntax syntaxPosition) throws CodeError {
+		FunctionValue function = this.getOperatorMethod(type, 1);
+		if (function != null) {
+			return function.call(context, ArucasList.arrayListOf(this));
+		}
+		return super.onUnaryOperation(context, type, syntaxPosition);
+	}
+
+	@Override
+	protected Value onBinaryOperation(Context context, Value other, Token.Type type, ISyntax syntaxPosition) throws CodeError {
+		FunctionValue function = this.getOperatorMethod(type, 2);
+		if (function != null) {
+			return function.call(context, ArucasList.arrayListOf(this, other));
+		}
+		return super.onBinaryOperation(context, other, type, syntaxPosition);
+	}
+
+	@Override
 	public int getHashCode(Context context) throws CodeError {
 		// If 'hashCode' is overridden we should use that here
 		FunctionValue memberFunction = this.getMember("hashCode", 1);
@@ -118,6 +136,11 @@ public class ArucasClassValue extends GenericValue<ArucasClassDefinition> implem
 		}
 
 		return this == other;
+	}
+
+	@Override
+	public boolean isNotEquals(Context context, Value other) throws CodeError {
+		return super.isNotEquals(context, other);
 	}
 
 	@Override

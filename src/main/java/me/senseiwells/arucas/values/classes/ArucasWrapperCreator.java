@@ -5,6 +5,7 @@ import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.ExceptionUtils;
 import me.senseiwells.arucas.values.GenericValue;
+import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.functions.WrapperMemberFunction;
 
 import java.lang.invoke.MethodHandle;
@@ -18,11 +19,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class ArucasWrapperExtension {
+public class ArucasWrapperCreator {
 	private final WrapperClassDefinition classDefinition;
 	private final Class<? extends IArucasWrappedClass> clazz;
 
-	private ArucasWrapperExtension(Supplier<IArucasWrappedClass> supplier) {
+	private ArucasWrapperCreator(Supplier<IArucasWrappedClass> supplier) {
 		IArucasWrappedClass value = supplier.get();
 		this.clazz = value.getClass();
 		this.classDefinition = new WrapperClassDefinition(getWrapperName(this.clazz), supplier);
@@ -135,7 +136,7 @@ public class ArucasWrapperExtension {
 		for (int i = 1; i < parameters.length; i++) {
 			Class<?> param = parameters[i];
 
-			if (!GenericValue.class.isAssignableFrom(param)) {
+			if (!Value.class.isAssignableFrom(param)) {
 				throw invalidWrapperMethod(clazz, method, "Invalid parameter %d '%s' is not a subclass of Value".formatted(i - 1, param.getSimpleName()));
 			}
 		}
@@ -174,7 +175,7 @@ public class ArucasWrapperExtension {
 		if (returnType == clazz) {
 			return ArucasMethodHandle.ReturnType.THIS;
 		}
-		if (GenericValue.class.isAssignableFrom(returnType)) {
+		if (Value.class.isAssignableFrom(returnType)) {
 			return ArucasMethodHandle.ReturnType.VALUE;
 		}
 		return null;
@@ -194,7 +195,7 @@ public class ArucasWrapperExtension {
 		final int parameterLength = parameters.length - (isStatic ? 1 : 0);
 
 		ArucasMethodHandle methodHandle = new ArucasMethodHandle(handle, getMethodReturnType(this.clazz, method));
-		WrapperMemberFunction function = new WrapperMemberFunction(method.getName(), parameterLength, isStatic, methodHandle);
+		WrapperMemberFunction function = WrapperMemberFunction.of(this.classDefinition, method.getName(), parameterLength, methodHandle, isStatic);
 
 		if (isStatic) {
 			this.classDefinition.addStaticMethod(function);
@@ -221,7 +222,8 @@ public class ArucasWrapperExtension {
 		Class<?>[] parameters = method.getParameterTypes();
 		final int parameterLength = parameters.length;
 
-		WrapperMemberFunction function = new WrapperMemberFunction("", parameterLength, false, new ArucasMethodHandle(handle, null));
+		ArucasMethodHandle methodHandle = new ArucasMethodHandle(handle, null);
+		WrapperMemberFunction function = WrapperMemberFunction.of(this.classDefinition, "", parameterLength, methodHandle, false);
 
 		this.classDefinition.addConstructor(function);
 		return true;
@@ -265,7 +267,7 @@ public class ArucasWrapperExtension {
 		}
 
 		ArucasMethodHandle methodHandle = new ArucasMethodHandle(handle, getMethodReturnType(this.clazz, method));
-		WrapperMemberFunction function = new WrapperMemberFunction(method.getName(), parameterLength, false, methodHandle);
+		WrapperMemberFunction function = WrapperMemberFunction.of(this.classDefinition, method.getName(), parameterLength, methodHandle, false);
 
 		this.classDefinition.addOperatorMethod(operatorToken, function);
 		return true;
@@ -278,11 +280,11 @@ public class ArucasWrapperExtension {
 		// We must force fields to be Value if they can be assigned in the language
 
 		if (isAssignable) {
-			if (field.getType() != GenericValue.class) {
+			if (field.getType() != Value.class) {
 				throw invalidWrapperField(clazz, field, "Field type must be type Value");
 			}
 		}
-		else if (!GenericValue.class.isAssignableFrom(field.getType())) {
+		else if (!Value.class.isAssignableFrom(field.getType())) {
 			throw invalidWrapperField(clazz, field, "Return type was not a subclass of Value");
 		}
 
@@ -330,7 +332,7 @@ public class ArucasWrapperExtension {
 	}
 
 	public static WrapperClassDefinition createWrapper(Supplier<IArucasWrappedClass> value) {
-		ArucasWrapperExtension wrapper = new ArucasWrapperExtension(value);
+		ArucasWrapperCreator wrapper = new ArucasWrapperCreator(value);
 		return wrapper.getClassDefinition();
 	}
 

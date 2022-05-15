@@ -1,83 +1,82 @@
 package me.senseiwells.arucas.values.functions;
 
 import me.senseiwells.arucas.api.ISyntax;
-import me.senseiwells.arucas.api.wrappers.IArucasWrappedClass;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.ArucasMethodHandle;
+import me.senseiwells.arucas.values.classes.WrapperClassDefinition;
 import me.senseiwells.arucas.values.classes.WrapperClassValue;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public class WrapperMemberFunction extends UserDefinedFunction implements IMemberFunction {
-	private final IArucasWrappedClass classValue;
+public class WrapperMemberFunction extends FunctionValue implements IMemberFunction {
+	private final WrapperClassDefinition definition;
 	private final ArucasMethodHandle methodHandle;
 	private final boolean isStatic;
-	private final int parameters;
-	private final WrapperClassValue thisValue;
 
-	private WrapperMemberFunction(WrapperClassValue thisValue, IArucasWrappedClass classValue, String name, int parameters, boolean isStatic, ArucasMethodHandle methodHandle) {
-		super(name, createParameters(parameters), ISyntax.empty());
-		this.classValue = classValue;
+	private WrapperMemberFunction(WrapperClassDefinition definition, String name, int parameters, ArucasMethodHandle methodHandle, boolean isStatic) {
+		super(name, ISyntax.emptyOf("Wrapper/" + name), parameters, null);
+		this.definition = definition;
 		this.methodHandle = methodHandle;
 		this.isStatic = isStatic;
-		this.parameters = parameters;
-		this.thisValue = thisValue;
 	}
 
-	public WrapperMemberFunction(String name, int parameters, boolean isStatic, ArucasMethodHandle methodHandle) {
-		this(null, null, name, parameters, isStatic, methodHandle);
-	}
-
-	private static List<String> createParameters(int count) {
-		return Collections.nCopies(count, "");
-	}
-
-	public WrapperMemberFunction copy(WrapperClassValue thisValue, IArucasWrappedClass wrappedClass) {
-		return new WrapperMemberFunction(thisValue, wrappedClass, this.getName(), this.parameters, this.isStatic, this.methodHandle);
+	public static WrapperMemberFunction of(WrapperClassDefinition definition, String name, int parameters, ArucasMethodHandle handle, boolean isStatic) {
+		return new WrapperMemberFunction(definition, name, parameters, handle, isStatic);
 	}
 
 	@Override
-	public Value call(Context context, List<Value> arguments, boolean returnable) throws CodeError {
-		context.pushFunctionScope(this.getPosition());
-
-		Object[] args = new Object[1 + this.parameters];
-		int iModifier = 0;
-		if (!this.isStatic) {
-			args[0] = this.classValue;
-			iModifier = 1;
-		}
-		args[iModifier] = context;
-		int parameters = this.parameters - iModifier;
-		iModifier++;
-		for (int i = 0; i < parameters; i++) {
-			args[i + iModifier] = arguments.get(i);
+	protected Value execute(Context context, List<Value> arguments) throws CodeError {
+		if (this.isStatic) {
+			Object[] args = new Object[1 + this.getCount()];
+			args[0] = context;
+			for (int i = 0; i < this.getCount(); i++) {
+				args[i + 1] = arguments.get(i);
+			}
+			return this.methodHandle.call(args, null, this.getPosition(), context);
 		}
 
-		Value returnValue;
-		if (returnable) {
-			returnValue = this.methodHandle.call(args, this.thisValue, this.getPosition(), context);
-		}
-		else {
-			this.methodHandle.call(args, this.thisValue, this.getPosition(), context);
-			returnValue = NullValue.NULL;
+		if (arguments.isEmpty() || !(arguments.get(0) instanceof WrapperClassValue wrapperValue)) {
+			throw new RuntimeException("'this' was not passed into the function");
 		}
 
-		context.popScope();
-		return returnValue;
+		Object[] args = new Object[1 + this.getCount()];
+		args[0] = wrapperValue.getWrapper();
+		args[1] = context;
+		for (int i = 0; i < this.getCount() - 1; i++) {
+			args[i + 2] = arguments.get(i);
+		}
+
+		return this.methodHandle.call(args, wrapperValue, this.getPosition(), context);
 	}
 
 	@Override
 	public String getAsString(Context context) throws CodeError {
-		return "<class " + this.thisValue.getName() + "::" + this.getName() + "@" + Integer.toHexString(Objects.hashCode(this)) + ">";
+		return "<class " + this.definition.getName() + "::" + this.getName() + "@" + Integer.toHexString(Objects.hashCode(this)) + ">";
 	}
 
 	@Override
 	public FunctionValue getDelegate(Value thisValue) {
-		return this;
+		if (thisValue instanceof WrapperClassValue wrapperValue) {
+			return new Delegate(wrapperValue, this);
+		}
+		return null;
+	}
+
+	private static class Delegate extends WrapperMemberFunction {
+		private final WrapperClassValue wrapperValue;
+
+		private Delegate(WrapperClassValue wrapperValue, WrapperMemberFunction function) {
+			super(function.definition, function.getName(), function.getCount(), function.methodHandle, function.isStatic);
+			this.wrapperValue = wrapperValue;
+		}
+
+		@Override
+		protected Value execute(Context context, List<Value> arguments) throws CodeError {
+			arguments.add(0, this.wrapperValue);
+			return super.execute(context, arguments);
+		}
 	}
 }
