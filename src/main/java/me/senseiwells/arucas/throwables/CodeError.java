@@ -22,6 +22,12 @@ public class CodeError extends Exception {
 		return this.toString(null);
 	}
 
+	// Too expensive, we don't use this
+	@Override
+	public synchronized Throwable fillInStackTrace() {
+		return this;
+	}
+
 	public String toString(Context context) {
 		return this.toString(context, false);
 	}
