@@ -5,7 +5,6 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.StringUtils;
 import me.senseiwells.arucas.utils.ValuePair;
-import me.senseiwells.arucas.values.GenericValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.ValueIdentifier;
 

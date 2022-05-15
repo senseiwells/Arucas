@@ -37,10 +37,6 @@ public class ArucasOperatorMap<T extends FunctionValue> {
 		};
 	}
 
-	public boolean hasOperator(Token.Type type, int parameterCount) {
-		return this.get(type, parameterCount) != null;
-	}
-
 	public void forEach(BiConsumer<Token.Type, T> biConsumer) {
 		if (this.unaryOperatorMap != null) {
 			for (Map.Entry<Token.Type, T> entry : this.unaryOperatorMap.entrySet()) {
