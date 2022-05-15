@@ -11,7 +11,7 @@ import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.*;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.functions.MemberOperations;
-import me.senseiwells.arucas.values.functions.WrapperClassMemberFunction;
+import me.senseiwells.arucas.values.functions.WrapperMemberFunction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,8 +19,8 @@ import java.util.Objects;
 
 public class WrapperClassValue extends GenericValue<WrapperClassDefinition> implements MemberOperations {
 	private final IArucasWrappedClass wrapperClass;
-	private final ArucasFunctionMap<WrapperClassMemberFunction> methods;
-	private final ArucasOperatorMap<WrapperClassMemberFunction> operatorMap;
+	private final ArucasFunctionMap<WrapperMemberFunction> methods;
+	private final ArucasOperatorMap<WrapperMemberFunction> operatorMap;
 
 
 	public WrapperClassValue(WrapperClassDefinition arucasClass, IArucasWrappedClass wrapperClass) {
@@ -34,15 +34,15 @@ public class WrapperClassValue extends GenericValue<WrapperClassDefinition> impl
 		return this.value.getName();
 	}
 
-	protected void addMethod(WrapperClassMemberFunction method) {
+	protected void addMethod(WrapperMemberFunction method) {
 		this.methods.add(method);
 	}
 
-	public void addOperatorMethod(Token.Type type, WrapperClassMemberFunction method) {
+	public void addOperatorMethod(Token.Type type, WrapperMemberFunction method) {
 		this.operatorMap.add(type, method);
 	}
 
-	public WrapperClassMemberFunction getOperatorMethod(Token.Type type, int parameters) {
+	public WrapperMemberFunction getOperatorMethod(Token.Type type, int parameters) {
 		return this.operatorMap.get(type, parameters);
 	}
 

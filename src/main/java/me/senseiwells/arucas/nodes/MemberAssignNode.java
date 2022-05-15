@@ -29,27 +29,6 @@ public class MemberAssignNode extends VariableAssignNode {
 		// The memberNameNode is the MemberAccessNode that contains the name of the member
 		StringValue memberName = (StringValue) this.memberNameNode.visit(context);
 
-		if (memberValue instanceof ArucasClassValue classValue) {
-			Value newValue = this.getNewValue(context);
-
-			if (!classValue.hasMember(memberName.value) || !classValue.setMember(memberName.value, newValue)) {
-				throw new RuntimeError(
-					"The member '%s' cannot be set for '%s'".formatted(memberName.value,classValue.getClass().getSimpleName()),
-					this.syntaxPosition,
-					context
-				);
-			}
-
-			return newValue;
-		}
-		if (memberValue instanceof JavaValue javaValue) {
-			Value newValue = this.getNewValue(context);
-			String obfuscatedFieldName = JavaValue.getObfuscatedFieldName(context, javaValue.asJavaValue().getClass(), memberName.value);
-			if (ReflectionUtils.setFieldFromJavaValue(javaValue, newValue, obfuscatedFieldName, this.syntaxPosition, context)) {
-				return newValue;
-			}
-		}
-
-		throw new RuntimeError("You can only assign values to class member values", this.syntaxPosition, context);
+		return memberValue.onMemberAssign(context, memberName.value, this::getNewValue, this.syntaxPosition);
 	}
 }

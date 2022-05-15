@@ -2,61 +2,61 @@ package me.senseiwells.arucas.values.functions;
 
 import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.throwables.CodeError;
-import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.values.ListValue;
 import me.senseiwells.arucas.values.Value;
+import me.senseiwells.arucas.values.classes.ArucasClassDefinition;
 import me.senseiwells.arucas.values.classes.ArucasClassValue;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class UserDefinedClassFunction extends UserDefinedFunction implements IMemberFunction {
-	protected ArucasClassValue thisValue;
+	private final ArucasClassDefinition definition;
 
-	public UserDefinedClassFunction(ArucasClassValue thisValue, String name, List<String> argumentNames, ISyntax position) {
-		super(name, argumentNames, position);
-		this.thisValue = thisValue;
-	}
-
-	public UserDefinedClassFunction(String name, List<String> argumentNames, ISyntax syntaxPosition) {
+	public UserDefinedClassFunction(ArucasClassDefinition definition, String name, List<String> argumentNames, ISyntax syntaxPosition) {
 		super(name, argumentNames, syntaxPosition);
-	}
-
-	public UserDefinedClassFunction copy(ArucasClassValue value) {
-		UserDefinedClassFunction memberFunction = new UserDefinedClassFunction(value, this.getName(), this.argumentNames, this.getPosition());
-		memberFunction.complete(this.bodyNode);
-		return memberFunction;
+		this.definition = definition;
 	}
 
 	@Override
 	protected Value execute(Context context, List<Value> arguments) throws CodeError {
-		arguments.add(0, this.thisValue);
 		return super.execute(context, arguments);
 	}
 
 	@Override
 	public String getAsString(Context context) throws CodeError {
-		return "<class " + this.thisValue.getName() + "::" + this.getName() + "@" + Integer.toHexString(Objects.hashCode(this)) + ">";
+		return "<class " + this.definition.getName() + "::" + this.getName() + "@" + Integer.toHexString(Objects.hashCode(this)) + ">";
 	}
 
 	@Override
-	public UserDefinedClassFunction setThisAndGet(Value thisValue) {
+	public UserDefinedClassFunction getDelegate(Value thisValue) {
 		if (thisValue instanceof ArucasClassValue classValue) {
-			return this.copy(classValue);
+			return new Delegate(classValue, this);
 		}
 		return null;
 	}
 
-	public static final class Arbitrary extends UserDefinedClassFunction {
-		private Arbitrary(ArucasClassValue thisValue, String name, List<String> argumentNames, ISyntax position) {
-			super(thisValue, name, argumentNames, position);
+	private static class Delegate extends UserDefinedClassFunction {
+		private final ArucasClassValue thisValue;
+
+		public Delegate(ArucasClassValue classValue, UserDefinedClassFunction function) {
+			super(function.definition, function.getName(), function.argumentNames, function.getPosition());
+			this.complete(function.bodyNode);
+			this.thisValue = classValue;
 		}
 
-		public Arbitrary(String name, List<String> argumentNames, ISyntax syntaxPosition) {
-			super(name, argumentNames, syntaxPosition);
+		@Override
+		protected Value execute(Context context, List<Value> arguments) throws CodeError {
+			arguments.add(0, this.thisValue);
+			return super.execute(context, arguments);
+		}
+	}
+
+	public static final class Arbitrary extends UserDefinedClassFunction {
+		public Arbitrary(ArucasClassDefinition definition, String name, List<String> argumentNames, ISyntax syntaxPosition) {
+			super(definition, name, argumentNames, syntaxPosition);
 		}
 
 		@Override
@@ -69,30 +69,21 @@ public class UserDefinedClassFunction extends UserDefinedFunction implements IMe
 		}
 
 		@Override
-		public UserDefinedClassFunction.Arbitrary copy(ArucasClassValue value) {
-			UserDefinedClassFunction.Arbitrary member = new UserDefinedClassFunction.Arbitrary(
-				value, this.getName(), this.argumentNames, this.getPosition()
-			);
-			member.complete(this.bodyNode);
-			return member;
-		}
-
-		@Override
 		public int getCount() {
 			return -1;
 		}
 
 		@Override
 		protected Value execute(Context context, List<Value> arguments) throws CodeError {
-			ArucasList list = new ArucasList();
-			// This can be empty
-			if (!arguments.isEmpty()) {
-				list.addAll(arguments);
+			if (arguments.isEmpty()) {
+				throw new RuntimeException("'this' was not passed into the function");
 			}
+			Value thisValue = arguments.get(0);
 
-			List<Value> listOfList = new ArrayList<>();
-			listOfList.add(new ListValue(list));
-			return super.execute(context, listOfList);
+			ArucasList varArgs = new ArucasList();
+			varArgs.addAll(arguments.subList(1, arguments.size()));
+
+			return super.execute(context, ArucasList.arrayListOf(thisValue, new ListValue(varArgs)));
 		}
 	}
 }

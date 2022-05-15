@@ -66,6 +66,40 @@ public class JavaValue extends GenericValue<Object> {
 	}
 
 	@Override
+	public Value onMemberAccess(Context context, String name, ISyntax position) {
+		Object callingObject = this.asJavaValue();
+		Class<?> callingClass = callingObject.getClass();
+		String obfuscatedName = JavaValue.getObfuscatedMethodName(context, callingClass, name);
+
+		Value value = ReflectionUtils.getFieldFromJavaValue(this, obfuscatedName, position, context);
+		if (value != null) {
+			return value;
+		}
+
+		obfuscatedName = JavaValue.getObfuscatedMethodName(context, callingClass, name);
+		value = JavaFunction.of(
+			ReflectionUtils.getMethodSlow(callingClass, callingObject, obfuscatedName, -1),
+			callingObject, position
+		);
+		if (value != null) {
+			return value;
+		}
+
+		return super.onMemberAccess(context, name, position);
+	}
+
+	@Override
+	public Value onMemberAssign(Context context, String name, Functions.Uni<Context, Value> valueGetter, ISyntax position) throws CodeError {
+		Value value = valueGetter.apply(context);
+		String obfuscatedFieldName = JavaValue.getObfuscatedFieldName(context, this.asJavaValue().getClass(), name);
+		if (ReflectionUtils.setFieldFromJavaValue(this, value, obfuscatedFieldName, position, context)) {
+			return value;
+		}
+
+		return super.onMemberAssign(context, name, valueGetter, position);
+	}
+
+	@Override
 	public String getTypeName() {
 		return JAVA;
 	}

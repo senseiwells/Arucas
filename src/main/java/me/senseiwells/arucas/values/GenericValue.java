@@ -60,7 +60,6 @@ public abstract class GenericValue<T> extends Value {
 			);
 		}
 
-
 		@FunctionDoc(
 			name = "instanceOf",
 			desc = "This checks whether this value is an instance of another type",

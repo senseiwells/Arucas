@@ -75,7 +75,8 @@ public class ArucasEnumDefinition extends ArucasClassDefinition {
 			throw new RuntimeError("No such constructor for %s".formatted(this.getName()), syntaxPosition, context);
 		}
 
-		constructor.copy(thisValue).call(context, parameters, false);
+		parameters.add(0, thisValue);
+		constructor.call(context, parameters, false);
 
 		return thisValue;
 	}

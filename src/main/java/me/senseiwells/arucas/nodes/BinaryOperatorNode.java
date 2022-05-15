@@ -5,6 +5,7 @@ import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.values.BooleanValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.ArucasClassValue;
@@ -46,9 +47,8 @@ public class BinaryOperatorNode extends Node {
 			else {
 				right = this.rightNode.visit(context);
 			}
-			List<Value> parameters = new ArrayList<>();
-			parameters.add(right);
-			return classValue.getOperatorMethod(this.token.type, 2).copy(classValue).call(context, parameters);
+			List<Value> parameters = ArucasList.arrayListOf(classValue, right);
+			return classValue.getOperatorMethod(this.token.type, 2).call(context, parameters);
 		}
 
 		switch (this.token.type) {

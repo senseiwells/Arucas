@@ -61,13 +61,6 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 	}
 
 	protected void addClassProperties(ArucasClassValue thisValue, Context context) throws ThrowValue, CodeError {
-		// Add methods
-		for (UserDefinedClassFunction function : this.getMethods()) {
-			function = function.copy(thisValue);
-			function.setLocalContext(context);
-			thisValue.addMethod(function);
-		}
-
 		// Add member variables
 		for (Map.Entry<String, Node> entry : this.memberVariables.entrySet()) {
 			String name = entry.getKey();
@@ -76,12 +69,6 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 			Value value = node.visit(context);
 			thisValue.addMemberVariable(name, value);
 		}
-
-		this.operatorMap.forEach((type, function) -> {
-			function = function.copy(thisValue);
-			function.setLocalContext(context);
-			thisValue.addOperatorMethod(type, function);
-		});
 	}
 
 	@Override
@@ -125,7 +112,9 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 			throw new RuntimeError("No such constructor for %s".formatted(this.getName()), syntaxPosition, context);
 		}
 
-		constructor.copy(thisValue).call(context, parameters, false);
+		parameters.add(0, thisValue);
+		constructor.call(context, parameters, false);
+
 		return thisValue;
 	}
 

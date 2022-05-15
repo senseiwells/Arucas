@@ -119,7 +119,7 @@ public class ContextBuilder {
 	 * The object that is passed into the function is
 	 * guaranteed to be of the same type as clazz
 	 */
-	public final <T> ContextBuilder addConversion(Class<T> clazz, ArucasBiFunction<T, Context, Value> converter) {
+	public final <T> ContextBuilder addConversion(Class<T> clazz, Functions.Bi<T, Context, Value> converter) {
 		this.converter.addClass(clazz, converter);
 		return this;
 	}
@@ -129,7 +129,7 @@ public class ContextBuilder {
 	 * check for primitives and Object arrays with a class check. So we
 	 * have a function to box all primitive arrays to Object arrays
 	 */
-	public final ContextBuilder addArrayConversion(ArucasBiFunction<Object[], Context, Value> converter) {
+	public final ContextBuilder addArrayConversion(Functions.Bi<Object[], Context, Value> converter) {
 		this.converter.addArrayConversion(converter);
 		return this;
 	}

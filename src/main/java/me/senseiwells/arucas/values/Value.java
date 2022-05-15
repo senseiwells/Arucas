@@ -5,9 +5,11 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.Functions;
 import me.senseiwells.arucas.utils.ValueRef;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.values.functions.FunctionValue;
+import me.senseiwells.arucas.values.functions.IMemberFunction;
 
 import java.util.List;
 
@@ -287,12 +289,45 @@ public abstract class Value implements ValueIdentifier {
 	 * @param reference A reference that is null, if the reference is not null
 	 *                  after then function has returns that reference will be
 	 *                  used instead of the normal function return value
-	 * @param position The current syntax position
+	 * @param position  The current syntax position
 	 * @return The function value to be called
 	 */
 	public FunctionValue onMemberCall(Context context, String name, List<Value> arguments, ValueRef reference, ISyntax position) throws CodeError {
 		arguments.add(0, this);
 		return context.getMemberFunction(this.getClass(), name, arguments.size());
+	}
+
+	/**
+	 * This is called when a value access a member on itself
+	 *
+	 * @param context  The current context
+	 * @param name     The name of the member it's accessing
+	 * @param position The current syntax position
+	 * @return The value that is being accessed which may be null
+	 */
+	public Value onMemberAccess(Context context, String name, ISyntax position) {
+		// Get delegate if method exists
+		Value value = context.getMemberFunction(this.getClass(), name, -2);
+
+		// We must set the value now if it is a member function
+		if (value instanceof IMemberFunction function) {
+			return function.getDelegate(this);
+		}
+
+		return null;
+	}
+
+	/**
+	 * This is called when a value assigns a member on itself
+	 *
+	 * @param context  The current context
+	 * @param name     The name of the member it's assigning
+	 * @param position The current syntax position
+	 * @return The value that it was just assigned
+	 * @throws RuntimeError if the value cannot assign a member
+	 */
+	public Value onMemberAssign(Context context, String name, Functions.Uni<Context, Value> valueGetter, ISyntax position) throws CodeError {
+		throw new RuntimeError("You can only assign values to class member values", position, context);
 	}
 
 	/**

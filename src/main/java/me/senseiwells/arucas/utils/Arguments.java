@@ -124,6 +124,11 @@ public class Arguments {
 		return this.getNext(FunctionValue.class);
 	}
 
+	public <T extends IArucasWrappedClass> T getNextWrapper(Class<T> type) throws RuntimeError {
+		WrapperClassValue wrapper = this.getNext(WrapperClassValue.class);
+		return wrapper.getWrapper(type);
+	}
+
 	public <S, T extends GenericValue<S>> S getNextVal(Class<T> type) throws RuntimeError {
 		return this.getNext(type).getValue();
 	}

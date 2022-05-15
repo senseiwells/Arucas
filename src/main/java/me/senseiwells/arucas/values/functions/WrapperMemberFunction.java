@@ -13,14 +13,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public class WrapperClassMemberFunction extends UserDefinedFunction implements IMemberFunction {
+public class WrapperMemberFunction extends UserDefinedFunction implements IMemberFunction {
 	private final IArucasWrappedClass classValue;
 	private final ArucasMethodHandle methodHandle;
 	private final boolean isStatic;
 	private final int parameters;
 	private final WrapperClassValue thisValue;
 
-	private WrapperClassMemberFunction(WrapperClassValue thisValue, IArucasWrappedClass classValue, String name, int parameters, boolean isStatic, ArucasMethodHandle methodHandle) {
+	private WrapperMemberFunction(WrapperClassValue thisValue, IArucasWrappedClass classValue, String name, int parameters, boolean isStatic, ArucasMethodHandle methodHandle) {
 		super(name, createParameters(parameters), ISyntax.empty());
 		this.classValue = classValue;
 		this.methodHandle = methodHandle;
@@ -29,7 +29,7 @@ public class WrapperClassMemberFunction extends UserDefinedFunction implements I
 		this.thisValue = thisValue;
 	}
 
-	public WrapperClassMemberFunction(String name, int parameters, boolean isStatic, ArucasMethodHandle methodHandle) {
+	public WrapperMemberFunction(String name, int parameters, boolean isStatic, ArucasMethodHandle methodHandle) {
 		this(null, null, name, parameters, isStatic, methodHandle);
 	}
 
@@ -37,8 +37,8 @@ public class WrapperClassMemberFunction extends UserDefinedFunction implements I
 		return Collections.nCopies(count, "");
 	}
 
-	public WrapperClassMemberFunction copy(WrapperClassValue thisValue, IArucasWrappedClass wrappedClass) {
-		return new WrapperClassMemberFunction(thisValue, wrappedClass, this.getName(), this.parameters, this.isStatic, this.methodHandle);
+	public WrapperMemberFunction copy(WrapperClassValue thisValue, IArucasWrappedClass wrappedClass) {
+		return new WrapperMemberFunction(thisValue, wrappedClass, this.getName(), this.parameters, this.isStatic, this.methodHandle);
 	}
 
 	@Override
@@ -77,7 +77,7 @@ public class WrapperClassMemberFunction extends UserDefinedFunction implements I
 	}
 
 	@Override
-	public FunctionValue setThisAndGet(Value thisValue) {
+	public FunctionValue getDelegate(Value thisValue) {
 		return this;
 	}
 }

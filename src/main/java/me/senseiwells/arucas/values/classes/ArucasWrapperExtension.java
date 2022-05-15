@@ -5,7 +5,7 @@ import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.ExceptionUtils;
 import me.senseiwells.arucas.values.GenericValue;
-import me.senseiwells.arucas.values.functions.WrapperClassMemberFunction;
+import me.senseiwells.arucas.values.functions.WrapperMemberFunction;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -194,7 +194,7 @@ public class ArucasWrapperExtension {
 		final int parameterLength = parameters.length - (isStatic ? 1 : 0);
 
 		ArucasMethodHandle methodHandle = new ArucasMethodHandle(handle, getMethodReturnType(this.clazz, method));
-		WrapperClassMemberFunction function = new WrapperClassMemberFunction(method.getName(), parameterLength, isStatic, methodHandle);
+		WrapperMemberFunction function = new WrapperMemberFunction(method.getName(), parameterLength, isStatic, methodHandle);
 
 		if (isStatic) {
 			this.classDefinition.addStaticMethod(function);
@@ -221,7 +221,7 @@ public class ArucasWrapperExtension {
 		Class<?>[] parameters = method.getParameterTypes();
 		final int parameterLength = parameters.length;
 
-		WrapperClassMemberFunction function = new WrapperClassMemberFunction("", parameterLength, false, new ArucasMethodHandle(handle, null));
+		WrapperMemberFunction function = new WrapperMemberFunction("", parameterLength, false, new ArucasMethodHandle(handle, null));
 
 		this.classDefinition.addConstructor(function);
 		return true;
@@ -265,7 +265,7 @@ public class ArucasWrapperExtension {
 		}
 
 		ArucasMethodHandle methodHandle = new ArucasMethodHandle(handle, getMethodReturnType(this.clazz, method));
-		WrapperClassMemberFunction function = new WrapperClassMemberFunction(method.getName(), parameterLength, false, methodHandle);
+		WrapperMemberFunction function = new WrapperMemberFunction(method.getName(), parameterLength, false, methodHandle);
 
 		this.classDefinition.addOperatorMethod(operatorToken, function);
 		return true;

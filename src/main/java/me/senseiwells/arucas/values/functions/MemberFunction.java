@@ -36,7 +36,7 @@ public class MemberFunction extends BuiltInFunction implements IMemberFunction {
 	}
 
 	@Override
-	public MemberFunction setThisAndGet(Value thisValue) {
+	public MemberFunction getDelegate(Value thisValue) {
 		return new Delegate(thisValue, this);
 	}
 

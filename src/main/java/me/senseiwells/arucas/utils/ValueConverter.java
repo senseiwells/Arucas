@@ -9,8 +9,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class ValueConverter {
-	final Map<Class<?>, ArucasBiFunction<?, Context, Value>> converterMap;
-	ArucasBiFunction<Object[], Context, Value> arrayConverter;
+	final Map<Class<?>, Functions.Bi<?, Context, Value>> converterMap;
+	Functions.Bi<Object[], Context, Value> arrayConverter;
 
 	public ValueConverter() {
 		this.converterMap = new LinkedHashMap<>();
@@ -21,7 +21,7 @@ public class ValueConverter {
 	 * The object that is passed into the function is
 	 * guaranteed to be of the same type as clazz
 	 */
-	public <T> void addClass(Class<T> clazz, ArucasBiFunction<T, Context, Value> converter) {
+	public <T> void addClass(Class<T> clazz, Functions.Bi<T, Context, Value> converter) {
 		this.converterMap.put(clazz, converter);
 	}
 
@@ -30,7 +30,7 @@ public class ValueConverter {
 	 * check for primitives and Object arrays with a class check. So we
 	 * have a function to box all primitive arrays to Object arrays
 	 */
-	public void addArrayConversion(ArucasBiFunction<Object[], Context, Value> converter) {
+	public void addArrayConversion(Functions.Bi<Object[], Context, Value> converter) {
 		this.arrayConverter = converter;
 	}
 
@@ -51,7 +51,7 @@ public class ValueConverter {
 		Class<?> clazz = baseClazz;
 		while (clazz != Object.class) {
 			@SuppressWarnings("unchecked")
-			ArucasBiFunction<S, Context, Value> converter = (ArucasBiFunction<S, Context, Value>) this.converterMap.get(clazz);
+			Functions.Bi<S, Context, Value> converter = (Functions.Bi<S, Context, Value>) this.converterMap.get(clazz);
 			if (converter != null) {
 				return converter.apply(object, context);
 			}
@@ -59,7 +59,7 @@ public class ValueConverter {
 		}
 		for (Class<?> iClass : baseClazz.getInterfaces()) {
 			@SuppressWarnings("unchecked")
-			ArucasBiFunction<S, Context, Value> converter = (ArucasBiFunction<S, Context, Value>) this.converterMap.get(iClass);
+			Functions.Bi<S, Context, Value> converter = (Functions.Bi<S, Context, Value>) this.converterMap.get(iClass);
 			if (converter != null) {
 				return converter.apply(object, context);
 			}

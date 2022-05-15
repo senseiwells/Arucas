@@ -413,7 +413,7 @@ public class Parser {
 								this.currentToken.syntaxPosition
 							);
 						}
-						UserDefinedClassFunction constructor = this.classConstructor(isStatic, token.content);
+						UserDefinedClassFunction constructor = this.classConstructor(definition, isStatic, token.content);
 						definition.addConstructor(constructor);
 					}
 					else {
@@ -426,7 +426,7 @@ public class Parser {
 				}
 				case FUN -> {
 					if (!isStatic) {
-						UserDefinedClassFunction method = this.classMethod();
+						UserDefinedClassFunction method = this.classMethod(definition);
 						definition.addMethod(method);
 					}
 					else {
@@ -437,7 +437,7 @@ public class Parser {
 				case OPERATOR -> {
 					this.advance();
 					Token token = this.currentToken;
-					UserDefinedClassFunction operatorMethod = this.operatorMethod(isStatic, token);
+					UserDefinedClassFunction operatorMethod = this.operatorMethod(definition, isStatic, token);
 					definition.addOperatorMethod(token.type, operatorMethod);
 				}
 				case LEFT_CURLY_BRACKET -> {
@@ -465,7 +465,7 @@ public class Parser {
 		return new ArucasClassNode(definition, startPos, endPos);
 	}
 
-	private UserDefinedClassFunction classConstructor(boolean isStatic, String name) throws CodeError {
+	private UserDefinedClassFunction classConstructor(ArucasClassDefinition definition, boolean isStatic, String name) throws CodeError {
 		ISyntax startPos = this.currentToken.syntaxPosition;
 		if (isStatic) {
 			throw new CodeError(
@@ -482,7 +482,8 @@ public class Parser {
 
 		MutableSyntaxImpl syntaxPosition = new MutableSyntaxImpl(startPos.getStartPos(), null);
 		UserDefinedClassFunction classConstructor = this.isStackTypePop(StackType.ARBITRARY) ?
-			new UserDefinedClassFunction.Arbitrary(name, argumentNames, syntaxPosition) : new UserDefinedClassFunction(name, argumentNames, syntaxPosition);
+			new UserDefinedClassFunction.Arbitrary(definition, name, argumentNames, syntaxPosition) :
+			new UserDefinedClassFunction(definition, name, argumentNames, syntaxPosition);
 		this.context.setLocal(name, classConstructor);
 
 		Node statements = this.statements();
@@ -494,7 +495,7 @@ public class Parser {
 		return classConstructor;
 	}
 
-	private UserDefinedClassFunction classMethod() throws CodeError {
+	private UserDefinedClassFunction classMethod(ArucasClassDefinition definition) throws CodeError {
 		ISyntax startPos = this.currentToken.syntaxPosition;
 		this.advance();
 
@@ -511,7 +512,8 @@ public class Parser {
 
 		MutableSyntaxImpl syntaxPosition = new MutableSyntaxImpl(startPos.getStartPos(), null);
 		UserDefinedClassFunction classMethod = this.isStackTypePop(StackType.ARBITRARY) ?
-			new UserDefinedClassFunction.Arbitrary(name, argumentNames, syntaxPosition) : new UserDefinedClassFunction(name, argumentNames, syntaxPosition);
+			new UserDefinedClassFunction.Arbitrary(definition, name, argumentNames, syntaxPosition) :
+			new UserDefinedClassFunction(definition, name, argumentNames, syntaxPosition);
 
 		this.context.setLocal(name, classMethod);
 
@@ -621,7 +623,7 @@ public class Parser {
 		return staticClassMethod;
 	}
 
-	private UserDefinedClassFunction operatorMethod(boolean isStatic, Token token) throws CodeError {
+	private UserDefinedClassFunction operatorMethod(ArucasClassDefinition definition, boolean isStatic, Token token) throws CodeError {
 		ISyntax startPos = token.syntaxPosition;
 		if (isStatic) {
 			throw new CodeError(
@@ -661,7 +663,7 @@ public class Parser {
 
 
 		MutableSyntaxImpl syntaxPosition = new MutableSyntaxImpl(startPos.getStartPos(), null);
-		UserDefinedClassFunction operatorMethod = new UserDefinedClassFunction("$%s".formatted(token.type), argumentNames, syntaxPosition);
+		UserDefinedClassFunction operatorMethod = new UserDefinedClassFunction(definition, "$%s".formatted(token.type), argumentNames, syntaxPosition);
 
 		Node statements = this.statements();
 		this.context.popScope();

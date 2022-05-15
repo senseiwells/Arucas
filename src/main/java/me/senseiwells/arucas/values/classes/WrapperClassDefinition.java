@@ -9,7 +9,7 @@ import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.ArucasOperatorMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.Value;
-import me.senseiwells.arucas.values.functions.WrapperClassMemberFunction;
+import me.senseiwells.arucas.values.functions.WrapperMemberFunction;
 
 import java.util.HashMap;
 import java.util.List;
@@ -20,9 +20,9 @@ public class WrapperClassDefinition extends AbstractClassDefinition {
 	private final Supplier<IArucasWrappedClass> supplier;
 	private final Map<String, ArucasMemberHandle> fieldMap;
 	private final Map<String, ArucasMemberHandle> staticFieldMap;
-	private final ArucasFunctionMap<WrapperClassMemberFunction> methods;
-	private final ArucasFunctionMap<WrapperClassMemberFunction> constructors;
-	private final ArucasOperatorMap<WrapperClassMemberFunction> operatorMap;
+	private final ArucasFunctionMap<WrapperMemberFunction> methods;
+	private final ArucasFunctionMap<WrapperMemberFunction> constructors;
+	private final ArucasOperatorMap<WrapperMemberFunction> operatorMap;
 
 	public WrapperClassDefinition(String name, Supplier<IArucasWrappedClass> supplier) {
 		super(name);
@@ -42,15 +42,15 @@ public class WrapperClassDefinition extends AbstractClassDefinition {
 		this.staticFieldMap.put(field.getName(), field);
 	}
 
-	public void addMethod(WrapperClassMemberFunction method) {
+	public void addMethod(WrapperMemberFunction method) {
 		this.methods.add(method);
 	}
 
-	public void addConstructor(WrapperClassMemberFunction constructor) {
+	public void addConstructor(WrapperMemberFunction constructor) {
 		this.constructors.add(constructor);
 	}
 
-	public void addOperatorMethod(Token.Type tokenType, WrapperClassMemberFunction method) {
+	public void addOperatorMethod(Token.Type tokenType, WrapperMemberFunction method) {
 		this.operatorMap.add(tokenType, method);
 	}
 
@@ -59,12 +59,12 @@ public class WrapperClassDefinition extends AbstractClassDefinition {
 	}
 
 	@Override
-	public ArucasFunctionMap<WrapperClassMemberFunction> getMethods() {
+	public ArucasFunctionMap<WrapperMemberFunction> getMethods() {
 		return this.methods;
 	}
 
 	@Override
-	public ArucasFunctionMap<WrapperClassMemberFunction> getConstructors() {
+	public ArucasFunctionMap<WrapperMemberFunction> getConstructors() {
 		return this.constructors;
 	}
 
@@ -92,7 +92,7 @@ public class WrapperClassDefinition extends AbstractClassDefinition {
 	private WrapperClassValue createDefinition(IArucasWrappedClass wrappedClass, Context context, List<Value> parameters, ISyntax syntaxPosition) throws CodeError {
 		WrapperClassValue thisValue = new WrapperClassValue(this, wrappedClass);
 
-		for (WrapperClassMemberFunction function : this.methods) {
+		for (WrapperMemberFunction function : this.methods) {
 			thisValue.addMethod(function.copy(thisValue, wrappedClass));
 		}
 
@@ -103,7 +103,7 @@ public class WrapperClassDefinition extends AbstractClassDefinition {
 			return thisValue;
 		}
 
-		WrapperClassMemberFunction constructor = this.constructors.get("", parameterCount);
+		WrapperMemberFunction constructor = this.constructors.get("", parameterCount);
 		if (constructor == null) {
 			if (syntaxPosition == null) {
 				throw new RuntimeException("No such constructor for %s".formatted(this.getName()));

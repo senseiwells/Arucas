@@ -4,12 +4,10 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.values.NumberValue;
-import me.senseiwells.arucas.values.GenericValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.ArucasClassValue;
-
-import java.util.ArrayList;
 
 public class UnaryOperatorNode extends DirectAccessNode<Value> {
 	private final Node node;
@@ -23,7 +21,7 @@ public class UnaryOperatorNode extends DirectAccessNode<Value> {
 	public Value visit(Context context) throws CodeError, ThrowValue {
 		Value value = this.node.visit(context);
 		if (value instanceof ArucasClassValue classValue && classValue.hasOperatorMethod(this.token.type, 1)) {
-			return classValue.getOperatorMethod(this.token.type, 1).call(context, new ArrayList<>(1));
+			return classValue.getOperatorMethod(this.token.type, 1).call(context, ArucasList.arrayListOf(classValue));
 		}
 		switch (this.token.type) {
 			case NOT -> value = value.not(context, this.syntaxPosition);

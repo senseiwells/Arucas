@@ -7,6 +7,7 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.utils.Arguments;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.values.classes.ArucasClassDefinition;
 import me.senseiwells.arucas.values.classes.ArucasClassValue;
 import me.senseiwells.arucas.values.functions.FunctionValue;
@@ -40,7 +41,7 @@ public class EnumValue extends ArucasClassValue {
 		// If 'toString' is overridden we should use that here
 		FunctionValue memberFunction = this.getMember("toString", 1);
 		if (memberFunction != null) {
-			return memberFunction.call(context, new ArrayList<>()).getAsString(context);
+			return memberFunction.call(context, ArucasList.arrayListOf(this)).getAsString(context);
 		}
 
 		return "<enum " + this.getName() + " - " + this.getEnumName() + ">";
