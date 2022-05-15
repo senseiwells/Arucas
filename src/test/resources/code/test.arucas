@@ -2,8 +2,12 @@
 
 import Test from test;
 
+fun makeTest() {
+    return new Test();
+}
+
 for (i = 0; i < 1000000; i++) {
-    test = new Test();
+    test = makeTest();
 }
 
 // Old: 1 677 195 microseconds

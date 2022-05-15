@@ -8,9 +8,11 @@ import me.senseiwells.arucas.api.wrappers.IArucasWrappedClass;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
-import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
-import me.senseiwells.arucas.values.classes.*;
+import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
+import me.senseiwells.arucas.values.classes.ArucasWrapperCreator;
+import me.senseiwells.arucas.values.classes.WrapperClassDefinition;
+import me.senseiwells.arucas.values.classes.WrapperClassValue;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 
 import java.io.IOException;
@@ -23,7 +25,7 @@ import java.util.UUID;
 
 /**
  * Runtime context class of the programming language.
- *
+ * <p>
  * A context is never shared across two threads and is
  * threadsafe.
  */
@@ -33,7 +35,7 @@ public class Context {
 	private final IArucasAPI arucasAPI;
 	private final ValueConverter converter;
 	private final UUID contextId;
-	
+
 	private final String displayName;
 	private final Context parentContext;
 
@@ -43,17 +45,18 @@ public class Context {
 	private boolean suppressDeprecated;
 	private boolean isMain;
 
-	private final ThrowValue.Continue continueThrowable = new ThrowValue.Continue();
-	private final ThrowValue.Break breakThrowable = new ThrowValue.Break();
-	private final ThrowValue.Return returnThrowable = new ThrowValue.Return(NullValue.NULL);
-	
+	// Creating exceptions is very expensive, so these are lazy
+	private ThrowValue.Continue continueThrowable;
+	private ThrowValue.Break breakThrowable;
+	private ThrowValue.Return returnThrowable;
+
 	private Context(String name, Context parent, ArucasFunctionMap<FunctionValue> extensions, StackTable table, ArucasThreadHandler handler, ValueConverter converter, IArucasAPI api) {
 		this.extensions = extensions;
 		this.arucasAPI = api;
 		this.threadHandler = handler;
 		this.converter = converter;
 		this.contextId = parent != null ? parent.contextId : UUID.randomUUID();
-		
+
 		this.displayName = name;
 		this.parentContext = parent;
 		this.suppressDeprecated = parent != null && parent.suppressDeprecated;
@@ -64,7 +67,7 @@ public class Context {
 	public Context(String displayName, Context parent, ArucasFunctionMap<FunctionValue> extensions, ArucasThreadHandler handler, ValueConverter converter, IArucasAPI api) {
 		this(displayName, parent, extensions, new StackTable(), handler, converter, api);
 	}
-	
+
 	private Context(Context branch, StackTable stackTable) {
 		this.displayName = branch.displayName;
 		this.stackTable = stackTable;
@@ -96,7 +99,7 @@ public class Context {
 		}
 		return null;
 	}
-	
+
 	public Context createChildContext(String displayName) {
 		StackTable root = this.stackTable.getRoot();
 		Context context = new Context(displayName, this, this.extensions, this.threadHandler, this.converter, this.arucasAPI);
@@ -114,20 +117,31 @@ public class Context {
 		Context context = new Context("Parser Context", this, this.extensions, this.threadHandler, this.converter, this.arucasAPI);
 		return context.setStackTable(root.classDefinitions, root.importableDefinitions, root.cachedDefinitions, true);
 	}
-	
+
 	public ThrowValue.Continue getContinueThrowable() {
+		if (this.continueThrowable == null) {
+			this.continueThrowable = new ThrowValue.Continue();
+		}
 		return this.continueThrowable;
 	}
-	
+
 	public ThrowValue.Break getBreakThrowable() {
+		if (this.breakThrowable == null) {
+			this.breakThrowable = new ThrowValue.Break();
+		}
 		return this.breakThrowable;
 	}
-	
+
 	public ThrowValue.Return getReturnThrowable(Value value) {
-		this.returnThrowable.setReturnValue(value);
+		if (this.returnThrowable == null) {
+			this.returnThrowable = new ThrowValue.Return(value);
+		}
+		else {
+			this.returnThrowable.setReturnValue(value);
+		}
 		return this.returnThrowable;
 	}
-	
+
 	/**
 	 * Returns this thread handler.
 	 */
@@ -164,27 +178,27 @@ public class Context {
 		}
 		return importPath;
 	}
-	
+
 	public String getDisplayName() {
 		return this.displayName;
 	}
-	
+
 	public StackTable getStackTable() {
 		return this.stackTable;
 	}
-	
+
 	public StackTable getBreakScope() {
 		return this.stackTable.getBreakScope();
 	}
-	
+
 	public StackTable getContinueScope() {
 		return this.stackTable.getContinueScope();
 	}
-	
+
 	public StackTable getReturnScope() {
 		return this.stackTable.getReturnScope();
 	}
-	
+
 	public void pushScope(ISyntax syntaxPosition) {
 		this.stackTable = new StackTable(this.stackTable, syntaxPosition, false, false, false);
 	}
@@ -192,26 +206,26 @@ public class Context {
 	public void pushRunScope() {
 		this.stackTable = new StackTable(this.stackTable, ISyntax.empty(), false, false, true);
 	}
-	
+
 	public void pushLoopScope(ISyntax syntaxPosition) {
 		this.stackTable = new StackTable(this.stackTable, syntaxPosition, true, true, false);
 	}
-	
+
 	public void pushSwitchScope(ISyntax syntaxPosition) {
 		this.stackTable = new StackTable(this.stackTable, syntaxPosition, true, false, false);
 	}
-	
+
 	public void pushFunctionScope(ISyntax syntaxPosition) {
 		this.stackTable = new StackTable(this.stackTable, syntaxPosition, false, false, true);
 	}
-	
+
 	public void popScope() {
 		this.stackTable = this.stackTable.getParentTable();
 	}
-	
+
 	public void moveScope(StackTable stackTable) {
 		// We do not want to jump to an arbitrary stackTable
-		
+
 		Iterator<StackTable> iter = this.stackTable.iterator();
 		while (iter.hasNext()) {
 			StackTable table = iter.next();
@@ -220,14 +234,14 @@ public class Context {
 				return;
 			}
 		}
-		
+
 		// This should throw an exception
 	}
-	
+
 	public void setDebug(boolean debug) {
 		this.isDebug = debug;
 	}
-	
+
 	public boolean isDebug() {
 		return this.isDebug;
 	}
@@ -276,15 +290,15 @@ public class Context {
 			);
 		}
 	}
-	
+
 	public void setVariable(String name, Value value) {
 		this.stackTable.set(name, value);
 	}
-	
+
 	public void setLocal(String name, Value value) {
 		this.stackTable.setLocal(name, value);
 	}
-	
+
 	public Value getVariable(String name) {
 		return this.stackTable.get(name);
 	}
@@ -298,11 +312,11 @@ public class Context {
 	@SuppressWarnings("unused")
 	public WrapperClassValue createWrapperClass(Class<? extends IArucasWrappedClass> clazz, List<Value> parameters, ISyntax syntaxPosition) throws CodeError {
 		String wrapperName = ArucasWrapperCreator.getWrapperName(clazz);
-		
+
 		if (wrapperName == null) {
 			throw new RuntimeError("No such wrapper class exists", syntaxPosition, this);
 		}
-		
+
 		AbstractClassDefinition classDefinition = this.getClassDefinition(wrapperName);
 		if (classDefinition instanceof WrapperClassDefinition wrappedClassDefinition) {
 			return wrappedClassDefinition.createNewDefinition(this, parameters, syntaxPosition);
@@ -325,7 +339,7 @@ public class Context {
 	public ArucasClassDefinitionMap getAllClassDefinitions() {
 		return this.stackTable.classDefinitions;
 	}
-	
+
 	public void addClassDefinition(AbstractClassDefinition definition) {
 		this.stackTable.addClassDefinition(definition);
 	}
@@ -360,12 +374,12 @@ public class Context {
 	public Context setStackTable(ArucasClassDefinitionMap definitions, Map<String, ArucasClassDefinitionMap> imports, Map<String, ArucasClassDefinitionMap> cached) {
 		return this.setStackTable(definitions, imports, cached, false);
 	}
-	
+
 	@Deprecated(forRemoval = true)
 	public void dumpScopes() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("----------------------------\n");
-		
+
 		Iterator<StackTable> iter = this.stackTable.iterator();
 		while (iter.hasNext()) {
 			sb.append(iter.next()).append("\n");

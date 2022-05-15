@@ -6,7 +6,13 @@ public abstract class ThrowValue extends RuntimeException {
 	ThrowValue(String message) {
 		super(message);
 	}
-	
+
+	// Filling in stack trace is very expensive
+	@Override
+	public synchronized Throwable fillInStackTrace() {
+		return this;
+	}
+
 	public static class Continue extends ThrowValue {
 		public Continue() {
 			super("Cannot continue here");
