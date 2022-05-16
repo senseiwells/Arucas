@@ -206,8 +206,7 @@ public class ArucasOrderedMap extends ArucasMap {
 
 	@Override
 	void afterNodeRemoval(Node e) {
-		Entry p =
-			(Entry) e, b = p.before, a = p.after;
+		Entry p = (Entry) e, b = p.before, a = p.after;
 		p.before = p.after = null;
 		if (b == null) {
 			this.head = a;

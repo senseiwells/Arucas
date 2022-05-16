@@ -111,6 +111,7 @@ public class Token {
 		CLASS,
 		ENUM,
 		THIS,
+		SUPER,
 		NEW,
 		STATIC,
 		OPERATOR,

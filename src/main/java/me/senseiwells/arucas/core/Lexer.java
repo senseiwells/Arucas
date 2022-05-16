@@ -95,6 +95,7 @@ public class Lexer {
 			.addRule(Type.CLASS, i -> i.addString("class"))
 			.addRule(Type.ENUM, i -> i.addString("enum"))
 			.addRule(Type.THIS, i -> i.addString("this"))
+			.addRule(Type.SUPER, i -> i.addString("super"))
 			.addRule(Type.NEW, i -> i.addString("new"))
 			.addRule(Type.STATIC, i -> i.addString("static"))
 			.addRule(Type.OPERATOR, i -> i.addString("operator"))

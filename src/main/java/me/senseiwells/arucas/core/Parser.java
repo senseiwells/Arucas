@@ -484,8 +484,8 @@ public class Parser {
 		UserDefinedClassFunction classConstructor = this.isStackTypePop(StackType.ARBITRARY) ?
 			new UserDefinedClassFunction.Arbitrary(definition, name, argumentNames, syntaxPosition) :
 			new UserDefinedClassFunction(definition, name, argumentNames, syntaxPosition);
-		this.context.setLocal(name, classConstructor);
 
+		this.context.setLocal(name, classConstructor);
 		Node statements = this.statements();
 		this.context.popScope();
 
@@ -1405,11 +1405,6 @@ public class Parser {
 				}
 
 				Value value = this.context.getVariable(token.content);
-				/* This can be checked at runtime
-				if (value == null) {
-					throw new CodeError(CodeError.ErrorType.UNKNOWN_IDENTIFIER, "Could not find '%s'".formatted(token.content), token.syntaxPosition);
-				}
-				*/
 
 				if (value instanceof FunctionValue) {
 					return new DirectAccessNode<>(token, value);
