@@ -1,5 +1,7 @@
 package me.senseiwells.arucas.api;
 
+import me.senseiwells.arucas.values.StringValue;
+
 import java.util.function.Consumer;
 
 /**
@@ -44,6 +46,14 @@ public interface IArucasOutput {
 
 	default void log(Object object) {
 		this.getDebugHandler().accept(String.valueOf(object));
+	}
+
+	default void logln(Object object) {
+		this.getDebugHandler().accept(object + "\n");
+	}
+
+	default void logError(Object object) {
+		this.getDebugHandler().accept(this.addErrorFormattingBold(object + "\n"));
 	}
 
 	default String addErrorFormatting(String string) {

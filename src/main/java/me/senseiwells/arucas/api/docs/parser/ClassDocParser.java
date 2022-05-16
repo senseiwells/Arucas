@@ -31,6 +31,7 @@ public class ClassDocParser extends DocParser {
 	 * that are available, and also providing documentation for
 	 * the classes, fields and functions.
 	 */
+	@Override
 	public String parse() {
 		StringBuilder builder = new StringBuilder();
 

@@ -9,6 +9,8 @@ import java.util.List;
 public abstract class DocParser {
 	protected abstract String getIndent();
 
+	public abstract String parse();
+
 	protected void addArgumentsToBuilder(StringBuilder builder, List<String> args, int params) {
 		if (args == null) {
 			if (params < 0) {

@@ -14,6 +14,7 @@ public class ExtensionDocParser extends DocParser {
 		this.extensions = extensions;
 	}
 
+	@Override
 	public String parse() {
 		StringBuilder builder = new StringBuilder();
 

@@ -1,3 +1,4 @@
+// ./src/test/resources/code/test.arucas
 // run(File.getDirectory().getPath() + "/src/test/resources/code/test.arucas");
 
 import Test from test;
