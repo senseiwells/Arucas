@@ -10,46 +10,61 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.*;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ReflectionUtils {
+	private static final Map<MethodId, Method> methodCache = new HashMap<>();
+
 	public static Value callMethodFromNameAndArgs(Class<?> callingClass, Object callingObject, String methodName, List<Value> arguments, ISyntax syntaxPosition, Context context) throws CodeError {
-		Object[] objects = new Object[arguments.size()];
-		Class<?>[] parameters = new Class[arguments.size()];
+		MethodId methodId = new MethodId(callingClass, methodName, arguments.size());
+		Object[] parameters = new Object[arguments.size()];
 
-		for (int i = 0; i < arguments.size(); i++) {
-			objects[i] = arguments.get(i).asJavaValue();
-			if (objects[i] != null) {
-				parameters[i] = objects[i].getClass();
-				continue;
-			}
-			parameters[i] = Object.class;
-		}
-
-		// This won't work if the parameter has primitive parameters since it converted to Wrappers
-		// This will be fine since #getMethodSlow will still resolve the correct method...
-		Method wantedMethod = ExceptionUtils.catchAsNull(() -> callingClass.getMethod(methodName, parameters));
+		Method wantedMethod = methodCache.get(methodId);
 		if (wantedMethod == null) {
-			wantedMethod = ExceptionUtils.catchAsNull(() -> callingClass.getMethod(methodName, Object[].class));
+			Class<?>[] types = new Class[arguments.size()];
+
+			for (int i = 0; i < arguments.size(); i++) {
+				parameters[i] = arguments.get(i).asJavaValue();
+				if (parameters[i] != null) {
+					types[i] = parameters[i].getClass();
+					continue;
+				}
+				types[i] = Object.class;
+			}
+
+			// This won't work if the parameter has primitive parameters since it converted to Wrappers
+			// This will be fine since #getMethodSlow will still resolve the correct method...
+			wantedMethod = ExceptionUtils.catchAsNull(() -> callingClass.getMethod(methodName, types));
 			if (wantedMethod == null) {
-				wantedMethod = getMethodSlow(callingClass, callingObject, methodName, objects.length);
+				wantedMethod = ExceptionUtils.catchAsNull(() -> callingClass.getMethod(methodName, Object[].class));
 				if (wantedMethod == null) {
-					throw new RuntimeError(
-						"No such method '%s' with %d parameters exists for '%s'".formatted(methodName, objects.length, callingClass.getSimpleName()),
-						syntaxPosition, context
-					);
+					wantedMethod = getMethodSlow(callingClass, callingObject, methodName, parameters.length);
+					if (wantedMethod == null) {
+						throw new RuntimeError(
+							"No such method '%s' with %d parameters exists for '%s'".formatted(methodName, parameters.length, callingClass.getSimpleName()),
+							syntaxPosition, context
+						);
+					}
 				}
 			}
+			methodCache.put(methodId, wantedMethod);
+		}
+		else {
+			for (int i = 0; i < arguments.size(); i++) {
+				parameters[i] = arguments.get(i).asJavaValue();
+			}
 		}
 
-		return invokeMethod(context, syntaxPosition, wantedMethod, callingObject, objects);
+		return invokeMethod(context, syntaxPosition, wantedMethod, callingObject, parameters);
 	}
 
 	public static Value callMethodFromJavaValue(JavaValue javaValue, String methodName, List<Value> arguments, ISyntax syntaxPosition, Context context) throws CodeError {
 		Object callingObject = javaValue.asJavaValue();
 		Class<?> callingClass = callingObject.getClass();
 
-		Method wantedMethod = getMethodSlow(callingClass, callingObject, methodName, arguments.size());
+		Method wantedMethod = getMethod(callingClass, callingObject, methodName, arguments.size());
 		if (wantedMethod == null) {
 			return null;
 		}
@@ -148,7 +163,20 @@ public class ReflectionUtils {
 		return false;
 	}
 
-	public static Method getMethodSlow(Class<?> callingClass, Object callingObject, String methodName, int arguments) {
+	public static Method getMethod(Class<?> callingClass, Object callingObject, String methodName, int arguments) {
+		MethodId methodId = new MethodId(callingClass, methodName, arguments);
+		Method cachedMethod = methodCache.get(methodId);
+		if (cachedMethod == null) {
+			Method method = getMethodSlow(callingClass, callingObject, methodName, arguments);
+			if (method != null) {
+				methodCache.put(methodId, method);
+			}
+			return method;
+		}
+		return cachedMethod;
+	}
+
+	private static Method getMethodSlow(Class<?> callingClass, Object callingObject, String methodName, int arguments) {
 		boolean isStatic = callingObject == null;
 		for (Method method : callingClass.getMethods()) {
 			boolean matchingStatic = Modifier.isStatic(method.getModifiers()) == isStatic;
@@ -250,6 +278,36 @@ public class ReflectionUtils {
 				"Failed to set field '%s' with value: %s".formatted(field.getName(), throwable),
 				syntaxPosition, context
 			);
+		}
+	}
+
+	private static final class MethodId {
+		private final Class<?> clazz;
+		private final String name;
+		private final int parameters;
+		private final int hash;
+
+		private MethodId(Class<?> clazz, String name, int parameters) {
+			this.clazz = clazz;
+			this.name = name;
+			this.parameters = parameters;
+			this.hash = (clazz.hashCode() - this.name.hashCode() * this.parameters) * 31;
+		}
+
+		@Override
+		public int hashCode() {
+			return this.hash;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj == this) {
+				return true;
+			}
+			if (obj instanceof MethodId id) {
+				return this.clazz == id.clazz && this.parameters == id.parameters && this.name.equals(id.name);
+			}
+			return false;
 		}
 	}
 }

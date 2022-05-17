@@ -78,7 +78,7 @@ public class JavaValue extends GenericValue<Object> {
 
 		obfuscatedName = JavaValue.getObfuscatedMethodName(context, callingClass, name);
 		value = JavaFunction.of(
-			ReflectionUtils.getMethodSlow(callingClass, callingObject, obfuscatedName, -1),
+			ReflectionUtils.getMethod(callingClass, callingObject, obfuscatedName, -1),
 			callingObject, position
 		);
 		if (value != null) {
@@ -407,7 +407,7 @@ public class JavaValue extends GenericValue<Object> {
 			int parameters = arguments.getNextVal(NumberValue.class).intValue();
 			Class<?> clazz = JavaValue.getObfuscatedClass(context, position, className);
 			methodName = getObfuscatedMethodName(context, clazz, methodName);
-			Method method = ReflectionUtils.getMethodSlow(clazz, null, methodName, parameters);
+			Method method = ReflectionUtils.getMethod(clazz, null, methodName, parameters);
 			JavaFunction javaFunction = JavaFunction.of(method, null, position);
 			if (javaFunction != null) {
 				return javaFunction;
@@ -791,7 +791,7 @@ public class JavaValue extends GenericValue<Object> {
 			Object callingObject = thisValue.asJavaValue();
 			Class<?> callingClass = callingObject.getClass();
 			methodName = getObfuscatedMethodName(arguments.getContext(), callingClass, methodName);
-			Method method = ReflectionUtils.getMethodSlow(callingClass, callingObject, methodName, parameters);
+			Method method = ReflectionUtils.getMethod(callingClass, callingObject, methodName, parameters);
 			JavaFunction javaFunction = JavaFunction.of(method, callingObject, arguments.getPosition());
 			if (javaFunction != null) {
 				return javaFunction;
