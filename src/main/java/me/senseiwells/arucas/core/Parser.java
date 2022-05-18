@@ -1165,8 +1165,34 @@ public class Parser {
 	}
 
 	private Node sizeComparisonExpression() throws CodeError {
+		return this.orExpression();
+	}
+
+	private Node orExpression() throws CodeError {
+		Node left = this.andExpression();
+		while (this.currentToken.type == Token.Type.OR) {
+			Token operatorToken = this.currentToken;
+			this.advance();
+			Node right = this.andExpression();
+			left = new BinaryOperatorNode(left, operatorToken, right);
+		}
+		return left;
+	}
+
+	private Node andExpression() throws CodeError {
+		Node left = this.xorExpression();
+		while (this.currentToken.type == Token.Type.AND) {
+			Token operatorToken = this.currentToken;
+			this.advance();
+			Node right = this.xorExpression();
+			left = new BinaryOperatorNode(left, operatorToken, right);
+		}
+		return left;
+	}
+
+	private Node xorExpression() throws CodeError {
 		Node left = this.comparisonExpression();
-		while (this.currentToken.type == Token.Type.AND || this.currentToken.type == Token.Type.OR || this.currentToken.type == Token.Type.XOR) {
+		while (this.currentToken.type == Token.Type.XOR) {
 			Token operatorToken = this.currentToken;
 			this.advance();
 			Node right = this.comparisonExpression();
