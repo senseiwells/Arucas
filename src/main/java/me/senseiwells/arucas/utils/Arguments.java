@@ -53,6 +53,16 @@ public class Arguments {
 		return this.getError(details, strings);
 	}
 
+	public Arguments set(int index) {
+		this.index = index;
+		return this;
+	}
+
+	public Arguments skip() {
+		this.index++;
+		return this;
+	}
+
 	public Value get(int index) throws RuntimeError {
 		if (index < 0 || index >= this.size()) {
 			throw this.function.getError(this.context, "Index %d out of bounds, incorrect amount of parameters", index);
@@ -137,8 +147,9 @@ public class Arguments {
 		return this.arguments.subList(this.index, this.size());
 	}
 
-	public void resetNext() {
+	public Arguments reset() {
 		this.index = 0;
+		return this;
 	}
 
 	public int size() {
