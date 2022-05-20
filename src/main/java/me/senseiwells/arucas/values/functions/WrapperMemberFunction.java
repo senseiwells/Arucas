@@ -45,8 +45,8 @@ public class WrapperMemberFunction extends FunctionValue implements IMemberFunct
 		Object[] args = new Object[1 + this.getCount()];
 		args[0] = wrapperValue.getWrapper();
 		args[1] = context;
-		for (int i = 0; i < this.getCount() - 1; i++) {
-			args[i + 2] = arguments.get(i);
+		for (int i = 1; i < this.getCount(); i++) {
+			args[i + 1] = arguments.get(i);
 		}
 
 		return this.methodHandle.call(args, wrapperValue, this.getPosition(), context);
