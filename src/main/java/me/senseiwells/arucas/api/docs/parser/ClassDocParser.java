@@ -39,10 +39,15 @@ public class ClassDocParser extends DocParser {
 		if (classDoc != null) {
 			builder.append("/* Native, implemented in Java\n");
 			for (String desc : classDoc.desc()) {
-				builder.append(" * ").append(desc);
+				builder.append(" * ").append(desc).append("\n");
 			}
-			builder.append("\n * Import with 'import ").append(classDoc.name());
-			builder.append(" from ").append(classDoc.importPath()).append("'");
+			if (classDoc.name().isEmpty()) {
+				builder.append(" * This class does not need to be imported.");
+			}
+			else {
+				builder.append(" * Import with 'import ").append(classDoc.name());
+				builder.append(" from ").append(classDoc.importPath()).append("'");
+			}
 			builder.append("\n */\n");
 		}
 		else {
