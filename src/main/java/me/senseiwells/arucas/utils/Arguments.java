@@ -147,8 +147,7 @@ public class Arguments {
 	public <T extends Value> T get(int index, Class<T> type) throws RuntimeError {
 		Value value = this.get(index);
 		if (!type.isInstance(value)) {
-			ClassDoc doc = type.getAnnotation(ClassDoc.class);
-			String className = doc == null ? type.getSimpleName() : doc.name();
+			String className = Value.getValueName(type);
 			throw this.function.getError(
 				this.context, "Must pass %s into parameter %d for %s()",
 				className, index + 1, this.function.getName()

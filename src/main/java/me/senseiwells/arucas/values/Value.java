@@ -1,6 +1,7 @@
 package me.senseiwells.arucas.values;
 
 import me.senseiwells.arucas.api.ISyntax;
+import me.senseiwells.arucas.api.docs.ClassDoc;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.tokens.Token;
@@ -422,6 +423,11 @@ public abstract class Value implements ValueIdentifier {
 			syntaxPosition,
 			context
 		);
+	}
+
+	public static String getValueName(Class<? extends Value> valueClass) {
+		ClassDoc doc = valueClass.getAnnotation(ClassDoc.class);
+		return doc == null ? valueClass.getSimpleName() : doc.name();
 	}
 
 	/**
