@@ -75,7 +75,7 @@ public class ArucasMathClass extends ArucasClassExtension {
 		example = "Math.round(3.5);"
 	)
 	private NumberValue round(Arguments arguments) throws CodeError {
-		double number = arguments.getNextVal(NumberValue.class);
+		double number = arguments.getNextGeneric(NumberValue.class);
 		return NumberValue.of(Math.round(number));
 	}
 
@@ -88,7 +88,7 @@ public class ArucasMathClass extends ArucasClassExtension {
 		example = "Math.ceil(3.5);"
 	)
 	private NumberValue ceil(Arguments arguments) throws CodeError {
-		double number = arguments.getNextVal(NumberValue.class);
+		double number = arguments.getNextGeneric(NumberValue.class);
 		return NumberValue.of(Math.ceil(number));
 	}
 
@@ -101,7 +101,7 @@ public class ArucasMathClass extends ArucasClassExtension {
 		example = "Math.floor(3.5);"
 	)
 	private NumberValue floor(Arguments arguments) throws CodeError {
-		double number = arguments.getNextVal(NumberValue.class);
+		double number = arguments.getNextGeneric(NumberValue.class);
 		return NumberValue.of(Math.floor(number));
 	}
 
@@ -114,7 +114,7 @@ public class ArucasMathClass extends ArucasClassExtension {
 		example = "Math.sqrt(9);"
 	)
 	private Value sqrt(Arguments arguments) throws CodeError {
-		double number = arguments.getNextVal(NumberValue.class);
+		double number = arguments.getNextGeneric(NumberValue.class);
 		return NumberValue.of(Math.sqrt(number));
 	}
 
@@ -127,7 +127,7 @@ public class ArucasMathClass extends ArucasClassExtension {
 		example = "Math.abs(-3);"
 	)
 	private Value abs(Arguments arguments) throws CodeError {
-		double number = arguments.getNextVal(NumberValue.class);
+		double number = arguments.getNextGeneric(NumberValue.class);
 		return NumberValue.of(Math.abs(number));
 	}
 
@@ -143,8 +143,8 @@ public class ArucasMathClass extends ArucasClassExtension {
 		example = "Math.mod(5, 2);"
 	)
 	private Value mod(Arguments arguments) throws CodeError {
-		double number = arguments.getNextVal(NumberValue.class);
-		double otherNumber = arguments.getNextVal(NumberValue.class);
+		double number = arguments.getNextGeneric(NumberValue.class);
+		double otherNumber = arguments.getNextGeneric(NumberValue.class);
 		return NumberValue.of(number % otherNumber);
 	}
 
@@ -160,8 +160,8 @@ public class ArucasMathClass extends ArucasClassExtension {
 		example = "Math.max(5, 2);"
 	)
 	private Value max(Arguments arguments) throws CodeError {
-		double number = arguments.getNextVal(NumberValue.class);
-		double otherNumber = arguments.getNextVal(NumberValue.class);
+		double number = arguments.getNextGeneric(NumberValue.class);
+		double otherNumber = arguments.getNextGeneric(NumberValue.class);
 		return NumberValue.of(Math.max(number, otherNumber));
 	}
 
@@ -177,8 +177,8 @@ public class ArucasMathClass extends ArucasClassExtension {
 		example = "Math.min(5, 2);"
 	)
 	private Value min(Arguments arguments) throws CodeError {
-		double number = arguments.getNextVal(NumberValue.class);
-		double otherNumber = arguments.getNextVal(NumberValue.class);
+		double number = arguments.getNextGeneric(NumberValue.class);
+		double otherNumber = arguments.getNextGeneric(NumberValue.class);
 		return NumberValue.of(Math.min(number, otherNumber));
 	}
 
@@ -195,9 +195,9 @@ public class ArucasMathClass extends ArucasClassExtension {
 		example = "Math.clamp(10, 2, 8);"
 	)
 	private Value clamp(Arguments arguments) throws CodeError {
-		double number = arguments.getNextVal(NumberValue.class);
-		double minNumber = arguments.getNextVal(NumberValue.class);
-		double maxNumber = arguments.getNextVal(NumberValue.class);
+		double number = arguments.getNextGeneric(NumberValue.class);
+		double minNumber = arguments.getNextGeneric(NumberValue.class);
+		double maxNumber = arguments.getNextGeneric(NumberValue.class);
 		return NumberValue.of(number < minNumber ? minNumber : Math.min(number, maxNumber));
 	}
 
@@ -210,7 +210,7 @@ public class ArucasMathClass extends ArucasClassExtension {
 		example = "Math.toRadians(90);"
 	)
 	private Value toRadians(Arguments arguments) throws CodeError {
-		double number = arguments.getNextVal(NumberValue.class);
+		double number = arguments.getNextGeneric(NumberValue.class);
 		return NumberValue.of(Math.toRadians(number));
 	}
 
@@ -223,7 +223,7 @@ public class ArucasMathClass extends ArucasClassExtension {
 		example = "Math.toDegrees(Math.pi);"
 	)
 	private Value toDegrees(Arguments arguments) throws CodeError {
-		double number = arguments.getNextVal(NumberValue.class);
+		double number = arguments.getNextGeneric(NumberValue.class);
 		return NumberValue.of(Math.toDegrees(number));
 	}
 
@@ -236,7 +236,7 @@ public class ArucasMathClass extends ArucasClassExtension {
 		example = "Math.log(Math.e);"
 	)
 	private Value log(Arguments arguments) throws CodeError {
-		double number = arguments.getNextVal(NumberValue.class);
+		double number = arguments.getNextGeneric(NumberValue.class);
 		return NumberValue.of(Math.log(number));
 	}
 
@@ -252,8 +252,8 @@ public class ArucasMathClass extends ArucasClassExtension {
 		example = "Math.log(2, 4);"
 	)
 	private Value logBase(Arguments arguments) throws CodeError {
-		double baseNumber = arguments.getNextVal(NumberValue.class);
-		double number = arguments.getNextVal(NumberValue.class);
+		double baseNumber = arguments.getNextGeneric(NumberValue.class);
+		double number = arguments.getNextGeneric(NumberValue.class);
 		return NumberValue.of(Math.log(number) / Math.log(baseNumber));
 	}
 
@@ -266,7 +266,7 @@ public class ArucasMathClass extends ArucasClassExtension {
 		example = "Math.log10(100);"
 	)
 	private Value log10(Arguments arguments) throws CodeError {
-		double number = arguments.getNextVal(NumberValue.class);
+		double number = arguments.getNextGeneric(NumberValue.class);
 		return NumberValue.of(Math.log10(number));
 	}
 
@@ -279,7 +279,7 @@ public class ArucasMathClass extends ArucasClassExtension {
 		example = "Math.sin(Math.pi);"
 	)
 	private Value sin(Arguments arguments) throws CodeError {
-		double number = arguments.getNextVal(NumberValue.class);
+		double number = arguments.getNextGeneric(NumberValue.class);
 		return NumberValue.of(Math.sin(number));
 	}
 
@@ -292,7 +292,7 @@ public class ArucasMathClass extends ArucasClassExtension {
 		example = "Math.cos(Math.pi);"
 	)
 	private Value cos(Arguments arguments) throws CodeError {
-		double number = arguments.getNextVal(NumberValue.class);
+		double number = arguments.getNextGeneric(NumberValue.class);
 		return NumberValue.of(Math.cos(number));
 	}
 
@@ -305,7 +305,7 @@ public class ArucasMathClass extends ArucasClassExtension {
 		example = "Math.tan(Math.pi);"
 	)
 	private Value tan(Arguments arguments) throws CodeError {
-		double number = arguments.getNextVal(NumberValue.class);
+		double number = arguments.getNextGeneric(NumberValue.class);
 		return NumberValue.of(Math.tan(number));
 	}
 
@@ -318,7 +318,7 @@ public class ArucasMathClass extends ArucasClassExtension {
 		example = "Math.arcsin(Math.sin(Math.pi));"
 	)
 	private Value arcsin(Arguments arguments) throws CodeError {
-		double number = arguments.getNextVal(NumberValue.class);
+		double number = arguments.getNextGeneric(NumberValue.class);
 		return NumberValue.of(Math.asin(number));
 	}
 
@@ -331,7 +331,7 @@ public class ArucasMathClass extends ArucasClassExtension {
 		example = "Math.arccos(Math.cos(Math.pi));"
 	)
 	private Value arccos(Arguments arguments) throws CodeError {
-		double number = arguments.getNextVal(NumberValue.class);
+		double number = arguments.getNextGeneric(NumberValue.class);
 		return NumberValue.of(Math.acos(number));
 	}
 
@@ -344,7 +344,7 @@ public class ArucasMathClass extends ArucasClassExtension {
 		example = "Math.arctan(Math.tan(Math.pi));"
 	)
 	private Value arctan(Arguments arguments) throws CodeError {
-		double number = arguments.getNextVal(NumberValue.class);
+		double number = arguments.getNextGeneric(NumberValue.class);
 		return NumberValue.of(Math.atan(number));
 	}
 
@@ -357,7 +357,7 @@ public class ArucasMathClass extends ArucasClassExtension {
 		example = "Math.cosec(Math.pi);"
 	)
 	private Value cosec(Arguments arguments) throws CodeError {
-		double number = arguments.getNextVal(NumberValue.class);
+		double number = arguments.getNextGeneric(NumberValue.class);
 		return NumberValue.of(1 / Math.sin(number));
 	}
 
@@ -370,7 +370,7 @@ public class ArucasMathClass extends ArucasClassExtension {
 		example = "Math.sec(Math.pi);"
 	)
 	private Value sec(Arguments arguments) throws CodeError {
-		double number = arguments.getNextVal(NumberValue.class);
+		double number = arguments.getNextGeneric(NumberValue.class);
 		return NumberValue.of(1 / Math.cos(number));
 	}
 
@@ -383,7 +383,7 @@ public class ArucasMathClass extends ArucasClassExtension {
 		example = "Math.cot(Math.pi);"
 	)
 	private Value cot(Arguments arguments) throws CodeError {
-		double number = arguments.getNextVal(NumberValue.class);
+		double number = arguments.getNextGeneric(NumberValue.class);
 		return NumberValue.of(1 / Math.tan(number));
 	}
 

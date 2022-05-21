@@ -122,8 +122,8 @@ public class TypeValue extends GenericValue<AbstractClassDefinition> {
 		)
 		private Value getConstructor(Arguments arguments) throws CodeError {
 			TypeValue thisValue = arguments.getNext(TypeValue.class);
-			String methodName = arguments.getNextVal(StringValue.class);
-			int parameters = arguments.getNextVal(NumberValue.class).intValue();
+			String methodName = arguments.getNextGeneric(StringValue.class);
+			int parameters = arguments.getNextGeneric(NumberValue.class).intValue();
 
 			FunctionValue delegate = thisValue.value.getConstructors().get(methodName, parameters);
 			if (delegate == null) {
@@ -144,8 +144,8 @@ public class TypeValue extends GenericValue<AbstractClassDefinition> {
 		)
 		private Value getStaticMethod(Arguments arguments) throws CodeError {
 			TypeValue typeValue = arguments.getNext(TypeValue.class);
-			String methodName = arguments.getNextVal(StringValue.class);
-			int parameters = arguments.getNextVal(NumberValue.class).intValue();
+			String methodName = arguments.getNextGeneric(StringValue.class);
+			int parameters = arguments.getNextGeneric(NumberValue.class).intValue();
 
 			FunctionValue delegate = typeValue.value.getMember(methodName, parameters);
 			if (delegate == null) {

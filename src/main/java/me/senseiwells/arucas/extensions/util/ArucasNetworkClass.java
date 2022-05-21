@@ -44,7 +44,7 @@ public class ArucasNetworkClass extends ArucasClassExtension {
 		example = "Network.requestUrl('https://google.com');"
 	)
 	private Value requestUrl(Arguments arguments) throws CodeError {
-		String url = arguments.getNextVal(StringValue.class);
+		String url = arguments.getNextGeneric(StringValue.class);
 		String response = NetworkUtils.getStringFromUrl(url);
 		if (response == null) {
 			throw arguments.getError("Failed to request data from '%s'", url);
@@ -64,8 +64,8 @@ public class ArucasNetworkClass extends ArucasClassExtension {
 		example = "Network.downloadFile('https://arucas.com', new File('dir/downloads'));"
 	)
 	private Value downloadFile(Arguments arguments) throws CodeError {
-		String url = arguments.getNextVal(StringValue.class);
-		File file = arguments.getNextVal(FileValue.class);
+		String url = arguments.getNextGeneric(StringValue.class);
+		File file = arguments.getNextGeneric(FileValue.class);
 		return BooleanValue.of(NetworkUtils.downloadFile(url, file));
 	}
 
@@ -78,7 +78,7 @@ public class ArucasNetworkClass extends ArucasClassExtension {
 		example = "Network.openUrl('https://google.com');"
 	)
 	private Value openUrl(Arguments arguments) throws CodeError {
-		String url = arguments.getNextVal(StringValue.class);
+		String url = arguments.getNextGeneric(StringValue.class);
 		if (!NetworkUtils.openUrl(url)) {
 			throw arguments.getError("Failed to open url '%s'", url);
 		}

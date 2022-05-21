@@ -1,6 +1,7 @@
 package me.senseiwells.arucas.values.functions;
 
 import me.senseiwells.arucas.throwables.CodeError;
+import me.senseiwells.arucas.utils.Arguments;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.Value;
 
@@ -33,6 +34,12 @@ public class MemberFunction extends BuiltInFunction implements IMemberFunction {
 
 	public static MemberFunction arbitrary(String name, FunctionDefinition function) {
 		return arbitrary(name, function, null);
+	}
+
+	@Override
+	protected Value execute(Context context, List<Value> arguments) throws CodeError {
+		this.checkDeprecation(context);
+		return this.function.execute(new Arguments.Member(context, this, arguments));
 	}
 
 	@Override

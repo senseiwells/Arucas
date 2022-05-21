@@ -197,7 +197,7 @@ public class StringValue extends GenericValue<String> {
 		)
 		private Value stringContainsString(Arguments arguments) throws CodeError {
 			StringValue thisValue = arguments.getNext(StringValue.class);
-			String otherString = arguments.getNextVal(StringValue.class);
+			String otherString = arguments.getNextGeneric(StringValue.class);
 			return BooleanValue.of(thisValue.value.contains(otherString));
 		}
 
@@ -237,7 +237,7 @@ public class StringValue extends GenericValue<String> {
 		)
 		private Value split(Arguments arguments) throws CodeError {
 			StringValue thisValue = arguments.getNext(StringValue.class);
-			String otherString = arguments.getNextVal(StringValue.class);
+			String otherString = arguments.getNextGeneric(StringValue.class);
 			ArucasList list = new ArucasList();
 			for (String string : thisValue.value.split(otherString)) {
 				list.add(new StringValue(string));
@@ -257,8 +257,8 @@ public class StringValue extends GenericValue<String> {
 		)
 		private Value subString(Arguments arguments) throws CodeError {
 			StringValue thisValue = arguments.getNext(StringValue.class);
-			int fromIndex = arguments.getNextVal(NumberValue.class).intValue();
-			int toIndex = arguments.getNextVal(NumberValue.class).intValue();
+			int fromIndex = arguments.getNextGeneric(NumberValue.class).intValue();
+			int toIndex = arguments.getNextGeneric(NumberValue.class).intValue();
 			if (fromIndex < 0 || toIndex > thisValue.value.length()) {
 				throw arguments.getError("Index out of bounds");
 			}

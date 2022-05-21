@@ -164,8 +164,8 @@ public abstract class FunctionValue extends GenericValue<String> {
 			example = "Function.getBuiltIn('print', 1);"
 		)
 		private Value getBuiltInDelegate(Arguments arguments) throws CodeError {
-			String functionName = arguments.getNextVal(StringValue.class);
-			int parameters = arguments.getNextVal(NumberValue.class).intValue();
+			String functionName = arguments.getNextGeneric(StringValue.class);
+			int parameters = arguments.getNextGeneric(NumberValue.class).intValue();
 			FunctionValue functionValue = arguments.getContext().getBuiltInFunction(functionName, parameters);
 			if (functionValue == null) {
 				throw arguments.getError("No such built in function '%s' with %d parameters", functionName, parameters);
@@ -187,8 +187,8 @@ public abstract class FunctionValue extends GenericValue<String> {
 		)
 		private Value getMethodDelegate(Arguments arguments) throws CodeError {
 			Value callingValue = arguments.getNext();
-			String functionName = arguments.getNextVal(StringValue.class);
-			int parameters = arguments.getNextVal(NumberValue.class).intValue();
+			String functionName = arguments.getNextGeneric(StringValue.class);
+			int parameters = arguments.getNextGeneric(NumberValue.class).intValue();
 
 			FunctionValue delegate = null;
 			if (callingValue instanceof ArucasClassValue classValue) {

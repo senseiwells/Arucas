@@ -175,7 +175,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		example = "debug(true)"
 	)
 	private Value debug(Arguments arguments) throws CodeError {
-		arguments.getContext().setDebug(arguments.getNextVal(BooleanValue.class));
+		arguments.getContext().setDebug(arguments.getNextGeneric(BooleanValue.class));
 		return NullValue.NULL;
 	}
 
@@ -186,7 +186,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		example = "experimental(true)"
 	)
 	private Value experimental(Arguments arguments) throws CodeError {
-		arguments.getContext().setExperimental(arguments.getNextVal(BooleanValue.class));
+		arguments.getContext().setExperimental(arguments.getNextGeneric(BooleanValue.class));
 		return NullValue.NULL;
 	}
 
@@ -197,7 +197,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		example = "suppressDeprecated(true)"
 	)
 	private Value suppressDeprecated(Arguments arguments) throws CodeError {
-		arguments.getContext().setSuppressDeprecated(arguments.getNextVal(BooleanValue.class));
+		arguments.getContext().setSuppressDeprecated(arguments.getNextGeneric(BooleanValue.class));
 		return NullValue.NULL;
 	}
 
@@ -335,7 +335,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 	)
 	private Value callFunctionWithList(Arguments arguments) throws CodeError {
 		FunctionValue functionValue = arguments.getNext(FunctionValue.class);
-		ArucasList listValue = arguments.getNextVal(ListValue.class);
+		ArucasList listValue = arguments.getNextGeneric(ListValue.class);
 		return functionValue.call(arguments.getContext(), listValue);
 	}
 

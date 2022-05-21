@@ -92,7 +92,7 @@ public class ListValue extends GenericValue<ArucasList> {
 		)
 		private Value getListIndex(Arguments arguments) throws CodeError {
 			ListValue thisValue = arguments.getNext(ListValue.class);
-			int index = arguments.getNextVal(NumberValue.class).intValue();
+			int index = arguments.getNextGeneric(NumberValue.class).intValue();
 			if (index >= thisValue.value.size() || index < 0) {
 				throw arguments.getError("Index is out of bounds");
 			}
@@ -109,7 +109,7 @@ public class ListValue extends GenericValue<ArucasList> {
 		)
 		private Value removeListIndex(Arguments arguments) throws CodeError {
 			ListValue thisValue = arguments.getNext(ListValue.class);
-			int index = arguments.getNextVal(NumberValue.class).intValue();
+			int index = arguments.getNextGeneric(NumberValue.class).intValue();
 			if (index >= thisValue.value.size() || index < 0) {
 				throw arguments.getError("Index is out of bounds");
 			}
@@ -144,7 +144,7 @@ public class ListValue extends GenericValue<ArucasList> {
 		private Value insertList(Arguments arguments) throws CodeError {
 			ListValue thisValue = arguments.getNext(ListValue.class);
 			Value value = arguments.getNext();
-			int index = arguments.getNextVal(NumberValue.class).intValue();
+			int index = arguments.getNextGeneric(NumberValue.class).intValue();
 			int len = thisValue.value.size();
 			if (index > len || index < 0) {
 				throw arguments.getError("Index is out of bounds");

@@ -324,7 +324,7 @@ public class JavaValue extends GenericValue<Object> {
 			example = "Java.classFromName('java.util.ArrayList');"
 		)
 		private Value classFromName(Arguments arguments) throws CodeError {
-			String name = arguments.getNextVal(StringValue.class);
+			String name = arguments.getNextGeneric(StringValue.class);
 			return new JavaValue(JavaValue.getObfuscatedClass(arguments.getContext(), arguments.getPosition(), name));
 		}
 
@@ -343,8 +343,8 @@ public class JavaValue extends GenericValue<Object> {
 		private Value getStaticField(Arguments arguments) throws CodeError {
 			Context context = arguments.getContext();
 			ISyntax position = arguments.getPosition();
-			String className = arguments.getNextVal(StringValue.class);
-			String fieldName = arguments.getNextVal(StringValue.class);
+			String className = arguments.getNextGeneric(StringValue.class);
+			String fieldName = arguments.getNextGeneric(StringValue.class);
 			Class<?> clazz = JavaValue.getObfuscatedClass(context, position, className);
 			fieldName = JavaValue.getObfuscatedFieldName(context, clazz, fieldName);
 			return ReflectionUtils.getFieldFromName(clazz, null, fieldName, position, context);
@@ -371,8 +371,8 @@ public class JavaValue extends GenericValue<Object> {
 		private Value setStaticField(Arguments arguments) throws CodeError {
 			Context context = arguments.getContext();
 			ISyntax position = arguments.getPosition();
-			String className = arguments.getNextVal(StringValue.class);
-			String fieldName = arguments.getNextVal(StringValue.class);
+			String className = arguments.getNextGeneric(StringValue.class);
+			String fieldName = arguments.getNextGeneric(StringValue.class);
 			Value value = arguments.getNext();
 			Class<?> clazz = JavaValue.getObfuscatedClass(context, position, className);
 			fieldName = JavaValue.getObfuscatedFieldName(context, clazz, fieldName);
@@ -402,9 +402,9 @@ public class JavaValue extends GenericValue<Object> {
 		private Value getStaticMethodDelegate(Arguments arguments) throws CodeError {
 			Context context = arguments.getContext();
 			ISyntax position = arguments.getPosition();
-			String className = arguments.getNextVal(StringValue.class);
-			String methodName = arguments.getNextVal(StringValue.class);
-			int parameters = arguments.getNextVal(NumberValue.class).intValue();
+			String className = arguments.getNextGeneric(StringValue.class);
+			String methodName = arguments.getNextGeneric(StringValue.class);
+			int parameters = arguments.getNextGeneric(NumberValue.class).intValue();
 			Class<?> clazz = JavaValue.getObfuscatedClass(context, position, className);
 			methodName = getObfuscatedMethodName(context, clazz, methodName);
 			Method method = ReflectionUtils.getMethod(clazz, null, methodName, parameters);
@@ -427,7 +427,7 @@ public class JavaValue extends GenericValue<Object> {
 			example = "Java.arrayWithSize(10);"
 		)
 		private Value arrayWithSize(Arguments arguments) throws CodeError {
-			int size = arguments.getNextVal(NumberValue.class).intValue();
+			int size = arguments.getNextGeneric(NumberValue.class).intValue();
 			this.checkArraySize(arguments.getContext(), arguments.getPosition(), size);
 			return new JavaValue(new Object[size]);
 		}
@@ -444,7 +444,7 @@ public class JavaValue extends GenericValue<Object> {
 			example = "Java.doubleArray(10);"
 		)
 		private Value doubleArray(Arguments arguments) throws CodeError {
-			int size = arguments.getNextVal(NumberValue.class).intValue();
+			int size = arguments.getNextGeneric(NumberValue.class).intValue();
 			this.checkArraySize(arguments.getContext(), arguments.getPosition(), size);
 			return new JavaValue(new double[size]);
 		}
@@ -461,7 +461,7 @@ public class JavaValue extends GenericValue<Object> {
 			example = "Java.floatArray(10);"
 		)
 		private Value floatArray(Arguments arguments) throws CodeError {
-			int size = arguments.getNextVal(NumberValue.class).intValue();
+			int size = arguments.getNextGeneric(NumberValue.class).intValue();
 			this.checkArraySize(arguments.getContext(), arguments.getPosition(), size);
 			return new JavaValue(new float[size]);
 		}
@@ -478,7 +478,7 @@ public class JavaValue extends GenericValue<Object> {
 			example = "Java.longArray(10);"
 		)
 		private Value longArray(Arguments arguments) throws CodeError {
-			int size = arguments.getNextVal(NumberValue.class).intValue();
+			int size = arguments.getNextGeneric(NumberValue.class).intValue();
 			this.checkArraySize(arguments.getContext(), arguments.getPosition(), size);
 			return new JavaValue(new long[size]);
 		}
@@ -495,7 +495,7 @@ public class JavaValue extends GenericValue<Object> {
 			example = "Java.intArray(10);"
 		)
 		private Value intArray(Arguments arguments) throws CodeError {
-			int size = arguments.getNextVal(NumberValue.class).intValue();
+			int size = arguments.getNextGeneric(NumberValue.class).intValue();
 			this.checkArraySize(arguments.getContext(), arguments.getPosition(), size);
 			return new JavaValue(new int[size]);
 		}
@@ -512,7 +512,7 @@ public class JavaValue extends GenericValue<Object> {
 			example = "Java.shortArray(10);"
 		)
 		private Value shortArray(Arguments arguments) throws CodeError {
-			int size = arguments.getNextVal(NumberValue.class).intValue();
+			int size = arguments.getNextGeneric(NumberValue.class).intValue();
 			this.checkArraySize(arguments.getContext(), arguments.getPosition(), size);
 			return new JavaValue(new short[size]);
 		}
@@ -529,7 +529,7 @@ public class JavaValue extends GenericValue<Object> {
 			example = "Java.byteArray(10);"
 		)
 		private Value byteArray(Arguments arguments) throws CodeError {
-			int size = arguments.getNextVal(NumberValue.class).intValue();
+			int size = arguments.getNextGeneric(NumberValue.class).intValue();
 			this.checkArraySize(arguments.getContext(), arguments.getPosition(), size);
 			return new JavaValue(new byte[size]);
 		}
@@ -546,7 +546,7 @@ public class JavaValue extends GenericValue<Object> {
 			example = "Java.charArray(10);"
 		)
 		private Value charArray(Arguments arguments) throws CodeError {
-			int size = arguments.getNextVal(NumberValue.class).intValue();
+			int size = arguments.getNextGeneric(NumberValue.class).intValue();
 			this.checkArraySize(arguments.getContext(), arguments.getPosition(), size);
 			return new JavaValue(new char[size]);
 		}
@@ -563,7 +563,7 @@ public class JavaValue extends GenericValue<Object> {
 			example = "Java.booleanArray(10);"
 		)
 		private Value booleanArray(Arguments arguments) throws CodeError {
-			int size = arguments.getNextVal(NumberValue.class).intValue();
+			int size = arguments.getNextGeneric(NumberValue.class).intValue();
 			this.checkArraySize(arguments.getContext(), arguments.getPosition(), size);
 			return new JavaValue(new boolean[size]);
 		}
@@ -705,8 +705,8 @@ public class JavaValue extends GenericValue<Object> {
 			Context context = arguments.getContext();
 			ISyntax position = arguments.getPosition();
 
-			String className = arguments.getNextVal(StringValue.class);
-			String methodName = arguments.getNextVal(StringValue.class);
+			String className = arguments.getNextGeneric(StringValue.class);
+			String methodName = arguments.getNextGeneric(StringValue.class);
 
 			Class<?> clazz = JavaValue.getObfuscatedClass(context, position, className);
 			String name = getObfuscatedMethodName(context, clazz, methodName);
@@ -738,7 +738,7 @@ public class JavaValue extends GenericValue<Object> {
 			Context context = arguments.getContext();
 			ISyntax position = arguments.getPosition();
 
-			String className = arguments.getNextVal(StringValue.class);
+			String className = arguments.getNextGeneric(StringValue.class);
 
 			Class<?> clazz = JavaValue.getObfuscatedClass(context, position, className);
 			return ReflectionUtils.constructFromArgs(clazz, arguments.getRemaining(), position, context);
@@ -786,8 +786,8 @@ public class JavaValue extends GenericValue<Object> {
 		)
 		private Value getMethodDelegate(Arguments arguments) throws CodeError {
 			JavaValue thisValue = arguments.getNext(JavaValue.class);
-			String methodName = arguments.getNextVal(StringValue.class);
-			int parameters = arguments.getNextVal(NumberValue.class).intValue();
+			String methodName = arguments.getNextGeneric(StringValue.class);
+			int parameters = arguments.getNextGeneric(NumberValue.class).intValue();
 			Object callingObject = thisValue.asJavaValue();
 			Class<?> callingClass = callingObject.getClass();
 			methodName = getObfuscatedMethodName(arguments.getContext(), callingClass, methodName);
@@ -826,7 +826,7 @@ public class JavaValue extends GenericValue<Object> {
 				throw arguments.getError("First parameter must be name of method");
 			}
 			Context context = arguments.getContext();
-			String methodName = arguments.getNextVal(StringValue.class);
+			String methodName = arguments.getNextGeneric(StringValue.class);
 
 			Object callingObject = thisValue.asJavaValue();
 			String name = getObfuscatedMethodName(context, callingObject.getClass(), methodName);
@@ -847,7 +847,7 @@ public class JavaValue extends GenericValue<Object> {
 		)
 		private Value getJavaField(Arguments arguments) throws CodeError {
 			JavaValue thisValue = arguments.getNext(JavaValue.class);
-			String fieldName = arguments.getNextVal(StringValue.class);
+			String fieldName = arguments.getNextGeneric(StringValue.class);
 			Context context = arguments.getContext();
 			Object callingObject = thisValue.asJavaValue();
 			fieldName = getObfuscatedFieldName(context, callingObject.getClass(), fieldName);
@@ -866,7 +866,7 @@ public class JavaValue extends GenericValue<Object> {
 		)
 		private Value setJavaField(Arguments arguments) throws CodeError {
 			JavaValue thisValue = arguments.getNext(JavaValue.class);
-			String fieldName = arguments.getNextVal(StringValue.class);
+			String fieldName = arguments.getNextGeneric(StringValue.class);
 			Value newValue = arguments.getNext();
 			Context context = arguments.getContext();
 			Object callingObject = thisValue.asJavaValue();

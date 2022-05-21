@@ -1,7 +1,6 @@
 package me.senseiwells.arucas.utils;
 
 import me.senseiwells.arucas.api.ISyntax;
-import me.senseiwells.arucas.api.docs.ClassDoc;
 import me.senseiwells.arucas.api.wrappers.IArucasWrappedClass;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
@@ -117,7 +116,7 @@ public class Arguments {
 	 */
 	public Value get(int index) throws RuntimeError {
 		if (index < 0 || index >= this.size()) {
-			throw this.function.getError(this.context, "Index %d out of bounds, incorrect amount of parameters", index);
+			throw this.function.getError(this.context, "Index %d out of bounds, incorrect amount of parameters", this.modifyIndex(index));
 		}
 		return this.arguments.get(index);
 	}
@@ -129,7 +128,7 @@ public class Arguments {
 	 * @return the Value at the current index
 	 * @throws RuntimeError if the index is out of bounds
 	 */
-	public Object getVal(int index) throws RuntimeError {
+	public Object getGenericValue(int index) throws RuntimeError {
 		return this.get(index).getValue();
 	}
 
@@ -150,12 +149,10 @@ public class Arguments {
 			String className = Value.getValueName(type);
 			throw this.function.getError(
 				this.context, "Must pass %s into parameter %d for %s()",
-				className, index + 1, this.function.getName()
+				className, this.modifyIndex(index), this.function.getName()
 			);
 		}
-		@SuppressWarnings("unchecked")
-		T typedValue = (T) value;
-		return typedValue;
+		return type.cast(value);
 	}
 
 	/**
@@ -170,8 +167,30 @@ public class Arguments {
 	 * @return the converted Value
 	 * @throws RuntimeError if the index is out of bounds, or the Value is not the correct type
 	 */
-	public <S, T extends GenericValue<S>> S getVal(int index, Class<T> type) throws RuntimeError {
+	public <S, T extends GenericValue<S>> S getGenericValue(int index, Class<T> type) throws RuntimeError {
 		return this.get(index, type).getValue();
+	}
+
+	/**
+	 * This gets the Value at a given index in the arguments,
+	 * and gets its Java value, otherwise throwing
+	 * a RuntimeError for wrong type
+	 *
+	 * @param index the index of the Value to get
+	 * @param type  the type to convert the Value to
+	 * @param <T>   the type to convert the Value to
+	 * @return the converted Value
+	 * @throws RuntimeError if the index is out of bounds, or the Value is not the correct type
+	 */
+	public <T> T getAsValue(int index, Class<T> type) throws RuntimeError {
+		Object object = this.get(index).asJavaValue();
+		if (!type.isInstance(object)) {
+			throw this.function.getError(
+				this.context, "Must pass '%s' into parameter %d for %s()",
+				type.getSimpleName(), index + 1, this.function.getName()
+			);
+		}
+		return type.cast(object);
 	}
 
 	/**
@@ -247,8 +266,21 @@ public class Arguments {
 		return wrapper.getWrapper(type);
 	}
 
-	public <S, T extends GenericValue<S>> S getNextVal(Class<T> type) throws RuntimeError {
-		return this.getNext(type).getValue();
+	public <S, T extends GenericValue<S>> S getNextGeneric(Class<T> type) throws RuntimeError {
+		return this.getGenericValue(this.index++, type);
+	}
+
+	public <T> T getNextAsValue(Class<T> type) throws RuntimeError {
+		return this.getAsValue(this.index++, type);
+	}
+
+	public <T extends Value> T find(Class<T> type) {
+		for (Value value : this.arguments) {
+			if (type.isInstance(value)) {
+				return type.cast(value);
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -275,5 +307,25 @@ public class Arguments {
 	 */
 	public int size() {
 		return this.arguments.size();
+	}
+
+	protected int modifyIndex(int index) {
+		return index + 1;
+	}
+
+	/**
+	 * This class is for Member functions, since 'this'
+	 * is passed in as the first argument we don't want
+	 * to include it in the index
+	 */
+	public static class Member extends Arguments {
+		public Member(Context context, FunctionValue function, List<Value> arguments) {
+			super(context, function, arguments);
+		}
+
+		@Override
+		protected int modifyIndex(int index) {
+			return index;
+		}
 	}
 }
