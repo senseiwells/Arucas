@@ -4,7 +4,7 @@ import java.lang.annotation.*;
 
 @Repeatable(MemberDoc.List.class)
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
+@Target({ElementType.METHOD, ElementType.FIELD})
 public @interface MemberDoc {
 	boolean isStatic() default false;
 	String name();
