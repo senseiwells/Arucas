@@ -10,7 +10,7 @@ import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.functions.MemberOperations;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,7 +24,7 @@ public abstract class AbstractClassDefinition implements MemberOperations {
 	public AbstractClassDefinition(String name) {
 		this.name = name;
 		this.staticMethods = new ArucasFunctionMap<>();
-		this.staticMemberVariables = new HashMap<>();
+		this.staticMemberVariables = new LinkedHashMap<>();
 		this.typeValue = new TypeValue(this);
 	}
 
