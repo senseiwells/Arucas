@@ -39,8 +39,9 @@ public class ContextBuilder {
 	private final ValueConverter converter;
 
 	private IArucasAPI arucasAPI;
-	private boolean suppressDeprecated;
 	private String displayName;
+	private boolean suppressDeprecated;
+	private int poolSize;
 
 	public ContextBuilder() {
 		this.extensions = new ArrayList<>();
@@ -50,6 +51,7 @@ public class ContextBuilder {
 		this.converter = new ValueConverter();
 		this.arucasAPI = new DefaultArucasAPI();
 		this.displayName = "";
+		this.poolSize = 2;
 	}
 
 	public ContextBuilder setDisplayName(String displayName) {
@@ -59,6 +61,11 @@ public class ContextBuilder {
 
 	public ContextBuilder setSuppressDeprecated(boolean suppressDeprecated) {
 		this.suppressDeprecated = suppressDeprecated;
+		return this;
+	}
+
+	public ContextBuilder setThreadPoolSize(int size) {
+		this.poolSize = size;
 		return this;
 	}
 
@@ -312,6 +319,7 @@ public class ContextBuilder {
 		classDefinitions.merge();
 
 		ArucasThreadHandler threadHandler = new ArucasThreadHandler();
+		threadHandler.setThreadPoolSize(this.poolSize);
 
 		Context context = new Context(this.displayName, null, extensionList, threadHandler, this.converter, this.arucasAPI);
 		context.setSuppressDeprecated(this.suppressDeprecated);

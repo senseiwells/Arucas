@@ -5,17 +5,20 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.ExceptionUtils;
+import me.senseiwells.arucas.utils.ExceptionUtils.ThrowableRunnable;
 import me.senseiwells.arucas.utils.impl.ArucasThread;
 import me.senseiwells.arucas.values.Value;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 
 @SuppressWarnings({"UnusedReturnValue", "unused"})
 public final class ArucasThreadHandler {
 	private final ThreadGroup arucasThreadGroup;
-	private final ThreadPoolExecutor asyncThreads;
+	private final ScheduledThreadPoolExecutor asyncThreads;
 	private final List<Runnable> shutdownEvents;
 
 	private TriConsumer<Context, Throwable, String> fatalErrorHandler;
@@ -33,9 +36,8 @@ public final class ArucasThreadHandler {
 		this.isRunning = false;
 		this.hasError = false;
 
-		this.asyncThreads = new ThreadPoolExecutor(
-			1, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<>(),
-			runnable -> new ArucasThread(this.arucasThreadGroup, runnable, "Arucas Async Thread")
+		this.asyncThreads = new ScheduledThreadPoolExecutor(
+			2, runnable -> new ArucasThread(this.arucasThreadGroup, runnable, "Arucas Async Thread")
 		);
 	}
 
@@ -57,6 +59,13 @@ public final class ArucasThreadHandler {
 	 */
 	public synchronized void addShutdownEvent(Runnable runnable) {
 		this.shutdownEvents.add(runnable);
+	}
+
+	/**
+	 * This changes the current thread pool size
+	 */
+	public synchronized void setThreadPoolSize(int size) {
+		this.asyncThreads.setCorePoolSize(size);
 	}
 
 	/**
@@ -223,9 +232,9 @@ public final class ArucasThreadHandler {
 	}
 
 	/**
-	 * @see #runAsyncFunctionInContext(Context, ThrowableConsumer, String)
+	 * @see #runAsyncFunctionInContext(Context, ContextConsumer, String)
 	 */
-	public ArucasThread runAsyncFunctionInContext(Context context, ThrowableConsumer<Context> consumer) {
+	public ArucasThread runAsyncFunctionInContext(Context context, ContextConsumer consumer) {
 		return this.runAsyncFunction(context, consumer, "Arucas Async Thread");
 	}
 
@@ -237,11 +246,11 @@ public final class ArucasThreadHandler {
 	 * @param consumer   the code you want to execute on the thread
 	 * @param threadName the name of the thread
 	 */
-	public ArucasThread runAsyncFunctionInContext(Context context, ThrowableConsumer<Context> consumer, String threadName) {
+	public ArucasThread runAsyncFunctionInContext(Context context, ContextConsumer consumer, String threadName) {
 		return this.runAsyncFunction(context, consumer, threadName);
 	}
 
-	private ArucasThread runAsyncFunction(Context context, ThrowableConsumer<Context> consumer, String name) {
+	private ArucasThread runAsyncFunction(Context context, ContextConsumer consumer, String name) {
 		// Make sure that this handler belongs to the provided context
 		// We also check that the Main thread is still running
 		if (context.getThreadHandler() != this || !this.isRunning()) {
@@ -258,7 +267,7 @@ public final class ArucasThreadHandler {
 		}, name).start(context);
 	}
 
-	public void runAsyncFunctionInThreadPool(Context context, ThrowableConsumer<Context> consumer) {
+	public void runAsyncFunctionInThreadPool(Context context, ContextConsumer consumer) {
 		if (context.getThreadHandler() != this || !this.isRunning()) {
 			return;
 		}
@@ -274,6 +283,42 @@ public final class ArucasThreadHandler {
 				this.tryError(context, t);
 			}
 		});
+	}
+
+	public ScheduledFuture<?> scheduleAsyncFunctionInThreadPool(int delay, TimeUnit timeUnit, Context context, ContextConsumer consumer) {
+		if (context.getThreadHandler() != this || !this.isRunning()) {
+			return null;
+		}
+
+		return this.asyncThreads.schedule(() -> {
+			if (context.isDebug()) {
+				context.getOutput().log("Running Scheduled Async Thread\n");
+			}
+			try {
+				consumer.accept(context);
+			}
+			catch (Throwable t) {
+				this.tryError(context, t);
+			}
+		}, delay, timeUnit);
+	}
+
+	public ScheduledFuture<?> loopAsyncFunctionInThreadPool(int period, TimeUnit timeUnit, Supplier<Boolean> shouldContinue, ThrowableRunnable onFinish, Context context, ContextConsumer consumer) {
+		AtomicReference<ScheduledFuture<?>> futureRef = new AtomicReference<>();
+		futureRef.set(this.asyncThreads.scheduleAtFixedRate(() -> {
+			try {
+				consumer.accept(context);
+
+				if (!shouldContinue.get()) {
+					futureRef.get().cancel(false);
+					onFinish.run();
+				}
+			}
+			catch (Throwable t) {
+				this.tryError(context, t);
+			}
+		}, 0, period, timeUnit));
+		return futureRef.get();
 	}
 
 	private synchronized void stop() {
@@ -294,7 +339,7 @@ public final class ArucasThreadHandler {
 	}
 
 	@FunctionalInterface
-	public interface ThrowableConsumer<T> {
-		void accept(T obj) throws Throwable;
+	public interface ContextConsumer {
+		void accept(Context obj) throws Throwable;
 	}
 }
