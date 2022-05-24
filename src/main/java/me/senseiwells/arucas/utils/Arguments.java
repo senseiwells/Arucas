@@ -156,6 +156,29 @@ public class Arguments {
 	}
 
 	/**
+	 * This gets any type of Value at a given index in the
+	 * arguments, this is intended for getting values that
+	 * implement interfaces, if not an instance then it will
+	 * throw a RuntimeError for wrong type
+	 *
+	 * @param index the index of the Value to get
+	 * @param type the type of to convert the Value to
+	 * @param <T> the type to convert the Value to
+	 * @return the converted Value
+	 * @throws RuntimeError if the index is out of bounds, or the Value is not the correct type
+	 */
+	public <T> T getAny(int index, Class<T> type) throws RuntimeError {
+		Value value = this.get(index);
+		if (!type.isInstance(value)) {
+			throw this.function.getError(
+				this.context, "Must pass %s into parameter %d for %s()",
+				type.getSimpleName(), this.modifyIndex(index), this.function.getName()
+			);
+		}
+		return type.cast(value);
+	}
+
+	/**
 	 * Gets the Value at the current index in the arguments,
 	 * and converts it to a specific type, otherwise throwing
 	 * a RuntimeError for wrong type
@@ -231,6 +254,20 @@ public class Arguments {
 	 */
 	public <T extends Value> T getNext(Class<T> type) throws RuntimeError {
 		return this.get(this.index++, type);
+	}
+
+	/**
+	 * This gets the next Value in the argument iterator, and increments the index,
+	 * and converts it to a specific type, otherwise throwing
+	 * a RuntimeError for wrong type
+	 *
+	 * @param type the type to convert the Value to
+	 * @param <T>  the type to convert the Value to
+	 * @return the converted Value
+	 * @throws RuntimeError if there are no more Values in the argument iterator, or the Value is not the correct type
+	 */
+	public <T> T getAnyNext(Class<T> type) throws RuntimeError {
+		return this.getAny(this.index++, type);
 	}
 
 	public BooleanValue getNextBoolean() throws RuntimeError {
