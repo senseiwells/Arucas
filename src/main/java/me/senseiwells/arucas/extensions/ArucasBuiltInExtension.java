@@ -80,7 +80,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		params = {STRING, "path", "as a file path"},
 		returns = {ANY, "any value that the file returns"},
 		throwMsgs = "Failed to execute script...",
-		example = "run('/home/user/script.arucas')"
+		example = "run('/home/user/script.arucas');"
 	)
 	private Value run(Arguments arguments) throws CodeError {
 		StringValue stringValue = arguments.getNext(StringValue.class);
@@ -98,7 +98,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 	@FunctionDoc(
 		name = "stop",
 		desc = "This is used to stop a script",
-		example = "stop()"
+		example = "stop();"
 	)
 	private Value stop(Arguments arguments) throws CodeError {
 		throw new ThrowStop();
@@ -108,7 +108,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		name = "sleep",
 		desc = "This pauses your program for a certain amount of milliseconds",
 		params = {NUMBER, "milliseconds", "milliseconds to sleep"},
-		example = "sleep(1000)"
+		example = "sleep(1000);"
 	)
 	private Value sleep(Arguments arguments) throws CodeError {
 		NumberValue numberValue = arguments.getNext(NumberValue.class);
@@ -125,7 +125,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		name = "print",
 		desc = "This prints a value to the console",
 		params = {ANY, "printValue", "the value to print"},
-		example = "print('Hello World')"
+		example = "print('Hello World');"
 	)
 	private Value print(Arguments arguments) throws CodeError {
 		Context context = arguments.getContext();
@@ -138,7 +138,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		name = "print",
 		desc = "This prints a number of values to the console",
 		params = {ANY, "printValue...", "the value to print"},
-		example = "print('Hello World', 'This is a test', 123)"
+		example = "print('Hello World', 'This is a test', 123);"
 	)
 	private Value fullPrint(Arguments arguments) throws CodeError {
 		Context context = arguments.getContext();
@@ -160,7 +160,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		desc = "This is used to take an input from the user",
 		params = {STRING, "prompt", "the prompt to show the user"},
 		returns = {STRING, "the input from the user"},
-		example = "input('What is your name?')"
+		example = "input('What is your name?');"
 	)
 	private synchronized Value input(Arguments arguments) throws CodeError {
 		StringValue stringValue = arguments.getNext(StringValue.class);
@@ -172,7 +172,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		name = "debug",
 		desc = "This is used to enable or disable debug mode",
 		params = {BOOLEAN, "bool", "true to enable debug mode, false to disable debug mode"},
-		example = "debug(true)"
+		example = "debug(true);"
 	)
 	private Value debug(Arguments arguments) throws CodeError {
 		arguments.getContext().setDebug(arguments.getNextGeneric(BooleanValue.class));
@@ -183,7 +183,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		name = "experimental",
 		desc = "This is used to enable or disable experimental mode",
 		params = {BOOLEAN, "bool", "true to enable experimental mode, false to disable experimental mode"},
-		example = "experimental(true)"
+		example = "experimental(true);"
 	)
 	private Value experimental(Arguments arguments) throws CodeError {
 		arguments.getContext().setExperimental(arguments.getNextGeneric(BooleanValue.class));
@@ -194,7 +194,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		name = "suppressDeprecated",
 		desc = "This is used to enable or disable suppressing deprecation warnings",
 		params = {BOOLEAN, "bool", "true to enable suppressing deprecation warnings, false to disable suppressing deprecation warnings"},
-		example = "suppressDeprecated(true)"
+		example = "suppressDeprecated(true);"
 	)
 	private Value suppressDeprecated(Arguments arguments) throws CodeError {
 		arguments.getContext().setSuppressDeprecated(arguments.getNextGeneric(BooleanValue.class));
@@ -205,7 +205,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		name = "isMain",
 		desc = "This is used to check whether the script is the main script",
 		returns = {BOOLEAN, "true if the script is the main script, false if it is not"},
-		example = "isMain()"
+		example = "isMain();"
 	)
 	private Value isMain(Arguments arguments) {
 		return BooleanValue.of(arguments.getContext().isMain());
@@ -215,7 +215,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		name = "getArucasVersion",
 		desc = "This is used to get the version of Arucas that is currently running",
 		returns = {STRING, "the version of Arucas that is currently running"},
-		example = "getArucasVersion()"
+		example = "getArucasVersion();"
 	)
 	private Value getArucasVersion(Arguments arguments) {
 		return StringValue.of(Arucas.VERSION);
@@ -227,7 +227,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		desc = "This is used to generate a random integer between 0 and the bound",
 		params = {NUMBER, "bound", "the maximum bound (exclusive)"},
 		returns = {NUMBER, "the random integer"},
-		example = "random(10)"
+		example = "random(10);"
 	)
 	private Value random(Arguments arguments) throws CodeError {
 		NumberValue numValue = arguments.getNext(NumberValue.class);
@@ -238,7 +238,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		name = "getTime",
 		desc = "This is used to get the current time formatted with HH:mm:ss in your local time",
 		returns = {STRING, "the current time formatted with HH:mm:ss"},
-		example = "getTime()"
+		example = "getTime();"
 	)
 	private Value getTime(Arguments arguments) {
 		return StringValue.of(DateTimeFormatter.ofPattern("HH:mm:ss").format(LocalTime.now()));
@@ -248,7 +248,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		name = "getNanoTime",
 		desc = "This is used to get the current time in nanoseconds",
 		returns = {NUMBER, "the current time in nanoseconds"},
-		example = "getNanoTime()"
+		example = "getNanoTime();"
 	)
 	private Value getNanoTime(Arguments arguments) {
 		return NumberValue.of(System.nanoTime());
@@ -258,7 +258,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		name = "getMilliTime",
 		desc = "This is used to get the current time in milliseconds",
 		returns = {NUMBER, "the current time in milliseconds"},
-		example = "getMilliTime()"
+		example = "getMilliTime();"
 	)
 	private Value getMilliTime(Arguments arguments) {
 		return NumberValue.of(System.currentTimeMillis());
@@ -268,7 +268,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		name = "getUnixTime",
 		desc = "This is used to get the current time in seconds since the Unix epoch",
 		returns = {NUMBER, "the current time in seconds since the Unix epoch"},
-		example = "getUnixTime()"
+		example = "getUnixTime();"
 	)
 	private Value getUnixTime(Arguments arguments) {
 		return NumberValue.of(System.currentTimeMillis() / 1000F);
@@ -278,7 +278,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		name = "getDate",
 		desc = "This is used to get the current date formatted with dd/MM/yyyy in your local time",
 		returns = {STRING, "the current date formatted with dd/MM/yyyy"},
-		example = "getDate()"
+		example = "getDate();"
 	)
 	private Value getDate(Arguments arguments) {
 		return StringValue.of(DateTimeFormatter.ofPattern("dd/MM/yyyy").format(LocalDate.now()));
@@ -289,7 +289,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		desc = "This is used to get the length of a collection or string",
 		params = {STRING, "collection", "the collection or string"},
 		throwMsgs = "Cannot pass ... into len()",
-		example = "len(\"Hello World\")"
+		example = "len(\"Hello World\");"
 	)
 	private Value len(Arguments arguments) throws CodeError {
 		Value value = arguments.getNext();
@@ -315,7 +315,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		desc = "This is used to throw a runtime error",
 		params = {STRING, "message", "the message of the error"},
 		throwMsgs = "the error with the message",
-		example = "throwRuntimeError('I'm throwing this error')"
+		example = "throwRuntimeError('I'm throwing this error');"
 	)
 	private Value throwRuntimeError(Arguments arguments) throws CodeError {
 		StringValue stringValue = arguments.getNext(StringValue.class);
@@ -331,7 +331,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 			LIST, "list", "the list of arguments"
 		},
 		returns = {ANY, "the return value of the function"},
-		example = "callFunctionWithList(fun(n1, n2, n3) {}, [1, 2, 3])"
+		example = "callFunctionWithList(fun(n1, n2, n3) {}, [1, 2, 3]);"
 	)
 	private Value callFunctionWithList(Arguments arguments) throws CodeError {
 		FunctionValue functionValue = arguments.getNext(FunctionValue.class);
@@ -344,7 +344,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		desc = "This is used to evaluate a string as a script",
 		params = {STRING, "string", "the string to evaluate"},
 		returns = {ANY, "the return value of the script"},
-		example = "runFromString('return 1;')"
+		example = "runFromString('return 1;');"
 	)
 	private Value runFromString(Arguments arguments) throws CodeError {
 		StringValue stringValue = arguments.getNext(StringValue.class);
