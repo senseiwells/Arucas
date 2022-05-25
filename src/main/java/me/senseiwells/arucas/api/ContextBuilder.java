@@ -1,5 +1,6 @@
 package me.senseiwells.arucas.api;
 
+import com.google.gson.JsonElement;
 import me.senseiwells.arucas.api.docs.parser.CodeDocParser;
 import me.senseiwells.arucas.api.impl.DefaultArucasAPI;
 import me.senseiwells.arucas.api.wrappers.IArucasWrappedClass;
@@ -206,6 +207,7 @@ public class ContextBuilder {
 		this.addConversion(ArucasMap.class, (m, c) -> new MapValue(m));
 		this.addConversion(AbstractClassDefinition.class, (a, c) -> a.getType());
 		this.addConversion(Stream.class, (s, c) -> c.convertValue(s.toList()));
+		this.addConversion(JsonElement.class, (j, c) -> new JsonValue(j));
 		this.addArrayConversion((o, c) -> {
 			ArucasList arucasList = new ArucasList();
 			for (Object object : o) {
