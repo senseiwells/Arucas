@@ -236,6 +236,22 @@ public class ContextBuilder {
 		return this;
 	}
 
+	public List<Supplier<IArucasExtension>> getExtensions() {
+		return this.extensions;
+	}
+
+	public List<Supplier<ArucasClassExtension>> getBuiltInClasses() {
+		return this.builtInClasses;
+	}
+
+	public Map<String, List<Supplier<ArucasClassExtension>>> getClasses() {
+		return this.classes;
+	}
+
+	public Map<String, List<Supplier<IArucasWrappedClass>>> getWrappers() {
+		return this.wrappers;
+	}
+
 	public ContextBuilder generateArucasFiles() throws IOException {
 		ArucasClassDefinitionMap classDefinitions = new ArucasClassDefinitionMap();
 

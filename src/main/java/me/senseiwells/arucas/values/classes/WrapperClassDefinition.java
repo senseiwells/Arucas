@@ -11,6 +11,7 @@ import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.functions.WrapperMemberFunction;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +57,11 @@ public class WrapperClassDefinition extends AbstractClassDefinition {
 
 	public ArucasMemberHandle getMemberHandle(String name) {
 		return this.fieldMap.get(name);
+	}
+
+	@SuppressWarnings("unused")
+	public Collection<String> getFieldNames() {
+		return this.fieldMap.keySet();
 	}
 
 	@Override
