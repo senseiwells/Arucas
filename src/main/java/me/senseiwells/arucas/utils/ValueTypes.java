@@ -12,6 +12,7 @@ public class ValueTypes {
 		FILE = "File",
 		FUNCTION = "Function",
 		JAVA = "Java",
+		JSON = "Json",
 		LIST = "List",
 		MAP = "Map",
 		MATH = "Math",

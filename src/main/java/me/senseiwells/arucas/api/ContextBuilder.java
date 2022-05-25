@@ -1,7 +1,6 @@
 package me.senseiwells.arucas.api;
 
-import me.senseiwells.arucas.api.docs.parser.ClassDocParser;
-import me.senseiwells.arucas.api.docs.parser.ExtensionDocParser;
+import me.senseiwells.arucas.api.docs.parser.CodeDocParser;
 import me.senseiwells.arucas.api.impl.DefaultArucasAPI;
 import me.senseiwells.arucas.api.wrappers.IArucasWrappedClass;
 import me.senseiwells.arucas.extensions.ArucasBuiltInExtension;
@@ -9,6 +8,7 @@ import me.senseiwells.arucas.extensions.ArucasMathClass;
 import me.senseiwells.arucas.extensions.util.ArucasNetworkClass;
 import me.senseiwells.arucas.extensions.util.CollectorValue;
 import me.senseiwells.arucas.extensions.util.JavaValue;
+import me.senseiwells.arucas.extensions.util.JsonValue;
 import me.senseiwells.arucas.utils.*;
 import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.utils.impl.ArucasMap;
@@ -188,6 +188,10 @@ public class ContextBuilder {
 			"util\\Internal",
 			JavaValue.ArucasJavaClass::new
 		);
+		this.addClasses(
+			"util\\Json",
+			JsonValue.ArucasJsonClass::new
+		);
 		return this;
 	}
 
@@ -276,17 +280,14 @@ public class ContextBuilder {
 			}
 		});
 
+		CodeDocParser parser = CodeDocParser.of(this);
 		for (Map.Entry<String, ArucasClassDefinitionMap> entry : importables.entrySet()) {
-			StringBuilder builder = new StringBuilder();
 			Path generationPath = this.arucasAPI.getImportPath().resolve(entry.getKey() + ".arucas");
 			Path parent = generationPath.getParent();
 			if (!Files.exists(parent)) {
 				Files.createDirectories(parent);
 			}
-			for (AbstractClassDefinition definition : entry.getValue()) {
-				builder.append(new ClassDocParser(definition).parse()).append("\n\n");
-			}
-			Files.write(generationPath, Collections.singleton(builder.toString()));
+			Files.write(generationPath, Collections.singleton(parser.parseClasses()));
 		}
 
 		if (!this.extensions.isEmpty()) {
@@ -295,8 +296,7 @@ public class ContextBuilder {
 			if (!Files.exists(parent)) {
 				Files.createDirectories(parent);
 			}
-			String documentation = new ExtensionDocParser(this.extensions.stream().map(Supplier::get).toList()).parse();
-			Files.write(generationPath, Collections.singleton(documentation));
+			Files.write(generationPath, Collections.singleton(parser.parse()));
 		}
 
 		return this;

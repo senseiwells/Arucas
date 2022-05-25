@@ -1,100 +1,181 @@
 package me.senseiwells.arucas.api.docs.parser;
 
+import me.senseiwells.arucas.api.ContextBuilder;
+import me.senseiwells.arucas.api.IArucasExtension;
+import me.senseiwells.arucas.api.docs.ClassDoc;
+import me.senseiwells.arucas.api.docs.ConstructorDoc;
 import me.senseiwells.arucas.api.docs.FunctionDoc;
+import me.senseiwells.arucas.api.docs.MemberDoc;
+import me.senseiwells.arucas.utils.ExceptionUtils;
+import me.senseiwells.arucas.utils.ExceptionUtils.ThrowableSupplier;
+import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
+import me.senseiwells.arucas.values.classes.WrapperClassDefinition;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.function.Supplier;
 
 public abstract class DocParser {
-	protected abstract String getIndent();
+	private final List<AbstractClassDefinition> definitions;
+	private final List<IArucasExtension> extensions;
+
+	protected DocParser() {
+		this.definitions = new ArrayList<>();
+		this.extensions = new ArrayList<>();
+	}
 
 	public abstract String parse();
 
-	protected void addArgumentsToBuilder(StringBuilder builder, List<String> args, int params) {
-		if (args == null) {
-			if (params < 0) {
-				builder.append("args...");
-				return;
-			}
-			for (int i = 0; i < params; i++) {
-				String argName = "arg" + (i + 1);
-				builder.append(argName);
-				if (i < params - 1) {
-					builder.append(", ");
-				}
-			}
-			return;
+	public void write(ThrowableSupplier<Path> path) {
+		ExceptionUtils.runSafe(() -> Files.write(path.get(), Collections.singleton(this.parse())));
+	}
+
+	protected void addFromBuilder(ContextBuilder builder) {
+		builder.getExtensions().stream()
+			.map(Supplier::get).forEach(this::addExtension);
+		builder.getBuiltInClasses().stream()
+			.map(Supplier::get).forEach(this::addDefinition);
+		builder.getClasses().values().stream()
+			.flatMap(Collection::stream).forEach(e -> this.addDefinition(e.get()));
+	}
+
+	protected List<AbstractClassDefinition> getDefinitions() {
+		return this.definitions;
+	}
+
+	protected List<IArucasExtension> getExtensions() {
+		return this.extensions;
+	}
+
+	public void addDefinition(AbstractClassDefinition definition) {
+		this.definitions.add(definition);
+	}
+
+	public void addExtension(IArucasExtension extension) {
+		this.extensions.add(extension);
+	}
+
+	protected Integer getConstructorId(ConstructorDoc doc) {
+		if (doc == null) {
+			return null;
+		}
+		return doc.params().length / 3;
+	}
+
+	protected String getFunctionId(FunctionDoc doc) {
+		if (doc == null) {
+			return null;
+		}
+		var functionId = (doc.isStatic() ? "$" : "") + doc.name();
+		return functionId + (doc.isVarArgs() ? "-1" : doc.params().length / 3);
+	}
+
+	protected String getMemberId(MemberDoc doc) {
+		if (doc == null) {
+			return null;
+		}
+		return (doc.isStatic() ? "$" : "") + doc.name();
+	}
+
+	protected class ParsedExtensionDocs {
+		private final Map<String, FunctionDoc> functionDocMap;
+
+		ParsedExtensionDocs(IArucasExtension extension) {
+			this.functionDocMap = new HashMap<>();
+
+			this.parse(extension);
 		}
 
-		Iterator<String> stringIterator = args.iterator();
-		while (stringIterator.hasNext()) {
-			String argName = stringIterator.next();
-			builder.append(argName);
-			if (stringIterator.hasNext()) {
-				builder.append(", ");
+		public FunctionDoc getFunctionDoc(String functionId) {
+			return this.functionDocMap.get(functionId);
+		}
+
+		private void parse(IArucasExtension extension) {
+			for (Method method : extension.getClass().getDeclaredMethods()) {
+				FunctionDoc doc = method.getAnnotation(FunctionDoc.class);
+				String functionId = DocParser.this.getFunctionId(doc);
+				if (functionId != null) {
+					this.functionDocMap.put(functionId, doc);
+				}
 			}
 		}
 	}
 
-	protected List<String> addFunctionDoc(StringBuilder builder, FunctionDoc doc) {
-		String indent = this.getIndent();
-		List<String> parameterNames = null;
-		if (doc != null) {
-			builder.append(indent).append("/*\n");
+	protected class ParsedClassDocs {
+		private final Map<Integer, ConstructorDoc> constructorDocMap;
+		private final Map<String, FunctionDoc> functionDocMap;
+		private final Map<String, MemberDoc> memberDocMap;
+		private final ClassDoc classDoc;
+		private final boolean isWrapper;
 
-			boolean deprecated = false;
-			for (String deprecate : doc.deprecated()) {
-				builder.append(indent).append(" * ");
-				if (!deprecated) {
-					builder.append("Deprecated: ");
-					deprecated = true;
-				}
-				builder.append(deprecate).append("\n");
-			}
+		ParsedClassDocs(AbstractClassDefinition definition) {
+			this.constructorDocMap = new HashMap<>();
+			this.functionDocMap = new HashMap<>();
+			this.memberDocMap = new HashMap<>();
 
-			for (String desc : doc.desc()) {
-				builder.append(indent).append(" * ").append(desc).append("\n");
-			}
 
-			parameterNames = this.addParameters(builder, doc.params());
+			Class<?> definitionClass = definition.getDefiningClass();
+			this.classDoc = definitionClass.getAnnotation(ClassDoc.class);
+			this.isWrapper = definition instanceof WrapperClassDefinition;
 
-			String[] returns = doc.returns();
-			if (returns.length == 2) {
-				builder.append(indent).append(" * ").append("Returns - ").append(returns[0]);
-				builder.append(": ").append(returns[1]).append("\n");
-			}
+			this.parse(definitionClass);
+		}
 
-			boolean hasThrown = false;
-			for (String throwMessage : doc.throwMsgs()) {
-				if (!hasThrown) {
-					builder.append(indent).append(" * ").append("Throws - Error: ").append(throwMessage);
-					hasThrown = true;
+		public ConstructorDoc getConstructorDoc(int parameters) {
+			return this.constructorDocMap.get(parameters);
+		}
+
+		public FunctionDoc getFunctionDoc(String functionId) {
+			return this.functionDocMap.get(functionId);
+		}
+
+		public MemberDoc getMemberDoc(String memberId) {
+			return this.memberDocMap.get(memberId);
+		}
+
+		public ClassDoc getClassDoc() {
+			return this.classDoc;
+		}
+
+		public boolean isWrapper() {
+			return this.isWrapper;
+		}
+
+		private void parse(Class<?> definitionClass) {
+			for (Method method : this.isWrapper ? definitionClass.getMethods() : definitionClass.getDeclaredMethods()) {
+				ConstructorDoc constructorDoc = method.getAnnotation(ConstructorDoc.class);
+				Integer constructorId = DocParser.this.getConstructorId(constructorDoc);
+				if (constructorId != null) {
+					this.constructorDocMap.put(constructorId, constructorDoc);
 					continue;
 				}
-				builder.append(", ").append(throwMessage);
-			}
-			if (hasThrown) {
-				builder.append("\n");
+
+				FunctionDoc functionDoc = method.getAnnotation(FunctionDoc.class);
+				String functionId = DocParser.this.getFunctionId(functionDoc);
+				if (functionId != null) {
+					this.functionDocMap.put(functionId, functionDoc);
+					continue;
+				}
+
+				MemberDoc[] memberDocs = method.getAnnotationsByType(MemberDoc.class);
+				for (MemberDoc memberDoc : memberDocs) {
+					String memberId = DocParser.this.getMemberId(memberDoc);
+					this.memberDocMap.put(memberId, memberDoc);
+				}
 			}
 
-			builder.append(indent).append(" */\n");
-		}
-		return parameterNames;
-	}
-
-	protected List<String> addParameters(StringBuilder builder, String[] params) {
-		if (params.length % 3 == 0) {
-			String indent = this.getIndent();
-			List<String> parameterNames = new ArrayList<>();
-			for (int i = 0; i < params.length; i += 3) {
-				builder.append(indent).append(" * ").append("Parameter - ");
-				builder.append(params[i]).append(" (").append(params[i + 1]).append("): ");
-				builder.append(params[i + 2]).append("\n");
-				parameterNames.add(params[i + 1]);
+			if (this.isWrapper) {
+				for (Field field : definitionClass.getFields()) {
+					MemberDoc memberDoc = field.getAnnotation(MemberDoc.class);
+					String memberId = DocParser.this.getMemberId(memberDoc);
+					if (memberId != null) {
+						this.memberDocMap.put(memberId, memberDoc);
+					}
+				}
 			}
-			return parameterNames;
 		}
-		return null;
 	}
 }

@@ -331,7 +331,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 			LIST, "list", "the list of arguments"
 		},
 		returns = {ANY, "the return value of the function"},
-		example = "callFunctionWithList(fun(n1, n2, n3) {}, [1, 2, 3]);"
+		example = "callFunctionWithList(fun(n1, n2, n3) { }, [1, 2, 3]);"
 	)
 	private Value callFunctionWithList(Arguments arguments) throws CodeError {
 		FunctionValue functionValue = arguments.getNext(FunctionValue.class);

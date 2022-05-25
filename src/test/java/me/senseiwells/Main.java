@@ -1,6 +1,7 @@
 package me.senseiwells;
 
 import me.senseiwells.arucas.api.ContextBuilder;
+import me.senseiwells.arucas.api.docs.parser.JsonParser;
 import me.senseiwells.arucas.utils.ArgumentParser;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.impl.wrappers.ArucasTestWrapper;
@@ -13,22 +14,18 @@ import java.util.Scanner;
 import java.util.concurrent.ExecutionException;
 
 public class Main {
-	@Deprecated
 	public static void main(String[] args) throws InterruptedException, IOException, ExecutionException {
-		Context context = new ContextBuilder()
+		ContextBuilder builder = new ContextBuilder()
 			.setDisplayName("System.in")
 			.addDefault()
-			.addWrappers(
-				"test",
-				ChildWrapper::new,
-				ArucasTestWrapper::new
-			)
-			.generateArucasFiles()
-			.build();
+			.generateArucasFiles();
+
+		Context context = builder.build();
 
 		ArgumentParser parser = new ArgumentParser()
 			.addArgument("-noformat", c -> c.getOutput().setFormatting("", "", ""))
-			.addArgument("-debug", c -> c.setDebug(true));
+			.addArgument("-debug", c -> c.setDebug(true))
+			.addArgument("-genjson", c -> JsonParser.of(builder).write(() -> c.getImportPath().getParent().resolve("docs").resolve("AllDocs.json")));
 		parser.parse(context, args);
 
 		context.getOutput().println("Welcome to Arucas Interpreter");
