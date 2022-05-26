@@ -9,6 +9,7 @@ import me.senseiwells.arucas.api.docs.MemberDoc;
 import me.senseiwells.arucas.utils.ExceptionUtils;
 import me.senseiwells.arucas.utils.ExceptionUtils.ThrowableSupplier;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
+import me.senseiwells.arucas.values.classes.ArucasWrapperCreator;
 import me.senseiwells.arucas.values.classes.WrapperClassDefinition;
 
 import java.lang.reflect.Field;
@@ -35,11 +36,18 @@ public abstract class DocParser {
 
 	protected void addFromBuilder(ContextBuilder builder) {
 		builder.getExtensions().stream()
-			.map(Supplier::get).forEach(this::addExtension);
+			.map(Supplier::get)
+			.forEach(this::addExtension);
 		builder.getBuiltInClasses().stream()
-			.map(Supplier::get).forEach(this::addDefinition);
+			.map(Supplier::get)
+			.forEach(this::addDefinition);
 		builder.getClasses().values().stream()
-			.flatMap(Collection::stream).forEach(e -> this.addDefinition(e.get()));
+			.flatMap(Collection::stream)
+			.forEach(e -> this.addDefinition(e.get()));
+		builder.getWrappers().values().stream()
+			.flatMap(Collection::stream)
+			.map(ArucasWrapperCreator::createWrapper)
+			.forEach(this::addDefinition);
 	}
 
 	protected List<AbstractClassDefinition> getDefinitions() {
