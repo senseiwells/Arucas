@@ -289,7 +289,7 @@ public class ContextBuilder {
 			if (!Files.exists(parent)) {
 				Files.createDirectories(parent);
 			}
-			Files.write(generationPath, Collections.singleton(parser.parseClasses()));
+			Files.write(generationPath, Collections.singleton(parser.parseClasses(entry.getValue())));
 		}
 
 		if (!this.extensions.isEmpty()) {
@@ -298,7 +298,7 @@ public class ContextBuilder {
 			if (!Files.exists(parent)) {
 				Files.createDirectories(parent);
 			}
-			Files.write(generationPath, Collections.singleton(parser.parse()));
+			Files.write(generationPath, Collections.singleton(parser.parseExtensions()));
 		}
 
 		return this;

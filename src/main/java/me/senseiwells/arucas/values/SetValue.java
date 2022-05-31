@@ -7,6 +7,7 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.utils.Arguments;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.impl.ArucasMap;
 import me.senseiwells.arucas.utils.impl.ArucasSet;
 import me.senseiwells.arucas.utils.impl.IArucasCollection;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
@@ -83,7 +84,7 @@ public class SetValue extends GenericValue<ArucasSet> {
 			example = "Set.unordered();"
 		)
 		private Value unordered(Arguments arguments) {
-			return new SetValue(new ArucasSet());
+			return new SetValue(new ArucasSet(new ArucasMap()));
 		}
 
 		@FunctionDoc(

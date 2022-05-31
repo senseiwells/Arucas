@@ -18,12 +18,16 @@ public class ArucasSet implements IArucasCollection, ValueIdentifier {
 
 	private final ArucasMap map;
 
+	public ArucasSet(ArucasMap map) {
+		this.map = map;
+	}
+
 	public ArucasSet() {
-		this.map = new ArucasOrderedMap();
+		this(new ArucasOrderedMap());
 	}
 
 	public ArucasSet(Context context, ArucasSet set) throws CodeError {
-		this.map = new ArucasOrderedMap(context, set.map);
+		this(new ArucasOrderedMap(context, set.map));
 	}
 
 	/**

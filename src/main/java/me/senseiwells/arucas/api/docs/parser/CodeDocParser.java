@@ -59,12 +59,16 @@ public class CodeDocParser extends DocParser {
 		return builder.toString();
 	}
 
-	public String parseClasses() {
+	public String parseClasses(Iterable<AbstractClassDefinition> abstractClassDefinitions) {
 		StringBuilder builder = new StringBuilder();
-		for (AbstractClassDefinition definition : this.getDefinitions()) {
+		for (AbstractClassDefinition definition : abstractClassDefinitions) {
 			builder.append(this.parseClass(definition)).append("\n\n");
 		}
 		return builder.toString();
+	}
+
+	public String parseClasses() {
+		return this.parseClasses(this.getDefinitions());
 	}
 
 	private String parseClass(AbstractClassDefinition definition) {
