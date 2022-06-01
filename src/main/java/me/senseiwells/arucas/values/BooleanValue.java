@@ -23,7 +23,7 @@ public class BooleanValue extends GenericValue<Boolean> {
 	}
 
 	@Override
-	public Value onBinaryOperation(Context context, Functions.Uni<Context, Value> valueGetter, Token.Type type, ISyntax syntaxPosition) throws CodeError {
+	public Value onBinaryOperation(Context context, Functions.UniFunction<Context, Value> valueGetter, Token.Type type, ISyntax syntaxPosition) throws CodeError {
 		// AND, OR has a special property that the right-hand side is not evaluated
 		// unless the value we read is either true or false. This means that we need
 		// to specify this value after we have checked for AND, OR

@@ -45,8 +45,8 @@ public abstract class Value implements ValueIdentifier {
 	 * This gets called when a unary operator is used on the
 	 * value, it provides the type of unary operation
 	 *
-	 * @param context The current context
-	 * @param type The type of operator
+	 * @param context        The current context
+	 * @param type           The type of operator
 	 * @param syntaxPosition The current position
 	 * @return The result of the operation
 	 * @throws CodeError If the value cannot use the operator
@@ -64,19 +64,19 @@ public abstract class Value implements ValueIdentifier {
 	 * This gets called when a binary operator is used on the
 	 * value, it provides a getter function for the right value
 	 *
-	 * @param context The current context
-	 * @param valueGetter Getter for the right value
-	 * @param type The type of operation
+	 * @param context        The current context
+	 * @param valueGetter    Getter for the right value
+	 * @param type           The type of operation
 	 * @param syntaxPosition The current position
 	 * @return The result of the operation
 	 * @throws CodeError If the value cannot use the operator
 	 */
-	public Value onBinaryOperation(Context context, Functions.Uni<Context, Value> valueGetter, Token.Type type, ISyntax syntaxPosition) throws CodeError {
+	public Value onBinaryOperation(Context context, Functions.UniFunction<Context, Value> valueGetter, Token.Type type, ISyntax syntaxPosition) throws CodeError {
 		return this.onBinaryOperation(context, valueGetter.apply(context), type, syntaxPosition);
 	}
 
 	/**
-	 * @see #onBinaryOperation(Context, Functions.Uni, Token.Type, ISyntax)
+	 * @see #onBinaryOperation(Context, Functions.UniFunction, Token.Type, ISyntax)
 	 */
 	protected Value onBinaryOperation(Context context, Value other, Token.Type type, ISyntax syntaxPosition) throws CodeError {
 		return switch (type) {
@@ -92,6 +92,7 @@ public abstract class Value implements ValueIdentifier {
 			case XOR -> this.xor(context, other, syntaxPosition);
 			case SHIFT_LEFT -> this.shiftLeft(context, other, syntaxPosition);
 			case SHIFT_RIGHT -> this.shiftRight(context, other, syntaxPosition);
+			case SQUARE_BRACKETS -> this.bracketAccess(context, other, syntaxPosition);
 			case EQUALS -> BooleanValue.of(this.isEquals(context, other));
 			case NOT_EQUALS -> BooleanValue.of(this.isNotEquals(context, other));
 			case LESS_THAN, LESS_THAN_EQUAL, MORE_THAN, MORE_THAN_EQUAL -> this.compareNumber(context, other, type, syntaxPosition);
@@ -385,8 +386,37 @@ public abstract class Value implements ValueIdentifier {
 	 * @return The value that it was just assigned
 	 * @throws RuntimeError if the value cannot assign a member
 	 */
-	public Value onMemberAssign(Context context, String name, Functions.Uni<Context, Value> valueGetter, ISyntax position) throws CodeError {
+	public Value onMemberAssign(Context context, String name, Functions.UniFunction<Context, Value> valueGetter, ISyntax position) throws CodeError {
 		throw new RuntimeError("You can only assign values to class member values", position, context);
+	}
+
+	/**
+	 * This gets called when the binary operator <code>[...]</code>
+	 * is used in Arucas
+	 *
+	 * @param context        The current context
+	 * @param other          The access value
+	 * @param syntaxPosition The current position
+	 * @return The access value
+	 * @throws CodeError If the values cannot use this operator
+	 */
+	public Value bracketAccess(Context context, Value other, ISyntax syntaxPosition) throws CodeError {
+		throw this.cannotApplyError(context, "BRACKET_ACCESS", other, syntaxPosition);
+	}
+
+	/**
+	 * This gets called when the binary operator <code>[...]</code>
+	 * is used in Arucas to assign a value with a value
+	 *
+	 * @param context        The current context
+	 * @param other          The access value
+	 * @param assignValue    The value to assign
+	 * @param syntaxPosition The current position
+	 * @throws CodeError If the values cannot use this operator
+	 * @return The assigned value
+	 */
+	public Value bracketAssign(Context context, Value other, Value assignValue, ISyntax syntaxPosition) throws CodeError {
+		throw this.cannotApplyError(context, "BRACKET_ASSIGN", other, assignValue, syntaxPosition);
 	}
 
 	/**
@@ -420,6 +450,18 @@ public abstract class Value implements ValueIdentifier {
 			operation,
 			this.getAsString(context),
 			other.getAsString(context)),
+			syntaxPosition,
+			context
+		);
+	}
+
+	@SuppressWarnings("SameParameterValue")
+	private RuntimeError cannotApplyError(Context context, String operation, Value second, Value third, ISyntax syntaxPosition) throws CodeError {
+		return new RuntimeError("The operation '%s' cannot be applied to %s and %s and %s".formatted(
+			operation,
+			this.getAsString(context),
+			second.getAsString(context),
+			third.getAsString(context)),
 			syntaxPosition,
 			context
 		);

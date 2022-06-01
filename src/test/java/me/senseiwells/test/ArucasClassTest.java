@@ -119,6 +119,50 @@ public class ArucasClassTest {
 			}
 			"""
 		));
+		assertThrows(CodeError.class, () -> ArucasHelper.compile(
+			"""
+			class Test {
+				operator [] () { }
+			}
+			"""
+		));
+
+		assertEquals("20", ArucasHelper.runSafe(
+			"""
+			class E {
+				operator [] (accessor) {
+					return 10;
+				}
+			}
+			e = new E();
+			return e[0] + e[e];
+			"""
+		));
+		assertEquals("42", ArucasHelper.runSafe(
+			"""
+			class E {
+				operator [] (index, value) {
+					return index + value;
+				}
+			}
+			e = new E();
+			return e[10] = 32;
+			"""
+		));
+		assertEquals("foobar", ArucasHelper.runSafe(
+			"""
+			class E {
+				var A;
+				
+				operator [] (i, v) {
+					this.A = i + v;
+				}
+			}
+			e = new E();
+			e["foo"], a, b = ["bar", 1, 2];
+			return e.A;
+			"""
+		));
 	}
 
 	@Test

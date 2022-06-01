@@ -4,12 +4,17 @@ import me.senseiwells.arucas.throwables.CodeError;
 
 public final class Functions {
 	@FunctionalInterface
-	public interface Bi<F, S, R> {
+	public interface BiFunction<F, S, R> {
 		R apply(F first, S second) throws CodeError;
 	}
 
 	@FunctionalInterface
-	public interface Uni<F, R> {
+	public interface UniFunction<F, R> {
 		R apply(F first) throws CodeError;
+	}
+
+	@FunctionalInterface
+	public interface TriConsumer<A, B, C> {
+		void accept(A first, B second, C third);
 	}
 }

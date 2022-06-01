@@ -175,7 +175,7 @@ public class Parser {
 					yield new ReturnNode(new NullNode(this.currentToken), startPos, startPos);
 				}
 
-				Node expression = this.sizeComparisonExpression();
+				Node expression = this.subExpression();
 				yield new ReturnNode(expression, startPos, this.currentToken.syntaxPosition);
 			}
 			case CONTINUE -> {
@@ -188,7 +188,7 @@ public class Parser {
 			}
 			case THROW -> {
 				this.advance();
-				Node expression = this.sizeComparisonExpression();
+				Node expression = this.subExpression();
 				yield new ThrowNode(expression, startPos, this.currentToken.syntaxPosition);
 			}
 			default -> this.expression();
@@ -388,7 +388,7 @@ public class Parser {
 					switch (this.currentToken.type) {
 						case ASSIGN_OPERATOR -> {
 							this.advance();
-							definition.addMemberVariableNode(isStatic, token.content, this.sizeComparisonExpression());
+							definition.addMemberVariableNode(isStatic, token.content, this.subExpression());
 							this.throwIfNotType(Token.Type.SEMICOLON, "Expected ';'");
 							this.advance();
 						}
@@ -437,6 +437,11 @@ public class Parser {
 				case OPERATOR -> {
 					this.advance();
 					Token token = this.currentToken;
+					if (this.currentToken.type == Token.Type.LEFT_SQUARE_BRACKET) {
+						this.advance();
+						this.throwIfNotType(Token.Type.RIGHT_SQUARE_BRACKET, "Expected closing ']'");
+						token = new Token(Token.Type.SQUARE_BRACKETS, token.syntaxPosition);
+					}
 					UserDefinedClassFunction operatorMethod = this.operatorMethod(definition, isStatic, token);
 					definition.addOperatorMethod(token.type, operatorMethod);
 				}
@@ -641,26 +646,13 @@ public class Parser {
 		List<String> argumentNames = this.getClassMemberArguments();
 		int parameters = argumentNames.size();
 
-		CodeError noSuchOperator = new CodeError(
-			CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
-			"No such operator %s with %d parameters".formatted(token.type, parameters),
-			startPos
-		);
-
-		switch (parameters) {
-			case 1 -> {
-				if (!Token.Type.OVERRIDABLE_UNARY_OPERATORS.contains(token.type)) {
-					throw noSuchOperator;
-				}
-			}
-			case 2 -> {
-				if (!Token.Type.OVERRIDABLE_BINARY_OPERATORS.contains(token.type)) {
-					throw noSuchOperator;
-				}
-			}
-			default -> throw noSuchOperator;
+		if (!Token.Type.isOperatorOverridable(parameters, token.type)) {
+			throw new CodeError(
+				CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
+				"No such operator %s with %d parameters".formatted(token.type, parameters),
+				startPos
+			);
 		}
-
 
 		MutableSyntaxImpl syntaxPosition = new MutableSyntaxImpl(startPos.getStartPos(), null);
 		UserDefinedClassFunction operatorMethod = new UserDefinedClassFunction(definition, "$%s".formatted(token.type), argumentNames, syntaxPosition);
@@ -1119,7 +1111,7 @@ public class Parser {
 				this.currentToken.syntaxPosition
 			);
 		}
-		return this.sizeComparisonExpression();
+		return this.subExpression();
 	}
 
 	private Node listExpression() throws CodeError {
@@ -1164,7 +1156,7 @@ public class Parser {
 		return new MapNode(elementMap, startPos, endPos);
 	}
 
-	private Node sizeComparisonExpression() throws CodeError {
+	private Node subExpression() throws CodeError {
 		return this.orExpression();
 	}
 
@@ -1310,11 +1302,11 @@ public class Parser {
 	}
 
 	private Node member() throws CodeError {
-		Node left = this.atom();
-		return this.member(left);
+		return this.member(this.atom());
 	}
 
 	private Node member(Node left) throws CodeError {
+		left = this.bracketMember(left);
 		while (this.currentToken.type == Token.Type.DOT) {
 			this.advance();
 			this.parseStack.add(StackType.MEMBER);
@@ -1362,6 +1354,43 @@ public class Parser {
 				case INCREMENT, DECREMENT -> left = this.modifyMember(left, right);
 				default -> left = new MemberAccessNode(left, right);
 			}
+			left = this.bracketMember(left);
+		}
+		return left;
+	}
+
+	private Node bracketMember(Node left) throws CodeError {
+		while (this.currentToken.type == Token.Type.LEFT_SQUARE_BRACKET) {
+			ISyntax startPos = this.currentToken.syntaxPosition;
+			this.advance();
+
+			Node right = this.subExpression();
+			this.throwIfNotType(Token.Type.RIGHT_SQUARE_BRACKET, "Expected closing ']'");
+			this.advance();
+
+			switch (this.currentToken.type) {
+				case ASSIGN_OPERATOR -> {
+					if (this.isStackType(StackType.UNPACKING)) {
+						return new BracketAssignNode(left, this.currentToken, right, new NullNode(this.currentToken));
+					}
+					this.advance();
+					Node valueNode = this.expression();
+					return new BracketAssignNode(left, this.currentToken, right, valueNode);
+				}
+				case COMMA -> {
+					this.advance();
+					VariableAssignNode assignNode = new BracketAssignNode(left, this.currentToken, right, new NullNode(this.currentToken));
+					if (!this.isStackType(StackType.UNPACKING) && this.isUnpackable()) {
+						return this.setUnpacking(assignNode);
+					}
+					this.recede();
+					if (this.isStackType(StackType.UNPACKING)) {
+						return assignNode;
+					}
+				}
+			}
+
+			left = new BinaryOperatorNode(left, new Token(Token.Type.SQUARE_BRACKETS, startPos), right);
 		}
 		return left;
 	}

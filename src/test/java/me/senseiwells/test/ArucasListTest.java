@@ -144,6 +144,140 @@ public class ArucasListTest {
 			return a.get(2) + b;
 			"""
 		));
+	}
 
+	@Test
+	public void testBracketSyntax() {
+		assertThrows(CodeError.class, () -> ArucasHelper.compile("[1, 2 ,3][2;"));
+		assertThrows(CodeError.class, () -> ArucasHelper.compile("[1, 2 ,3][2, 3];"));
+		assertThrows(CodeError.class, () -> ArucasHelper.compile("[1, 2 ,3[2, 3, 4, 5];"));
+		assertThrows(CodeError.class, () -> ArucasHelper.compile("[1, 2 ,3] = [2, 3, 4, 5];"));
+		assertThrows(CodeError.class, () -> ArucasHelper.compile("[1, 2 ,3][] = [2, 3, 4, 5];"));
+		assertThrows(CodeError.class, () -> ArucasHelper.compile("[1, 2 ,3][2, 3, 4, 5] = [1];"));
+		assertThrows(CodeError.class, () -> ArucasHelper.compile("[1, 2 ,3][2][] = [1];"));
+
+		assertThrows(CodeError.class, () -> ArucasHelper.compile(
+			"""
+			class E {
+				operator [ (accessor) { }
+			}
+			"""
+		));
+
+		assertThrows(CodeError.class, () -> ArucasHelper.compile(
+			"""
+			class E {
+				operator [] () { }
+			}
+			"""
+		));
+
+		assertEquals("10", ArucasHelper.runSafe(
+			"""
+			class E {
+				operator [] (a) { }
+				operator [] (a, b) { }
+			}
+			return 10;
+			"""
+		));
+	}
+
+	@Test
+	public void testBracketAccessing() {
+		assertThrows(RuntimeError.class, () -> ArucasHelper.runUnsafe("[1, 2, 3][3];"));
+		assertThrows(RuntimeError.class, () -> ArucasHelper.runUnsafe("[1, 2, 3][3] = 0;"));
+
+		assertEquals("wow", ArucasHelper.runSafe("return [[[['wow']]]][0][0][0][0];"));
+		assertEquals("1", ArucasHelper.runSafe("return [1, 2, 3][0];"));
+
+		assertEquals("1", ArucasHelper.runSafe(
+   			"""
+			class E {
+				var list;
+			}
+			   
+			e = new E();
+			e.list = [1, 2, 3];
+			return e.list[0];
+			"""
+		));
+
+		assertEquals("2", ArucasHelper.runSafe(
+			"""
+			class E {
+				var list;
+			}
+			   
+			e = new E();
+			e.list = [e, 2, 3];
+			return e.list[0].list[0].list[0].list[0].list[1];
+			"""
+		));
+
+		assertEquals("3", ArucasHelper.runSafe(
+		"""
+			class E {
+				var list;
+			}
+			   
+			e = new E();
+			e.list = [e, [e], 3];
+			return e.list[1][0].list[1][0].list[0].list[2];
+			"""
+		));
+
+		assertEquals("3", ArucasHelper.runSafe(
+		"""
+			class E {
+				var list;
+			   
+				fun getList() {
+					return this.list;
+				}
+			}
+			   
+			e = new E();
+			e.list = [e, [e], fun() { return [1, 2, 3]; }];
+			return e.getList()[1][0].getList()[1][0].getList()[0].getList()[2]()[2];
+			"""
+		));
+	}
+
+	@Test
+	public void testBracketAssigning() {
+		assertEquals("1", ArucasHelper.runSafe("return [1, 2, 3][0] = 5;"));
+
+		assertEquals("aaa", ArucasHelper.runSafe(
+		"""
+			class E {
+				var list;
+				
+				fun getList() {
+					return this.list;
+				}
+			}
+			e = new E();
+			e.list = [e, [e], fun() { return [1, 2, 3]; }];
+			e.getList()[1][0].getList()[1] = "aaa";
+			return e.list[1];
+			"""
+		));
+
+		assertEquals("4", ArucasHelper.runSafe(
+			"""
+			list = [1, 2, 3];
+			a, b, c, list[0] = [1, 2, 3, 4];
+			return list[0];
+			"""
+		));
+
+		assertEquals("[5]", ArucasHelper.runSafe(
+			"""
+			list = [1];
+			list[0], b, c = [5, 4, 3];
+			return list;
+			"""
+		));
 	}
 }

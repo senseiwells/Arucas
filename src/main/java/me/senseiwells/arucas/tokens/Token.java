@@ -78,6 +78,7 @@ public class Token {
 		RIGHT_SQUARE_BRACKET("]"),
 		LEFT_CURLY_BRACKET("{"),
 		RIGHT_CURLY_BRACKET("}"),
+		SQUARE_BRACKETS("[]"),
 
 		// Memory Operator
 		ASSIGN_OPERATOR("="),
@@ -155,31 +156,26 @@ public class Token {
 			BIT_OR
 		);
 
-		public static final Set<Type> OVERRIDABLE_UNARY_OPERATORS = Set.of(
-			NOT,
-			PLUS,
-			MINUS
+		private static final Set<Type> OVERRIDABLE_UNARY_OPERATORS = Set.of(
+			NOT, PLUS, MINUS
 		);
 
-		public static final Set<Type> OVERRIDABLE_BINARY_OPERATORS = Set.of(
-			PLUS,
-			MINUS,
-			MULTIPLY,
-			DIVIDE,
-			POWER,
-			LESS_THAN,
-			LESS_THAN_EQUAL,
-			MORE_THAN,
-			MORE_THAN_EQUAL,
-			EQUALS,
-			NOT_EQUALS,
-			AND,
-			OR,
-			XOR,
-			SHIFT_LEFT,
-			SHIFT_RIGHT,
-			BIT_AND,
-			BIT_OR
+		private static final Set<Type> OVERRIDABLE_BINARY_OPERATORS = Set.of(
+			PLUS, MINUS, MULTIPLY, DIVIDE, POWER,
+			LESS_THAN, LESS_THAN_EQUAL, MORE_THAN,
+			MORE_THAN_EQUAL, EQUALS, NOT_EQUALS,
+			AND, OR, XOR, SHIFT_LEFT, SHIFT_RIGHT,
+			BIT_AND, BIT_OR, SQUARE_BRACKETS
 		);
+
+		@SuppressWarnings("BooleanMethodIsAlwaysInverted")
+		public static boolean isOperatorOverridable(int parameters, Type type) {
+			return switch (parameters) {
+				case 1 -> OVERRIDABLE_UNARY_OPERATORS.contains(type);
+				case 2 -> OVERRIDABLE_BINARY_OPERATORS.contains(type);
+				case 3 -> type == SQUARE_BRACKETS;
+				default -> false;
+			};
+		}
 	}
 }

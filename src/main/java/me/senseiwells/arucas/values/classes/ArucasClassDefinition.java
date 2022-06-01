@@ -113,7 +113,7 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 		}
 
 		parameters.add(0, thisValue);
-		constructor.call(context, parameters, false);
+		constructor.call(context, parameters, true);
 
 		return thisValue;
 	}

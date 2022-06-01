@@ -41,9 +41,7 @@ public class WrapperClassValue extends GenericValue<WrapperClassDefinition> impl
 			String thisWrapperName = ArucasWrapperCreator.getWrapperName(this.wrapperClass.getClass());
 			throw new RuntimeException("Expected %s found %s".formatted(wrapperName, thisWrapperName));
 		}
-		@SuppressWarnings("unchecked")
-		T wrappedClass = (T) this.wrapperClass;
-		return wrappedClass;
+		return clazz.cast(this.wrapperClass);
 	}
 
 	private ArucasMemberHandle getHandle(String name) {
@@ -178,7 +176,7 @@ public class WrapperClassValue extends GenericValue<WrapperClassDefinition> impl
 	}
 
 	@Override
-	public Value onMemberAssign(Context context, String name, Functions.Uni<Context, Value> valueGetter, ISyntax position) throws CodeError {
+	public Value onMemberAssign(Context context, String name, Functions.UniFunction<Context, Value> valueGetter, ISyntax position) throws CodeError {
 		if (!this.hasMember(name)) {
 			throw new RuntimeError(
 				"The member '%s' does not exist for the class '%s'".formatted(name, this.getTypeName()),
@@ -193,6 +191,15 @@ public class WrapperClassValue extends GenericValue<WrapperClassDefinition> impl
 			);
 		}
 		return value;
+	}
+
+	@Override
+	public Value bracketAssign(Context context, Value other, Value assignValue, ISyntax syntaxPosition) throws CodeError {
+		FunctionValue function = this.getOperatorMethod(Token.Type.SQUARE_BRACKETS, 3);
+		if (function != null) {
+			return function.call(context, ArucasList.arrayListOf(this, other));
+		}
+		return super.bracketAssign(context, other, assignValue, syntaxPosition);
 	}
 
 	@Override

@@ -89,7 +89,7 @@ public class JavaValue extends GenericValue<Object> {
 	}
 
 	@Override
-	public Value onMemberAssign(Context context, String name, Functions.Uni<Context, Value> valueGetter, ISyntax position) throws CodeError {
+	public Value onMemberAssign(Context context, String name, Functions.UniFunction<Context, Value> valueGetter, ISyntax position) throws CodeError {
 		Value value = valueGetter.apply(context);
 		String obfuscatedFieldName = JavaValue.getObfuscatedFieldName(context, this.asJavaValue().getClass(), name);
 		if (ReflectionUtils.setFieldFromJavaValue(this, value, obfuscatedFieldName, position, context)) {

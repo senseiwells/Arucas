@@ -55,6 +55,7 @@ public abstract class GenericValue<T> extends Value {
 				MemberFunction.of("getValueType", this::getValueType, "Use 'Type.of(<Value>).getName()'"),
 				MemberFunction.of("copy", this::newCopy),
 				MemberFunction.of("hashCode", this::hashCode),
+				MemberFunction.of("uniqueHash", this::uniqueHash),
 				MemberFunction.of("equals", 1, this::equals, "Use the '==' operator"),
 				MemberFunction.of("toString", this::toString)
 			);
@@ -126,6 +127,17 @@ public abstract class GenericValue<T> extends Value {
 		private NumberValue hashCode(Arguments arguments) throws CodeError {
 			Value thisValue = arguments.getNext();
 			return NumberValue.of(thisValue.getHashCode(arguments.getContext()));
+		}
+
+		@FunctionDoc(
+			name = "uniqueHash",
+			desc = "This returns the unique hashcode of the value, this is different for every instance of a value",
+			returns = {NUMBER, "the unique hashcode of the value"},
+			example = "'thing'.uniqueHash();"
+		)
+		private NumberValue uniqueHash(Arguments arguments) throws CodeError {
+			Value thisValue = arguments.getNext();
+			return NumberValue.of(System.identityHashCode(thisValue));
 		}
 
 		@FunctionDoc(

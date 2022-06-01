@@ -1,6 +1,7 @@
 package me.senseiwells.arucas.values;
 
 import me.senseiwells.arucas.api.ArucasClassExtension;
+import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.api.docs.ClassDoc;
 import me.senseiwells.arucas.api.docs.FunctionDoc;
 import me.senseiwells.arucas.throwables.CodeError;
@@ -27,6 +28,17 @@ public class MapValue extends GenericValue<ArucasMap> {
 	@Override
 	public MapValue newCopy(Context context) throws CodeError {
 		return new MapValue(new ArucasOrderedMap(context, this.value));
+	}
+
+	@Override
+	public Value bracketAccess(Context context, Value other, ISyntax syntaxPosition) throws CodeError {
+		return this.value.get(context, other);
+	}
+
+	@Override
+	public Value bracketAssign(Context context, Value other, Value assignValue, ISyntax syntaxPosition) throws CodeError {
+		Value value = this.value.put(context, other, assignValue);
+		return value == null ? NullValue.NULL : value;
 	}
 
 	@Override

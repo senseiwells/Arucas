@@ -1,15 +1,28 @@
 // ./src/test/resources/code/test.arucas
 // run(File.getDirectory().getPath() + "/src/test/resources/code/test.arucas");
 
-import Test from test;
+class AccessibleList {
+    var list;
 
-fun makeTest() {
-    return new Test();
+    AccessibleList() {
+        this.list = [];
+    }
+
+    AccessibleList(list) {
+        if (list.instanceOf(List.type)) {
+            this.list = list;
+            return;
+        }
+        this.list = [];
+    }
+
+    operator [] (accessor) {
+        return this.list.get(accessor);
+    }
 }
 
-for (i = 0; i < 1000000; i++) {
-    test = makeTest();
-}
+list = new AccessibleList([new AccessibleList([0]), 2, 3]);
 
-// Old: 1 677 195 microseconds
-// Updated: 404 459 microseconds
+print(list[0].list[0]);
+
+

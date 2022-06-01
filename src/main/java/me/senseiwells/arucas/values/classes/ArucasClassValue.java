@@ -173,7 +173,7 @@ public class ArucasClassValue extends GenericValue<ArucasClassDefinition> implem
 	}
 
 	@Override
-	public Value onMemberAssign(Context context, String name, Functions.Uni<Context, Value> valueGetter, ISyntax position) throws CodeError {
+	public Value onMemberAssign(Context context, String name, Functions.UniFunction<Context, Value> valueGetter, ISyntax position) throws CodeError {
 		if (!this.hasMember(name)) {
 			throw new RuntimeError(
 				"The member '%s' does not exist for the class '%s'".formatted(name, this.getTypeName()),
@@ -188,6 +188,15 @@ public class ArucasClassValue extends GenericValue<ArucasClassDefinition> implem
 			);
 		}
 		return value;
+	}
+
+	@Override
+	public Value bracketAssign(Context context, Value other, Value assignValue, ISyntax syntaxPosition) throws CodeError {
+		FunctionValue function = this.getOperatorMethod(Token.Type.SQUARE_BRACKETS, 3);
+		if (function != null) {
+			return function.call(context, ArucasList.arrayListOf(this, other, assignValue));
+		}
+		return super.bracketAssign(context, other, assignValue, syntaxPosition);
 	}
 
 	@Override

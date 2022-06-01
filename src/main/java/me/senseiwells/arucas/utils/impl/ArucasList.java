@@ -352,8 +352,7 @@ public class ArucasList implements IArucasCollection, List<Value>, ValueIdentifi
 		int i = 0;
 		while (i < this.size) {
 			stringBuilder.append(StringUtils.toPlainString(context, this.valueData[i]));
-			i++;
-			if (i < this.size) {
+			if (++i < this.size) {
 				stringBuilder.append(", ");
 			}
 		}

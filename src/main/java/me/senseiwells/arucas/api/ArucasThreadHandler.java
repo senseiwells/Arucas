@@ -6,6 +6,7 @@ import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.ExceptionUtils;
 import me.senseiwells.arucas.utils.ExceptionUtils.ThrowableRunnable;
+import me.senseiwells.arucas.utils.Functions;
 import me.senseiwells.arucas.utils.impl.ArucasThread;
 import me.senseiwells.arucas.values.Value;
 
@@ -21,7 +22,7 @@ public final class ArucasThreadHandler {
 	private final ScheduledThreadPoolExecutor asyncThreads;
 	private final List<Runnable> shutdownEvents;
 
-	private TriConsumer<Context, Throwable, String> fatalErrorHandler;
+	private Functions.TriConsumer<Context, Throwable, String> fatalErrorHandler;
 	private String currentFileContent;
 
 	private boolean isRunning;
@@ -47,7 +48,7 @@ public final class ArucasThreadHandler {
 	 * Arucas code. The consumer provides the
 	 * context, throwable, and file contents
 	 */
-	public ArucasThreadHandler setFatalErrorHandler(TriConsumer<Context, Throwable, String> triConsumer) {
+	public ArucasThreadHandler setFatalErrorHandler(Functions.TriConsumer<Context, Throwable, String> triConsumer) {
 		this.fatalErrorHandler = triConsumer;
 		return this;
 	}
@@ -331,11 +332,6 @@ public final class ArucasThreadHandler {
 			this.asyncThreads.shutdownNow();
 			this.currentFileContent = "";
 		}
-	}
-
-	@FunctionalInterface
-	public interface TriConsumer<A, B, C> {
-		void accept(A a, B b, C c);
 	}
 
 	@FunctionalInterface

@@ -1,9 +1,11 @@
 package me.senseiwells.arucas.values;
 
 import me.senseiwells.arucas.api.ArucasClassExtension;
+import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.api.docs.ClassDoc;
 import me.senseiwells.arucas.api.docs.FunctionDoc;
 import me.senseiwells.arucas.throwables.CodeError;
+import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.Arguments;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
@@ -26,6 +28,30 @@ public class ListValue extends GenericValue<ArucasList> {
 	@Override
 	public ListValue newCopy(Context context) {
 		return new ListValue(new ArucasList(this.value));
+	}
+
+	@Override
+	public Value bracketAccess(Context context, Value other, ISyntax syntaxPosition) throws CodeError {
+		if (other instanceof NumberValue numberValue) {
+			int index = numberValue.value.intValue();
+			if (index >= this.value.size() || index < 0) {
+				throw new RuntimeError("Index is out of bounds", syntaxPosition, context);
+			}
+			return this.value.get(index);
+		}
+		return super.bracketAccess(context, other, syntaxPosition);
+	}
+
+	@Override
+	public Value bracketAssign(Context context, Value other, Value assignValue, ISyntax syntaxPosition) throws CodeError {
+		if (other instanceof NumberValue numberValue) {
+			int index = numberValue.value.intValue();
+			if (index >= this.value.size() || index < 0) {
+				throw new RuntimeError("Index is out of bounds", syntaxPosition, context);
+			}
+			return this.value.set(index, assignValue);
+		}
+		return super.bracketAssign(context, other, assignValue, syntaxPosition);
 	}
 
 	@Override
@@ -71,6 +97,7 @@ public class ListValue extends GenericValue<ArucasList> {
 				MemberFunction.of("remove", 1, this::removeListIndex),
 				MemberFunction.of("append", 1, this::appendList),
 				MemberFunction.of("insert", 2, this::insertList),
+				MemberFunction.of("set", 2, this::setList),
 				MemberFunction.of("addAll", 1, this::addAll),
 				MemberFunction.of("concat",1, this::concatList, "Use '<List>.addAll(collection)'"),
 				MemberFunction.of("contains", 1, this::listContains),
@@ -150,6 +177,29 @@ public class ListValue extends GenericValue<ArucasList> {
 				throw arguments.getError("Index is out of bounds");
 			}
 			thisValue.value.add(index, value);
+			return thisValue;
+		}
+
+		@FunctionDoc(
+			name = "set",
+			desc = "This allows you to set the value at a specific index",
+			params = {
+				ANY, "value", "the value you want to set",
+				NUMBER, "index", "the index you want to set the value at"
+			},
+			returns = {LIST, "the list"},
+			throwMsgs = "Index is out of bounds",
+			example = "`['object', 81, 96, 'case'].set('foo', 1);`"
+		)
+		private Value setList(Arguments arguments) throws CodeError {
+			ListValue thisValue = arguments.getNext(ListValue.class);
+			Value value = arguments.getNext();
+			int index = arguments.getNextGeneric(NumberValue.class).intValue();
+			int len = thisValue.value.size();
+			if (index > len || index < 0) {
+				throw arguments.getError("Index is out of bounds");
+			}
+			thisValue.value.set(index, value);
 			return thisValue;
 		}
 

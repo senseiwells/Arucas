@@ -245,24 +245,12 @@ public class ArucasWrapperCreator {
 
 		Token.Type operatorToken = operatorAnnotation.value();
 
-		RuntimeException noSuchOperator = invalidWrapperMethod(
-			this.clazz,
-			method,
-			"No such operator %s with %d parameters".formatted(operatorToken, parameterLength)
-		);
-
-		switch (parameterLength) {
-			case 1 -> {
-				if (!Token.Type.OVERRIDABLE_UNARY_OPERATORS.contains(operatorToken)) {
-					throw noSuchOperator;
-				}
-			}
-			case 2 -> {
-				if (!Token.Type.OVERRIDABLE_BINARY_OPERATORS.contains(operatorToken)) {
-					throw noSuchOperator;
-				}
-			}
-			default -> throw noSuchOperator;
+		if (!Token.Type.isOperatorOverridable(parameterLength, operatorToken)) {
+			throw invalidWrapperMethod(
+				this.clazz,
+				method,
+				"No such operator %s with %d parameters".formatted(operatorToken, parameterLength)
+			);
 		}
 
 		ArucasMethodHandle methodHandle = new ArucasMethodHandle(handle, getMethodReturnType(this.clazz, method));
