@@ -9,25 +9,15 @@ import me.senseiwells.arucas.utils.StackTable;
 import java.util.Iterator;
 
 public class RuntimeError extends CodeError {
-	private Context context;
+	private final Context context;
 
 	public RuntimeError(String details, ISyntax syntaxHolder, Context context) {
 		super(ErrorType.RUNTIME_ERROR, details, syntaxHolder);
 		this.context = context;
 	}
 
-	public RuntimeError(String details, ISyntax syntaxHolder) {
-		this(details, syntaxHolder, null);
-	}
-
-	public boolean hasContext() {
-		return this.context != null;
-	}
-
-	public void setContext(Context context) {
-		if (!this.hasContext()) {
-			this.context = context;
-		}
+	public RuntimeError(Throwable throwable, ISyntax syntaxHolder, Context context) {
+		this(throwableToString(throwable), syntaxHolder, context);
 	}
 
 	private String generateTraceback(Context context, IArucasOutput output) {
@@ -64,7 +54,6 @@ public class RuntimeError extends CodeError {
 
 	@Override
 	public String toString(Context context, boolean raw) {
-		this.setContext(context);
 		IArucasOutput output = raw ? IArucasOutput.DUMMY : this.context.getOutput();
 		return this.context != null ? "%s%s%s - '%s'%s".formatted(
 			this.generateTraceback(this.context, output),

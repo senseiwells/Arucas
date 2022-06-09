@@ -238,17 +238,17 @@ public class StackTable {
 
 	public Iterator<StackTable> iterator() {
 		return new Iterator<>() {
-			private StackTable object = StackTable.this;
+			private StackTable nextStack = StackTable.this;
 
 			@Override
 			public boolean hasNext() {
-				return this.object != null;
+				return this.nextStack != null && this.nextStack != this.nextStack.rootTable;
 			}
 
 			@Override
 			public StackTable next() {
-				StackTable current = this.object;
-				this.object = this.object.parentTable;
+				StackTable current = this.nextStack;
+				this.nextStack = this.nextStack.parentTable;
 				return current;
 			}
 		};

@@ -4,8 +4,6 @@ import me.senseiwells.arucas.api.ContextBuilder;
 import me.senseiwells.arucas.api.docs.parser.JsonParser;
 import me.senseiwells.arucas.utils.ArgumentParser;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.impl.wrappers.ArucasTestWrapper;
-import me.senseiwells.impl.wrappers.ChildWrapper;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -44,8 +42,13 @@ public class Main {
 					continue;
 				}
 			}
+
+			String fileName = "System.in";
 			if (line.endsWith(".arucas")) {
 				try {
+					Path path = Path.of(line);
+					Path fileNamePath = path.getFileName();
+					fileName = fileNamePath == null ? line : fileNamePath.toString();
 					line = Files.readString(Path.of(line));
 				}
 				catch (Exception e) {
@@ -54,7 +57,7 @@ public class Main {
 				}
 			}
 
-			context.getThreadHandler().runOnMainThreadFuture(context, "System.in", line).get();
+			context.getThreadHandler().runOnMainThreadFuture(context, fileName, line).get();
 		}
 	}
 }

@@ -1,4 +1,8 @@
-// run(getDirectory() + "/src/test/resources/code/testSpeed.arucas");
+// run(File.getDirectory() + "/src/test/resources/code/testSpeed.arucas");
+
+class Test {
+    var memberValue;
+}
 
 class Benchmark {
     static var thread = Thread.getCurrentThread();
@@ -17,6 +21,9 @@ class Benchmark {
             for (i = 0; i < 10000000; i++) value.memberValue;
             end = Benchmark.thread.getAge();
             times.append(end - start);
+            if (i == 4) {
+                throw null;
+            }
         }
         return Benchmark.average(times);
     }

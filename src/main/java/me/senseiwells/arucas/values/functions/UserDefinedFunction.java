@@ -27,7 +27,9 @@ public class UserDefinedFunction extends FunctionValue {
 	}
 
 	public void setLocalContext(Context context) {
-		this.localContext = context.createBranch();
+		if (context != null) {
+			this.localContext = context.createBranch();
+		}
 	}
 
 	protected void checkAndPopulateArguments(Context context, List<Value> arguments) throws RuntimeError {
@@ -52,14 +54,18 @@ public class UserDefinedFunction extends FunctionValue {
 	}
 
 	@Override
-	protected Value execute(Context context, List<Value> arguments) throws CodeError {
+	protected Context getContext(Context context) {
 		if (this.localContext != null) {
-			context = this.localContext.createBranch();
+			// This breaks stack traces
+			return this.localContext.createBranch();
 		}
-		context.pushScope(this.getPosition());
+		return context;
+	}
+
+	@Override
+	protected Value execute(Context context, List<Value> arguments) throws CodeError {
 		this.checkAndPopulateArguments(context, arguments);
 		this.bodyNode.visit(context);
-		context.popScope();
 		return NullValue.NULL;
 	}
 

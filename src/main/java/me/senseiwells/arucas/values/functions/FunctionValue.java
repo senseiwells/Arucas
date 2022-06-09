@@ -4,6 +4,7 @@ import me.senseiwells.arucas.api.ArucasClassExtension;
 import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.api.docs.ClassDoc;
 import me.senseiwells.arucas.api.docs.FunctionDoc;
+import me.senseiwells.arucas.throwables.BuiltInException;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
@@ -55,6 +56,14 @@ public abstract class FunctionValue extends GenericValue<String> {
 		return new RuntimeError(details.formatted(objects), this.syntaxPosition, context);
 	}
 
+	public RuntimeError getError(Context context, Throwable throwable) {
+		return new RuntimeError(throwable, this.syntaxPosition, context);
+	}
+
+	protected Context getContext(Context context) {
+		return context;
+	}
+
 	protected abstract Value execute(Context context, List<Value> arguments) throws CodeError;
 
 	public final Value callSafe(Context context, ExceptionUtils.ThrowableSupplier<List<Value>> arguments) {
@@ -72,6 +81,7 @@ public abstract class FunctionValue extends GenericValue<String> {
 	}
 
 	public Value call(Context context, List<Value> arguments, boolean returnable) throws CodeError {
+		context = this.getContext(context);
 		context.pushFunctionScope(this.syntaxPosition);
 		try {
 			Value value = this.execute(context, arguments);
@@ -86,12 +96,8 @@ public abstract class FunctionValue extends GenericValue<String> {
 			context.popScope();
 			return throwValue.getReturnValue();
 		}
-		catch (RuntimeError runtimeError) {
-			runtimeError.setContext(context);
-			throw runtimeError;
-		}
-		catch (RuntimeException e) {
-			throw this.getError(context, e.getMessage());
+		catch (BuiltInException exception) {
+			throw exception.asRuntimeError(context, this.syntaxPosition);
 		}
 		catch (StackOverflowError e) {
 			throw this.getError(context, "StackOverflow: Call stack went too deep");

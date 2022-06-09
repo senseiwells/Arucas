@@ -17,6 +17,10 @@ public class CodeError extends Exception {
 		this.syntaxPosition = Objects.requireNonNull(syntaxPosition);
 	}
 
+	public CodeError(ErrorType errorType, Throwable throwable, ISyntax syntaxPosition) {
+		this(errorType, throwableToString(throwable), syntaxPosition);
+	}
+
 	@Override
 	public String toString() {
 		return this.toString(null);
@@ -42,6 +46,10 @@ public class CodeError extends Exception {
 			startPos.fileName, startPos.line + 1, startPos.column + 1,
 			output.getResetFormatting()
 		);
+	}
+
+	public static String throwableToString(Throwable throwable) {
+		return "Java - " + throwable.getClass().getSimpleName() + ": " + throwable.getMessage();
 	}
 
 	public enum ErrorType {

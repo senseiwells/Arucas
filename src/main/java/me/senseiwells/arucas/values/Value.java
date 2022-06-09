@@ -10,7 +10,7 @@ import me.senseiwells.arucas.utils.Functions;
 import me.senseiwells.arucas.utils.ValueRef;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.values.functions.FunctionValue;
-import me.senseiwells.arucas.values.functions.IMemberFunction;
+import me.senseiwells.arucas.values.functions.Delegatable;
 
 import java.util.List;
 
@@ -370,7 +370,7 @@ public abstract class Value implements ValueIdentifier {
 		Value value = context.getMemberFunction(this.getClass(), name, -2);
 
 		// We must set the value now if it is a member function
-		if (value instanceof IMemberFunction function) {
+		if (value instanceof Delegatable function) {
 			return function.getDelegate(this);
 		}
 

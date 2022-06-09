@@ -11,7 +11,7 @@ import me.senseiwells.arucas.values.classes.WrapperClassValue;
 import java.util.List;
 import java.util.Objects;
 
-public class WrapperMemberFunction extends FunctionValue implements IMemberFunction {
+public class WrapperMemberFunction extends FunctionValue implements Delegatable {
 	private final WrapperClassDefinition definition;
 	private final ArucasMethodHandle methodHandle;
 	private final boolean isStatic;

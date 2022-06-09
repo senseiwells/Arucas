@@ -50,21 +50,20 @@ public class ArucasMethodHandle {
 			throw codeError;
 		}
 		catch (ClassCastException e) {
-			throw new RuntimeError(formatCastException(e.getMessage()), syntaxPosition, context);
+			throw new RuntimeError(formatCastException(e), syntaxPosition, context);
 		}
 		catch (Throwable t) {
-			String message = t.getMessage();
-			message = message == null ? "" : message.strip();
-			throw new RuntimeError(message, syntaxPosition, context);
+			throw new RuntimeError(t, syntaxPosition, context);
 		}
 	}
 
-	private static String formatCastException(String message) {
+	private static String formatCastException(ClassCastException exception) {
+		String message = exception.getMessage();
 		String[] matches = Pattern.compile("[a-zA-Z]+(?=Value(?!\\.))")
 			.matcher(message).results().map(MatchResult::group)
 			.toArray(String[]::new);
 		if (matches.length != 2) {
-			return message;
+			return CodeError.throwableToString(exception);
 		}
 		return "Invalid parameter types: Expected: %s, Found: %s".formatted(matches[1], matches[0]);
 	}

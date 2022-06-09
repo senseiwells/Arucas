@@ -7,7 +7,7 @@ import me.senseiwells.arucas.values.Value;
 
 import java.util.List;
 
-public class MemberFunction extends BuiltInFunction implements IMemberFunction {
+public class MemberFunction extends BuiltInFunction implements Delegatable {
 	protected MemberFunction(String name, int parameters, FunctionDefinition function, String deprecationMessage) {
 		super(name, parameters + 1, function, deprecationMessage);
 	}

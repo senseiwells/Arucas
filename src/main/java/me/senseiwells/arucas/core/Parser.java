@@ -5,10 +5,7 @@ import me.senseiwells.arucas.nodes.*;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.tokens.Token;
-import me.senseiwells.arucas.utils.ArucasClassDefinitionMap;
-import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.utils.MutableSyntaxImpl;
-import me.senseiwells.arucas.utils.StringUtils;
+import me.senseiwells.arucas.utils.*;
 import me.senseiwells.arucas.utils.impl.ArucasSet;
 import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.StringValue;
@@ -236,6 +233,9 @@ public class Parser {
 			try {
 				Path importPath = this.context.getImportPath();
 				Path filePath = importPath.resolve(fileName + ".arucas");
+				if (!Files.exists(filePath)) {
+					NetworkUtils.downloadLibrary(filePath, fileName.replaceAll("\\\\", "/") + ".arucas");
+				}
 				String fileContent = Files.readString(filePath);
 				Context childContext = this.context.createChildContext("Import - " + className.content + " from " + fileName);
 				importDefinitions = Run.importClasses(childContext, fileName, fileContent);
@@ -244,7 +244,7 @@ public class Parser {
 			catch (IOException e) {
 				throw new CodeError(
 					CodeError.ErrorType.RUNTIME_ERROR,
-					e.getMessage(), className.syntaxPosition
+					e, className.syntaxPosition
 				);
 			}
 			catch (StackOverflowError e) {

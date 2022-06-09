@@ -12,7 +12,7 @@ import me.senseiwells.arucas.values.classes.ArucasClassValue;
 import java.util.List;
 import java.util.Objects;
 
-public class UserDefinedClassFunction extends UserDefinedFunction implements IMemberFunction {
+public class UserDefinedClassFunction extends UserDefinedFunction implements Delegatable {
 	private final ArucasClassDefinition definition;
 
 	public UserDefinedClassFunction(ArucasClassDefinition definition, String name, List<String> argumentNames, ISyntax syntaxPosition) {
@@ -44,6 +44,7 @@ public class UserDefinedClassFunction extends UserDefinedFunction implements IMe
 		public Delegate(ArucasClassValue classValue, UserDefinedClassFunction function) {
 			super(function.definition, function.getName(), function.argumentNames, function.getPosition());
 			this.complete(function.bodyNode);
+			this.setLocalContext(function.localContext);
 			this.thisValue = classValue;
 		}
 

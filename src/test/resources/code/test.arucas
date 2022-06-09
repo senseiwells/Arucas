@@ -1,28 +1,20 @@
 // ./src/test/resources/code/test.arucas
 // run(File.getDirectory().getPath() + "/src/test/resources/code/test.arucas");
 
-class AccessibleList {
-    var list;
+x = 10;
 
-    AccessibleList() {
-        this.list = [];
-    }
-
-    AccessibleList(list) {
-        if (list.instanceOf(List.type)) {
-            this.list = list;
-            return;
-        }
-        this.list = [];
-    }
-
-    operator [] (accessor) {
-        return this.list.get(accessor);
-    }
+fun c(x) {
+    throw null;
 }
 
-list = new AccessibleList([new AccessibleList([0]), 2, 3]);
+fun a(x) {
+    fun b(x) {
+        c(null);
+    }
 
-print(list[0].list[0]);
+    b(10);
+}
 
+a(100);
 
+print(x);

@@ -15,7 +15,7 @@ import me.senseiwells.arucas.utils.impl.IArucasCollection;
 import me.senseiwells.arucas.values.*;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
 import me.senseiwells.arucas.values.functions.FunctionValue;
-import me.senseiwells.arucas.values.functions.IMemberFunction;
+import me.senseiwells.arucas.values.functions.Delegatable;
 
 import java.io.File;
 import java.io.IOException;
@@ -86,9 +86,11 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		StringValue stringValue = arguments.getNext(StringValue.class);
 		String filePath = new File(stringValue.value).getAbsolutePath();
 		try {
-			Context childContext = arguments.getContext().createChildContext(filePath);
-			String fileContent = Files.readString(Path.of(filePath));
-			return Run.run(childContext, filePath, fileContent);
+			Path path = Path.of(filePath);
+			Path fileNamePath = path.getFileName();
+			String fileName = fileNamePath == null ? filePath : fileNamePath.toString();
+			String fileContent = Files.readString(path);
+			return Run.run(arguments.getContext(), fileName, fileContent);
 		}
 		catch (IOException | OutOfMemoryError | InvalidPathException e) {
 			throw arguments.getError("Failed to execute script '%s'\n%s", filePath, ExceptionUtils.getStackTrace(e));
@@ -301,7 +303,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		}
 		if (value instanceof FunctionValue functionValue) {
 			// If the function is a member we don't include itself in the length
-			if (value instanceof IMemberFunction) {
+			if (value instanceof Delegatable) {
 				return NumberValue.of(functionValue.getCount() - 1);
 			}
 			return NumberValue.of(functionValue.getCount());

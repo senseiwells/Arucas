@@ -40,6 +40,7 @@ public class Context {
 	private final Context parentContext;
 
 	private StackTable stackTable;
+	private Context inheritedContext;
 	private boolean isDebug;
 	private boolean isExperimental;
 	private boolean suppressDeprecated;
