@@ -7,6 +7,26 @@ This guide is for Arucas 1.2.0+
 > #### [Installation ](#installation)
 > #### [Development Environment ](#development-environment)
 
+> #### [Comments ](#comments)
+> #### [Literals ](#literals)
+> #### [Variables ](#variables)
+> #### [Output ](#output)
+> #### [Input ](#input)
+> #### [Operators ](#operators)
+> #### [Conditional Statements ](#conditional-statements)
+> #### [Switch Statements ](#switch-statements)
+> #### [Loops ](#loops)
+> #### [Functions ](#functions)
+> #### [Members ](#members)
+> #### [Lists ](#lists)
+> #### [Maps ](#maps)
+> #### [Errors ](#errors)
+> #### [Imports ](#imports)
+> #### [Classes ](#classes)
+> #### [Enums ](#enums)
+> #### [Threads ](#threads)
+> #### [Java](#java-integration)
+
 ## Installation
 
 This installation guide is for those who want to just run vanilla Arucas not bundled in with another application. If you are running Arucas inside another application you can just skip this part.
@@ -4542,3 +4562,5 @@ print(example - 10);                    // This will print 'Binary Minus!'
 example.setMemberField(["foo", "bar"]); // This sets the member field
 print(example);                         // This now prints ["foo", "bar"]
 ```
+
+
