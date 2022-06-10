@@ -1,47 +1,29 @@
 package me.senseiwells.arucas.nodes;
 
 import me.senseiwells.arucas.throwables.CodeError;
-import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.StringValue;
 import me.senseiwells.arucas.values.Value;
-import me.senseiwells.arucas.values.classes.ArucasClassValue;
 
-public class MemberAssignNode extends Node {
+public class MemberAssignNode extends VariableAssignNode {
 	private final Node leftNode;
 	private final Node memberNameNode;
-	private final Node valueNode;
-	
+
 	public MemberAssignNode(Node leftNode, Node memberName, Node valueNode) {
-		super(leftNode.token, leftNode.syntaxPosition, valueNode.syntaxPosition);
+		super(leftNode.token, leftNode.syntaxPosition, valueNode.syntaxPosition, valueNode);
 		this.leftNode = leftNode;
 		this.memberNameNode = memberName;
-		this.valueNode = valueNode;
 	}
 
 	@Override
-	public Value<?> visit(Context context) throws CodeError, ThrowValue {
+	public Value visit(Context context) throws CodeError, ThrowValue {
 		// The leftNode holds the Value that contains the member
-		Value<?> memberValue = this.leftNode.visit(context);
-		
+		Value memberValue = this.leftNode.visit(context);
+
 		// The memberNameNode is the MemberAccessNode that contains the name of the member
 		StringValue memberName = (StringValue) this.memberNameNode.visit(context);
-		
-		if (!(memberValue instanceof ArucasClassValue classValue)) {
-			throw new RuntimeError("You can only assign values to class member values", this.syntaxPosition, context);
-		}
-		
-		Value<?> newValue = this.valueNode.visit(context);
-		
-		if (!classValue.hasMember(memberName.value) || !classValue.setMember(memberName.value, newValue)) {
-			throw new RuntimeError(
-				"The member '%s' cannot be set for '%s'".formatted(memberName.value,classValue.getClass().getSimpleName()),
-				this.syntaxPosition,
-				context
-			);
-		}
-		
-		return newValue;
+
+		return memberValue.onMemberAssign(context, memberName.value, this::getNewValue, this.syntaxPosition);
 	}
 }

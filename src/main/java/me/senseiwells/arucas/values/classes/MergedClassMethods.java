@@ -15,12 +15,14 @@ public class MergedClassMethods {
 	public FunctionValue getMethod(String name, int parameters) {
 		return this.methods.get(name, parameters);
 	}
-
+	
 	public static MergedClassMethods mergeMethods(List<AbstractClassDefinition> classDefinitions) {
 		MergedClassMethods mergedMethods = new MergedClassMethods();
 
 		for (int i = classDefinitions.size() - 1; i >= 0; i--) {
-			mergedMethods.methods.addAll(classDefinitions.get(i).getMethods());
+			AbstractClassDefinition definition = classDefinitions.get(i);
+			mergedMethods.methods.addAll(definition.getMethods());
+			mergedMethods.methods.addAll(definition.getConstructors());
 		}
 
 		return mergedMethods;

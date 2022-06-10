@@ -1,13 +1,12 @@
 package me.senseiwells.arucas.nodes;
 
 import me.senseiwells.arucas.api.ISyntax;
-import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.tokens.Token;
+import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.values.ListValue;
-import me.senseiwells.arucas.values.Value;
 
 import java.util.List;
 
@@ -20,12 +19,12 @@ public class ListNode extends Node {
 	}
 
 	@Override
-	public Value<?> visit(Context context) throws CodeError, ThrowValue {
+	public ListValue visit(Context context) throws CodeError, ThrowValue {
 		ArucasList elements = new ArucasList();
 		for (Node elementNode : this.elementNodes) {
 			elements.add(elementNode.visit(context));
 		}
-		
+
 		return new ListValue(elements);
 	}
 }

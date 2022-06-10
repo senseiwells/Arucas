@@ -1,74 +1,88 @@
 package me.senseiwells.arucas.utils;
 
 import me.senseiwells.arucas.api.ArucasThreadHandler;
+import me.senseiwells.arucas.api.IArucasAPI;
 import me.senseiwells.arucas.api.IArucasOutput;
 import me.senseiwells.arucas.api.ISyntax;
-import me.senseiwells.arucas.api.wrappers.ArucasWrapperExtension;
 import me.senseiwells.arucas.api.wrappers.IArucasWrappedClass;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
-import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
-import me.senseiwells.arucas.values.classes.ArucasClassValue;
-import me.senseiwells.arucas.values.classes.WrapperArucasClassDefinition;
-import me.senseiwells.arucas.values.functions.AbstractBuiltInFunction;
+import me.senseiwells.arucas.values.classes.ArucasWrapperCreator;
+import me.senseiwells.arucas.values.classes.WrapperClassDefinition;
+import me.senseiwells.arucas.values.classes.WrapperClassValue;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 
-import java.util.*;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Runtime context class of the programming language.
- *
+ * <p>
  * A context is never shared across two threads and is
  * threadsafe.
  */
 public class Context {
 	private final ArucasThreadHandler threadHandler;
-	private final ArucasFunctionMap<AbstractBuiltInFunction<?>> extensions;
-	private final IArucasOutput arucasOutput;
-	
+	private final ArucasFunctionMap<FunctionValue> extensions;
+	private final IArucasAPI arucasAPI;
+	private final ValueConverter converter;
+	private final UUID contextId;
+
 	private final String displayName;
 	private final Context parentContext;
+
 	private StackTable stackTable;
 	private boolean isDebug;
+	private boolean isExperimental;
 	private boolean suppressDeprecated;
-	
-	private final ThrowValue.Continue continueThrowable = new ThrowValue.Continue();
-	private final ThrowValue.Break breakThrowable = new ThrowValue.Break();
-	private final ThrowValue.Return returnThrowable = new ThrowValue.Return(NullValue.NULL);
-	
-	private Context(String displayName, Context parentContext, ArucasFunctionMap<AbstractBuiltInFunction<?>> extensions, ArucasClassDefinitionMap classDefinitions, ArucasThreadHandler threadHandler, IArucasOutput arucasOutput) {
+	private boolean isMain;
+
+	// Creating exceptions is very expensive, so these are lazy
+	private ThrowValue.Continue continueThrowable;
+	private ThrowValue.Break breakThrowable;
+	private ThrowValue.Return returnThrowable;
+
+	private Context(String name, Context parent, ArucasFunctionMap<FunctionValue> extensions, StackTable table, ArucasThreadHandler handler, ValueConverter converter, IArucasAPI api) {
 		this.extensions = extensions;
-		this.arucasOutput = arucasOutput;
-		this.threadHandler = threadHandler;
-		
-		this.displayName = displayName;
-		this.parentContext = parentContext;
-		this.suppressDeprecated = parentContext != null && parentContext.suppressDeprecated;
-		this.stackTable = new StackTable();
-		
-		// Initialize the class definitions map by inserting the previous table values
-		this.stackTable.classDefinitions = new ArucasClassDefinitionMap();
-		this.stackTable.classDefinitions.insertAll(classDefinitions);
+		this.arucasAPI = api;
+		this.threadHandler = handler;
+		this.converter = converter;
+		this.contextId = parent != null ? parent.contextId : UUID.randomUUID();
+
+		this.displayName = name;
+		this.parentContext = parent;
+		this.suppressDeprecated = parent != null && parent.suppressDeprecated;
+		this.isMain = true;
+		this.stackTable = table;
 	}
-	
-	public Context(String displayName, ArucasFunctionMap<AbstractBuiltInFunction<?>> extensions, ArucasClassDefinitionMap classDefinitions, ArucasThreadHandler threadHandler, IArucasOutput arucasOutput) {
-		this(displayName, null, extensions, classDefinitions, threadHandler, arucasOutput);
+
+	public Context(String displayName, Context parent, ArucasFunctionMap<FunctionValue> extensions, ArucasThreadHandler handler, ValueConverter converter, IArucasAPI api) {
+		this(displayName, parent, extensions, new StackTable(), handler, converter, api);
 	}
-	
+
 	private Context(Context branch, StackTable stackTable) {
 		this.displayName = branch.displayName;
 		this.stackTable = stackTable;
 		this.threadHandler = branch.threadHandler;
-		this.arucasOutput = branch.arucasOutput;
+		this.converter = branch.converter;
+		this.arucasAPI = branch.arucasAPI;
 		this.extensions = branch.extensions;
 		this.parentContext = branch.parentContext;
+		this.isDebug = branch.isDebug;
+		this.isExperimental = branch.isExperimental;
 		this.suppressDeprecated = branch.suppressDeprecated;
+		this.isMain = branch.isMain;
+		this.contextId = branch.contextId;
 	}
 
-	@SuppressWarnings("unused")
 	public Context createBranch() {
 		return new Context(this, this.stackTable);
 	}
@@ -85,85 +99,133 @@ public class Context {
 		}
 		return null;
 	}
-	
+
 	public Context createChildContext(String displayName) {
-		return new Context(displayName, this, this.extensions, this.stackTable.getRoot().classDefinitions, this.threadHandler, this.arucasOutput);
+		StackTable root = this.stackTable.getRoot();
+		Context context = new Context(displayName, this, this.extensions, this.threadHandler, this.converter, this.arucasAPI);
+		context.isDebug = this.isDebug;
+		context.isMain = false;
+		return context.setStackTable(root.classDefinitions, root.importableDefinitions, root.cachedDefinitions, false);
 	}
-	
+
+	/**
+	 * We have special context for parser since we want to be able to add class definitions the
+	 * existing stack table which will be used at runtime. This is needed for imports.
+	 */
+	public Context createParserContext() {
+		StackTable root = this.stackTable.getRoot();
+		Context context = new Context("Parser Context", this, this.extensions, this.threadHandler, this.converter, this.arucasAPI);
+		return context.setStackTable(root.classDefinitions, root.importableDefinitions, root.cachedDefinitions, true);
+	}
+
 	public ThrowValue.Continue getContinueThrowable() {
+		if (this.continueThrowable == null) {
+			this.continueThrowable = new ThrowValue.Continue();
+		}
 		return this.continueThrowable;
 	}
-	
+
 	public ThrowValue.Break getBreakThrowable() {
+		if (this.breakThrowable == null) {
+			this.breakThrowable = new ThrowValue.Break();
+		}
 		return this.breakThrowable;
 	}
-	
-	public ThrowValue.Return getReturnThrowable(Value<?> value) {
-		this.returnThrowable.setReturnValue(value);
+
+	public ThrowValue.Return getReturnThrowable(Value value) {
+		if (this.returnThrowable == null) {
+			this.returnThrowable = new ThrowValue.Return(value);
+		}
+		else {
+			this.returnThrowable.setReturnValue(value);
+		}
 		return this.returnThrowable;
 	}
-	
+
 	/**
 	 * Returns this thread handler.
 	 */
 	public ArucasThreadHandler getThreadHandler() {
 		return this.threadHandler;
 	}
-	
+
+	/**
+	 * Returns the current API
+	 */
+	public IArucasAPI getAPI() {
+		return this.arucasAPI;
+	}
+
 	/**
 	 * Returns this contexts output object.
 	 */
 	public IArucasOutput getOutput() {
-		return this.arucasOutput;
+		return this.arucasAPI.getOutput();
 	}
-	
+
+	/**
+	 * Returns the contexts UUID
+	 */
+	@SuppressWarnings("unused")
+	public UUID getContextId() {
+		return this.contextId;
+	}
+
+	public Path getImportPath() throws IOException {
+		Path importPath = this.arucasAPI.getImportPath();
+		if (!Files.exists(importPath) && !ExceptionUtils.runSafe(() -> Files.createDirectories(importPath))) {
+			throw new IOException("Failed to import '%s'".formatted(importPath.toAbsolutePath()));
+		}
+		return importPath;
+	}
+
 	public String getDisplayName() {
 		return this.displayName;
 	}
-	
+
 	public StackTable getStackTable() {
 		return this.stackTable;
 	}
-	
+
 	public StackTable getBreakScope() {
 		return this.stackTable.getBreakScope();
 	}
-	
+
 	public StackTable getContinueScope() {
 		return this.stackTable.getContinueScope();
 	}
-	
+
 	public StackTable getReturnScope() {
 		return this.stackTable.getReturnScope();
 	}
-	
+
 	public void pushScope(ISyntax syntaxPosition) {
 		this.stackTable = new StackTable(this.stackTable, syntaxPosition, false, false, false);
 	}
 
 	public void pushRunScope() {
-		this.stackTable = new StackTable(this.stackTable, null, ISyntax.empty(), false, false, true);
+		this.stackTable = new StackTable(this.stackTable, ISyntax.empty(), false, false, true);
 	}
-	
+
 	public void pushLoopScope(ISyntax syntaxPosition) {
 		this.stackTable = new StackTable(this.stackTable, syntaxPosition, true, true, false);
 	}
-	
+
 	public void pushSwitchScope(ISyntax syntaxPosition) {
 		this.stackTable = new StackTable(this.stackTable, syntaxPosition, true, false, false);
 	}
-	
+
 	public void pushFunctionScope(ISyntax syntaxPosition) {
-		this.stackTable = new FunctionStackTable(this.stackTable, syntaxPosition);
+		this.stackTable = new StackTable(this.stackTable, syntaxPosition, false, false, true);
 	}
-	
+
 	public void popScope() {
 		this.stackTable = this.stackTable.getParentTable();
 	}
-	
+
 	public void moveScope(StackTable stackTable) {
 		// We do not want to jump to an arbitrary stackTable
-		
+
 		Iterator<StackTable> iter = this.stackTable.iterator();
 		while (iter.hasNext()) {
 			StackTable table = iter.next();
@@ -172,27 +234,36 @@ public class Context {
 				return;
 			}
 		}
-		
+
 		// This should throw an exception
 	}
-	
+
 	public void setDebug(boolean debug) {
 		this.isDebug = debug;
 	}
-	
+
 	public boolean isDebug() {
 		return this.isDebug;
 	}
 
+	public void setExperimental(boolean experimental) {
+		this.isExperimental = experimental;
+	}
+
+	public boolean isExperimental() {
+		return this.isExperimental;
+	}
+
 	public void setSuppressDeprecated(boolean suppressed) {
 		this.suppressDeprecated = suppressed;
-		if (this.parentContext != null) {
-			this.parentContext.setSuppressDeprecated(suppressed);
-		}
 	}
 
 	public boolean isSuppressDeprecated() {
 		return this.suppressDeprecated;
+	}
+
+	public boolean isMain() {
+		return this.isMain;
 	}
 
 	public boolean isBuiltInFunction(String name) {
@@ -211,9 +282,6 @@ public class Context {
 				syntaxPosition
 			);
 		}
-	}
-
-	public void throwIfClassNameTaken(String name, ISyntax syntaxPosition) throws CodeError {
 		if (this.isDefinedClass(name)) {
 			throw new CodeError(
 				CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
@@ -222,67 +290,105 @@ public class Context {
 			);
 		}
 	}
-	
-	public void setVariable(String name, Value<?> value) {
+
+	public void setVariable(String name, Value value) {
 		this.stackTable.set(name, value);
 	}
-	
-	public void setLocal(String name, Value<?> value) {
+
+	public void setLocal(String name, Value value) {
 		this.stackTable.setLocal(name, value);
 	}
-	
-	public Value<?> getVariable(String name) {
+
+	public Value getVariable(String name) {
 		return this.stackTable.get(name);
 	}
 
-	public void printDeprecated(String message) {
+	public void printDeprecated(String message, Object... objects) {
 		if (!this.suppressDeprecated) {
-			this.getOutput().println(message);
+			this.getOutput().println(this.arucasAPI.getOutput().addErrorFormattingBold(message.formatted(objects)));
 		}
 	}
 
 	@SuppressWarnings("unused")
-	public ArucasClassValue createWrapperClass(Class<? extends IArucasWrappedClass> clazz, List<Value<?>> parameters, ISyntax syntaxPosition) throws CodeError {
-		String wrapperName = ArucasWrapperExtension.getWrapperName(clazz);
-		
+	public WrapperClassValue createWrapperClass(Class<? extends IArucasWrappedClass> clazz, List<Value> parameters, ISyntax syntaxPosition) throws CodeError {
+		String wrapperName = ArucasWrapperCreator.getWrapperName(clazz);
+
 		if (wrapperName == null) {
 			throw new RuntimeError("No such wrapper class exists", syntaxPosition, this);
 		}
-		
+
 		AbstractClassDefinition classDefinition = this.getClassDefinition(wrapperName);
-		if (classDefinition instanceof WrapperArucasClassDefinition wrappedClassDefinition) {
+		if (classDefinition instanceof WrapperClassDefinition wrappedClassDefinition) {
 			return wrappedClassDefinition.createNewDefinition(this, parameters, syntaxPosition);
 		}
 		throw new RuntimeError("No such wrapper class exists", syntaxPosition, this);
 	}
-	
+
+	public Value convertValue(Object object) throws CodeError {
+		return this.converter.convertFrom(object, this);
+	}
+
 	public AbstractClassDefinition getClassDefinition(String name) {
 		return this.stackTable.getClassDefinition(name);
 	}
-	
+
+	public ArucasClassDefinitionMap getCachedDefinitions(String fileName) {
+		return this.stackTable.getCachedDefinitionMap(fileName);
+	}
+
+	public ArucasClassDefinitionMap getAllClassDefinitions() {
+		return this.stackTable.classDefinitions;
+	}
+
 	public void addClassDefinition(AbstractClassDefinition definition) {
 		this.stackTable.addClassDefinition(definition);
 	}
 
-	public AbstractBuiltInFunction<?> getBuiltInFunction(String methodName, int parameters) {
+	public void clearCachedDefinitions() {
+		this.stackTable.clearCachedDefinitions();
+	}
+
+	public void addCachedDefinition(String fileName, ArucasClassDefinitionMap definitions) {
+		this.stackTable.addCachedDefinitionMap(fileName, definitions);
+	}
+
+	public FunctionValue getBuiltInFunction(String methodName, int parameters) {
 		return this.extensions.get(methodName, parameters);
 	}
 
 	public FunctionValue getMemberFunction(Class<?> clazz, String methodName, int parameters) {
 		return this.stackTable.getClassFunction(clazz, methodName, parameters);
 	}
-	
+
+	private Context setStackTable(ArucasClassDefinitionMap definitions, Map<String, ArucasClassDefinitionMap> imports, Map<String, ArucasClassDefinitionMap> cached, boolean force) {
+		this.stackTable.importableDefinitions = imports;
+		this.stackTable.cachedDefinitions = cached;
+		if (force) {
+			this.stackTable.classDefinitions = definitions;
+			return this;
+		}
+		this.stackTable.insertAllClassDefinitions(definitions);
+		return this;
+	}
+
+	public Context setStackTable(ArucasClassDefinitionMap definitions, Map<String, ArucasClassDefinitionMap> imports, Map<String, ArucasClassDefinitionMap> cached) {
+		return this.setStackTable(definitions, imports, cached, false);
+	}
+
 	@Deprecated(forRemoval = true)
 	public void dumpScopes() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("----------------------------\n");
-		
+
 		Iterator<StackTable> iter = this.stackTable.iterator();
 		while (iter.hasNext()) {
 			sb.append(iter.next()).append("\n");
 		}
-		
-		this.stackTable.getRoot().classDefinitions.iterator().forEachRemaining(System.out::println);
+
+		ArucasClassDefinitionMap definitions = this.stackTable.getRoot().classDefinitions;
+		if (definitions != null) {
+			this.stackTable.getRoot().classDefinitions.iterator().forEachRemaining(System.out::println);
+		}
 		System.out.println(sb);
 	}
 }

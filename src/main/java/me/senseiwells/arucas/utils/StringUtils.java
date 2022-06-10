@@ -1,24 +1,30 @@
 package me.senseiwells.arucas.utils;
 
+import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.throwables.CodeError;
-import me.senseiwells.arucas.values.*;
+import me.senseiwells.arucas.utils.impl.IArucasCollection;
+import me.senseiwells.arucas.values.StringValue;
+import me.senseiwells.arucas.values.Value;
 
 public class StringUtils {
 	/**
 	 * Joins all arguments using <code>StringBuilder</code>.
 	 */
+	@SuppressWarnings("unused")
 	public static String join(Object... args) {
 		final int length = args.length;
-		if (length == 0) return "";
-		StringBuilder sb = new StringBuilder();
-		
-		for (int i = 0; i < length; i++) {
-			sb.append(args[i]);
+		if (length == 0) {
+			return "";
 		}
-		
+		StringBuilder sb = new StringBuilder();
+
+		for (Object arg : args) {
+			sb.append(arg);
+		}
+
 		return sb.toString();
 	}
-	
+
 	/**
 	 * Converts all instances of <code>[\'] [\"] [\\] [\r] [\n] [\b] [\t] [\x..] [&bsol;u....]</code> to the correct character.
 	 */
@@ -29,10 +35,10 @@ public class StringUtils {
 
 		StringBuilder sb = new StringBuilder();
 		boolean escape = false;
-		
+
 		for (int i = 0, len = string.length(); i < len; i++) {
 			char c = string.charAt(i);
-			
+
 			if (escape) {
 				escape = false;
 
@@ -59,7 +65,7 @@ public class StringUtils {
 
 						i += 2;
 					}
-					
+
 					case 'u' -> {
 						if (i + 5 > string.length()) {
 							throw new RuntimeException("(index:%d) Not enough characters for '\\u....' escape.".formatted(i));
@@ -87,10 +93,10 @@ public class StringUtils {
 				sb.append(c);
 			}
 		}
-		
+
 		return sb.toString();
 	}
-	
+
 	/**
 	 * Escapes a string to convert all control characters into their escaped form.
 	 */
@@ -99,38 +105,59 @@ public class StringUtils {
 		if (string == null) {
 			return null;
 		}
-		
+
 		StringBuilder sb = new StringBuilder();
-		
+
 		for (int i = 0, len = string.length(); i < len; i++) {
 			char c = string.charAt(i);
 
 			switch (c) { // Normal escapes
-				case '\r' -> { sb.append("\\r"); continue; }
-				case '\n' -> { sb.append("\\n"); continue; }
-				case '\b' -> { sb.append("\\b"); continue; }
-				case '\t' -> { sb.append("\\t"); continue; }
-				case '\'' -> { sb.append("\\'"); continue; }
-				case '\"' -> { sb.append("\\\""); continue; }
-				case '\\' -> { sb.append("\\\\"); continue; }
+				case '\r' -> {
+					sb.append("\\r");
+					continue;
+				}
+				case '\n' -> {
+					sb.append("\\n");
+					continue;
+				}
+				case '\b' -> {
+					sb.append("\\b");
+					continue;
+				}
+				case '\t' -> {
+					sb.append("\\t");
+					continue;
+				}
+				case '\'' -> {
+					sb.append("\\'");
+					continue;
+				}
+				case '\"' -> {
+					sb.append("\\\"");
+					continue;
+				}
+				case '\\' -> {
+					sb.append("\\\\");
+					continue;
+				}
 			}
-			
+
 			if (c > 0xff) { // Unicode
 				sb.append("\\u").append(toHexString(c, 4));
 				continue;
 			}
-			
+
 			if (Character.isISOControl(c)) { // Control character
 				sb.append("\\x").append(toHexString(c, 2));
 				continue;
 			}
-			
+
 			sb.append(c);
 		}
-		
+
 		return sb.toString();
 	}
-	
+
 	/**
 	 * Escapes a string so that it can safely be placed inside a regex expression.
 	 */
@@ -138,46 +165,61 @@ public class StringUtils {
 		if (string == null) {
 			return null;
 		}
-		
+
 		StringBuilder sb = new StringBuilder();
-		
+
 		for (int i = 0, len = string.length(); i < len; i++) {
 			char c = string.charAt(i);
 
 			switch (c) { // Normal escapes
-				case '\0' -> { sb.append("\\0"); continue; }
-				case '\n' -> { sb.append("\\n"); continue; }
-				case '\r' -> { sb.append("\\r"); continue; }
-				case '\t' -> { sb.append("\\t"); continue; }
-				case '\\' -> { sb.append("\\\\"); continue; }
+				case '\0' -> {
+					sb.append("\\0");
+					continue;
+				}
+				case '\n' -> {
+					sb.append("\\n");
+					continue;
+				}
+				case '\r' -> {
+					sb.append("\\r");
+					continue;
+				}
+				case '\t' -> {
+					sb.append("\\t");
+					continue;
+				}
+				case '\\' -> {
+					sb.append("\\\\");
+					continue;
+				}
 				case '^', '$', '?', '|', '*', '/', '+', '.', '(', ')', '[', ']', '{', '}' -> {
 					sb.append("\\").append(c);
 					continue;
 				}
 			}
-			
+
 			if (c > 0xff) { // Unicode
 				sb.append("\\u").append(toHexString(c, 4));
 				continue;
 			}
-			
+
 			if (Character.isISOControl(c)) { // Control character
 				sb.append("\\x").append(toHexString(c, 2));
 				continue;
 			}
-			
+
 			sb.append(c);
 		}
-		
+
 		return sb.toString();
 	}
-	
+
 	/**
 	 * Converts a number into a hex string with a given minimum length.
 	 *
-	 * @param	value	the value to be converted to a hex string
-	 * @param	length	the minimum length of that hex string
-	 * @return	a hex string
+	 * @param value  the value to be converted to a hex string
+	 * @param length the minimum length of that hex string
+	 * @return a hex string
 	 */
 	public static String toHexString(long value, int length) {
 		if (length < 1) {
@@ -185,7 +227,7 @@ public class StringUtils {
 		}
 		return String.format("%0" + length + "x", value);
 	}
-	
+
 	/**
 	 * Converts a string into a number</br>
 	 * If the input string has a negative sign it will be handled correctly.
@@ -204,60 +246,40 @@ public class StringUtils {
 	 *     [0-9]+(\.[0-9]+)?
 	 * </pre>
 	 */
-	@SuppressWarnings("unused")
 	public static double parseNumber(String string) {
 		if (string == null || string.isBlank()) {
 			throw new IllegalArgumentException("The input string must not be null or empty");
 		}
-		
+
 		// First check if the value is negative.
 		boolean isNegative = string.charAt(0) == '-';
-		
+
 		if (isNegative) {
 			// If the string is negative we remove the first character.
 			string = string.substring(1);
 		}
-		
+
 		double result;
 		try {
-			if (string.startsWith("0x")) { // Hexadecimal
-				result = Long.parseLong(string.substring(2), 16);
-			}
-			else if (string.startsWith("0b")) { // Binary
-				result = Long.parseLong(string.substring(2), 2);
-			}
-			else if (string.startsWith("0")) { // Octodecimal
-				result = Long.parseLong(string.substring(1), 7);
-			}
-			else { // Decimal
-				result = Double.parseDouble(string);
-			}
-			
+			// Hexadecimal or denary
+			result = string.startsWith("0x") ? Long.parseLong(string.substring(2), 16) : Double.parseDouble(string);
 			return isNegative ? -result : result;
 		}
 		catch (NumberFormatException e) {
 			throw new IllegalArgumentException("Invalid input string. '%s' is not a number".formatted(string));
 		}
 	}
-	
+
 	/**
 	 * Convert value objects into their simple form.
 	 */
-	public static String toPlainString(Context context, Value<?> value) throws CodeError {
+	public static String toPlainString(Context context, Value value) throws CodeError {
 		if (value instanceof StringValue) {
 			return "\"" + value.getAsString(context) + "\"";
 		}
-		else if (value instanceof NumberValue) {
-			return value.getAsString(context);
+		if (value.isCollection()) {
+			return value.asCollection(context, ISyntax.EMPTY).getAsStringSafe();
 		}
-		else if (value instanceof ListValue) {
-			return "<list>";
-		}
-		else if (value instanceof MapValue) {
-			return "<map>";
-		}
-		else {
-			return value.getAsString(context);
-		}
+		return value.getAsString(context);
 	}
 }

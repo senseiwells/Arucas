@@ -3,8 +3,7 @@ package me.senseiwells.arucas.nodes;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.utils.impl.ArucasList;
-import me.senseiwells.arucas.values.ListValue;
+import me.senseiwells.arucas.utils.impl.IArucasCollection;
 import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
 
@@ -21,16 +20,15 @@ public class ForeachNode extends Node {
 	}
 
 	@Override
-	public Value<?> visit(Context context) throws CodeError, ThrowValue {
+	public Value visit(Context context) throws CodeError, ThrowValue {
 		context.pushLoopScope(this.syntaxPosition);
-		Value<?> forValue = this.list.visit(context);
-		if (!(forValue instanceof ListValue listValue)) {
-			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "For loop must contain a list", this.syntaxPosition);
+		Value forValue = this.list.visit(context);
+		if (!(forValue.isCollection())) {
+			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "For loop must contain a collection", this.syntaxPosition);
 		}
-		
-		final ArucasList list = listValue.value;
+		IArucasCollection collection = forValue.asCollection(context, this.syntaxPosition);
 
-		for (Value<?> item : list) {
+		for (Value item : collection.asCollection()) {
 			// Throws an error if the thread has been interrupted
 			this.keepRunning();
 

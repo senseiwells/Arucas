@@ -30,7 +30,7 @@ public class ArucasBuiltInClassOrderTest {
 				.addDefault();
 
 			for (int i : list) {
-				contextBuilder.addClasses(suppliers.get(i));
+				contextBuilder.addBuiltInClasses(suppliers.get(i));
 			}
 
 			Context context = contextBuilder.build();

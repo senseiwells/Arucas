@@ -1,17 +1,17 @@
 package me.senseiwells.arucas.core;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import me.senseiwells.arucas.api.ISyntax;
-import me.senseiwells.arucas.utils.Position;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.tokens.Token.Type;
+import me.senseiwells.arucas.utils.Position;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Lexer {
 	private static final LexerContext LEXER;
-	
+
 	static {
 		LEXER = new LexerContext()
 			// Whitespaces
@@ -20,14 +20,14 @@ public class Lexer {
 				.addRegex("//[^\\r\\n]*")
 				.addRegex("[ \t\r\n]")
 			)
-			
+
 			// Arithmetics
 			.addRule(Type.PLUS, i -> i.addString("+"))
 			.addRule(Type.MINUS, i -> i.addString("-"))
 			.addRule(Type.MULTIPLY, i -> i.addString("*"))
 			.addRule(Type.DIVIDE, i -> i.addString("/"))
 			.addRule(Type.POWER, i -> i.addString("^"))
-			
+
 			// Atoms
 			.addRule(Type.IDENTIFIER, i -> i.addRegex("[a-zA-Z_][a-zA-Z0-9_]*"))
 			.addRule(Type.BOOLEAN, i -> i.addStrings("true", "false"))
@@ -37,7 +37,8 @@ public class Lexer {
 			)
 			.addRule(Type.NUMBER, i -> i.addRegexes(
 				"[0-9]+\\.[0-9]+",
-				"[0-9]+"
+				"[0-9]+",
+				"0[xX][0-9a-fA-F]+"
 			))
 			.addRule(Type.NULL, i -> i.addStrings("null"))
 
@@ -51,12 +52,17 @@ public class Lexer {
 			.addRule(Type.NOT, i -> i.addStrings("!"))
 			.addRule(Type.AND, i -> i.addStrings("&&"))
 			.addRule(Type.OR, i -> i.addStrings("||"))
-			
+			.addRule(Type.XOR, i -> i.addString("~"))
+			.addRule(Type.SHIFT_LEFT, i -> i.addString("<<"))
+			.addRule(Type.SHIFT_RIGHT, i -> i.addString(">>"))
+			.addRule(Type.BIT_AND, i -> i.addString("&"))
+			.addRule(Type.BIT_OR, i -> i.addString("|"))
+
 			// Memory operations
 			.addRule(Type.ASSIGN_OPERATOR, i -> i.addString("="))
 			.addRule(Type.INCREMENT, i -> i.addString("++"))
 			.addRule(Type.DECREMENT, i -> i.addString("--"))
-			
+
 			// Brackets
 			.addRule(Type.LEFT_BRACKET, i -> i.addString("("))
 			.addRule(Type.RIGHT_BRACKET, i -> i.addString(")"))
@@ -64,12 +70,12 @@ public class Lexer {
 			.addRule(Type.RIGHT_SQUARE_BRACKET, i -> i.addString("]"))
 			.addRule(Type.LEFT_CURLY_BRACKET, i -> i.addString("{"))
 			.addRule(Type.RIGHT_CURLY_BRACKET, i -> i.addString("}"))
-			
+
 			// Delimiters
 			.addRule(Type.SEMICOLON, i -> i.addString(";"))
 			.addRule(Type.COLON, i -> i.addString(":"))
 			.addRule(Type.COMMA, i -> i.addString(","))
-			
+
 			// Keywords
 			.addRule(Type.IF, i -> i.addString("if"))
 			.addRule(Type.ELSE, i -> i.addString("else"))
@@ -87,17 +93,23 @@ public class Lexer {
 			.addRule(Type.CASE, i -> i.addString("case"))
 			.addRule(Type.DEFAULT, i -> i.addString("default"))
 			.addRule(Type.CLASS, i -> i.addString("class"))
+			.addRule(Type.ENUM, i -> i.addString("enum"))
 			.addRule(Type.THIS, i -> i.addString("this"))
+			.addRule(Type.SUPER, i -> i.addString("super"))
 			.addRule(Type.NEW, i -> i.addString("new"))
 			.addRule(Type.STATIC, i -> i.addString("static"))
 			.addRule(Type.OPERATOR, i -> i.addString("operator"))
+			.addRule(Type.THROW, i -> i.addString("throw"))
+			.addRule(Type.IMPORT, i -> i.addString("import"))
+			.addRule(Type.FROM, i -> i.addString("from"))
 
 			// Dot operator
+			.addRule(Type.ARBITRARY, i -> i.addString("..."))
 			.addRule(Type.DOT, i -> i.addString("."))
 			.addRule(Type.POINTER, i -> i.addString("->"))
 		;
 	}
-	
+
 	private final String text;
 	private final String fileName;
 
@@ -105,7 +117,7 @@ public class Lexer {
 		this.text = text;
 		this.fileName = fileName;
 	}
-	
+
 	public List<Token> createTokens() throws CodeError {
 		List<Token> tokenList = new ArrayList<>();
 		int offset = 0;
@@ -113,34 +125,34 @@ public class Lexer {
 		int column = 0;
 		int length = this.text.length();
 		String input = this.text;
-		
+
 		while (offset < length) {
 			LexerContext.LexerToken lexerToken = LEXER.nextToken(input);
-			
+
 			if (lexerToken == null) {
 				throw new CodeError(CodeError.ErrorType.ILLEGAL_CHAR_ERROR, "Invalid character", ISyntax.of(new Position(offset, line, column, this.fileName)));
 			}
-			
+
 			if (lexerToken.length + offset > length) {
 				break;
 			}
-			
+
 			int old_offset = offset;
 			int old_line = line;
 			int old_column = column;
-			
+
 			for (int i = offset; i < offset + lexerToken.length; i++) {
 				char c = this.text.charAt(i);
-				
+
 				if (c == '\n') {
-					line ++;
+					line++;
 					column = 0;
 				}
 				else {
-					column ++;
+					column++;
 				}
 			}
-			
+
 			if (lexerToken.type != Type.WHITESPACE) {
 				tokenList.add(new Token(
 					lexerToken.type,
@@ -149,11 +161,11 @@ public class Lexer {
 					new Position(offset, line, column, this.fileName)
 				));
 			}
-			
+
 			input = input.substring(lexerToken.length);
 			offset += lexerToken.length;
 		}
-	
+
 		tokenList.add(new Token(Type.FINISH, ISyntax.of(new Position(offset, line, column, this.fileName))));
 		return tokenList;
 	}

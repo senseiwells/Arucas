@@ -1,6 +1,5 @@
 package me.senseiwells.arucas.nodes;
 
-import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
@@ -8,6 +7,7 @@ import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.Value;
+import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,7 @@ public class NewNode extends Node {
 	}
 
 	@Override
-	public Value<?> visit(Context context) throws CodeError, ThrowValue {
+	public Value visit(Context context) throws CodeError, ThrowValue {
 		// Throws an error if the thread has been interrupted
 		this.keepRunning();
 
@@ -32,7 +32,7 @@ public class NewNode extends Node {
 			throw new RuntimeError("The class '%s' does not exist".formatted(this.className.content), this.syntaxPosition, context);
 		}
 		
-		List<Value<?>> parameters = new ArrayList<>();
+		List<Value> parameters = new ArrayList<>();
 		for (Node node : this.arguments) {
 			parameters.add(node.visit(context));
 		}

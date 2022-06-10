@@ -1,138 +1,249 @@
 package me.senseiwells.arucas.values.functions;
 
+import me.senseiwells.arucas.api.ArucasClassExtension;
 import me.senseiwells.arucas.api.ISyntax;
+import me.senseiwells.arucas.api.docs.ClassDoc;
+import me.senseiwells.arucas.api.docs.FunctionDoc;
+import me.senseiwells.arucas.throwables.BuiltInException;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
+import me.senseiwells.arucas.utils.Arguments;
+import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.values.Value;
+import me.senseiwells.arucas.utils.ExceptionUtils;
+import me.senseiwells.arucas.values.*;
+import me.senseiwells.arucas.values.classes.ArucasClassValue;
 
 import java.util.List;
 import java.util.Objects;
 
-public abstract class FunctionValue extends Value<String> {
-	public final List<String> argumentNames;
-	public final ISyntax syntaxPosition;
-	public final String deprecatedMessage;
-	
-	public FunctionValue(String name, ISyntax syntaxPosition, List<String> argumentNames, String deprecatedMessage) {
+import static me.senseiwells.arucas.utils.ValueTypes.*;
+
+public abstract class FunctionValue extends GenericValue<String> {
+	private final ISyntax syntaxPosition;
+	private final String deprecationMessage;
+	private final int parameters;
+
+	protected FunctionValue(String name, ISyntax position, int parameters, String deprecationMessage) {
 		super(name);
-		this.syntaxPosition = syntaxPosition;
-		this.argumentNames = argumentNames;
-		this.deprecatedMessage = deprecatedMessage;
+		this.syntaxPosition = position;
+		this.deprecationMessage = deprecationMessage;
+		this.parameters = parameters;
 	}
-	
+
 	public String getName() {
 		return this.value;
 	}
-	
-	public int getParameterCount() {
-		return this.argumentNames.size();
-	}
-	
-	private void checkArguments(Context context, List<Value<?>> arguments, List<String> argumentNames) throws CodeError {
-		int argumentSize = arguments == null ? 0 : arguments.size();
-		if (argumentSize > argumentNames.size()) {
-			throw new RuntimeError(
-				"%s too many arguments passed into %s".formatted(arguments.size() - argumentNames.size(), this.value),
-				this.syntaxPosition,
-				context
-			);
-		}
-		if (argumentSize < argumentNames.size()) {
-			throw new RuntimeError(
-				"%s too few arguments passed into %s".formatted(argumentNames.size() - argumentSize, this.value),
-				this.syntaxPosition,
-				context
-			);
-		}
+
+	public int getCount() {
+		return this.parameters;
 	}
 
-	private void populateArguments(Context context, List<Value<?>> arguments, List<String> argumentNames) {
-		for (int i = 0; i < argumentNames.size(); i++) {
-			String argumentName = argumentNames.get(i);
-			Value<?> argumentValue = arguments.get(i);
-			context.setLocal(argumentName, argumentValue);
-		}
+	public String getDeprecationMessage() {
+		return this.deprecationMessage;
 	}
 
-	public void checkAndPopulateArguments(Context context, List<Value<?>> arguments, List<String> argumentNames) throws CodeError {
-		this.checkArguments(context, arguments, argumentNames);
-		this.populateArguments(context, arguments, argumentNames);
+	public ISyntax getPosition() {
+		return this.syntaxPosition;
 	}
 
-	public CodeError throwInvalidParameterError(String details, Context context) {
+	public RuntimeError getError(Context context, String details) {
 		return new RuntimeError(details, this.syntaxPosition, context);
 	}
 
-	protected abstract Value<?> execute(Context context, List<Value<?>> arguments) throws CodeError, ThrowValue;
-	
-	/**
-	 * API overridable method.
-	 */
-	protected Value<?> callOverride(Context context, List<Value<?>> arguments, boolean returnable) throws CodeError {
+	public RuntimeError getError(Context context, String details, Object... objects) {
+		return new RuntimeError(details.formatted(objects), this.syntaxPosition, context);
+	}
+
+	public RuntimeError getError(Context context, Throwable throwable) {
+		return new RuntimeError(throwable, this.syntaxPosition, context);
+	}
+
+	protected Context getContext(Context context) {
+		return context;
+	}
+
+	protected abstract Value execute(Context context, List<Value> arguments) throws CodeError;
+
+	public final Value callSafe(Context context, ExceptionUtils.ThrowableSupplier<List<Value>> arguments) {
+		try {
+			return this.call(context, arguments.get());
+		}
+		catch (Throwable throwable) {
+			context.getThreadHandler().tryError(context, throwable);
+			return null;
+		}
+	}
+
+	public final Value call(Context context, List<Value> arguments) throws CodeError {
+		return this.call(context, arguments, true);
+	}
+
+	public Value call(Context context, List<Value> arguments, boolean returnable) throws CodeError {
+		context = this.getContext(context);
 		context.pushFunctionScope(this.syntaxPosition);
 		try {
-			Value<?> value = this.execute(context, arguments);
+			Value value = this.execute(context, arguments);
 			context.popScope();
 			return value;
 		}
-		catch (ThrowValue.Return tv) {
+		catch (ThrowValue.Return throwValue) {
 			if (!returnable) {
-				throw new CodeError(
-					CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
-					tv.getMessage(),
-					this.syntaxPosition
-				);
+				throw this.getError(context, throwValue.getMessage());
 			}
 			context.moveScope(context.getReturnScope());
 			context.popScope();
-			return tv.getReturnValue();
+			return throwValue.getReturnValue();
 		}
-		catch (ThrowValue tv) {
-			throw new CodeError(
-				CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
-				tv.getMessage(),
-				this.syntaxPosition
-			);
+		catch (BuiltInException exception) {
+			throw exception.asRuntimeError(context, this.syntaxPosition);
 		}
 		catch (StackOverflowError e) {
-			throw new CodeError(
-				CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
-				"StackOverflow: Call stack went too deep",
-				this.syntaxPosition
-			);
+			throw this.getError(context, "StackOverflow: Call stack went too deep");
 		}
 	}
-	
-	public final Value<?> call(Context context, List<Value<?>> arguments) throws CodeError {
-		return this.callOverride(context, arguments, true);
-	}
 
-	public final Value<?> call(Context context, List<Value<?>> arguments, boolean returnable) throws CodeError {
-		return this.callOverride(context, arguments, returnable);
-	}
-	
 	@Override
-	public final FunctionValue copy(Context context) {
+	public GenericValue<String> copy(Context context) throws CodeError {
 		return this;
 	}
-	
+
 	@Override
-	public int getHashCode(Context context) throws CodeError {
-		return Objects.hash(this.value, this.getParameterCount());
+	public Object asJavaValue() {
+		return this;
 	}
-	
+
+	@Override
+	public boolean isEquals(Context context, Value other) throws CodeError {
+		return this == other;
+	}
+
+	@Override
+	public String getTypeName() {
+		return FUNCTION;
+	}
+
 	@Override
 	public String getAsString(Context context) throws CodeError {
-		return "<function " + this.value + ">";
+		return "<function - " + this.getName() + ">";
 	}
-	
+
 	@Override
-	public boolean isEquals(Context context, Value<?> other) {
-		// The problem here is that it is not enough to check the parameter count and name
-		// If this function was a delegate of a class, and then we compared it to a delegate
-		// of the same class but another instance it should always return false.
-		return this == other;
+	public int getHashCode(Context context) throws CodeError {
+		return Objects.hash(this.getName(), this.getCount());
+	}
+
+	@ClassDoc(
+		name = FUNCTION,
+		desc = "Adds utilities for delegating and calling functions."
+	)
+	public static class ArucasFunctionClass extends ArucasClassExtension {
+		public ArucasFunctionClass() {
+			super(FUNCTION);
+		}
+
+		@Override
+		public Class<FunctionValue> getValueClass() {
+			return FunctionValue.class;
+		}
+
+		@Override
+		public ArucasFunctionMap<BuiltInFunction> getDefinedStaticMethods() {
+			return ArucasFunctionMap.of(
+				BuiltInFunction.of("getBuiltIn", 2, this::getBuiltInDelegate),
+				BuiltInFunction.of("getMethod", 3, this::getMethodDelegate),
+				BuiltInFunction.of("callWithList", 2, this::callDelegateWithList),
+				BuiltInFunction.arbitrary("call", this::callDelegate)
+			);
+		}
+
+		@FunctionDoc(
+			isStatic = true,
+			name = "getBuiltIn",
+			desc = "Returns a built-in function delegate with the given name and parameter count",
+			params = {
+				STRING, "functionName", "the name of the function",
+				NUMBER, "parameterCount", "the parameter count of the function"
+			},
+			returns = {FUNCTION, "the built-in function delegate"},
+			example = "Function.getBuiltIn('print', 1);"
+		)
+		private Value getBuiltInDelegate(Arguments arguments) throws CodeError {
+			String functionName = arguments.getNextGeneric(StringValue.class);
+			int parameters = arguments.getNextGeneric(NumberValue.class).intValue();
+			FunctionValue functionValue = arguments.getContext().getBuiltInFunction(functionName, parameters);
+			if (functionValue == null) {
+				throw arguments.getError("No such built in function '%s' with %d parameters", functionName, parameters);
+			}
+			return functionValue;
+		}
+
+		@FunctionDoc(
+			isStatic = true,
+			name = "getMethod",
+			desc = "Returns a method delegate with the given name and parameter count",
+			params = {
+				ANY, "value", "the value to call the method on",
+				STRING, "methodName", "the name of the method",
+				NUMBER, "parameterCount", "the parameter count of the method"
+			},
+			returns = {FUNCTION, "the method delegate"},
+			example = "Function.getMethod('String', 'contains', 1);"
+		)
+		private Value getMethodDelegate(Arguments arguments) throws CodeError {
+			Value callingValue = arguments.getNext();
+			String functionName = arguments.getNextGeneric(StringValue.class);
+			int parameters = arguments.getNextGeneric(NumberValue.class).intValue();
+
+			FunctionValue delegate = null;
+			if (callingValue instanceof ArucasClassValue classValue) {
+				delegate = classValue.getMember(functionName, parameters + 1);
+			}
+			if (delegate == null) {
+				delegate = arguments.getContext().getMemberFunction(callingValue.getClass(), functionName, parameters + 1);
+			}
+			if (delegate == null) {
+				throw arguments.getError("No such method '%s' with %d parameters", functionName, parameters);
+			}
+			return delegate;
+		}
+
+		@FunctionDoc(
+			isStatic = true,
+			name = "callWithList",
+			desc = "Calls the given delegate with the given parameters",
+			params = {
+				FUNCTION, "delegate", "the delegate to call",
+				LIST, "parameters", "the parameters to pass to the delegate"
+			},
+			returns = {ANY, "the return value of the delegate"},
+			example = "Function.callWithList(fun(m1, m2) { }, ['Hello', 'World']);"
+		)
+		private Value callDelegateWithList(Arguments arguments) throws CodeError {
+			FunctionValue delegate = arguments.getNextFunction();
+			ListValue listValue = arguments.getNextList();
+			return delegate.call(arguments.getContext(), listValue.value);
+		}
+
+		@FunctionDoc(
+			isVarArgs = true,
+			isStatic = true,
+			name = "call",
+			desc = "Calls the given delegate with the given arbitrary parameters",
+			params = {
+				FUNCTION, "delegate", "the delegate to call",
+				ANY, "parameters...", "the parameters to pass to the delegate"
+			},
+			returns = {ANY, "the return value of the delegate"},
+			example = "Function.call(Function.getBuiltIn('print', 1), 'Hello World!');"
+		)
+		private Value callDelegate(Arguments arguments) throws CodeError {
+			if (arguments.size() < 1) {
+				throw arguments.getError("First parameter must be of function value");
+			}
+			FunctionValue function = arguments.getNextFunction();
+			return function.call(arguments.getContext(), arguments.getRemaining());
+		}
 	}
 }

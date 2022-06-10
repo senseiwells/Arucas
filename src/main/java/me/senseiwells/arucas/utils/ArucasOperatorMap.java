@@ -5,52 +5,38 @@ import me.senseiwells.arucas.values.functions.FunctionValue;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 public class ArucasOperatorMap<T extends FunctionValue> {
-	// Initialize these later to make sure we do not allocate empty memory
-	private Map<Token.Type, T> unaryOperatorMap;
-	private Map<Token.Type, T> binaryOperatorMap;
+	private Map<Integer, Map<Token.Type, T>> operatorsMap;
 
 	public void add(Token.Type type, T function) {
-		switch (function.getParameterCount()) {
-			case 1 -> {
-				if (this.unaryOperatorMap == null) {
-					this.unaryOperatorMap = new HashMap<>();
-				}
-				this.unaryOperatorMap.put(type, function);
-			}
-			case 2 -> {
-				if (this.binaryOperatorMap == null) {
-					this.binaryOperatorMap = new HashMap<>();
-				}
-				this.binaryOperatorMap.put(type, function);
-			}
+		if (this.operatorsMap == null) {
+			this.operatorsMap = new HashMap<>();
 		}
+
+		Map<Token.Type, T> operatorMap = this.operatorsMap.computeIfAbsent(function.getCount(), i -> new HashMap<>());
+		operatorMap.put(type, function);
 	}
 
 	public T get(Token.Type type, int parameterCount) {
-		return switch (parameterCount) {
-			case 1 -> this.unaryOperatorMap == null ? null : this.unaryOperatorMap.get(type);
-			case 2 -> this.binaryOperatorMap == null ? null : this.binaryOperatorMap.get(type);
-			default -> null;
-		};
-	}
-
-	public boolean hasOperator(Token.Type type, int parameterCount) {
-		return this.get(type, parameterCount) != null;
-	}
-
-	public void forEach(BiConsumer<Token.Type, T> biConsumer) {
-		if (this.unaryOperatorMap != null) {
-			for (Map.Entry<Token.Type, T> entry : this.unaryOperatorMap.entrySet()) {
-				biConsumer.accept(entry.getKey(), entry.getValue());
-			}
+		if (this.operatorsMap == null) {
+			return null;
 		}
-		
-		if (this.binaryOperatorMap != null) {
-			for (Map.Entry<Token.Type, T> entry : this.binaryOperatorMap.entrySet()) {
-				biConsumer.accept(entry.getKey(), entry.getValue());
+
+		Map<Token.Type, T> operatorMap = this.operatorsMap.get(parameterCount);
+		if (operatorMap != null) {
+			return operatorMap.get(type);
+		}
+		return null;
+	}
+
+	public void forEach(Functions.TriConsumer<Integer, Token.Type, T> triConsumer) {
+		if (this.operatorsMap != null) {
+			for (Map.Entry<Integer, Map<Token.Type, T>> entry : this.operatorsMap.entrySet()) {
+				int parameters = entry.getKey();
+				for (Map.Entry<Token.Type, T> operatorMap : entry.getValue().entrySet()) {
+					triConsumer.accept(parameters, operatorMap.getKey(), operatorMap.getValue());
+				}
 			}
 		}
 	}

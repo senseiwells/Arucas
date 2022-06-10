@@ -1,19 +1,13 @@
-// run(getDirectory() + "/src/test/resources/code/test.arucas");
+// ./src/test/resources/code/test.arucas
+// run(File.getDirectory().getPath() + "/src/test/resources/code/test.arucas");
 
-class A {
+import * from util.Collections;
 
+stack = new LinkedStack();
+
+stack.push("Wow");
+stack.push(90);
+
+foreach (v : stack) {
+    print(v);
 }
-
-fun B() {
-
-}
-
-{
-    print("inside scope " + new A());
-}
-
-print(new A());
-
-t = run(File.getDirectory().getPath() + "/src/test/resources/code/test2.arucas");
-
-print(t);

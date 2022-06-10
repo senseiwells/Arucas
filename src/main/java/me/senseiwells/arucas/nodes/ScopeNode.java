@@ -19,13 +19,13 @@ public class ScopeNode extends Node {
 	}
 
 	@Override
-	public Value<?> visit(Context context) throws CodeError, ThrowValue {
+	public Value visit(Context context) throws CodeError, ThrowValue {
 		context.pushScope(this.syntaxPosition);
-		
+
 		for (Node elementNode : this.elementNodes) {
 			elementNode.visit(context);
 		}
-		
+
 		context.popScope();
 		return NullValue.NULL;
 	}

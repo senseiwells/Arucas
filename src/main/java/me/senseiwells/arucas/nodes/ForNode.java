@@ -22,12 +22,12 @@ public class ForNode extends Node {
 	}
 
 	@Override
-	public Value<?> visit(Context context) throws CodeError, ThrowValue {
+	public Value visit(Context context) throws CodeError, ThrowValue {
 		context.pushLoopScope(this.syntaxPosition);
 
 		this.initialExpression.visit(context);
 		while (this.keepRunning()) {
-			Value<?> conditionValue = this.condition.visit(context);
+			Value conditionValue = this.condition.visit(context);
 			if (!(conditionValue instanceof BooleanValue booleanValue)) {
 				throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "Condition must result in either 'true' or 'false'", this.syntaxPosition);
 			}

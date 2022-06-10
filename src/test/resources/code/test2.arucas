@@ -1,2 +1,10 @@
 // run(File.getDirectory().getPath() + "/src/test/resources/code/test2.arucas");
-return ["hi"].toString();
+
+import Java from util.Internal;
+
+f = Java.functionOf(fun(something) {
+    // print(something);
+    return something;
+});
+
+Java.callStaticMethod("me.senseiwells.impl.Test", "runFunction", f);

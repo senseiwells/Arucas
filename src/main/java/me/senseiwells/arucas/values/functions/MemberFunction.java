@@ -1,55 +1,64 @@
 package me.senseiwells.arucas.values.functions;
 
 import me.senseiwells.arucas.throwables.CodeError;
+import me.senseiwells.arucas.utils.Arguments;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.Value;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class MemberFunction extends AbstractBuiltInFunction<MemberFunction> {
-	public MemberFunction(String name, List<String> argumentNames, FunctionDefinition<MemberFunction> function, String isDeprecated) {
-		super(name, addThis(argumentNames), function, isDeprecated);
+public class MemberFunction extends BuiltInFunction implements Delegatable {
+	protected MemberFunction(String name, int parameters, FunctionDefinition function, String deprecationMessage) {
+		super(name, parameters + 1, function, deprecationMessage);
 	}
 
-	public MemberFunction(String name, List<String> argumentNames, FunctionDefinition<MemberFunction> function) {
-		this(name, addThis(argumentNames), function, null);
+	public static MemberFunction of(String name, int parameters, FunctionDefinition function, String deprecationMessage) {
+		return new MemberFunction(name, parameters, function, deprecationMessage);
 	}
 
-	public MemberFunction(String name, String argument, FunctionDefinition<MemberFunction> function) {
-		this(name, List.of(argument), function, null);
+	public static MemberFunction of(String name, int parameters, FunctionDefinition function) {
+		return of(name, parameters, function, null);
 	}
 
-	public MemberFunction(String name, FunctionDefinition<MemberFunction> function) {
-		// TODO: Remove empty redundant allocations
-		this(name, List.of(), function, null);
+	public static MemberFunction of(String name, FunctionDefinition function, String deprecationMessage) {
+		return of(name, 0, function, deprecationMessage);
 	}
 
-	public MemberFunction(String name, String argument, FunctionDefinition<MemberFunction> function, String isDeprecated) {
-		this(name, List.of(argument), function, isDeprecated);
+	public static MemberFunction of(String name, FunctionDefinition function) {
+		return of(name, 0, function);
 	}
 
-	public MemberFunction(String name, FunctionDefinition<MemberFunction> function, String isDeprecated) {
-		// TODO: Remove empty redundant allocations
-		this(name, List.of(), function, isDeprecated);
+	public static MemberFunction arbitrary(String name, FunctionDefinition function, String deprecationMessage) {
+		return MemberFunction.of(name, -2, function, deprecationMessage);
 	}
 
-	public <T extends Value<?>> T getThis(Context context, Class<T> clazz) throws CodeError {
-		return this.getParameterValueOfType(context, clazz, 0);
+	public static MemberFunction arbitrary(String name, FunctionDefinition function) {
+		return arbitrary(name, function, null);
 	}
 
 	@Override
-	protected Value<?> execute(Context context, List<Value<?>> arguments) throws CodeError {
-		this.checkDeprecated(context);
-		this.checkAndPopulateArguments(context, arguments, this.argumentNames);
-		return this.function.execute(context, this);
+	protected Value execute(Context context, List<Value> arguments) throws CodeError {
+		this.checkDeprecation(context);
+		return this.function.execute(new Arguments.Member(context, this, arguments));
 	}
-	
-	private static List<String> addThis(List<String> stringList) {
-		if (stringList.isEmpty() || !stringList.get(0).equals("this")) {
-			stringList = new ArrayList<>(stringList);
-			stringList.add(0, "this");
+
+	@Override
+	public MemberFunction getDelegate(Value thisValue) {
+		return new Delegate(thisValue, this);
+	}
+
+	private static class Delegate extends MemberFunction {
+		private final Value thisValue;
+
+		protected Delegate(Value thisValue, MemberFunction function) {
+			super(function.getName(), function.getCount(), function.function, function.getDeprecationMessage());
+			this.thisValue = thisValue;
 		}
-		return stringList;
+
+		@Override
+		protected Value execute(Context context, List<Value> arguments) throws CodeError {
+			arguments.add(0, this.thisValue);
+			return super.execute(context, arguments);
+		}
 	}
 }

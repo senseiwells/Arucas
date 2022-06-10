@@ -1,7 +1,6 @@
 package me.senseiwells.arucas.utils;
 
-import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
-import me.senseiwells.arucas.values.classes.MergedClassMethods;
+import me.senseiwells.arucas.values.classes.*;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 
 import java.util.*;
@@ -15,7 +14,7 @@ public class ArucasClassDefinitionMap implements Iterable<AbstractClassDefinitio
 	private final Map<String, AbstractClassDefinition> nameMap;
 
 	private boolean isMerged;
-	
+
 	public ArucasClassDefinitionMap() {
 		this.classMap = new HashMap<>();
 		this.mergedClassMap = new HashMap<>();
@@ -37,12 +36,13 @@ public class ArucasClassDefinitionMap implements Iterable<AbstractClassDefinitio
 
 		return length;
 	}
-	
+
 	/**
 	 * This method adds the class definition value to all of its subclasses.
 	 */
 	private void addSubclasses(AbstractClassDefinition value) {
-		if (this.isMerged) {
+		if (value instanceof ArucasClassDefinition || value instanceof WrapperClassDefinition) {
+			// We do not want to add wrapper classes and arucas classes here
 			return;
 		}
 
@@ -70,14 +70,16 @@ public class ArucasClassDefinitionMap implements Iterable<AbstractClassDefinitio
 					List<AbstractClassDefinition> childList = this.classMap.get(key);
 
 					if (childList != null) {
-						int classIndex = getClassIndex(baseClazz, childList);
+						int classIndex = this.getClassIndex(baseClazz, childList);
 						childList.add(classIndex, value);
 					}
 				}
 			}
 		}
+
+		this.merge();
 	}
-	
+
 	/**
 	 * Add all the values from the specified map without doing any hierarchy checks.
 	 */
@@ -89,25 +91,23 @@ public class ArucasClassDefinitionMap implements Iterable<AbstractClassDefinitio
 		for (Class<?> key : map.mergedClassMap.keySet()) {
 			this.mergedClassMap.put(key, map.mergedClassMap.get(key));
 		}
-		
+
 		for (String key : map.nameMap.keySet()) {
 			this.nameMap.put(key, map.nameMap.get(key));
 		}
 	}
 
 	public void merge() {
-		if (this.isMerged) {
-			return;
-		}
+		this.mergedClassMap.clear();
 
 		for (Class<?> key : this.classMap.keySet().toArray(Class<?>[]::new)) {
 			this.mergedClassMap.put(key, MergedClassMethods.mergeMethods(this.classMap.get(key)));
 		}
 
 		this.isMerged = true;
-		this.classMap.clear();
 	}
 
+	@SuppressWarnings("unused")
 	@Deprecated(forRemoval = true)
 	private void debug(Class<?> added, AbstractClassDefinition value) {
 		System.out.printf("Adding: %s, %s\n", added, value);
@@ -123,7 +123,7 @@ public class ArucasClassDefinitionMap implements Iterable<AbstractClassDefinitio
 		this.nameMap.putIfAbsent(value.getName(), value);
 		this.addSubclasses(value);
 	}
-	
+
 	/**
 	 * Returns true if this map is empty.
 	 */
@@ -136,27 +136,33 @@ public class ArucasClassDefinitionMap implements Iterable<AbstractClassDefinitio
 	 */
 	public FunctionValue getFunctionForClass(Class<?> clazz, String name, int parameters) {
 		MergedClassMethods mergedMethods = this.mergedClassMap.get(clazz);
+
+		while (mergedMethods == null && clazz != Object.class) {
+			clazz = clazz.getSuperclass();
+			mergedMethods = this.mergedClassMap.get(clazz);
+		}
+
 		if (mergedMethods != null) {
 			return mergedMethods.getMethod(name, parameters);
 		}
 
 		return null;
 	}
-	
+
 	/**
 	 * Returns the class definition of the specified name.
 	 */
 	public AbstractClassDefinition get(String name) {
 		return this.nameMap.get(name);
 	}
-	
+
 	/**
 	 * Returns true if this map contains the specified name.
 	 */
 	public boolean has(String name) {
 		return this.nameMap.containsKey(name);
 	}
-	
+
 	@Override
 	public Iterator<AbstractClassDefinition> iterator() {
 		// Create a non thread safe iterator of the current map

@@ -1,35 +1,63 @@
 package me.senseiwells;
 
 import me.senseiwells.arucas.api.ContextBuilder;
+import me.senseiwells.arucas.api.docs.parser.JsonParser;
+import me.senseiwells.arucas.utils.ArgumentParser;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.impl.wrappers.ArucasTestWrapper;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Scanner;
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 
 public class Main {
-	public static void main(String[] args) throws InterruptedException {
-		Context context = new ContextBuilder()
+	public static void main(String[] args) throws InterruptedException, IOException, ExecutionException {
+		ContextBuilder builder = new ContextBuilder()
 			.setDisplayName("System.in")
 			.addDefault()
-			.addWrapper(ArucasTestWrapper::new)
-			.build();
-		
-		context.getThreadHandler()
-			.setStopErrorHandler(System.out::println)
-			.setErrorHandler(System.out::println)
-			.setFatalErrorHandler((c, t, s) -> t.printStackTrace());
-		
-		while (true) {
-			Scanner scanner = new Scanner(System.in);
-			String line = scanner.nextLine();
-			if (line.trim().equals("")) {
-				continue;
+			.generateArucasFiles();
+
+		Context context = builder.build();
+
+		ArgumentParser parser = new ArgumentParser()
+			.addArgument("-noformat", c -> c.getOutput().setFormatting("", "", ""))
+			.addArgument("-debug", c -> c.setDebug(true))
+			.addArgument("-genjson", c -> JsonParser.of(builder).write(() -> c.getImportPath().getParent().resolve("docs").resolve("AllDocs.json")));
+		parser.parse(context, args);
+
+		context.getOutput().println("Welcome to Arucas Interpreter");
+		Scanner scanner = new Scanner(System.in);
+		boolean running = true;
+		while (running) {
+			System.out.print("\n>> ");
+
+			String line = scanner.nextLine().trim();
+			switch (line) {
+				case "" -> {
+					continue;
+				}
+				case "quit", "exit" -> {
+					running = false;
+					continue;
+				}
 			}
-			
-			CountDownLatch latch = new CountDownLatch(1);
-			context.getThreadHandler().runOnThread(context, "System.in", line, latch);
-			latch.await();
+
+			String fileName = "System.in";
+			if (line.endsWith(".arucas")) {
+				try {
+					Path path = Path.of(line);
+					Path fileNamePath = path.getFileName();
+					fileName = fileNamePath == null ? line : fileNamePath.toString();
+					line = Files.readString(Path.of(line));
+				}
+				catch (Exception e) {
+					context.getOutput().logError("Could not read file: \n" + e);
+					continue;
+				}
+			}
+
+			context.getThreadHandler().runOnMainThreadFuture(context, fileName, line).get();
 		}
 	}
 }

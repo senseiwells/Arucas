@@ -1,5 +1,7 @@
 package me.senseiwells.arucas.api;
 
+import me.senseiwells.arucas.values.StringValue;
+
 import java.util.function.Consumer;
 
 /**
@@ -7,14 +9,91 @@ import java.util.function.Consumer;
  */
 @SuppressWarnings("unused")
 public interface IArucasOutput {
-	// Declare methods that pipeline the output stream
-	void setOutputHandler(Consumer<String> outputHandler);
+
+	/**
+	 * Gets the current output handler
+	 */
 	Consumer<String> getOutputHandler();
-	
-	// Declare methods used for printing
-	void print(Object object);
 
-	void println();
+	/**
+	 * Gets the current debug handler
+	 */
+	Consumer<String> getDebugHandler();
 
-	void println(Object object);
+	/**
+	 * Sets the current error formatting
+	 */
+	void setFormatting(String error, String boldError, String reset);
+
+	/**
+	 * Gets the current error formatting
+	 */
+	String getErrorFormatting();
+	String getErrorFormattingBold();
+	String getResetFormatting();
+
+	default void print(Object object) {
+		this.getOutputHandler().accept(String.valueOf(object));
+	}
+
+	default void println() {
+		this.print("\n");
+	}
+
+	default void println(Object object) {
+		this.print(object + "\n");
+	}
+
+	default void log(Object object) {
+		this.getDebugHandler().accept(String.valueOf(object));
+	}
+
+	default void logln(Object object) {
+		this.getDebugHandler().accept(object + "\n");
+	}
+
+	default void logError(Object object) {
+		this.getDebugHandler().accept(this.addErrorFormattingBold(object + "\n"));
+	}
+
+	default String addErrorFormatting(String string) {
+		return this.getErrorFormatting() + string + this.getResetFormatting();
+	}
+
+	default String addErrorFormattingBold(String string) {
+		return this.getErrorFormattingBold() + string + this.getResetFormatting();
+	}
+
+
+	IArucasOutput DUMMY = new IArucasOutput() {
+		private final Consumer<String> dummyConsumer = s -> { };
+
+		@Override
+		public Consumer<String> getOutputHandler() {
+			return this.dummyConsumer;
+		}
+
+		@Override
+		public Consumer<String> getDebugHandler() {
+			return this.dummyConsumer;
+		}
+
+		@Override
+		public void setFormatting(String error, String boldError, String reset) { }
+
+		@Override
+		public String getErrorFormatting() {
+			return "";
+		}
+
+		@Override
+		public String getErrorFormattingBold() {
+			return "";
+		}
+
+		@Override
+		public String getResetFormatting() {
+			return "";
+		}
+	};
 }

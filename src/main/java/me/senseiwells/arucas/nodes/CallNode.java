@@ -21,23 +21,23 @@ public class CallNode extends Node {
 	}
 
 	@Override
-	public Value<?> visit(Context context) throws CodeError, ThrowValue {
+	public Value visit(Context context) throws CodeError, ThrowValue {
 		// Throws an error if the thread has been interrupted
 		this.keepRunning();
-		
-		Value<?> value = this.callNode.visit(context);
+
+		Value value = this.callNode.visit(context);
 		if (!(value instanceof FunctionValue functionValue)) {
 			throw new RuntimeError("Cannot call the non function value '%s'".formatted(value.getAsString(context)), this.syntaxPosition, context);
 		}
-		
-		List<Value<?>> argumentValues = new ArrayList<>();
+
+		List<Value> argumentValues = new ArrayList<>();
 		for (Node node : this.argumentNodes) {
 			argumentValues.add(node.visit(context));
 		}
-		
+
 		// We push a new scope to make StackTraces easier to read
 		context.pushScope(this.syntaxPosition);
-		Value<?> result = functionValue.call(context, argumentValues);
+		Value result = functionValue.call(context, argumentValues);
 		context.popScope();
 		return result;
 	}

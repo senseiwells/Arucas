@@ -33,6 +33,11 @@ public abstract class ArucasClassExtension extends AbstractClassDefinition {
 		return this.methods;
 	}
 
+	@Override
+	public final ArucasFunctionMap<ConstructorFunction> getConstructors() {
+		return this.constructors;
+	}
+
 	/**
 	 * No members are assignable by default.
 	 */
@@ -58,7 +63,7 @@ public abstract class ArucasClassExtension extends AbstractClassDefinition {
 	/**
 	 * This lets you define static variables for a Class.
 	 */
-	public Map<String, Value<?>> getDefinedStaticVariables() {
+	public Map<String, Value> getDefinedStaticVariables() {
 		return Map.of();
 	}
 
@@ -73,16 +78,17 @@ public abstract class ArucasClassExtension extends AbstractClassDefinition {
 	 * This returns the new value that was returned inside the constructor.
 	 */
 	@Override
-	public Value<?> createNewDefinition(Context context, List<Value<?>> parameters, ISyntax syntaxPosition) throws CodeError {
+	public Value createNewDefinition(Context context, List<Value> parameters, ISyntax syntaxPosition) throws CodeError {
+		// We don't need to get local context because this isn't user defined
 		if (this.constructors.isEmpty()) {
 			throw new RuntimeError("%s cannot be constructed".formatted(this.getName()), syntaxPosition, context);
 		}
-		
+
 		ConstructorFunction constructor = this.constructors.get("", parameters.size());
 		if (constructor == null) {
 			throw new RuntimeError("No such constructor for %s".formatted(this.getName()), syntaxPosition, context);
 		}
-		
+
 		return constructor.call(context, parameters, false);
 	}
 }

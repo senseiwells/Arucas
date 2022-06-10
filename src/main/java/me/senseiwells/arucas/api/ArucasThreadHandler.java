@@ -2,215 +2,340 @@ package me.senseiwells.arucas.api;
 
 import me.senseiwells.arucas.core.Run;
 import me.senseiwells.arucas.throwables.CodeError;
-import me.senseiwells.arucas.throwables.ThrowStop;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.ExceptionUtils;
+import me.senseiwells.arucas.utils.ExceptionUtils.ThrowableRunnable;
+import me.senseiwells.arucas.utils.Functions;
 import me.senseiwells.arucas.utils.impl.ArucasThread;
-import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
 
-import java.util.concurrent.CountDownLatch;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 @SuppressWarnings({"UnusedReturnValue", "unused"})
-public class ArucasThreadHandler {
-	private final ThreadGroup arucasThreadGroup = new ThreadGroup("Arucas Thread Group");
+public final class ArucasThreadHandler {
+	private final ThreadGroup arucasThreadGroup;
+	private final ScheduledThreadPoolExecutor asyncThreads;
+	private final List<Runnable> shutdownEvents;
 
-	private Consumer<String> stopErrorHandler;
-	private Consumer<String> errorHandler;
-	private TriConsumer<Context, Throwable, String> fatalErrorHandler;
-	private Runnable finalHandler;
+	private Functions.TriConsumer<Context, Throwable, String> fatalErrorHandler;
+	private String currentFileContent;
 
+	private boolean isRunning;
 	private boolean hasError;
-	
+
 	// This class can only be instantiated from this package
-	protected ArucasThreadHandler() {
-		this.stopErrorHandler = this.errorHandler;
-		this.errorHandler = System.out::println;
+	ArucasThreadHandler() {
+		this.arucasThreadGroup = new ThreadGroup("Arucas Thread Group");
+		this.shutdownEvents = new ArrayList<>();
 		this.fatalErrorHandler = (c, t, s) -> t.printStackTrace();
-		this.finalHandler = () -> { };
+		this.currentFileContent = "";
+		this.isRunning = false;
 		this.hasError = false;
+
+		this.asyncThreads = new ScheduledThreadPoolExecutor(
+			2, runnable -> new ArucasThread(this.arucasThreadGroup, runnable, "Arucas Async Thread")
+		);
 	}
 
-	public ArucasThreadHandler setStopErrorHandler(Consumer<String> consumer) {
-		this.stopErrorHandler = consumer;
-		return this;
-	}
-
-	public ArucasThreadHandler setErrorHandler(Consumer<String> consumer) {
-		this.errorHandler = consumer;
-		return this;
-	}
-
-	public ArucasThreadHandler setFatalErrorHandler(TriConsumer<Context, Throwable, String> triConsumer) {
+	/**
+	 * Sets the fatal error handler for when
+	 * a Throwable is thrown when executing
+	 * Arucas code. The consumer provides the
+	 * context, throwable, and file contents
+	 */
+	public ArucasThreadHandler setFatalErrorHandler(Functions.TriConsumer<Context, Throwable, String> triConsumer) {
 		this.fatalErrorHandler = triConsumer;
 		return this;
 	}
 
-	public ArucasThreadHandler setFinalHandler(Runnable runnable) {
-		this.finalHandler = runnable;
-		return this;
+	/**
+	 * Adds a runnable that will be called when
+	 * the Main thread stops, events will then
+	 * be cleared for when a new Main thread starts
+	 */
+	public synchronized void addShutdownEvent(Runnable runnable) {
+		this.shutdownEvents.add(runnable);
 	}
 
-	public synchronized void stop() {
-		if (this.isRunning()) {
-			this.arucasThreadGroup.interrupt();
-			this.finalHandler.run();
-		}
+	/**
+	 * This changes the current thread pool size
+	 */
+	public synchronized void setThreadPoolSize(int size) {
+		this.asyncThreads.setCorePoolSize(size);
 	}
 
+	/**
+	 * Checks whether the main Arucas thread is running
+	 */
 	public boolean isRunning() {
-		return this.arucasThreadGroup.activeCount() > 0;
+		return this.isRunning;
+	}
+
+	/**
+	 * This allows you to try and submit an error to the thread
+	 * which will stop the program unless it was controlled
+	 */
+	public synchronized void tryError(Context context, Throwable throwable) {
+		if (!this.isRunning() || this.hasError || context.getThreadHandler() != this) {
+			return;
+		}
+		try {
+			if (throwable instanceof CodeError codeError) {
+				if (codeError.errorType != CodeError.ErrorType.INTERRUPTED_ERROR) {
+					context.getOutput().println(codeError.toString(context));
+					this.hasError = true;
+				}
+				return;
+			}
+			this.hasError = true;
+			if (throwable instanceof ThrowValue throwValue) {
+				context.getOutput().println(throwValue.getMessage());
+				return;
+			}
+			this.fatalErrorHandler.accept(context, throwable, this.currentFileContent);
+		}
+		finally {
+			if (!(Thread.currentThread() instanceof ArucasThread arucasThread) || !arucasThread.isStopControlled()) {
+				this.stop();
+			}
+		}
 	}
 
 	/**
 	 * This method is to run the base script from
-	 * @param context the base context
-	 * @param fileName the name of the file you are running from
+	 *
+	 * @param context     the base context
+	 * @param fileName    the name of the file you are running from
 	 * @param fileContent the Arucas code you want to execute
-	 * @param latch this can be null, counts down when thread has finished executing
 	 */
-	public ArucasThread runOnThread(Context context, String fileName, String fileContent, CountDownLatch latch) {
+	public ArucasThread runOnMainThread(Context context, String fileName, String fileContent) {
 		// Make sure that this handler belongs to the provided context
-		if (context.getThreadHandler() != this || this.isRunning()) {
-			if (latch != null) {
-				latch.countDown();
-			}
-			return null;
+		// Cannot have two main threads for the same program
+		if (context.getThreadHandler() != this) {
+			throw new IllegalStateException("Wrong context passed in");
 		}
-		
+		if (this.isRunning()) {
+			throw new IllegalStateException("Main thread is already running");
+		}
+
+		this.currentFileContent = fileContent;
 		this.hasError = false;
-		ArucasThread thread = new ArucasThread(this.arucasThreadGroup, () -> {
+		this.isRunning = true;
+
+		return new ArucasThread(this.arucasThreadGroup, () -> {
 			try {
 				Run.run(context, fileName, fileContent);
-			}
-			catch (ThrowStop stop) {
-				this.stopErrorHandler.accept(stop.toString(context));
-			}
-			catch (CodeError codeError) {
-				this.tryError(context, codeError);
-			}
-			catch (Throwable t) {
-				this.fatalErrorHandler.accept(context, t, fileContent);
-			}
-			finally {
-				if (latch != null) {
-					latch.countDown();
-				}
 				this.stop();
 			}
-		}, "Arucas Main Thread");
-		thread.setDaemon(true);
-		thread.start();
-		return thread;
-	}
-
-	public Value<?> runOnThreadReturnable(Context context, String fileName, String fileContent) throws CodeError {
-		if (context.getThreadHandler() != this || this.isRunning()) {
-			return null;
-		}
-
-		final CountDownLatch latch = new CountDownLatch(1);
-		final AtomicReference<CodeError> atomicError = new AtomicReference<>(null);
-		final AtomicReference<Value<?>> atomicValue = new AtomicReference<>(NullValue.NULL);
-
-		ArucasThread thread = new ArucasThread(this.arucasThreadGroup, () -> {
-			try {
-				atomicValue.set(Run.run(context, fileName, fileContent));
+			catch (Throwable t) {
+				this.tryError(context, t);
 			}
-			catch (CodeError thrownCodeError) {
-				atomicError.set(thrownCodeError);
-			}
-			finally {
-				latch.countDown();
-			}
-		}, "Arucas Test Thread");
-		thread.setDaemon(true);
-		thread.start();
-
-		try {
-			latch.await();
-			// This sleep statement is required
-			Thread.sleep(1);
-		}
-		catch (InterruptedException ignored) { }
-
-		if (atomicError.get() != null) {
-			throw atomicError.get();
-		}
-		return atomicValue.get();
+		}, "Arucas Main Thread").start(context);
 	}
 
 	/**
-	 * @see #runAsyncFunctionInContext(Context, ThrowableConsumer, String) 
+	 * This method is to run the base script returning a Future
+	 *
+	 * @param context     the base context
+	 * @param fileName    the name of the file you are running from
+	 * @param fileContent the Arucas code you want to execute
 	 */
-	public ArucasThread runAsyncFunctionInContext(Context context, ThrowableConsumer<Context> consumer) {
-		return this.runAsyncFunction(context, consumer, "Arucas Runnable Thread");
+	public Future<Value> runOnMainThreadFuture(Context context, String fileName, String fileContent) {
+		// Make sure that this handler belongs to the provided context
+		// Cannot have two main threads for the same program
+		if (context.getThreadHandler() != this) {
+			throw new IllegalStateException("Wrong context passed in");
+		}
+		if (this.isRunning()) {
+			throw new IllegalStateException("Main thread is already running");
+		}
+
+		this.currentFileContent = fileContent;
+		this.hasError = false;
+		this.isRunning = true;
+
+		CompletableFuture<Value> futureValue = new CompletableFuture<>();
+		new ArucasThread(this.arucasThreadGroup, () -> {
+			Value value;
+			try {
+				value = Run.run(context, fileName, fileContent);
+				this.stop();
+			}
+			catch (Throwable t) {
+				this.tryError(context, t);
+				value = null;
+			}
+			futureValue.complete(value);
+		}, "Arucas Main Thread").start(context);
+		return futureValue;
+	}
+
+	/**
+	 * This method runs a script on a Main thread and
+	 * will wait for the thread to finish returning the
+	 * correct value and throwing any errors that the
+	 * script would have thrown on the Main Thread
+	 *
+	 * @param context     the base context
+	 * @param fileName    the name of the file you are running from
+	 * @param fileContent the Arucas code you want to execute
+	 */
+	public Value runOnMainThreadAndWait(Context context, String fileName, String fileContent) throws CodeError {
+		// Make sure that this handler belongs to the provided context
+		// Cannot have two main threads for the same program
+		if (context.getThreadHandler() != this) {
+			throw new IllegalStateException("Wrong context passed in");
+		}
+		if (this.isRunning()) {
+			throw new IllegalStateException("Main thread is already running");
+		}
+
+		this.currentFileContent = fileContent;
+		this.hasError = false;
+		this.isRunning = true;
+
+		CompletableFuture<Throwable> futureThrowable = new CompletableFuture<>();
+		CompletableFuture<Value> futureValue = new CompletableFuture<>();
+
+		new ArucasThread(this.arucasThreadGroup, () -> {
+			Value value;
+			try {
+				value = Run.run(context, fileName, fileContent);
+			}
+			catch (Throwable throwable) {
+				futureThrowable.complete(throwable);
+				value = null;
+			}
+			this.stop();
+			futureValue.complete(value);
+		}, "Arucas Main Thread").start(context);
+
+		Value value = ExceptionUtils.catchAsNull(futureValue::get);
+		if (value != null) {
+			return value;
+		}
+		if (futureThrowable.isDone()) {
+			Throwable throwable = ExceptionUtils.catchAsNull(futureThrowable::get);
+			if (throwable == null) {
+				throw new NullPointerException("Throwable was null");
+			}
+			if (throwable instanceof CodeError codeError) {
+				throw codeError;
+			}
+			throw new RuntimeException(throwable);
+		}
+		throw new IllegalStateException("Result was neither an error or a value");
+	}
+
+	/**
+	 * @see #runAsyncFunctionInContext(Context, ContextConsumer, String)
+	 */
+	public ArucasThread runAsyncFunctionInContext(Context context, ContextConsumer consumer) {
+		return this.runAsyncFunction(context, consumer, "Arucas Async Thread");
 	}
 
 	/**
 	 * This lets you run something on a different thread with
 	 * a passed in context, this context is used in the consumer
-	 * @param context the context you want to use in the consumer
-	 * @param consumer the code you want to execute on the thread
+	 *
+	 * @param context    the context you want to use in the consumer
+	 * @param consumer   the code you want to execute on the thread
 	 * @param threadName the name of the thread
 	 */
-	public ArucasThread runAsyncFunctionInContext(Context context, ThrowableConsumer<Context> consumer, String threadName) {
+	public ArucasThread runAsyncFunctionInContext(Context context, ContextConsumer consumer, String threadName) {
 		return this.runAsyncFunction(context, consumer, threadName);
 	}
 
-	private ArucasThread runAsyncFunction(final Context context, ThrowableConsumer<Context> consumer, String name) {
+	private ArucasThread runAsyncFunction(Context context, ContextConsumer consumer, String name) {
 		// Make sure that this handler belongs to the provided context
+		// We also check that the Main thread is still running
 		if (context.getThreadHandler() != this || !this.isRunning()) {
 			return null;
 		}
 
-		ArucasThread thread = new ArucasThread(this.arucasThreadGroup, () -> {
+		return new ArucasThread(this.arucasThreadGroup, () -> {
 			try {
 				consumer.accept(context);
-				return;
-			}
-			catch (CodeError codeError) {
-				this.tryError(context, codeError);
-			}
-			catch (ThrowValue tv) {
-				this.tryError(tv);
 			}
 			catch (Throwable t) {
-				this.fatalErrorHandler.accept(context, t, "");
+				this.tryError(context, t);
 			}
-			// If an exception happens in a thread it stops the program
-			this.stop();
-		}, name);
-		thread.setDaemon(true);
-		thread.start();
-		return thread;
+		}, name).start(context);
 	}
 
-	public synchronized void tryError(Context context, CodeError error) {
-		if (this.hasError || error.errorType == CodeError.ErrorType.INTERRUPTED_ERROR) {
+	public void runAsyncFunctionInThreadPool(Context context, ContextConsumer consumer) {
+		if (context.getThreadHandler() != this || !this.isRunning()) {
 			return;
 		}
-		this.errorHandler.accept(error.toString(context));
-		this.hasError = true;
+
+		this.asyncThreads.execute(() -> {
+			if (context.isDebug()) {
+				context.getOutput().log("Running Async Thread\n");
+			}
+			try {
+				consumer.accept(context);
+			}
+			catch (Throwable t) {
+				this.tryError(context, t);
+			}
+		});
 	}
 
-	private synchronized void tryError(ThrowValue tv) {
-		if (this.hasError) {
-			return;
+	public ScheduledFuture<?> scheduleAsyncFunctionInThreadPool(int delay, TimeUnit timeUnit, Context context, ContextConsumer consumer) {
+		if (context.getThreadHandler() != this || !this.isRunning()) {
+			return null;
 		}
-		this.errorHandler.accept(tv.getMessage());
-		this.hasError = true;
+
+		return this.asyncThreads.schedule(() -> {
+			if (context.isDebug()) {
+				context.getOutput().log("Running Scheduled Async Thread\n");
+			}
+			try {
+				consumer.accept(context);
+			}
+			catch (Throwable t) {
+				this.tryError(context, t);
+			}
+		}, delay, timeUnit);
 	}
-	
-	@FunctionalInterface
-	public interface TriConsumer<A, B, C> {
-		void accept(A a, B b, C c);
+
+	public ScheduledFuture<?> loopAsyncFunctionInThreadPool(int period, TimeUnit timeUnit, Supplier<Boolean> shouldContinue, ThrowableRunnable onFinish, Context context, ContextConsumer consumer) {
+		AtomicReference<ScheduledFuture<?>> futureRef = new AtomicReference<>();
+		futureRef.set(this.asyncThreads.scheduleAtFixedRate(() -> {
+			try {
+				consumer.accept(context);
+
+				if (!shouldContinue.get()) {
+					futureRef.get().cancel(false);
+					onFinish.run();
+				}
+			}
+			catch (Throwable t) {
+				this.tryError(context, t);
+			}
+		}, 0, period, timeUnit));
+		return futureRef.get();
 	}
-	
+
+	private synchronized void stop() {
+		if (this.isRunning()) {
+			this.isRunning = false;
+			this.shutdownEvents.forEach(Runnable::run);
+			this.shutdownEvents.clear();
+
+			this.arucasThreadGroup.interrupt();
+			this.asyncThreads.shutdownNow();
+			this.currentFileContent = "";
+		}
+	}
+
 	@FunctionalInterface
-	public interface ThrowableConsumer<T> {
-		void accept(T obj) throws Throwable;
+	public interface ContextConsumer {
+		void accept(Context obj) throws Throwable;
 	}
 }
