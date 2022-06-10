@@ -12,7 +12,10 @@ public interface IArucasCollection {
 	String COLLECTION = "<collection>";
 
 	Collection<? extends Value> asCollection();
-	int size();
+
+	default int size() {
+		return this.asCollection().size();
+	}
 
 	default String getAsStringSafe() {
 		return COLLECTION;
@@ -25,8 +28,8 @@ public interface IArucasCollection {
 			Collection<? extends Value> values = this.asCollection();
 
 			for (Value value : values) {
-				String valueAsString = value.getValue() instanceof IArucasCollection collection ?
-					collection.getAsStringUnsafe(context, position) : value.getAsString(context);
+				String valueAsString = value.isCollection() ?
+					value.asCollection(context, position).getAsStringUnsafe(context, position) : value.getAsString(context);
 				builder.append(valueAsString).append(", ");
 			}
 

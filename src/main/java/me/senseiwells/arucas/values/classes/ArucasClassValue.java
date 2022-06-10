@@ -9,6 +9,7 @@ import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.Functions;
 import me.senseiwells.arucas.utils.ValueRef;
 import me.senseiwells.arucas.utils.impl.ArucasList;
+import me.senseiwells.arucas.utils.impl.IArucasCollection;
 import me.senseiwells.arucas.values.*;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.functions.MemberOperations;
@@ -73,6 +74,25 @@ public class ArucasClassValue extends GenericValue<ArucasClassDefinition> implem
 	@Override
 	public Object asJavaValue() {
 		return this;
+	}
+
+	@Override
+	public boolean isCollection() {
+		return this.hasMember("toList", 1);
+	}
+
+	@Override
+	public IArucasCollection asCollection(Context context, ISyntax syntaxPosition) throws CodeError {
+		FunctionValue memberFunction = this.getMember("toList", 1);
+		if (memberFunction != null) {
+			Value value = memberFunction.call(context, ArucasList.arrayListOf(this));
+			if (!(value instanceof ListValue listValue)) {
+				throw new RuntimeError("toList() must return a list", memberFunction.getPosition(), context);
+			}
+			return listValue.value;
+		}
+
+		return super.asCollection(context, syntaxPosition);
 	}
 
 	@Override

@@ -8,9 +8,10 @@ import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.Functions;
 import me.senseiwells.arucas.utils.ValueRef;
+import me.senseiwells.arucas.utils.impl.IArucasCollection;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
-import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.functions.Delegatable;
+import me.senseiwells.arucas.values.functions.FunctionValue;
 
 import java.util.List;
 
@@ -37,8 +38,31 @@ public abstract class Value implements ValueIdentifier {
 	 */
 	public abstract Value newCopy(Context context) throws CodeError;
 
+	/**
+	 * This returns the Java equivalent of the
+	 * value, most of the time this is the wrapped value
+	 */
 	public Object asJavaValue() {
 		return this.getValue();
+	}
+
+	/**
+	 * This returns whether the value is a collection
+	 */
+	public boolean isCollection() {
+		return false;
+	}
+
+	/**
+	 * This gets the value as a collection
+	 *
+	 * @param context        The current context
+	 * @param syntaxPosition The current position
+	 * @return The value as a collection
+	 * @throws CodeError If the value is not a collection
+	 */
+	public IArucasCollection asCollection(Context context, ISyntax syntaxPosition) throws CodeError {
+		throw new RuntimeError("'%s' is not a collection".formatted(this.getAsString(context)), syntaxPosition, context);
 	}
 
 	/**
@@ -412,8 +436,8 @@ public abstract class Value implements ValueIdentifier {
 	 * @param other          The access value
 	 * @param assignValue    The value to assign
 	 * @param syntaxPosition The current position
-	 * @throws CodeError If the values cannot use this operator
 	 * @return The assigned value
+	 * @throws CodeError If the values cannot use this operator
 	 */
 	public Value bracketAssign(Context context, Value other, Value assignValue, ISyntax syntaxPosition) throws CodeError {
 		throw this.cannotApplyError(context, "BRACKET_ASSIGN", other, assignValue, syntaxPosition);

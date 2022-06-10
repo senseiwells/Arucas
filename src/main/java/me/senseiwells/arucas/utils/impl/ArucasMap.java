@@ -412,12 +412,12 @@ public class ArucasMap implements IArucasCollection, ValueIdentifier {
 			sb.append("{");
 
 			for (ValuePair pair : this.pairSet()) {
-				String key = pair.getKey().getValue() instanceof IArucasCollection collection ?
-					collection.getAsStringUnsafe(context, position) : pair.getKey().getAsString(context);
+				String key = pair.getKey().isCollection() ?
+					pair.getKey().asCollection(context, position).getAsStringUnsafe(context, position) : pair.getKey().getAsString(context);
 				sb.append(key).append(": ");
 
-				String value = pair.getValue().getValue() instanceof IArucasCollection collection ?
-					collection.getAsStringUnsafe(context, position) : pair.getValue().getAsString(context);
+				String value = pair.getValue().isCollection() ?
+					pair.getValue().asCollection(context, position).getAsStringUnsafe(context, position) : pair.getValue().getAsString(context);
 				sb.append(value).append(", ");
 			}
 

@@ -31,6 +31,16 @@ public class ListValue extends GenericValue<ArucasList> {
 	}
 
 	@Override
+	public boolean isCollection() {
+		return true;
+	}
+
+	@Override
+	public IArucasCollection asCollection(Context context, ISyntax syntaxPosition) {
+		return this.value;
+	}
+
+	@Override
 	public Value bracketAccess(Context context, Value other, ISyntax syntaxPosition) throws CodeError {
 		if (other instanceof NumberValue numberValue) {
 			int index = numberValue.value.intValue();
@@ -214,11 +224,9 @@ public class ListValue extends GenericValue<ArucasList> {
 		private Value addAll(Arguments arguments) throws CodeError {
 			ListValue thisValue = arguments.getNext(ListValue.class);
 			Value value = arguments.getNext();
-			if (value.getValue() instanceof IArucasCollection collection) {
-				thisValue.value.addAll(collection.asCollection());
-				return thisValue;
-			}
-			throw arguments.getError("'%s' is not a collection", value);
+			IArucasCollection collection = value.asCollection(arguments.getContext(), arguments.getPosition());
+			thisValue.value.addAll(collection.asCollection());
+			return thisValue;
 		}
 
 		@FunctionDoc(
@@ -260,10 +268,8 @@ public class ListValue extends GenericValue<ArucasList> {
 		private BooleanValue containsAll(Arguments arguments) throws CodeError {
 			ListValue thisValue = arguments.getNext(ListValue.class);
 			Value value = arguments.getNext();
-			if (value.getValue() instanceof IArucasCollection collection) {
-				return BooleanValue.of(thisValue.value.containsAll(arguments.getContext(), collection.asCollection()));
-			}
-			throw arguments.getError("'%s' is not a collection", value);
+			IArucasCollection collection = value.asCollection(arguments.getContext(), arguments.getPosition());
+			return BooleanValue.of(thisValue.value.containsAll(arguments.getContext(), collection.asCollection()));
 		}
 
 		@FunctionDoc(

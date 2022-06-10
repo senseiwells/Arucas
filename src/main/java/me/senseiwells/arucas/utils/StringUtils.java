@@ -1,5 +1,6 @@
 package me.senseiwells.arucas.utils;
 
+import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.utils.impl.IArucasCollection;
 import me.senseiwells.arucas.values.StringValue;
@@ -276,8 +277,8 @@ public class StringUtils {
 		if (value instanceof StringValue) {
 			return "\"" + value.getAsString(context) + "\"";
 		}
-		if (value.getValue() instanceof IArucasCollection collection) {
-			return collection.getAsStringSafe();
+		if (value.isCollection()) {
+			return value.asCollection(context, ISyntax.EMPTY).getAsStringSafe();
 		}
 		return value.getAsString(context);
 	}

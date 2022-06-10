@@ -23,9 +23,10 @@ public class ForeachNode extends Node {
 	public Value visit(Context context) throws CodeError, ThrowValue {
 		context.pushLoopScope(this.syntaxPosition);
 		Value forValue = this.list.visit(context);
-		if (!(forValue.getValue() instanceof IArucasCollection collection)) {
+		if (!(forValue.isCollection())) {
 			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "For loop must contain a collection", this.syntaxPosition);
 		}
+		IArucasCollection collection = forValue.asCollection(context, this.syntaxPosition);
 
 		for (Value item : collection.asCollection()) {
 			// Throws an error if the thread has been interrupted

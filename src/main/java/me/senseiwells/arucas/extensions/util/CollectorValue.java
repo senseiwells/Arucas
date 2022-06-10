@@ -85,12 +85,10 @@ public class CollectorValue extends GenericValue<ArucasList> {
 		)
 		private Value of(Arguments arguments) throws CodeError {
 			Value value = arguments.getNext();
-			if (value.getValue() instanceof IArucasCollection collection) {
-				ArucasList list = new ArucasList();
-				list.addAll(collection.asCollection());
-				return new CollectorValue(list);
-			}
-			throw arguments.getError("'%s' is not a collection", value);
+			IArucasCollection collection = value.asCollection(arguments.getContext(), arguments.getPosition());
+			ArucasList list = new ArucasList();
+			list.addAll(collection.asCollection());
+			return new CollectorValue(list);
 		}
 
 		@FunctionDoc(
@@ -118,7 +116,7 @@ public class CollectorValue extends GenericValue<ArucasList> {
 		)
 		private Value isCollection(Arguments arguments) throws RuntimeError {
 			Value value = arguments.getNext();
-			return BooleanValue.of(value.getValue() instanceof IArucasCollection);
+			return BooleanValue.of(value.isCollection());
 		}
 
 		@Override
@@ -301,7 +299,8 @@ public class CollectorValue extends GenericValue<ArucasList> {
 
 			for (int i = 0; i < thisValue.value.size(); i++) {
 				Value value = thisValue.value.get(i);
-				if (value.getValue() instanceof IArucasCollection collection) {
+				if (value.isCollection()) {
+					IArucasCollection collection = value.asCollection(arguments.getContext(), arguments.getPosition());
 					thisValue.value.addAll(i + 1, collection.asCollection());
 					thisValue.value.remove(i);
 					i += collection.size() - 1;

@@ -1,20 +1,13 @@
 // ./src/test/resources/code/test.arucas
 // run(File.getDirectory().getPath() + "/src/test/resources/code/test.arucas");
 
-x = 10;
+import * from util.Collections;
 
-fun c(x) {
-    throw null;
+stack = new LinkedStack();
+
+stack.push("Wow");
+stack.push(90);
+
+foreach (v : stack) {
+    print(v);
 }
-
-fun a(x) {
-    fun b(x) {
-        c(null);
-    }
-
-    b(10);
-}
-
-a(100);
-
-print(x);

@@ -7,6 +7,7 @@ import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.*;
 import me.senseiwells.arucas.utils.impl.ArucasList;
+import me.senseiwells.arucas.utils.impl.IArucasCollection;
 import me.senseiwells.arucas.values.*;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.functions.MemberOperations;
@@ -81,6 +82,19 @@ public class WrapperClassValue extends GenericValue<WrapperClassDefinition> impl
 	@Override
 	public Object asJavaValue() {
 		return this.wrapperClass.asJavaValue();
+	}
+
+	@Override
+	public boolean isCollection() {
+		return this.wrapperClass instanceof IArucasCollection;
+	}
+
+	@Override
+	public IArucasCollection asCollection(Context context, ISyntax syntaxPosition) throws CodeError {
+		if (this.wrapperClass instanceof IArucasCollection collection) {
+			return collection;
+		}
+		return super.asCollection(context, syntaxPosition);
 	}
 
 	@Override

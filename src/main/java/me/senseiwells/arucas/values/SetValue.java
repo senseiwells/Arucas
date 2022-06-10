@@ -1,6 +1,7 @@
 package me.senseiwells.arucas.values;
 
 import me.senseiwells.arucas.api.ArucasClassExtension;
+import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.api.docs.ClassDoc;
 import me.senseiwells.arucas.api.docs.FunctionDoc;
 import me.senseiwells.arucas.throwables.CodeError;
@@ -29,6 +30,16 @@ public class SetValue extends GenericValue<ArucasSet> {
 	@Override
 	public SetValue newCopy(Context context) throws CodeError {
 		return new SetValue(new ArucasSet(context, this.value));
+	}
+
+	@Override
+	public boolean isCollection() {
+		return true;
+	}
+
+	@Override
+	public IArucasCollection asCollection(Context context, ISyntax syntaxPosition) {
+		return this.value;
 	}
 
 	@Override
@@ -172,11 +183,9 @@ public class SetValue extends GenericValue<ArucasSet> {
 		private Value addAll(Arguments arguments) throws CodeError {
 			SetValue thisValue = arguments.getNextSet();
 			Value value = arguments.getNext();
-			if (value.getValue() instanceof IArucasCollection collection) {
-				thisValue.value.addAll(arguments.getContext(), collection.asCollection());
-				return thisValue;
-			}
-			throw arguments.getError("'%s' is not a collection", value);
+			IArucasCollection collection = value.asCollection(arguments.getContext(), arguments.getPosition());
+			thisValue.value.addAll(arguments.getContext(), collection.asCollection());
+			return thisValue;
 		}
 
 		@FunctionDoc(
@@ -203,10 +212,8 @@ public class SetValue extends GenericValue<ArucasSet> {
 		private BooleanValue containsAll(Arguments arguments) throws CodeError {
 			SetValue thisValue = arguments.getNextSet();
 			Value value = arguments.getNext();
-			if (value.getValue() instanceof IArucasCollection collection) {
-				return BooleanValue.of(thisValue.value.containsAll(arguments.getContext(), collection.asCollection()));
-			}
-			throw arguments.getError("'%s' is not a collection", value);
+			IArucasCollection collection = value.asCollection(arguments.getContext(), arguments.getPosition());
+			return BooleanValue.of(thisValue.value.containsAll(arguments.getContext(), collection.asCollection()));
 		}
 
 		@FunctionDoc(

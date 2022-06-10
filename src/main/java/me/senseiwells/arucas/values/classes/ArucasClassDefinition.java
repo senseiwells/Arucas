@@ -10,7 +10,9 @@ import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.ArucasOperatorMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.Value;
+import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.functions.UserDefinedClassFunction;
+import me.senseiwells.arucas.values.functions.UserDefinedFunction;
 
 import java.util.*;
 
@@ -83,6 +85,16 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 
 	@Override
 	protected void initialiseStatics(Context context) throws CodeError, ThrowValue {
+		// Set local context for functions
+		for (FunctionValue functionValue : this.getStaticMethods()) {
+			if (functionValue instanceof UserDefinedFunction userFunction) {
+				userFunction.setLocalContext(context);
+			}
+		}
+		for (UserDefinedFunction function : this.methods) {
+			function.setLocalContext(context);
+		}
+
 		for (Map.Entry<String, Node> entry : this.staticMemberVariableNodes.entrySet()) {
 			this.getStaticMemberVariables().put(entry.getKey(), entry.getValue().visit(context));
 		}

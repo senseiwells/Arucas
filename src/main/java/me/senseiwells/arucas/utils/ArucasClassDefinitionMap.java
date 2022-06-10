@@ -1,7 +1,6 @@
 package me.senseiwells.arucas.utils;
 
-import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
-import me.senseiwells.arucas.values.classes.MergedClassMethods;
+import me.senseiwells.arucas.values.classes.*;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 
 import java.util.*;
@@ -42,6 +41,11 @@ public class ArucasClassDefinitionMap implements Iterable<AbstractClassDefinitio
 	 * This method adds the class definition value to all of its subclasses.
 	 */
 	private void addSubclasses(AbstractClassDefinition value) {
+		if (value instanceof ArucasClassDefinition || value instanceof WrapperClassDefinition) {
+			// We do not want to add wrapper classes and arucas classes here
+			return;
+		}
+
 		Class<?> clazz = value.getValueClass();
 		Class<?> baseClazz = clazz;
 		List<AbstractClassDefinition> baseSet = this.classMap.computeIfAbsent(clazz, (v) -> new ArrayList<>());

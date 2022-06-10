@@ -10,6 +10,7 @@ import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.impl.ArucasMap;
 import me.senseiwells.arucas.utils.impl.ArucasOrderedMap;
+import me.senseiwells.arucas.utils.impl.IArucasCollection;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
@@ -28,6 +29,16 @@ public class MapValue extends GenericValue<ArucasMap> {
 	@Override
 	public MapValue newCopy(Context context) throws CodeError {
 		return new MapValue(new ArucasOrderedMap(context, this.value));
+	}
+
+	@Override
+	public boolean isCollection() {
+		return true;
+	}
+
+	@Override
+	public IArucasCollection asCollection(Context context, ISyntax syntaxPosition) throws CodeError {
+		return this.value;
 	}
 
 	@Override

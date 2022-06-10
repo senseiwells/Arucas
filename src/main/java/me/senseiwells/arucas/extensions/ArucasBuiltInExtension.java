@@ -11,11 +11,10 @@ import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.ExceptionUtils;
 import me.senseiwells.arucas.utils.impl.ArucasList;
-import me.senseiwells.arucas.utils.impl.IArucasCollection;
 import me.senseiwells.arucas.values.*;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
-import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.functions.Delegatable;
+import me.senseiwells.arucas.values.functions.FunctionValue;
 
 import java.io.File;
 import java.io.IOException;
@@ -298,8 +297,8 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		if (value instanceof StringValue stringValue) {
 			return NumberValue.of(stringValue.value.length());
 		}
-		if (value.getValue() instanceof IArucasCollection collection) {
-			return NumberValue.of(collection.size());
+		if (value.isCollection()) {
+			return NumberValue.of(value.asCollection(arguments.getContext(), arguments.getPosition()).size());
 		}
 		if (value instanceof FunctionValue functionValue) {
 			// If the function is a member we don't include itself in the length
