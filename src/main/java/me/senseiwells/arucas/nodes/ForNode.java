@@ -38,7 +38,6 @@ public class ForNode extends Node {
 
 			try {
 				this.body.visit(context);
-				this.endExpression.visit(context);
 			}
 			catch (ThrowValue.Break tv) {
 				context.moveScope(context.getBreakScope());
@@ -47,6 +46,7 @@ public class ForNode extends Node {
 			catch (ThrowValue.Continue tv) {
 				context.moveScope(context.getContinueScope());
 			}
+			this.endExpression.visit(context);
 		}
 
 		context.popScope();
