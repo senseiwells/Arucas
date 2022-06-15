@@ -96,6 +96,9 @@ public abstract class FunctionValue extends GenericValue<String> {
 			context.popScope();
 			return throwValue.getReturnValue();
 		}
+		catch (ThrowValue throwValue) {
+			throw new RuntimeError(throwValue.getMessage(), this.syntaxPosition, context);
+		}
 		catch (BuiltInException exception) {
 			throw exception.asRuntimeError(context, this.syntaxPosition);
 		}

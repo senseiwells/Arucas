@@ -955,13 +955,13 @@ public class Parser {
 		this.throwIfNotType(Token.Type.COLON, "Expected ':'");
 		this.advance();
 
-		Node member = this.member();
+		Node expression = this.expression();
 
 		this.throwIfNotType(Token.Type.RIGHT_BRACKET, "Expected ')'");
 		this.advance();
 
 		Node statements = this.statements();
-		return new ForeachNode(member, statements, forParameterName);
+		return new ForeachNode(expression, statements, forParameterName);
 	}
 
 	private Node forStatement() throws CodeError {
