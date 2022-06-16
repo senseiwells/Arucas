@@ -158,7 +158,7 @@ public class Lexer {
 					lexerToken.type,
 					lexerToken.content,
 					new Position(old_offset, old_line, old_column, this.fileName),
-					new Position(offset, line, column, this.fileName)
+					new Position(offset + lexerToken.length, line, column, this.fileName)
 				));
 			}
 

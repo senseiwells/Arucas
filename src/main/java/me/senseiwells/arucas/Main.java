@@ -6,8 +6,6 @@ import me.senseiwells.arucas.utils.ArgumentParser;
 import me.senseiwells.arucas.utils.Context;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Scanner;
 import java.util.concurrent.ExecutionException;
 
@@ -44,6 +42,7 @@ public class Main {
 			}
 
 			String fileName = "System.in";
+			/* To please HardCoded :)
 			if (line.endsWith(".arucas")) {
 				try {
 					Path path = Path.of(line);
@@ -56,6 +55,7 @@ public class Main {
 					continue;
 				}
 			}
+			 */
 
 			context.getThreadHandler().runOnMainThreadFuture(context, fileName, line).get();
 		}
