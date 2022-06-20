@@ -46,6 +46,7 @@ public class ArucasMathClass extends ArucasClassExtension {
 			BuiltInFunction.of("sqrt", 1, this::sqrt),
 			BuiltInFunction.of("abs", 1, this::abs),
 			BuiltInFunction.of("mod", 2, this::mod),
+			BuiltInFunction.of("rem", 2, this::rem),
 			BuiltInFunction.of("max", 2, this::max),
 			BuiltInFunction.of("min", 2, this::min),
 			BuiltInFunction.of("clamp", 3, this::clamp),
@@ -134,15 +135,32 @@ public class ArucasMathClass extends ArucasClassExtension {
 	@FunctionDoc(
 		isStatic = true,
 		name = "mod",
+		desc = "Returns the modulus of a division",
+		params = {
+			NUMBER, "num1", "the number to divide",
+			NUMBER, "num2", "the divisor"
+		},
+		returns = {NUMBER, "the modulus of the division"},
+		example = "Math.mod(5, 2);"
+	)
+	private Value mod(Arguments arguments) throws CodeError {
+		double number = arguments.getNextGeneric(NumberValue.class);
+		double otherNumber = arguments.getNextGeneric(NumberValue.class);
+		return NumberValue.of((number % otherNumber + otherNumber) % otherNumber);
+	}
+
+	@FunctionDoc(
+		isStatic = true,
+		name = "rem",
 		desc = "Returns the remainder of a division",
 		params = {
 			NUMBER, "num1", "the number to divide",
 			NUMBER, "num2", "the divisor"
 		},
 		returns = {NUMBER, "the remainder of the division"},
-		example = "Math.mod(5, 2);"
+		example = "Math.rem(5, 2);"
 	)
-	private Value mod(Arguments arguments) throws CodeError {
+	private Value rem(Arguments arguments) throws CodeError {
 		double number = arguments.getNextGeneric(NumberValue.class);
 		double otherNumber = arguments.getNextGeneric(NumberValue.class);
 		return NumberValue.of(number % otherNumber);

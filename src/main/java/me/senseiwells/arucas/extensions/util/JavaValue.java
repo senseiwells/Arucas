@@ -69,7 +69,7 @@ public class JavaValue extends GenericValue<Object> {
 	public Value onMemberAccess(Context context, String name, ISyntax position) {
 		Object callingObject = this.asJavaValue();
 		Class<?> callingClass = callingObject.getClass();
-		String obfuscatedName = JavaValue.getObfuscatedMethodName(context, callingClass, name);
+		String obfuscatedName = JavaValue.getObfuscatedFieldName(context, callingClass, name);
 
 		Value value = ReflectionUtils.getFieldFromJavaValue(this, obfuscatedName, position, context);
 		if (value != null) {
@@ -116,7 +116,7 @@ public class JavaValue extends GenericValue<Object> {
 
 	public static Class<?> getObfuscatedClass(Context context, ISyntax syntaxPosition, String name) throws RuntimeError {
 		IArucasAPI api = context.getAPI();
-		String remappedClassName = api.shouldObfuscate() ? api.obfuscate(name) : name;
+		String remappedClassName = api.shouldObfuscate() ? api.obfuscateClassName(name) : name;
 		Class<?> clazz = ExceptionUtils.catchAsNull(() -> Class.forName(remappedClassName));
 		if (clazz == null) {
 			throw new RuntimeError(
@@ -129,20 +129,14 @@ public class JavaValue extends GenericValue<Object> {
 
 	public static String getObfuscatedMethodName(Context context, Class<?> clazz, String name) {
 		if (context.getAPI().shouldObfuscate()) {
-			String deobfuscatedClassName = context.getAPI().deobfuscate(clazz.getName());
-			String fullMethodName = deobfuscatedClassName + "#" + name + "()";
-			String obfuscatedMethod = context.getAPI().obfuscate(fullMethodName);
-			return obfuscatedMethod.substring(obfuscatedMethod.lastIndexOf('#') + 1, obfuscatedMethod.length() - 2);
+			return context.getAPI().obfuscateMethodName(clazz, name);
 		}
 		return name;
 	}
 
 	public static String getObfuscatedFieldName(Context context, Class<?> clazz, String name) {
 		if (context.getAPI().shouldObfuscate()) {
-			String deobfuscatedClassName = context.getAPI().deobfuscate(clazz.getName());
-			String fullFieldName = deobfuscatedClassName + "#" + name;
-			String obfuscatedField = context.getAPI().obfuscate(fullFieldName);
-			return obfuscatedField.substring(obfuscatedField.lastIndexOf('#') + 1);
+			return context.getAPI().obfuscateFieldName(clazz, name);
 		}
 		return name;
 	}
