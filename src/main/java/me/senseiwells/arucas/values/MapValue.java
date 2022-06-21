@@ -43,7 +43,8 @@ public class MapValue extends GenericValue<ArucasMap> {
 
 	@Override
 	public Value bracketAccess(Context context, Value other, ISyntax syntaxPosition) throws CodeError {
-		return this.value.get(context, other);
+		Value value = this.value.get(context, other);
+		return value == null ? NullValue.NULL : value;
 	}
 
 	@Override

@@ -12,7 +12,7 @@ sourceCompatibility = JavaVersion.VERSION_16
 targetCompatibility = JavaVersion.VERSION_16
 
 group 'me.senseiwells'
-version '1.2.2'
+version '1.2.3'
 
 sourceSets {
     main {
@@ -92,7 +92,7 @@ publishing {
         mavenJava(MavenPublication) {
             groupId = 'com.github.senseiwells'
             artifactId = 'Arucas'
-            version = '1.2.2'
+            version = '1.2.3'
 
             from components.java
         }
