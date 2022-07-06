@@ -140,7 +140,7 @@ public class MapValue extends GenericValue<ArucasMap> {
 			name = "getKeys",
 			desc = "This allows you to get the keys in the map",
 			returns = {LIST, "a complete list of all the keys"},
-			example = "{'key': 'value', 'key2', 'value2'}.getKeys();"
+			example = "{'key': 'value', 'key2': 'value2'}.getKeys();"
 		)
 		private Value mapGetKeys(Arguments arguments) throws CodeError {
 			MapValue thisValue = arguments.getNext(MapValue.class);
@@ -151,7 +151,7 @@ public class MapValue extends GenericValue<ArucasMap> {
 			name = "getValues",
 			desc = "This allows you to get the values in the map",
 			returns = {LIST, "a complete list of all the values"},
-			example = "{'key': 'value', 'key2', 'value2'}.getValues();"
+			example = "{'key': 'value', 'key2': 'value2'}.getValues();"
 		)
 		private Value mapGetValues(Arguments arguments) throws CodeError {
 			MapValue thisValue = arguments.getNext(MapValue.class);
