@@ -9,11 +9,10 @@ The syntax of the language is similar to that of Java, and JavaScript.
 
 This is the wiki as of Arucas Version `v1.2.0+`
 
-## Wiki Pages
+## Pages
 
-> #### [Documentation](https://github.com/senseiwells/Arucas/wiki/Documentation)
-> #### [Language Syntax](https://github.com/senseiwells/Arucas/wiki/Language-Syntax)
-> #### [Built-in Functions](https://github.com/senseiwells/Arucas/wiki/Built-in-Functions)
-> #### [Built-in Classes](https://github.com/senseiwells/Arucas/wiki/Built-in-Classes)
-> #### [Example Code](https://github.com/senseiwells/Arucas/wiki/Example-Code)
-> #### [Arucas API](https://github.com/senseiwells/Arucas/wiki/Arucas-API)
+> #### [Language Documenation Index](https://github.com/senseiwells/Arucas/blob/master/docs/Language%20Documentation/0.%20Index.md)
+> #### [Built-in Functions](https://github.com/senseiwells/Arucas/blob/master/docs/Built-in%20Extensions.md)
+> #### [Built-in Classes](https://github.com/senseiwells/Arucas/blob/master/docs/Built-in%20Classes.md)
+> #### [Arucas API](https://github.com/senseiwells/Arucas/blob/master/docs/ArucasAPI.md)
+> #### [Full Documentation]()
