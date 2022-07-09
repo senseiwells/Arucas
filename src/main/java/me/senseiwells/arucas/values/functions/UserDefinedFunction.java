@@ -9,11 +9,14 @@ import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.values.ListValue;
 import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
+import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 
+import java.util.Iterator;
 import java.util.List;
 
 public class UserDefinedFunction extends FunctionValue {
 	protected final List<String> argumentNames;
+	protected List<AbstractClassDefinition> returnTypes;
 	protected Node bodyNode;
 	protected Context localContext;
 
@@ -30,6 +33,10 @@ public class UserDefinedFunction extends FunctionValue {
 		if (context != null) {
 			this.localContext = context.createBranch();
 		}
+	}
+
+	public void setReturnTypes(List<AbstractClassDefinition> returnType) {
+		this.returnTypes = returnType;
 	}
 
 	protected void checkAndPopulateArguments(Context context, List<Value> arguments) throws RuntimeError {
@@ -53,6 +60,20 @@ public class UserDefinedFunction extends FunctionValue {
 		}
 	}
 
+	private String returnValuesAsString() {
+		StringBuilder builder = new StringBuilder();
+		Iterator<AbstractClassDefinition> iterator = this.returnTypes.iterator();
+		while (iterator.hasNext()) {
+			AbstractClassDefinition definition = iterator.next();
+			builder.append(definition.getName());
+
+			if (iterator.hasNext()) {
+				builder.append(" | ");
+			}
+		}
+		return builder.toString();
+	}
+
 	@Override
 	protected Context getContext(Context context) {
 		if (this.localContext != null) {
@@ -60,6 +81,16 @@ public class UserDefinedFunction extends FunctionValue {
 			return this.localContext.createBranch();
 		}
 		return context;
+	}
+
+	@Override
+	protected void onReturnValue(Context context, Value returnValue) throws CodeError {
+		AbstractClassDefinition returnType = context.getClassDefinition(returnValue.getTypeName());
+		if (this.returnTypes != null && !this.returnTypes.isEmpty() && !this.returnTypes.contains(returnType)) {
+			throw new RuntimeError("Function returned type '%s', but expected type '%s'".formatted(
+				returnValue.getTypeName(), this.returnValuesAsString()
+			), this.getPosition(), context);
+		}
 	}
 
 	@Override

@@ -27,6 +27,7 @@ public class Parser {
 	private final Context context;
 	private final Stack<StackType> parseStack;
 
+	private int functionLambdaIndex;
 	private int operatorTokenIndex;
 	private Token currentToken;
 
@@ -34,6 +35,7 @@ public class Parser {
 		this.tokens = tokens;
 		this.context = context.createParserContext();
 		this.parseStack = new Stack<>();
+		this.functionLambdaIndex = 1;
 		this.operatorTokenIndex = -1;
 		this.advance();
 	}
@@ -519,6 +521,7 @@ public class Parser {
 		UserDefinedClassFunction classMethod = this.isStackTypePop(StackType.ARBITRARY) ?
 			new UserDefinedClassFunction.Arbitrary(definition, name, argumentNames, syntaxPosition) :
 			new UserDefinedClassFunction(definition, name, argumentNames, syntaxPosition);
+		classMethod.setReturnTypes(this.getFunctionReturnTypes());
 
 		this.context.setLocal(name, classMethod);
 
@@ -617,6 +620,8 @@ public class Parser {
 		if (staticClassMethod == null) {
 			staticClassMethod = new UserDefinedFunction(variableNameToken.content, argumentNames, syntaxPosition);
 		}
+		staticClassMethod.setReturnTypes(this.getFunctionReturnTypes());
+
 		this.context.setLocal(variableNameToken.content, staticClassMethod);
 
 		Node statements = this.statements();
@@ -656,6 +661,7 @@ public class Parser {
 
 		MutableSyntaxImpl syntaxPosition = new MutableSyntaxImpl(startPos.getStartPos(), null);
 		UserDefinedClassFunction operatorMethod = new UserDefinedClassFunction(definition, "$%s".formatted(token.type), argumentNames, syntaxPosition);
+		operatorMethod.setReturnTypes(this.getFunctionReturnTypes());
 
 		Node statements = this.statements();
 		this.context.popScope();
@@ -815,7 +821,31 @@ public class Parser {
 		return new WhileNode(condition, statement);
 	}
 
-	private int functionLambdaIndex = 1;
+	private List<AbstractClassDefinition> getFunctionReturnTypes() throws CodeError {
+		if (this.currentToken.type != Token.Type.POINTER) {
+			return null;
+		}
+		this.advance();
+
+		List<AbstractClassDefinition> definitions = new ArrayList<>();
+		do {
+			this.throwIfNotType(Token.Type.IDENTIFIER, "Expected return type");
+			String className = this.currentToken.content;
+			AbstractClassDefinition classDefinition = this.context.getClassDefinition(className);
+			if (classDefinition == null) {
+				throw new CodeError(
+					CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
+					"Return type '%s' doesn't exist".formatted(className),
+					this.currentToken.syntaxPosition
+				);
+			}
+			definitions.add(classDefinition);
+			this.advance();
+		}
+		while (this.currentToken.type == Token.Type.BIT_OR && this.advance());
+
+		return definitions;
+	}
 
 	private Node functionDefinition(boolean isLambda) throws CodeError {
 		this.parseStack.add(StackType.FUN);
@@ -881,12 +911,15 @@ public class Parser {
 		if (functionNode == null) {
 			functionNode = new FunctionNode(functionStartToken, variableNameToken, argumentNameTokens);
 		}
+
+		List<AbstractClassDefinition> returnTypes = this.getFunctionReturnTypes();
+
 		this.context.setLocal(variableNameToken.content, functionNode.getFunctionValue());
 
 		Node statements = this.statements();
 		this.context.popScope();
 
-		functionNode.complete(statements);
+		functionNode.complete(statements, returnTypes);
 		this.context.setVariable(variableNameToken.content, functionNode.getFunctionValue());
 		this.parseStack.pop();
 		return functionNode;

@@ -5,6 +5,7 @@ import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.MutableSyntaxImpl;
 import me.senseiwells.arucas.values.Value;
+import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.values.functions.UserDefinedFunction;
 
 import java.util.List;
@@ -23,11 +24,12 @@ public class FunctionNode extends Node {
 		this.functionValue = functionValue;
 	}
 
-	public void complete(Node bodyNode) {
+	public void complete(Node bodyNode, List<AbstractClassDefinition> returnTypes) {
 		// Because recursive calls need access to the node before
 		// it's complete we need to initialize some values later
 		((MutableSyntaxImpl) this.syntaxPosition).end = bodyNode.syntaxPosition.getEndPos();
 		this.functionValue.complete(bodyNode);
+		this.functionValue.setReturnTypes(returnTypes);
 	}
 
 	public UserDefinedFunction getFunctionValue() {

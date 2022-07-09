@@ -64,6 +64,8 @@ public abstract class FunctionValue extends GenericValue<String> {
 		return context;
 	}
 
+	protected void onReturnValue(Context context, Value returnValue) throws CodeError { }
+
 	protected abstract Value execute(Context context, List<Value> arguments) throws CodeError;
 
 	public final Value callSafe(Context context, ExceptionUtils.ThrowableSupplier<List<Value>> arguments) {
@@ -80,13 +82,13 @@ public abstract class FunctionValue extends GenericValue<String> {
 		return this.call(context, arguments, true);
 	}
 
-	public Value call(Context context, List<Value> arguments, boolean returnable) throws CodeError {
+	public final Value call(Context context, List<Value> arguments, boolean returnable) throws CodeError {
 		context = this.getContext(context);
 		context.pushFunctionScope(this.syntaxPosition);
+		Value returnValue;
 		try {
-			Value value = this.execute(context, arguments);
+			returnValue = this.execute(context, arguments);
 			context.popScope();
-			return value;
 		}
 		catch (ThrowValue.Return throwValue) {
 			if (!returnable) {
@@ -94,7 +96,7 @@ public abstract class FunctionValue extends GenericValue<String> {
 			}
 			context.moveScope(context.getReturnScope());
 			context.popScope();
-			return throwValue.getReturnValue();
+			returnValue = throwValue.getReturnValue();
 		}
 		catch (ThrowValue throwValue) {
 			throw new RuntimeError(throwValue.getMessage(), this.syntaxPosition, context);
@@ -105,6 +107,9 @@ public abstract class FunctionValue extends GenericValue<String> {
 		catch (StackOverflowError e) {
 			throw this.getError(context, "StackOverflow: Call stack went too deep");
 		}
+
+		this.onReturnValue(context, returnValue);
+		return returnValue;
 	}
 
 	@Override
