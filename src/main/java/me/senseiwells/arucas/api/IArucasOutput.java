@@ -1,7 +1,5 @@
 package me.senseiwells.arucas.api;
 
-import me.senseiwells.arucas.values.StringValue;
-
 import java.util.function.Consumer;
 
 /**

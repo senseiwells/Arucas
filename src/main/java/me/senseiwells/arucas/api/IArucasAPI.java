@@ -5,6 +5,12 @@ import java.nio.file.Path;
 @SuppressWarnings("unused")
 public interface IArucasAPI {
 	/**
+	 * Gets the input handler for the
+	 * language runtime.
+	 */
+	IArucasInput getInput();
+
+	/**
 	 * Gets the Output handler for the
 	 * language runtime.
 	 */

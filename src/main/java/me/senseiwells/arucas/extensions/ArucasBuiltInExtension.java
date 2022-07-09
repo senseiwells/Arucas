@@ -4,6 +4,7 @@ import me.senseiwells.arucas.api.IArucasExtension;
 import me.senseiwells.arucas.api.docs.FunctionDoc;
 import me.senseiwells.arucas.core.Arucas;
 import me.senseiwells.arucas.core.Run;
+import me.senseiwells.arucas.throwables.BuiltInException;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowStop;
 import me.senseiwells.arucas.utils.Arguments;
@@ -25,7 +26,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Random;
-import java.util.Scanner;
 
 import static me.senseiwells.arucas.utils.ValueTypes.*;
 
@@ -36,7 +36,6 @@ import static me.senseiwells.arucas.utils.ValueTypes.*;
  * @author senseiwells
  */
 public class ArucasBuiltInExtension implements IArucasExtension {
-	private final Scanner scanner = new Scanner(System.in);
 	private final Random random = new Random();
 
 	@Override
@@ -165,8 +164,13 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 	)
 	private synchronized Value input(Arguments arguments) throws CodeError {
 		StringValue stringValue = arguments.getNext(StringValue.class);
-		arguments.getContext().getOutput().println(stringValue.value);
-		return StringValue.of(this.scanner.nextLine());
+		Context context = arguments.getContext();
+		context.getOutput().println(stringValue.value);
+		String input = ExceptionUtils.catchAsNull(() -> context.getInput().takeInput().get());
+		if (input == null) {
+			throw new BuiltInException("Could not take input");
+		}
+		return StringValue.of(input);
 	}
 
 	@FunctionDoc(

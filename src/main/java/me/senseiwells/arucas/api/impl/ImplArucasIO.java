@@ -1,17 +1,22 @@
 package me.senseiwells.arucas.api.impl;
 
+import me.senseiwells.arucas.api.IArucasInput;
 import me.senseiwells.arucas.api.IArucasOutput;
 
+import java.util.Scanner;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
-public class ArucasOutputImpl implements IArucasOutput {
+public class ImplArucasIO implements IArucasInput, IArucasOutput {
+	private final Scanner inputScanner;
 	private final Consumer<String> outputHandler;
 	private final Consumer<String> debugHandler;
 	private String boldError;
 	private String error;
 	private String reset;
 
-	public ArucasOutputImpl() {
+	public ImplArucasIO() {
+		this.inputScanner = new Scanner(System.in);
 		this.outputHandler = System.out::print;
 		this.debugHandler = this.outputHandler;
 		this.boldError = "\033[1;31m";
@@ -49,5 +54,10 @@ public class ArucasOutputImpl implements IArucasOutput {
 	@Override
 	public String getResetFormatting() {
 		return this.reset;
+	}
+
+	@Override
+	public CompletableFuture<String> takeInput() {
+		return CompletableFuture.completedFuture(this.inputScanner.next());
 	}
 }

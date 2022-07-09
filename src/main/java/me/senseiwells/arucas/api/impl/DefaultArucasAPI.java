@@ -7,7 +7,7 @@ import me.senseiwells.arucas.core.Arucas;
 import java.nio.file.Path;
 
 public class DefaultArucasAPI implements IArucasAPI {
-	private final IArucasOutput OUTPUT_HANDLER = new ArucasOutputImpl();
+	private final IArucasOutput OUTPUT_HANDLER = new ImplArucasIO();
 	private final Path IMPORT_PATH = Arucas.PATH.resolve("libs");
 
 	@Override

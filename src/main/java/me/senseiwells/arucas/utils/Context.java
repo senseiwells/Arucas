@@ -1,9 +1,6 @@
 package me.senseiwells.arucas.utils;
 
-import me.senseiwells.arucas.api.ArucasThreadHandler;
-import me.senseiwells.arucas.api.IArucasAPI;
-import me.senseiwells.arucas.api.IArucasOutput;
-import me.senseiwells.arucas.api.ISyntax;
+import me.senseiwells.arucas.api.*;
 import me.senseiwells.arucas.api.wrappers.IArucasWrappedClass;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
@@ -157,7 +154,14 @@ public class Context {
 	}
 
 	/**
-	 * Returns this contexts output object.
+	 * Returns this contexts input handler
+	 */
+	public IArucasInput getInput() {
+		return this.arucasAPI.getInput();
+	}
+
+	/**
+	 * Returns this contexts output handler.
 	 */
 	public IArucasOutput getOutput() {
 		return this.arucasAPI.getOutput();
