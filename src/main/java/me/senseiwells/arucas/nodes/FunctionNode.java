@@ -6,6 +6,7 @@ import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.MutableSyntaxImpl;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
+import me.senseiwells.arucas.values.functions.Argument;
 import me.senseiwells.arucas.values.functions.UserDefinedFunction;
 
 import java.util.List;
@@ -14,7 +15,7 @@ public class FunctionNode extends Node {
 	private final Token variableNameToken;
 	private final UserDefinedFunction functionValue;
 
-	public FunctionNode(Token functionToken, Token varNameToken, List<String> argumentNames) {
+	public FunctionNode(Token functionToken, Token varNameToken, List<Argument> argumentNames) {
 		this(varNameToken, new UserDefinedFunction(varNameToken.content, argumentNames, functionToken.syntaxPosition));
 	}
 

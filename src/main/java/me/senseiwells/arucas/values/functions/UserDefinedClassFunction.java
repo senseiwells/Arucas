@@ -2,6 +2,7 @@ package me.senseiwells.arucas.values.functions;
 
 import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.throwables.CodeError;
+import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.values.ListValue;
@@ -15,8 +16,8 @@ import java.util.Objects;
 public class UserDefinedClassFunction extends UserDefinedFunction implements Delegatable {
 	private final ArucasClassDefinition definition;
 
-	public UserDefinedClassFunction(ArucasClassDefinition definition, String name, List<String> argumentNames, ISyntax syntaxPosition) {
-		super(name, argumentNames, syntaxPosition);
+	public UserDefinedClassFunction(ArucasClassDefinition definition, String name, List<Argument> arguments, ISyntax syntaxPosition) {
+		super(name, arguments, syntaxPosition);
 		this.definition = definition;
 	}
 
@@ -42,7 +43,7 @@ public class UserDefinedClassFunction extends UserDefinedFunction implements Del
 		private final ArucasClassValue thisValue;
 
 		public Delegate(ArucasClassValue classValue, UserDefinedClassFunction function) {
-			super(function.definition, function.getName(), function.argumentNames, function.getPosition());
+			super(function.definition, function.getName(), function.arguments, function.getPosition());
 			this.complete(function.bodyNode);
 			this.setLocalContext(function.localContext);
 			this.thisValue = classValue;
@@ -56,16 +57,19 @@ public class UserDefinedClassFunction extends UserDefinedFunction implements Del
 	}
 
 	public static final class Arbitrary extends UserDefinedClassFunction {
-		public Arbitrary(ArucasClassDefinition definition, String name, List<String> argumentNames, ISyntax syntaxPosition) {
-			super(definition, name, argumentNames, syntaxPosition);
+		public Arbitrary(ArucasClassDefinition definition, String name, List<Argument> arguments, ISyntax syntaxPosition) {
+			super(definition, name, arguments, syntaxPosition);
 		}
 
 		@Override
-		protected void checkAndPopulateArguments(Context context, List<Value> arguments) {
-			for (int i = 0; i < this.argumentNames.size(); i++) {
-				String argumentName = this.argumentNames.get(i);
+		protected void checkAndPopulateArguments(Context context, List<Value> arguments) throws RuntimeError {
+			for (int i = 0; i < this.arguments.size(); i++) {
+				Argument argumentDef = this.arguments.get(i);
 				Value argument = arguments.get(i);
-				context.setLocal(argumentName, argument);
+
+				this.checkTypes(context, argument, argumentDef.getTypes(), "Parameter " + (i + 1));
+
+				context.setLocal(argumentDef.getName(), argument);
 			}
 		}
 

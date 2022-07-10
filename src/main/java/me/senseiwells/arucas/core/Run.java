@@ -13,8 +13,8 @@ import me.senseiwells.arucas.values.Value;
 import java.util.List;
 
 public class Run {
-	public static Value run(Context context, String fileName, String fileContent) throws CodeError {
-		context = context.createChildContext(fileName);
+	public static Value run(Context context, String fileName, String fileContent, boolean isMain) throws CodeError {
+		context = context.createChildContext(fileName, isMain);
 		Node nodeResult = compile(context, fileName, fileContent);
 		long startTime = System.nanoTime();
 		Value returnValue = null;

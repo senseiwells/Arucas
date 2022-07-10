@@ -120,6 +120,8 @@ public class FileValue extends GenericValue<File> {
 				MemberFunction.of("createDirectory", this::createDirectory),
 				MemberFunction.of("getPath", this::getPath),
 				MemberFunction.of("getAbsolutePath", this::getAbsolutePath),
+				MemberFunction.of("getParent", this::getParent),
+				MemberFunction.of("getChild", 1, this::getChild),
 				MemberFunction.of("open", this::open)
 			);
 		}
@@ -286,6 +288,39 @@ public class FileValue extends GenericValue<File> {
 			FileValue thisValue = arguments.getNext(FileValue.class);
 			try {
 				return StringValue.of(thisValue.value.getAbsolutePath());
+			}
+			catch (SecurityException e) {
+				throw arguments.getError(e.getMessage());
+			}
+		}
+
+		@FunctionDoc(
+			name = "getParent",
+			desc = "This returns the parent directory of the file",
+			returns = {FILE, "the parent directory of the file"},
+			example = "file.getParent()"
+		)
+		private Value getParent(Arguments arguments) throws CodeError {
+			FileValue thisValue = arguments.getNext(FileValue.class);
+			try {
+				return FileValue.of(thisValue.value.getParentFile());
+			}
+			catch (SecurityException e) {
+				throw arguments.getError(e.getMessage());
+			}
+		}
+
+		@FunctionDoc(
+			name = "getChild",
+			desc = "This returns the child file of the file",
+			returns = {FILE, "the child file of the file"},
+			example = "file.getChild('child.txt')"
+		)
+		private Value getChild(Arguments arguments) throws CodeError {
+			FileValue thisValue = arguments.getNext(FileValue.class);
+			StringValue childName = arguments.getNext(StringValue.class);
+			try {
+				return FileValue.of(new File(thisValue.value, childName.value));
 			}
 			catch (SecurityException e) {
 				throw arguments.getError(e.getMessage());

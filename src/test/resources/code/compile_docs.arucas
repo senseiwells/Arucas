@@ -1,0 +1,45 @@
+// This script is a example script used to compile
+// all the documentation for Arucas together
+// --------------------------------------------
+// This script runs when running tests for the language
+// DO NOT DELETE THIS FILE
+
+import StringBuilder from util.StringUtils;
+
+fun listOfNulls(size): List {
+    nullList = [];
+    for (i = 0; i < size; i++) {
+        nullList.append(null);
+    }
+    return nullList;
+}
+
+documentationDir = File.getDirectory().getChild("docs").getChild("Language Documentation");
+documentationFiles = documentationDir.getSubFiles();
+
+size = len(documentationFiles);
+list = listOfNulls(size);
+
+foreach (file : documentationFiles) {
+    if (file.getName().contains("Full.md")) {
+        file.delete();
+        size--;
+    } else {
+        fileIndex = file.getName().split(". ")[0].toNumber();
+        list[fileIndex] = file.read();
+    }
+}
+
+compiledDocumentation = new StringBuilder();
+
+foreach (documentation : list) {
+    if (documentation != null) {
+        compiledDocumentation + documentation + "\n\n";
+    }
+}
+
+compiledFile = documentationDir.getChild(size.toString() + ". Full.md");
+compiledFile.write(compiledDocumentation.toString());
+
+return true;
+

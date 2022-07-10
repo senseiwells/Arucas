@@ -11,18 +11,19 @@ import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
 public class UserDefinedFunction extends FunctionValue {
-	protected final List<String> argumentNames;
+	protected final List<Argument> arguments;
 	protected List<AbstractClassDefinition> returnTypes;
 	protected Node bodyNode;
 	protected Context localContext;
 
-	public UserDefinedFunction(String name, List<String> argumentNames, ISyntax position) {
-		super(name, position, argumentNames.size(), null);
-		this.argumentNames = argumentNames;
+	public UserDefinedFunction(String name, List<Argument> arguments, ISyntax position) {
+		super(name, position, arguments.size(), null);
+		this.arguments = arguments;
 	}
 
 	public void complete(Node bodyNode) {
@@ -54,15 +55,29 @@ public class UserDefinedFunction extends FunctionValue {
 		}
 
 		for (int i = 0; i < this.getCount(); i++) {
-			String argumentName = this.argumentNames.get(i);
+			Argument argumentDef = this.arguments.get(i);
 			Value argument = arguments.get(i);
-			context.setLocal(argumentName, argument);
+
+			this.checkTypes(context, argument, argumentDef.getTypes(), "Parameter " + (i + 1));
+
+			context.setLocal(argumentDef.getName(), argument);
 		}
 	}
 
-	private String returnValuesAsString() {
+	protected void checkTypes(Context context, Value value, List<AbstractClassDefinition> types, String messageStart) throws RuntimeError {
+		if (types != null && !types.isEmpty()) {
+			AbstractClassDefinition argumentType = context.getClassDefinition(value.getTypeName());
+			if (!types.contains(argumentType)) {
+				throw new RuntimeError("%s got '%s', but expected type '%s'".formatted(
+					messageStart, value.getTypeName(), this.typesAsString(types)
+				), this.getPosition(), context);
+			}
+		}
+	}
+
+	private String typesAsString(Collection<AbstractClassDefinition> collection) {
 		StringBuilder builder = new StringBuilder();
-		Iterator<AbstractClassDefinition> iterator = this.returnTypes.iterator();
+		Iterator<AbstractClassDefinition> iterator = collection.iterator();
 		while (iterator.hasNext()) {
 			AbstractClassDefinition definition = iterator.next();
 			builder.append(definition.getName());
@@ -85,12 +100,7 @@ public class UserDefinedFunction extends FunctionValue {
 
 	@Override
 	protected void onReturnValue(Context context, Value returnValue) throws CodeError {
-		AbstractClassDefinition returnType = context.getClassDefinition(returnValue.getTypeName());
-		if (this.returnTypes != null && !this.returnTypes.isEmpty() && !this.returnTypes.contains(returnType)) {
-			throw new RuntimeError("Function returned type '%s', but expected type '%s'".formatted(
-				returnValue.getTypeName(), this.returnValuesAsString()
-			), this.getPosition(), context);
-		}
+		this.checkTypes(context, returnValue, this.returnTypes, "Function return");
 	}
 
 	@Override
@@ -102,7 +112,7 @@ public class UserDefinedFunction extends FunctionValue {
 
 	public static final class Arbitrary extends UserDefinedFunction {
 		public Arbitrary(String name, String argumentName, ISyntax position) {
-			super(name, List.of(argumentName), position);
+			super(name, List.of(new Argument(argumentName)), position);
 		}
 
 		@Override
@@ -117,7 +127,7 @@ public class UserDefinedFunction extends FunctionValue {
 			if (!arguments.isEmpty()) {
 				list.addAll(arguments);
 			}
-			context.setLocal(this.argumentNames.get(0), new ListValue(list));
+			context.setLocal(this.arguments.get(0).getName(), new ListValue(list));
 		}
 	}
 }

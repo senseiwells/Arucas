@@ -13,6 +13,7 @@ import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.values.classes.ArucasClassDefinition;
 import me.senseiwells.arucas.values.classes.ArucasEnumDefinition;
+import me.senseiwells.arucas.values.functions.Argument;
 import me.senseiwells.arucas.values.functions.UserDefinedClassFunction;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.functions.UserDefinedFunction;
@@ -239,7 +240,7 @@ public class Parser {
 					NetworkUtils.downloadLibrary(filePath, fileName.replaceAll("\\\\", "/") + ".arucas");
 				}
 				String fileContent = Files.readString(filePath);
-				Context childContext = this.context.createChildContext("Import - " + className.content + " from " + fileName);
+				Context childContext = this.context.createChildContext("Import - " + className.content + " from " + fileName, false);
 				importDefinitions = Run.importClasses(childContext, fileName, fileContent);
 				this.context.addCachedDefinition(fileName, importDefinitions);
 			}
@@ -485,7 +486,7 @@ public class Parser {
 
 		this.context.pushScope(this.currentToken.syntaxPosition);
 
-		List<String> argumentNames = this.getClassMemberArguments();
+		List<Argument> argumentNames = this.getClassMemberArguments();
 
 		MutableSyntaxImpl syntaxPosition = new MutableSyntaxImpl(startPos.getStartPos(), null);
 		UserDefinedClassFunction classConstructor = this.isStackTypePop(StackType.ARBITRARY) ?
@@ -515,13 +516,13 @@ public class Parser {
 
 		this.context.pushScope(this.currentToken.syntaxPosition);
 
-		List<String> argumentNames = this.getClassMemberArguments();
+		List<Argument> arguments = this.getClassMemberArguments();
 
 		MutableSyntaxImpl syntaxPosition = new MutableSyntaxImpl(startPos.getStartPos(), null);
 		UserDefinedClassFunction classMethod = this.isStackTypePop(StackType.ARBITRARY) ?
-			new UserDefinedClassFunction.Arbitrary(definition, name, argumentNames, syntaxPosition) :
-			new UserDefinedClassFunction(definition, name, argumentNames, syntaxPosition);
-		classMethod.setReturnTypes(this.getFunctionReturnTypes());
+			new UserDefinedClassFunction.Arbitrary(definition, name, arguments, syntaxPosition) :
+			new UserDefinedClassFunction(definition, name, arguments, syntaxPosition);
+		classMethod.setReturnTypes(this.getVariableTypes());
 
 		this.context.setLocal(name, classMethod);
 
@@ -534,24 +535,24 @@ public class Parser {
 		return classMethod;
 	}
 
-	private List<String> getClassMemberArguments() throws CodeError {
-		List<String> argumentNames = new ArrayList<>();
-		argumentNames.add("this");
+	private List<Argument> getClassMemberArguments() throws CodeError {
+		List<Argument> argumentNames = new ArrayList<>();
+		argumentNames.add(new Argument("this"));
 		this.context.setLocal("this", NullValue.NULL);
 
 		if (this.currentToken.type == Token.Type.IDENTIFIER) {
 			do {
 				this.throwIfNotType(Token.Type.IDENTIFIER, "Expected Identifier");
 				this.throwIfStackNameTaken(this.currentToken);
-				String varName = this.currentToken.content;
-				argumentNames.add(varName);
+				Argument argument = new Argument(this.currentToken.content);
+				argumentNames.add(argument);
 				this.advance();
 
 				if (this.currentToken.type == Token.Type.ARBITRARY) {
 					// 2 because we include 'this'
 					if (argumentNames.size() == 2) {
 						this.parseStack.push(StackType.ARBITRARY);
-						this.context.setLocal(varName, NullValue.NULL);
+						this.context.setLocal(argument.getName(), NullValue.NULL);
 						this.advance();
 						break;
 					}
@@ -562,7 +563,8 @@ public class Parser {
 					);
 				}
 
-				this.context.setLocal(varName, NullValue.NULL);
+				argument.setTypes(this.getVariableTypes());
+				this.context.setLocal(argument.getName(), NullValue.NULL);
 			}
 			while (this.currentToken.type == Token.Type.COMMA && this.advance());
 		}
@@ -585,7 +587,7 @@ public class Parser {
 
 		this.context.pushScope(this.currentToken.syntaxPosition);
 
-		List<String> argumentNames = new ArrayList<>();
+		List<Argument> arguments = new ArrayList<>();
 
 		UserDefinedFunction staticClassMethod = null;
 		if (this.currentToken.type == Token.Type.IDENTIFIER) {
@@ -593,11 +595,12 @@ public class Parser {
 				this.throwIfNotType(Token.Type.IDENTIFIER, "Expected Identifier");
 				this.throwIfStackNameTaken(this.currentToken);
 				String varName = this.currentToken.content;
-				argumentNames.add(varName);
+				Argument argument = new Argument(varName);
+				arguments.add(argument);
 				this.advance();
 
 				if (this.currentToken.type == Token.Type.ARBITRARY) {
-					if (argumentNames.size() == 1) {
+					if (arguments.size() == 1) {
 						staticClassMethod = new UserDefinedFunction.Arbitrary(variableNameToken.content, varName, syntaxPosition);
 						this.context.setLocal(varName, NullValue.NULL);
 						this.advance();
@@ -609,6 +612,7 @@ public class Parser {
 						this.currentToken.syntaxPosition
 					);
 				}
+				argument.setTypes(this.getVariableTypes());
 
 				this.context.setLocal(varName, NullValue.NULL);
 			}
@@ -618,9 +622,9 @@ public class Parser {
 		this.advance();
 
 		if (staticClassMethod == null) {
-			staticClassMethod = new UserDefinedFunction(variableNameToken.content, argumentNames, syntaxPosition);
+			staticClassMethod = new UserDefinedFunction(variableNameToken.content, arguments, syntaxPosition);
 		}
-		staticClassMethod.setReturnTypes(this.getFunctionReturnTypes());
+		staticClassMethod.setReturnTypes(this.getVariableTypes());
 
 		this.context.setLocal(variableNameToken.content, staticClassMethod);
 
@@ -648,8 +652,8 @@ public class Parser {
 		this.advance();
 
 		this.context.pushScope(this.currentToken.syntaxPosition);
-		List<String> argumentNames = this.getClassMemberArguments();
-		int parameters = argumentNames.size();
+		List<Argument> arguments = this.getClassMemberArguments();
+		int parameters = arguments.size();
 
 		if (!Token.Type.isOperatorOverridable(parameters, token.type)) {
 			throw new CodeError(
@@ -660,8 +664,8 @@ public class Parser {
 		}
 
 		MutableSyntaxImpl syntaxPosition = new MutableSyntaxImpl(startPos.getStartPos(), null);
-		UserDefinedClassFunction operatorMethod = new UserDefinedClassFunction(definition, "$%s".formatted(token.type), argumentNames, syntaxPosition);
-		operatorMethod.setReturnTypes(this.getFunctionReturnTypes());
+		UserDefinedClassFunction operatorMethod = new UserDefinedClassFunction(definition, "$%s".formatted(token.type), arguments, syntaxPosition);
+		operatorMethod.setReturnTypes(this.getVariableTypes());
 
 		Node statements = this.statements();
 		this.context.popScope();
@@ -821,21 +825,21 @@ public class Parser {
 		return new WhileNode(condition, statement);
 	}
 
-	private List<AbstractClassDefinition> getFunctionReturnTypes() throws CodeError {
-		if (this.currentToken.type != Token.Type.POINTER) {
+	private List<AbstractClassDefinition> getVariableTypes() throws CodeError {
+		if (this.currentToken.type != Token.Type.COLON) {
 			return null;
 		}
 		this.advance();
 
 		List<AbstractClassDefinition> definitions = new ArrayList<>();
 		do {
-			this.throwIfNotType(Token.Type.IDENTIFIER, "Expected return type");
+			this.throwIfNotType(Token.Type.IDENTIFIER, "Expected class type");
 			String className = this.currentToken.content;
 			AbstractClassDefinition classDefinition = this.context.getClassDefinition(className);
 			if (classDefinition == null) {
 				throw new CodeError(
 					CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
-					"Return type '%s' doesn't exist".formatted(className),
+					"Class type '%s' doesn't exist".formatted(className),
 					this.currentToken.syntaxPosition
 				);
 			}
@@ -851,7 +855,7 @@ public class Parser {
 		this.parseStack.add(StackType.FUN);
 		Token functionStartToken = this.currentToken;
 		this.advance();
-		List<String> argumentNameTokens = new ArrayList<>();
+		List<Argument> arguments = new ArrayList<>();
 		Token variableNameToken;
 
 		if (isLambda) {
@@ -879,13 +883,14 @@ public class Parser {
 				this.throwIfNotType(Token.Type.IDENTIFIER, "Expected Identifier");
 				this.throwIfStackNameTaken(this.currentToken);
 				String varName = this.currentToken.content;
-				argumentNameTokens.add(varName);
+				Argument argument = new Argument(varName);
+				arguments.add(argument);
 				this.advance();
 
 				if (this.currentToken.type == Token.Type.ARBITRARY) {
 					// We can't have more than one argument be arbitrary
 					// Since this would not work with the current FunctionMap system
-					if (argumentNameTokens.size() == 1) {
+					if (arguments.size() == 1) {
 						functionNode = new FunctionNode(
 							functionStartToken,
 							new UserDefinedFunction.Arbitrary(variableNameToken.content, varName, functionStartToken.syntaxPosition)
@@ -900,6 +905,7 @@ public class Parser {
 						this.currentToken.syntaxPosition
 					);
 				}
+				argument.setTypes(this.getVariableTypes());
 
 				this.context.setLocal(varName, NullValue.NULL);
 			}
@@ -909,10 +915,9 @@ public class Parser {
 		this.advance();
 
 		if (functionNode == null) {
-			functionNode = new FunctionNode(functionStartToken, variableNameToken, argumentNameTokens);
+			functionNode = new FunctionNode(functionStartToken, variableNameToken, arguments);
 		}
-
-		List<AbstractClassDefinition> returnTypes = this.getFunctionReturnTypes();
+		List<AbstractClassDefinition> returnTypes = this.getVariableTypes();
 
 		this.context.setLocal(variableNameToken.content, functionNode.getFunctionValue());
 

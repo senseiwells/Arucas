@@ -2,6 +2,9 @@ package me.senseiwells.arucas.utils;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class ExceptionUtils {
 	public static String getStackTrace(Throwable throwable) {
@@ -11,17 +14,11 @@ public class ExceptionUtils {
 		return stringWriter.getBuffer().toString();
 	}
 
-	public static boolean runSafe(ThrowableRunnable runnable) {
-		try {
-			runnable.run();
-			return true;
-		}
-		catch (Throwable throwable) {
-			return false;
-		}
+	public static boolean runSafe(Functions.ThrowableRunnable runnable) {
+		return returnThrowable(runnable) == null;
 	}
 
-	public static Throwable returnThrowable(ThrowableRunnable runnable) {
+	public static Throwable returnThrowable(Functions.ThrowableRunnable runnable) {
 		try {
 			runnable.run();
 			return null;
@@ -31,22 +28,30 @@ public class ExceptionUtils {
 		}
 	}
 
-	public static <T> T catchAsNull(ThrowableSupplier<T> supplier) {
+	public static <T> T catchAsNull(Functions.ThrowableSupplier<T> supplier) {
+		return catchAsDefault(supplier, () -> null);
+	}
+
+	public static <T> T catchAsDefault(Functions.ThrowableSupplier<T> supplier, Supplier<T> defaultSupplier) {
 		try {
 			return supplier.get();
 		}
 		catch (Throwable throwable) {
-			return null;
+			return defaultSupplier.get();
 		}
 	}
 
-	@FunctionalInterface
-	public interface ThrowableRunnable {
-		void run() throws Throwable;
+	public static void catchAndHandle(Functions.ThrowableRunnable runnable, Consumer<Throwable> handler) {
+		Throwable throwable = returnThrowable(runnable);
+		if (throwable != null) {
+			handler.accept(throwable);
+		}
 	}
 
-	@FunctionalInterface
-	public interface ThrowableSupplier<T> {
-		T get() throws Throwable;
+	public static void catchAndThrow(Functions.ThrowableRunnable runnable, Function<Throwable, ? extends RuntimeException> handler) {
+		Throwable throwable = returnThrowable(runnable);
+		if (throwable != null) {
+			throw handler.apply(throwable);
+		}
 	}
 }

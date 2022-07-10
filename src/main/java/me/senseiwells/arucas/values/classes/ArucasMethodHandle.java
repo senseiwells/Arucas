@@ -4,7 +4,7 @@ import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.utils.ExceptionUtils;
+import me.senseiwells.arucas.utils.Functions;
 import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
 
@@ -42,7 +42,7 @@ public class ArucasMethodHandle {
 		}, syntaxPosition, context);
 	}
 
-	public static <T extends Value> T invokeMethodHandle(ExceptionUtils.ThrowableSupplier<T> supplier, ISyntax syntaxPosition, Context context) throws CodeError {
+	public static <T extends Value> T invokeMethodHandle(Functions.ThrowableSupplier<T> supplier, ISyntax syntaxPosition, Context context) throws CodeError {
 		try {
 			return supplier.get();
 		}

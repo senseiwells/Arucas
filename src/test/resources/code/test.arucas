@@ -1,13 +1,14 @@
 // ./src/test/resources/code/test.arucas
 // run(File.getDirectory().getPath() + "/src/test/resources/code/test.arucas");
 
-import * from util.Collections;
-
-stack = new LinkedStack();
-
-stack.push("Wow");
-stack.push(90);
-
-foreach (v : stack) {
-    print(v);
+class B {
+    operator + (str: String): String {
+        return str;
+    }
 }
+
+fun add(param: B, otherParam: String): String {
+    return param + otherParam;
+}
+
+print(add(new B(), "98"));

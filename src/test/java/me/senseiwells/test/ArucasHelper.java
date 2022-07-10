@@ -47,7 +47,7 @@ public class ArucasHelper {
 	}
 
 	public static Context createContext(Context parent) {
-		return parent.createChildContext("Test Context");
+		return parent.createChildContext("Test Context", true);
 	}
 
 	public static void compile(String syntax) throws CodeError {

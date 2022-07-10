@@ -7,7 +7,7 @@ import me.senseiwells.arucas.api.docs.ConstructorDoc;
 import me.senseiwells.arucas.api.docs.FunctionDoc;
 import me.senseiwells.arucas.api.docs.MemberDoc;
 import me.senseiwells.arucas.utils.ExceptionUtils;
-import me.senseiwells.arucas.utils.ExceptionUtils.ThrowableSupplier;
+import me.senseiwells.arucas.utils.Functions.ThrowableSupplier;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.values.classes.ArucasWrapperCreator;
 import me.senseiwells.arucas.values.classes.WrapperClassDefinition;

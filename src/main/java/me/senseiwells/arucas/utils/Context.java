@@ -97,11 +97,11 @@ public class Context {
 		return null;
 	}
 
-	public Context createChildContext(String displayName) {
+	public Context createChildContext(String displayName, boolean isMain) {
 		StackTable root = this.stackTable.getRoot();
 		Context context = new Context(displayName, this, this.extensions, this.threadHandler, this.converter, this.arucasAPI);
 		context.isDebug = this.isDebug;
-		context.isMain = false;
+		context.isMain = isMain;
 		return context.setStackTable(root.classDefinitions, root.importableDefinitions, root.cachedDefinitions, false);
 	}
 

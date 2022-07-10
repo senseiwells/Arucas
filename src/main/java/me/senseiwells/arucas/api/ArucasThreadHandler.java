@@ -5,7 +5,7 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.ExceptionUtils;
-import me.senseiwells.arucas.utils.ExceptionUtils.ThrowableRunnable;
+import me.senseiwells.arucas.utils.Functions.ThrowableRunnable;
 import me.senseiwells.arucas.utils.Functions;
 import me.senseiwells.arucas.utils.impl.ArucasThread;
 import me.senseiwells.arucas.values.Value;
@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Supplier;
 
 @SuppressWarnings({"UnusedReturnValue", "unused"})
 public final class ArucasThreadHandler {
@@ -129,7 +128,7 @@ public final class ArucasThreadHandler {
 
 		return new ArucasThread(this.arucasThreadGroup, () -> {
 			try {
-				Run.run(context, fileName, fileContent);
+				Run.run(context, fileName, fileContent, true);
 				this.stop();
 			}
 			catch (Throwable t) {
@@ -163,7 +162,7 @@ public final class ArucasThreadHandler {
 		new ArucasThread(this.arucasThreadGroup, () -> {
 			Value value;
 			try {
-				value = Run.run(context, fileName, fileContent);
+				value = Run.run(context, fileName, fileContent, true);
 				this.stop();
 			}
 			catch (Throwable t) {
@@ -205,7 +204,7 @@ public final class ArucasThreadHandler {
 		new ArucasThread(this.arucasThreadGroup, () -> {
 			Value value;
 			try {
-				value = Run.run(context, fileName, fileContent);
+				value = Run.run(context, fileName, fileContent, true);
 			}
 			catch (Throwable throwable) {
 				futureThrowable.complete(throwable);
@@ -304,7 +303,7 @@ public final class ArucasThreadHandler {
 		}, delay, timeUnit);
 	}
 
-	public ScheduledFuture<?> loopAsyncFunctionInThreadPool(int period, TimeUnit timeUnit, Supplier<Boolean> shouldContinue, ThrowableRunnable onFinish, Context context, ContextConsumer consumer) {
+	public ScheduledFuture<?> loopAsyncFunctionInThreadPool(int period, TimeUnit timeUnit, Functions.ThrowableSupplier<Boolean> shouldContinue, ThrowableRunnable onFinish, Context context, ContextConsumer consumer) {
 		AtomicReference<ScheduledFuture<?>> futureRef = new AtomicReference<>();
 		futureRef.set(this.asyncThreads.scheduleAtFixedRate(() -> {
 			try {

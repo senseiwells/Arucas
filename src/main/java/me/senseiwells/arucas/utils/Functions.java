@@ -19,4 +19,14 @@ public final class Functions {
 	public interface TriConsumer<A, B, C> {
 		void accept(A first, B second, C third);
 	}
+
+	@FunctionalInterface
+	public interface ThrowableRunnable {
+		void run() throws Throwable;
+	}
+
+	@FunctionalInterface
+	public interface ThrowableSupplier<T> {
+		T get() throws Throwable;
+	}
 }

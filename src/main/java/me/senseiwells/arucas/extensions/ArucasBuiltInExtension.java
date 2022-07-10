@@ -88,7 +88,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 			Path fileNamePath = path.getFileName();
 			String fileName = fileNamePath == null ? filePath : fileNamePath.toString();
 			String fileContent = Files.readString(path);
-			return Run.run(arguments.getContext(), fileName, fileContent);
+			return Run.run(arguments.getContext(), fileName, fileContent, false);
 		}
 		catch (IOException | OutOfMemoryError | InvalidPathException e) {
 			throw arguments.getError("Failed to execute script '%s'\n%s", filePath, ExceptionUtils.getStackTrace(e));
@@ -353,6 +353,6 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 	)
 	private Value runFromString(Arguments arguments) throws CodeError {
 		StringValue stringValue = arguments.getNext(StringValue.class);
-		return Run.run(arguments.getContext().createBranch(), "string-run", stringValue.value);
+		return Run.run(arguments.getContext().createBranch(), "string-run", stringValue.value, arguments.getContext().isMain());
 	}
 }

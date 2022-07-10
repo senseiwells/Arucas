@@ -8,10 +8,7 @@ import me.senseiwells.arucas.throwables.BuiltInException;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
-import me.senseiwells.arucas.utils.Arguments;
-import me.senseiwells.arucas.utils.ArucasFunctionMap;
-import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.utils.ExceptionUtils;
+import me.senseiwells.arucas.utils.*;
 import me.senseiwells.arucas.values.*;
 import me.senseiwells.arucas.values.classes.ArucasClassValue;
 
@@ -68,7 +65,7 @@ public abstract class FunctionValue extends GenericValue<String> {
 
 	protected abstract Value execute(Context context, List<Value> arguments) throws CodeError;
 
-	public final Value callSafe(Context context, ExceptionUtils.ThrowableSupplier<List<Value>> arguments) {
+	public final Value callSafe(Context context, Functions.ThrowableSupplier<List<Value>> arguments) {
 		try {
 			return this.call(context, arguments.get());
 		}
