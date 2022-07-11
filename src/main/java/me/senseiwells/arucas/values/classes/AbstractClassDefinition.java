@@ -71,6 +71,11 @@ public abstract class AbstractClassDefinition implements MemberOperations {
 	public abstract Class<? extends Value> getValueClass();
 
 	/**
+	 * Returns whether the class instance has a field with name
+	 */
+	public abstract boolean hasMemberField(String name);
+
+	/**
 	 * This gets called when the class is initialised.
 	 */
 	protected abstract void initialiseStatics(Context context) throws CodeError, ThrowValue;

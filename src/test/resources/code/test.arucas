@@ -2,13 +2,21 @@
 // run(File.getDirectory().getPath() + "/src/test/resources/code/test.arucas");
 
 class B {
-    operator + (str: String): String {
-        return str;
+    as Number {
+        return 10;
+    }
+
+    as Boolean {
+        return false;
     }
 }
 
-fun add(param: B, otherParam: String): String {
-    return param + otherParam;
-}
+print(new B().isNaN());
 
-print(add(new B(), "98"));
+// Auto casting only works when
+// calling members on that value
+// or when passing it into a function
+// that has specific type requirements
+if (new B()) {
+    // throws
+}

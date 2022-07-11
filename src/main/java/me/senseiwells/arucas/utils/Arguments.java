@@ -87,6 +87,20 @@ public class Arguments {
 	}
 
 	/**
+	 * Casts a value to a class in the
+	 * context of the arguments context
+	 * and syntax position
+	 *
+	 * @param value the value to cast
+	 * @param clazz the class to cast to
+	 * @param <T>   the type of class
+	 * @return the casted value
+	 */
+	public <T extends Value> T castAs(Value value, Class<T> clazz) {
+		return value.castAs(this.context, clazz, this.getPosition());
+	}
+
+	/**
 	 * This sets the index of the argument iterator
 	 *
 	 * @param index the new index
@@ -146,11 +160,13 @@ public class Arguments {
 	public <T extends Value> T get(int index, Class<T> type) throws RuntimeError {
 		Value value = this.get(index);
 		if (!type.isInstance(value)) {
-			String className = Value.getValueName(type);
-			throw this.function.getError(
-				this.context, "Must pass %s into parameter %d for %s()",
-				className, this.modifyIndex(index), this.function.getName()
-			);
+			value = this.castAs(value, type);
+			if (value == null) {
+				throw this.function.getError(
+					this.context, "Must pass %s into parameter %d for %s()",
+					Value.getValueName(type), this.modifyIndex(index), this.function.getName()
+				);
+			}
 		}
 		return type.cast(value);
 	}
@@ -162,8 +178,8 @@ public class Arguments {
 	 * throw a RuntimeError for wrong type
 	 *
 	 * @param index the index of the Value to get
-	 * @param type the type of to convert the Value to
-	 * @param <T> the type to convert the Value to
+	 * @param type  the type of to convert the Value to
+	 * @param <T>   the type to convert the Value to
 	 * @return the converted Value
 	 * @throws RuntimeError if the index is out of bounds, or the Value is not the correct type
 	 */
@@ -268,6 +284,10 @@ public class Arguments {
 	 */
 	public <T> T getAnyNext(Class<T> type) throws RuntimeError {
 		return this.getAny(this.index++, type);
+	}
+
+	public boolean isNext(Class<? extends Value> type) throws RuntimeError {
+		return this.castAs(this.get(this.index), type) != null;
 	}
 
 	public BooleanValue getNextBoolean() throws RuntimeError {

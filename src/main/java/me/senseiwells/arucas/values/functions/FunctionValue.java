@@ -61,7 +61,9 @@ public abstract class FunctionValue extends GenericValue<String> {
 		return context;
 	}
 
-	protected void onReturnValue(Context context, Value returnValue) throws CodeError { }
+	protected Value onReturnValue(Context context, Value returnValue) throws CodeError {
+		return returnValue;
+	}
 
 	protected abstract Value execute(Context context, List<Value> arguments) throws CodeError;
 
@@ -105,8 +107,7 @@ public abstract class FunctionValue extends GenericValue<String> {
 			throw this.getError(context, "StackOverflow: Call stack went too deep");
 		}
 
-		this.onReturnValue(context, returnValue);
-		return returnValue;
+		return this.onReturnValue(context, returnValue);
 	}
 
 	@Override

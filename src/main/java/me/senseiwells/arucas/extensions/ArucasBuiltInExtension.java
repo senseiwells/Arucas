@@ -297,20 +297,23 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		example = "len(\"Hello World\");"
 	)
 	private Value len(Arguments arguments) throws CodeError {
-		Value value = arguments.getNext();
-		if (value instanceof StringValue stringValue) {
-			return NumberValue.of(stringValue.value.length());
+		if (arguments.isNext(StringValue.class)) {
+			StringValue string = arguments.getNextString();
+			return NumberValue.of(string.value.length());
 		}
+		if (arguments.isNext(FunctionValue.class)) {
+			FunctionValue function = arguments.getNextFunction();
+			// If the function is a member we don't include itself in the length
+			if (function instanceof Delegatable) {
+				return NumberValue.of(function.getCount() - 1);
+			}
+			return NumberValue.of(function.getCount());
+		}
+		Value value = arguments.getNext();
 		if (value.isCollection()) {
 			return NumberValue.of(value.asCollection(arguments.getContext(), arguments.getPosition()).size());
 		}
-		if (value instanceof FunctionValue functionValue) {
-			// If the function is a member we don't include itself in the length
-			if (value instanceof Delegatable) {
-				return NumberValue.of(functionValue.getCount() - 1);
-			}
-			return NumberValue.of(functionValue.getCount());
-		}
+
 		throw arguments.getError("Cannot pass %s into len()", value);
 	}
 

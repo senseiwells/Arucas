@@ -6,6 +6,7 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.ExceptionUtils;
 import me.senseiwells.arucas.utils.Functions;
 import me.senseiwells.arucas.utils.ValueRef;
 import me.senseiwells.arucas.utils.impl.IArucasCollection;
@@ -37,6 +38,27 @@ public abstract class Value implements ValueIdentifier {
 	 * of an applicable Value
 	 */
 	public abstract Value newCopy(Context context) throws CodeError;
+
+	/**
+	 * Tries to cast the value as a different
+	 * class definition.
+	 */
+	public Value castAs(Context context, AbstractClassDefinition definition, ISyntax position) throws CodeError {
+		throw new RuntimeError("Invalid type, cannot convert type '%s' to type '%s'".formatted(this.getTypeName(), definition.getName()), position, context);
+	}
+
+	public <T extends Value> T castAs(Context context, Class<T> clazz, ISyntax position) {
+		if (clazz.isInstance(this)) {
+			return clazz.cast(this);
+		}
+
+		String valueName = Value.getValueName(clazz);
+		Value casted = ExceptionUtils.catchAsNull(() -> this.castAs(context, context.getClassDefinition(valueName), position));
+		if (clazz.isInstance(casted)) {
+			return clazz.cast(casted);
+		}
+		return null;
+	}
 
 	/**
 	 * This returns the Java equivalent of the
@@ -389,7 +411,7 @@ public abstract class Value implements ValueIdentifier {
 	 * @param position The current syntax position
 	 * @return The value that is being accessed which may be null
 	 */
-	public Value onMemberAccess(Context context, String name, ISyntax position) {
+	public Value onMemberAccess(Context context, String name, ISyntax position) throws CodeError {
 		// Get delegate if method exists
 		Value value = context.getMemberFunction(this.getClass(), name, -2);
 

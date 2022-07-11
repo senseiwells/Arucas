@@ -38,6 +38,11 @@ public abstract class ArucasClassExtension extends AbstractClassDefinition {
 		return this.constructors;
 	}
 
+	@Override
+	public final boolean hasMemberField(String name) {
+		return false;
+	}
+
 	/**
 	 * No members are assignable by default.
 	 */

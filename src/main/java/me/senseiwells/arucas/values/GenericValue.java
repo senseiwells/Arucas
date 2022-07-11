@@ -85,7 +85,10 @@ public abstract class GenericValue<T> extends Value {
 				return BooleanValue.FALSE;
 			}
 			if (thisValue instanceof ArucasClassValue classValue) {
-				return BooleanValue.of(classValue.value == classDefinition);
+				if (classValue.value == classDefinition) {
+					return BooleanValue.TRUE;
+				}
+				return BooleanValue.of(classValue.value.getCastMethod(classDefinition) != null);
 			}
 			return BooleanValue.of(classDefinition.getValueClass().isAssignableFrom(thisValue.getClass()));
 		}

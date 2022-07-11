@@ -147,4 +147,9 @@ public class WrapperClassDefinition extends AbstractClassDefinition {
 	public Class<WrapperClassValue> getValueClass() {
 		return WrapperClassValue.class;
 	}
+
+	@Override
+	public boolean hasMemberField(String name) {
+		return this.fieldMap.containsKey(name);
+	}
 }

@@ -6,6 +6,7 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.*;
+import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.utils.impl.ArucasSet;
 import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.StringValue;
@@ -457,6 +458,42 @@ public class Parser {
 						);
 					}
 					definition.addStaticInitializer(this.statements());
+				}
+				case AS -> {
+					if (isStatic) {
+						throw new CodeError(
+							CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR,
+							"Unexpected token 'as', cannot be applied in a static context",
+							this.currentToken.syntaxPosition
+						);
+					}
+					this.advance();
+
+					this.throwIfNotType(Token.Type.IDENTIFIER, "Expected class type after 'as'");
+					String className = this.currentToken.content;
+
+					AbstractClassDefinition asDefinition = this.context.getClassDefinition(className);
+					if (asDefinition == null) {
+						throw new CodeError(
+							CodeError.ErrorType.ILLEGAL_OPERATION_ERROR,
+							"Class type '%s' doesn't exist".formatted(className),
+							this.currentToken.syntaxPosition
+						);
+					}
+					this.advance();
+
+					MutableSyntaxImpl syntaxPosition = new MutableSyntaxImpl(this.currentToken.syntaxPosition.getStartPos(), null);
+					UserDefinedClassFunction method = new UserDefinedClassFunction(definition, "$as" + className, List.of(new Argument("this")), syntaxPosition);
+					method.setReturnTypes(List.of(asDefinition));
+
+					this.context.pushScope(this.currentToken.syntaxPosition);
+					Node statements = this.statements();
+					this.context.popScope();
+
+					method.complete(statements);
+					syntaxPosition.end = statements.syntaxPosition.getEndPos();
+
+					definition.addCastMethod(asDefinition, method);
 				}
 				default -> throw new CodeError(
 					CodeError.ErrorType.ILLEGAL_SYNTAX_ERROR,

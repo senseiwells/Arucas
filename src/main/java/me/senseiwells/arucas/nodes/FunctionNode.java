@@ -15,8 +15,8 @@ public class FunctionNode extends Node {
 	private final Token variableNameToken;
 	private final UserDefinedFunction functionValue;
 
-	public FunctionNode(Token functionToken, Token varNameToken, List<Argument> argumentNames) {
-		this(varNameToken, new UserDefinedFunction(varNameToken.content, argumentNames, functionToken.syntaxPosition));
+	public FunctionNode(Token functionToken, Token varNameToken, List<Argument> arguments) {
+		this(varNameToken, new UserDefinedFunction(varNameToken.content, arguments, functionToken.syntaxPosition));
 	}
 
 	public FunctionNode(Token varNameToken, UserDefinedFunction functionValue) {

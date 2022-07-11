@@ -62,12 +62,12 @@ public class UserDefinedClassFunction extends UserDefinedFunction implements Del
 		}
 
 		@Override
-		protected void checkAndPopulateArguments(Context context, List<Value> arguments) throws RuntimeError {
+		protected void checkAndPopulateArguments(Context context, List<Value> arguments) throws CodeError {
 			for (int i = 0; i < this.arguments.size(); i++) {
 				Argument argumentDef = this.arguments.get(i);
 				Value argument = arguments.get(i);
 
-				this.checkTypes(context, argument, argumentDef.getTypes(), "Parameter " + (i + 1));
+				argument = this.checkTypes(context, argument, argumentDef.getTypes(), "Parameter " + (i + 1));
 
 				context.setLocal(argumentDef.getName(), argument);
 			}

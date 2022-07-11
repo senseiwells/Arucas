@@ -23,6 +23,7 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 	private final Map<String, Node> memberVariables;
 	protected final ArucasFunctionMap<UserDefinedClassFunction> constructors;
 	protected final ArucasOperatorMap<UserDefinedClassFunction> operatorMap;
+	protected final Map<AbstractClassDefinition, UserDefinedClassFunction> castAsMap;
 
 	public ArucasClassDefinition(String name) {
 		super(name);
@@ -32,6 +33,7 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 		this.memberVariables = new LinkedHashMap<>();
 		this.constructors = new ArucasFunctionMap<>();
 		this.operatorMap = new ArucasOperatorMap<>();
+		this.castAsMap = new LinkedHashMap<>();
 	}
 
 	public void addMethod(UserDefinedClassFunction method) {
@@ -56,6 +58,14 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 			return;
 		}
 		this.memberVariables.put(name, value);
+	}
+
+	public void addCastMethod(AbstractClassDefinition definition, UserDefinedClassFunction function) {
+		this.castAsMap.put(definition, function);
+	}
+
+	public UserDefinedClassFunction getCastMethod(AbstractClassDefinition definition) {
+		return this.castAsMap.get(definition);
 	}
 
 	public boolean hasMemberVariable(boolean isStatic, String name) {
@@ -133,5 +143,10 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 	@Override
 	public Class<ArucasClassValue> getValueClass() {
 		return ArucasClassValue.class;
+	}
+
+	@Override
+	public boolean hasMemberField(String name) {
+		return this.hasMemberVariable(false, name);
 	}
 }

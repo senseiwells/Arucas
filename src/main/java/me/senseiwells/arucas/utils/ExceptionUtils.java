@@ -1,5 +1,8 @@
 package me.senseiwells.arucas.utils;
 
+import me.senseiwells.arucas.throwables.CodeError;
+import me.senseiwells.arucas.values.Value;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.function.Consumer;

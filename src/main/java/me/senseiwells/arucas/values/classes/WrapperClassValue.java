@@ -175,7 +175,7 @@ public class WrapperClassValue extends GenericValue<WrapperClassDefinition> impl
 	}
 
 	@Override
-	public Value onMemberAccess(Context context, String name, ISyntax position) {
+	public Value onMemberAccess(Context context, String name, ISyntax position) throws CodeError {
 		Value value = this.getMember(name);
 		if (value != null) {
 			return value;

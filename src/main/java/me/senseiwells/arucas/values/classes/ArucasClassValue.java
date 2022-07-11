@@ -72,6 +72,15 @@ public class ArucasClassValue extends GenericValue<ArucasClassDefinition> implem
 	}
 
 	@Override
+	public Value castAs(Context context, AbstractClassDefinition definition, ISyntax position) throws CodeError {
+		UserDefinedClassFunction castMethod = this.value.getCastMethod(definition);
+		if (castMethod != null) {
+			return castMethod.call(context, ArucasList.arrayListOf(this));
+		}
+		return super.castAs(context, definition, position);
+	}
+
+	@Override
 	public Object asJavaValue() {
 		return this;
 	}
@@ -101,6 +110,7 @@ public class ArucasClassValue extends GenericValue<ArucasClassDefinition> implem
 		if (function != null) {
 			return function.call(context, ArucasList.arrayListOf(this));
 		}
+
 		return super.onUnaryOperation(context, type, syntaxPosition);
 	}
 
@@ -160,16 +170,37 @@ public class ArucasClassValue extends GenericValue<ArucasClassDefinition> implem
 	}
 
 	@Override
-	public FunctionValue onMemberCall(Context context, String name, List<Value> arguments, ValueRef reference, ISyntax position) {
+	public FunctionValue onMemberCall(Context context, String name, List<Value> arguments, ValueRef reference, ISyntax position) throws CodeError {
 		// Get the class method
-		FunctionValue function = this.getMember(name, arguments.size() + 1);
+		int size = arguments.size() + 1;
+		FunctionValue function = this.getMember(name, size);
 		if (function == null) {
 			// If null get built in member
-			function = context.getMemberFunction(this.getClass(), name, arguments.size() + 1);
+			function = context.getMemberFunction(this.getClass(), name, size);
 
 			// We check fields as a last resort
 			if (function == null && this.getMember(name) instanceof FunctionValue delegate) {
 				return delegate;
+			}
+
+			if (function == null) {
+				// If still not then we check delegates
+				for (AbstractClassDefinition definition : this.value.castAsMap.keySet()) {
+					function = definition.getMember(name, size);
+					if (function != null) {
+						arguments.add(0, this.castAs(context, definition, position));
+						return function;
+					}
+					function = context.getMemberFunction(definition.getValueClass(), name, size);
+					if (function != null) {
+						arguments.add(0, this.castAs(context, definition, position));
+						return function;
+					}
+					// We check fields as a last resort
+					if (definition.hasMemberField(name)) {
+						return this.castAs(context, definition, position).onMemberCall(context, name, arguments, reference, position);
+					}
+				}
 			}
 		}
 
@@ -178,7 +209,7 @@ public class ArucasClassValue extends GenericValue<ArucasClassDefinition> implem
 	}
 
 	@Override
-	public Value onMemberAccess(Context context, String name, ISyntax position) {
+	public Value onMemberAccess(Context context, String name, ISyntax position) throws CodeError {
 		Value value = this.getMember(name);
 		if (value != null) {
 			return value;
@@ -189,12 +220,24 @@ public class ArucasClassValue extends GenericValue<ArucasClassDefinition> implem
 			return function.getDelegate(this);
 		}
 
+		for (AbstractClassDefinition definition : this.value.castAsMap.keySet()) {
+			if (definition.hasMemberField(name) || definition.getMethods().get(name) != null) {
+				return this.value.castAsMap.get(definition).call(context, ArucasList.arrayListOf(this)).onMemberAccess(context, name, position);
+			}
+		}
+
 		return super.onMemberAccess(context, name, position);
 	}
 
 	@Override
 	public Value onMemberAssign(Context context, String name, Functions.UniFunction<Context, Value> valueGetter, ISyntax position) throws CodeError {
 		if (!this.hasMember(name)) {
+			for (AbstractClassDefinition definition : this.value.castAsMap.keySet()) {
+				if (definition.hasMemberField(name)) {
+					return this.castAs(context, definition, position).onMemberAssign(context, name, valueGetter, position);
+				}
+			}
+
 			throw new RuntimeError(
 				"The member '%s' does not exist for the class '%s'".formatted(name, this.getTypeName()),
 				position, context

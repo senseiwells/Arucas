@@ -10,6 +10,7 @@ import me.senseiwells.arucas.values.ListValue;
 import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
+import me.senseiwells.arucas.values.classes.ArucasClassDefinition;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -40,7 +41,7 @@ public class UserDefinedFunction extends FunctionValue {
 		this.returnTypes = returnType;
 	}
 
-	protected void checkAndPopulateArguments(Context context, List<Value> arguments) throws RuntimeError {
+	protected void checkAndPopulateArguments(Context context, List<Value> arguments) throws CodeError {
 		if (arguments.size() > this.getCount()) {
 			throw this.getError(
 				context, "%d too many arguments passed into %s",
@@ -58,21 +59,31 @@ public class UserDefinedFunction extends FunctionValue {
 			Argument argumentDef = this.arguments.get(i);
 			Value argument = arguments.get(i);
 
-			this.checkTypes(context, argument, argumentDef.getTypes(), "Parameter " + (i + 1));
+			argument = this.checkTypes(context, argument, argumentDef.getTypes(), "Parameter " + (i + 1));
 
 			context.setLocal(argumentDef.getName(), argument);
 		}
 	}
 
-	protected void checkTypes(Context context, Value value, List<AbstractClassDefinition> types, String messageStart) throws RuntimeError {
+	protected Value checkTypes(Context context, Value value, List<AbstractClassDefinition> types, String messageStart) throws CodeError {
 		if (types != null && !types.isEmpty()) {
 			AbstractClassDefinition argumentType = context.getClassDefinition(value.getTypeName());
 			if (!types.contains(argumentType)) {
+				if (argumentType instanceof ArucasClassDefinition classArgumentType) {
+					for (AbstractClassDefinition validTypes : types) {
+						UserDefinedClassFunction function = classArgumentType.getCastMethod(validTypes);
+						if (function != null) {
+							return function.call(context, ArucasList.arrayListOf(value));
+						}
+					}
+				}
+
 				throw new RuntimeError("%s got '%s', but expected type '%s'".formatted(
 					messageStart, value.getTypeName(), this.typesAsString(types)
 				), this.getPosition(), context);
 			}
 		}
+		return value;
 	}
 
 	private String typesAsString(Collection<AbstractClassDefinition> collection) {
@@ -99,8 +110,8 @@ public class UserDefinedFunction extends FunctionValue {
 	}
 
 	@Override
-	protected void onReturnValue(Context context, Value returnValue) throws CodeError {
-		this.checkTypes(context, returnValue, this.returnTypes, "Function return");
+	protected Value onReturnValue(Context context, Value returnValue) throws CodeError {
+		return this.checkTypes(context, returnValue, this.returnTypes, "Function return");
 	}
 
 	@Override

@@ -22,12 +22,12 @@ public class WhileNode extends Node {
 		context.pushLoopScope(this.syntaxPosition);
 
 		while (this.keepRunning()) {
-			Value conditionValue = this.condition.visit(context);
-			if (!(conditionValue instanceof BooleanValue booleanValue)) {
+			BooleanValue conditionValue = this.condition.visit(context).castAs(context, BooleanValue.class, this.syntaxPosition);
+			if (conditionValue == null) {
 				throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "Condition must result in either 'true' or 'false'", this.syntaxPosition);
 			}
 
-			if (!booleanValue.value) {
+			if (!conditionValue.value) {
 				break;
 			}
 

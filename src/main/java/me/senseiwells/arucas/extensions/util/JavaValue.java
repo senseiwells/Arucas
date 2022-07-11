@@ -66,7 +66,7 @@ public class JavaValue extends GenericValue<Object> {
 	}
 
 	@Override
-	public Value onMemberAccess(Context context, String name, ISyntax position) {
+	public Value onMemberAccess(Context context, String name, ISyntax position) throws CodeError {
 		Object callingObject = this.asJavaValue();
 		Class<?> callingClass = callingObject.getClass();
 		String obfuscatedName = JavaValue.getObfuscatedFieldName(context, callingClass, name);
