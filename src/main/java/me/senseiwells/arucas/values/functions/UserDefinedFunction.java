@@ -5,6 +5,7 @@ import me.senseiwells.arucas.nodes.Node;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.TypedValue;
 import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.values.ListValue;
 import me.senseiwells.arucas.values.NullValue;
@@ -12,8 +13,6 @@ import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.values.classes.ArucasClassDefinition;
 
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 public class UserDefinedFunction extends FunctionValue {
@@ -67,7 +66,7 @@ public class UserDefinedFunction extends FunctionValue {
 
 	protected Value checkTypes(Context context, Value value, List<AbstractClassDefinition> types, String messageStart) throws CodeError {
 		if (types != null && !types.isEmpty()) {
-			AbstractClassDefinition argumentType = context.getClassDefinition(value.getTypeName());
+			AbstractClassDefinition argumentType = value.getType(context).value;
 			if (!types.contains(argumentType)) {
 				if (argumentType instanceof ArucasClassDefinition classArgumentType) {
 					for (AbstractClassDefinition validTypes : types) {
@@ -79,25 +78,11 @@ public class UserDefinedFunction extends FunctionValue {
 				}
 
 				throw new RuntimeError("%s got '%s', but expected type '%s'".formatted(
-					messageStart, value.getTypeName(), this.typesAsString(types)
+					messageStart, value.getTypeName(), TypedValue.typesAsString(types)
 				), this.getPosition(), context);
 			}
 		}
 		return value;
-	}
-
-	private String typesAsString(Collection<AbstractClassDefinition> collection) {
-		StringBuilder builder = new StringBuilder();
-		Iterator<AbstractClassDefinition> iterator = collection.iterator();
-		while (iterator.hasNext()) {
-			AbstractClassDefinition definition = iterator.next();
-			builder.append(definition.getName());
-
-			if (iterator.hasNext()) {
-				builder.append(" | ");
-			}
-		}
-		return builder.toString();
 	}
 
 	@Override

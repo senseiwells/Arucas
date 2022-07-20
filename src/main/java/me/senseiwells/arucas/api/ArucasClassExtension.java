@@ -4,12 +4,14 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.TypedValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
 import me.senseiwells.arucas.values.functions.ConstructorFunction;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,12 +23,14 @@ public abstract class ArucasClassExtension extends AbstractClassDefinition {
 		super(name);
 		this.constructors = this.getDefinedConstructors();
 		this.methods = this.getDefinedMethods();
-		this.getStaticMemberVariables().putAll(this.getDefinedStaticVariables());
+		Map<String, TypedValue> fields = new HashMap<>();
+		this.getDefinedStaticVariables().forEach((s, v) -> fields.put(s, new TypedValue(null, v)));
+		this.getStaticMemberVariables().putAll(fields);
 		this.getStaticMethods().addAll(this.getDefinedStaticMethods());
 	}
 
 	@Override
-	public final void initialiseStatics(Context context) { }
+	public final void initialiseStatics(Context context, ISyntax position) { }
 
 	@Override
 	public final ArucasFunctionMap<MemberFunction> getMethods() {

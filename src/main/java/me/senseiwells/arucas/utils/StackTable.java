@@ -125,7 +125,7 @@ public class StackTable {
 	}
 
 	/**
-	 * Gets a class definition if it's available in the stack
+	 * Gets a class definitions if it's available in the stack
 	 */
 	public AbstractClassDefinition getClassDefinition(String name) {
 		if (this.classDefinitions != null) {
@@ -139,7 +139,7 @@ public class StackTable {
 	}
 
 	/**
-	 * Checks whether a class definition is available in the stack
+	 * Checks whether a class definitions is available in the stack
 	 */
 	public boolean hasClassDefinition(String name) {
 		if (this.classDefinitions == null || !this.classDefinitions.has(name)) {
@@ -150,7 +150,7 @@ public class StackTable {
 	}
 
 	/**
-	 * Adds a class definition to the stack
+	 * Adds a class definitions to the stack
 	 */
 	public void addClassDefinition(AbstractClassDefinition definition) {
 		if (this.classDefinitions == null) {
@@ -161,7 +161,7 @@ public class StackTable {
 	}
 
 	/**
-	 * Adds class definition map without sorting
+	 * Adds class definitions map without sorting
 	 */
 	public void insertAllClassDefinitions(ArucasClassDefinitionMap definitions) {
 		if (this.classDefinitions == null) {
@@ -172,7 +172,7 @@ public class StackTable {
 	}
 
 	/**
-	 * Adds a class definition map to the cache (used for importing)
+	 * Adds a class definitions map to the cache (used for importing)
 	 */
 	public void addCachedDefinitionMap(String fileName, ArucasClassDefinitionMap definitions) {
 		if (this.rootTable == this) {
@@ -187,7 +187,7 @@ public class StackTable {
 	}
 
 	/**
-	 * Tries to get a class definition map if it's in the cache or if it's importable
+	 * Tries to get a class definitions map if it's in the cache or if it's importable
 	 */
 	public ArucasClassDefinitionMap getCachedDefinitionMap(String fileName) {
 		if (this.rootTable == this) {

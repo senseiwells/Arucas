@@ -2,9 +2,11 @@ package me.senseiwells.arucas.values.classes;
 
 import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.throwables.CodeError;
+import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.TypedValue;
 import me.senseiwells.arucas.values.TypeValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.functions.FunctionValue;
@@ -17,7 +19,7 @@ import java.util.Map;
 public abstract class AbstractClassDefinition implements MemberOperations {
 	private final String name;
 	private final ArucasFunctionMap<FunctionValue> staticMethods;
-	private final Map<String, Value> staticMemberVariables;
+	private final Map<String, TypedValue> staticMemberVariables;
 	private final TypeValue typeValue;
 	private Context localContext;
 
@@ -36,7 +38,7 @@ public abstract class AbstractClassDefinition implements MemberOperations {
 
 	public abstract ArucasFunctionMap<? extends FunctionValue> getConstructors();
 
-	public final Map<String, Value> getStaticMemberVariables() {
+	public final Map<String, TypedValue> getStaticMemberVariables() {
 		return this.staticMemberVariables;
 	}
 
@@ -52,9 +54,9 @@ public abstract class AbstractClassDefinition implements MemberOperations {
 		this.staticMethods.add(method);
 	}
 
-	public final void init(Context context) throws ThrowValue, CodeError {
+	public final void init(Context context, ISyntax position) throws ThrowValue, CodeError {
 		this.localContext = context.createBranch();
-		this.initialiseStatics(context);
+		this.initialiseStatics(context, position);
 	}
 
 	public final Context getLocalContext(Context fallback) {
@@ -78,7 +80,7 @@ public abstract class AbstractClassDefinition implements MemberOperations {
 	/**
 	 * This gets called when the class is initialised.
 	 */
-	protected abstract void initialiseStatics(Context context) throws CodeError, ThrowValue;
+	protected abstract void initialiseStatics(Context context, ISyntax position) throws CodeError, ThrowValue;
 
 	/**
 	 * This gets called when a new instance of this object is created.
@@ -116,12 +118,24 @@ public abstract class AbstractClassDefinition implements MemberOperations {
 	}
 
 	@Override
-	public boolean setMember(String name, Value value) {
+	public boolean setMember(Context context, ISyntax position, String name, Value value) throws RuntimeError {
 		if (!this.isAssignable(name)) {
 			return false;
 		}
 
-		this.staticMemberVariables.put(name, value);
+		TypedValue typedValue = this.staticMemberVariables.get(name);
+		if (typedValue == null) {
+			return false;
+		}
+
+		if (typedValue.definitions != null && !typedValue.definitions.contains(value.getDefinition(context))) {
+			throw new RuntimeError("Static field %s.%s got type '%s' but expected '%s'".formatted(
+				this.getName(), name, value.getTypeName(),
+				TypedValue.typesAsString(typedValue.definitions)
+			), position, context);
+		}
+
+		typedValue.value = value;
 		return true;
 	}
 
@@ -130,8 +144,8 @@ public abstract class AbstractClassDefinition implements MemberOperations {
 		if (name.equals("type")) {
 			return this.getType();
 		}
-		Value member = this.staticMemberVariables.get(name);
-		return member == null ? this.staticMethods.get(name) : member;
+		TypedValue member = this.staticMemberVariables.get(name);
+		return member == null ? this.staticMethods.get(name) : member.value;
 	}
 
 	@Override

@@ -9,6 +9,8 @@ import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.ArucasOperatorMap;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.TypedValue;
+import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.functions.UserDefinedClassFunction;
@@ -18,9 +20,9 @@ import java.util.*;
 
 public class ArucasClassDefinition extends AbstractClassDefinition {
 	private final ArucasFunctionMap<UserDefinedClassFunction> methods;
-	private final Map<String, Node> staticMemberVariableNodes;
+	private final Map<String, TypedNode> staticMemberVariableNodes;
 	private final List<Node> staticInitializers;
-	private final Map<String, Node> memberVariables;
+	private final Map<String, TypedNode> memberVariables;
 	protected final ArucasFunctionMap<UserDefinedClassFunction> constructors;
 	protected final ArucasOperatorMap<UserDefinedClassFunction> operatorMap;
 	protected final Map<AbstractClassDefinition, UserDefinedClassFunction> castAsMap;
@@ -52,12 +54,12 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 		this.operatorMap.add(tokenType, method);
 	}
 
-	public void addMemberVariableNode(boolean isStatic, String name, Node value) {
+	public void addMemberVariableNode(boolean isStatic, String name, Node value, List<AbstractClassDefinition> types) {
 		if (isStatic) {
-			this.staticMemberVariableNodes.put(name, value);
+			this.staticMemberVariableNodes.put(name, new TypedNode(types, value));
 			return;
 		}
-		this.memberVariables.put(name, value);
+		this.memberVariables.put(name, new TypedNode(types, value));
 	}
 
 	public void addCastMethod(AbstractClassDefinition definition, UserDefinedClassFunction function) {
@@ -72,14 +74,15 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 		return isStatic ? this.staticMemberVariableNodes.containsKey(name) : this.memberVariables.containsKey(name);
 	}
 
-	protected void addClassProperties(ArucasClassValue thisValue, Context context) throws ThrowValue, CodeError {
+	protected void addClassProperties(ArucasClassValue thisValue, Context context, ISyntax position) throws ThrowValue, CodeError {
 		// Add member variables
-		for (Map.Entry<String, Node> entry : this.memberVariables.entrySet()) {
+		for (Map.Entry<String, TypedNode> entry : this.memberVariables.entrySet()) {
 			String name = entry.getKey();
-			Node node = entry.getValue();
+			TypedNode typedNode = entry.getValue();
 
-			Value value = node.visit(context);
-			thisValue.addMemberVariable(name, value);
+			Value value = typedNode.node.visit(context);
+			thisValue.addMemberVariable(name, new TypedValue(typedNode.definitions, NullValue.NULL));
+			thisValue.setMember(context, position, name, value);
 		}
 	}
 
@@ -94,7 +97,7 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 	}
 
 	@Override
-	protected void initialiseStatics(Context context) throws CodeError, ThrowValue {
+	protected void initialiseStatics(Context context, ISyntax position) throws CodeError, ThrowValue {
 		// Set local context for functions
 		for (FunctionValue functionValue : this.getStaticMethods()) {
 			if (functionValue instanceof UserDefinedFunction userFunction) {
@@ -105,8 +108,10 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 			function.setLocalContext(context);
 		}
 
-		for (Map.Entry<String, Node> entry : this.staticMemberVariableNodes.entrySet()) {
-			this.getStaticMemberVariables().put(entry.getKey(), entry.getValue().visit(context));
+		for (Map.Entry<String, TypedNode> entry : this.staticMemberVariableNodes.entrySet()) {
+			Value value = entry.getValue().node.visit(context);
+			this.getStaticMemberVariables().put(entry.getKey(), new TypedValue(entry.getValue().definitions(), NullValue.NULL));
+			this.setMember(context, position, entry.getKey(), value);
 		}
 		this.staticMemberVariableNodes.clear();
 
@@ -122,7 +127,7 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 
 		ArucasClassValue thisValue = new ArucasClassValue(this);
 
-		this.addClassProperties(thisValue, context);
+		this.addClassProperties(thisValue, context, syntaxPosition);
 
 		int parameterCount = parameters.size() + 1;
 		if (this.constructors.isEmpty() && parameterCount == 1) {
@@ -149,4 +154,6 @@ public class ArucasClassDefinition extends AbstractClassDefinition {
 	public boolean hasMemberField(String name) {
 		return this.hasMemberVariable(false, name);
 	}
+
+	private record TypedNode(List<AbstractClassDefinition> definitions, Node node) { }
 }

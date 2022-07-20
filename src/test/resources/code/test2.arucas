@@ -1,9 +1,16 @@
 // run(File.getDirectory().getPath() + "/src/test/resources/code/test2.arucas");
 
-value = lazy {
-    print("hi");
-    return 10;
-};
+class Example {
+    var field: Number = 10;
+    var field2 = lazy {
+        print("init field2");
+        return "field";
+    };
+}
 
-print(value.isReady());
-print(value);
+e = new Example();
+print("e");
+print(e.field2);
+print(e.field2);
+
+print(Type.of(e.field2));

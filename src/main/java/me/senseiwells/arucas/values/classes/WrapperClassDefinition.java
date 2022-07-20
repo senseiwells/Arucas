@@ -80,7 +80,7 @@ public class WrapperClassDefinition extends AbstractClassDefinition {
 	}
 
 	@Override
-	public void initialiseStatics(Context context) { }
+	public void initialiseStatics(Context context, ISyntax position) { }
 
 	@Override
 	public WrapperClassValue createNewDefinition(Context context, List<Value> parameters, ISyntax syntaxPosition) throws CodeError {
@@ -124,7 +124,7 @@ public class WrapperClassDefinition extends AbstractClassDefinition {
 	}
 
 	@Override
-	public boolean setMember(String name, Value value) {
+	public boolean setMember(Context context, ISyntax position, String name, Value value) {
 		if (this.staticFieldMap.containsKey(name)) {
 			return this.staticFieldMap.get(name).set(null, value);
 		}

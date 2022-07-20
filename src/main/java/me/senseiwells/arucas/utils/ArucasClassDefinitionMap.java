@@ -38,7 +38,7 @@ public class ArucasClassDefinitionMap implements Iterable<AbstractClassDefinitio
 	}
 
 	/**
-	 * This method adds the class definition value to all of its subclasses.
+	 * This method adds the class definitions value to all of its subclasses.
 	 */
 	private void addSubclasses(AbstractClassDefinition value) {
 		if (value instanceof ArucasClassDefinition || value instanceof WrapperClassDefinition) {
@@ -150,7 +150,7 @@ public class ArucasClassDefinitionMap implements Iterable<AbstractClassDefinitio
 	}
 
 	/**
-	 * Returns the class definition of the specified name.
+	 * Returns the class definitions of the specified name.
 	 */
 	public AbstractClassDefinition get(String name) {
 		return this.nameMap.get(name);

@@ -93,7 +93,7 @@ public class ArucasWrapperCreator {
 			ArucasDefinition definitionAnnotation = field.getAnnotation(ArucasDefinition.class);
 			if (definitionAnnotation != null) {
 				if (hasDefinition) {
-					throw invalidWrapperField(clazz, field, "Already have definition reference");
+					throw invalidWrapperField(clazz, field, "Already have definitions reference");
 				}
 				int mods = field.getModifiers();
 				if (!Modifier.isStatic(mods) || Modifier.isFinal(mods)) {

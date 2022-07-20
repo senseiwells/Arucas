@@ -4,10 +4,7 @@ import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.tokens.Token;
-import me.senseiwells.arucas.utils.ArucasFunctionMap;
-import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.utils.Functions;
-import me.senseiwells.arucas.utils.ValueRef;
+import me.senseiwells.arucas.utils.*;
 import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.utils.impl.IArucasCollection;
 import me.senseiwells.arucas.values.*;
@@ -21,7 +18,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public class ArucasClassValue extends GenericValue<ArucasClassDefinition> implements MemberOperations {
-	private final Map<String, Value> members;
+	private final Map<String, TypedValue> members;
 
 	public ArucasClassValue(ArucasClassDefinition arucasClass) {
 		super(arucasClass);
@@ -32,7 +29,7 @@ public class ArucasClassValue extends GenericValue<ArucasClassDefinition> implem
 		return this.value.getName();
 	}
 
-	public void addMemberVariable(String name, Value value) {
+	public void addMemberVariable(String name, TypedValue value) {
 		this.members.put(name, value);
 	}
 
@@ -47,18 +44,31 @@ public class ArucasClassValue extends GenericValue<ArucasClassDefinition> implem
 	}
 
 	@Override
-	public boolean setMember(String name, Value value) {
+	public boolean setMember(Context context, ISyntax position, String name, Value value) throws RuntimeError {
 		if (!this.isAssignable(name)) {
 			return false;
 		}
 
-		this.members.put(name, value);
+		TypedValue typedValue = this.members.get(name);
+		if (typedValue == null) {
+			return false;
+		}
+
+		if (typedValue.definitions != null && !typedValue.definitions.contains(value.getDefinition(context))) {
+			throw new RuntimeError("Member field <%s>.%s got type '%s' but expected '%s'".formatted(
+				this.getName(), name, value.getTypeName(),
+				TypedValue.typesAsString(typedValue.definitions)
+			), position, context);
+		}
+
+		typedValue.value = value;
 		return true;
 	}
 
 	@Override
 	public Value getMember(String name) {
-		return this.members.get(name);
+		TypedValue typedValue = this.members.get(name);
+		return typedValue == null ? null : typedValue.value;
 	}
 
 	@Override
@@ -244,7 +254,7 @@ public class ArucasClassValue extends GenericValue<ArucasClassDefinition> implem
 			);
 		}
 		Value value = valueGetter.apply(context);
-		if (!this.setMember(name, value)) {
+		if (!this.setMember(context, position, name, value)) {
 			throw new RuntimeError(
 				"The member '%s' cannot be set for the class '%s'".formatted(name, this.getTypeName()),
 				position, context
@@ -268,7 +278,7 @@ public class ArucasClassValue extends GenericValue<ArucasClassDefinition> implem
 	}
 
 	@Override
-	public final TypeValue getType(Context context, ISyntax syntaxPosition) {
-		return this.value.getType();
+	public final AbstractClassDefinition getDefinition(Context context) {
+		return this.value;
 	}
 }

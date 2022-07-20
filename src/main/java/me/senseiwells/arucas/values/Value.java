@@ -41,7 +41,7 @@ public abstract class Value implements ValueIdentifier {
 
 	/**
 	 * Tries to cast the value as a different
-	 * class definition.
+	 * class definitions.
 	 */
 	public Value castAs(Context context, AbstractClassDefinition definition, ISyntax position) throws CodeError {
 		throw new RuntimeError("Invalid type, cannot convert type '%s' to type '%s'".formatted(this.getTypeName(), definition.getName()), position, context);
@@ -467,19 +467,23 @@ public abstract class Value implements ValueIdentifier {
 
 	/**
 	 * This gets the name of the class, this is important to get the
-	 * class definition of the value to be able to get the {@link TypeValue}.
+	 * class definitions of the value to be able to get the {@link TypeValue}.
 	 * This should never be null
 	 *
 	 * @return The name of the type
 	 */
 	public abstract String getTypeName();
 
-	public TypeValue getType(Context context, ISyntax syntaxPosition) throws CodeError {
+	public AbstractClassDefinition getDefinition(Context context) {
 		AbstractClassDefinition definition = context.getClassDefinition(this.getTypeName());
 		if (definition == null) {
-			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "Value has no type", syntaxPosition);
+			throw new IllegalStateException("Value had no type, this is a bug!");
 		}
-		return definition.getType();
+		return definition;
+	}
+
+	public TypeValue getType(Context context) {
+		return this.getDefinition(context).getType();
 	}
 
 	private RuntimeError cannotApplyError(Context context, String operation, ISyntax syntaxPosition) throws CodeError {

@@ -293,7 +293,7 @@ public class Parser {
 		this.throwIfNotType(Token.Type.LEFT_CURLY_BRACKET, "Expected '{'");
 		this.advance();
 
-		// Push the stack definition so that we can detect it from identifiers
+		// Push the stack definitions so that we can detect it from identifiers
 		ArucasClassDefinition definition = new ArucasClassDefinition(className.content);
 		this.context.addClassDefinition(definition);
 		return this.internalClassStatements(definition, startPos);
@@ -388,15 +388,17 @@ public class Parser {
 					}
 					this.advance();
 
+					List<AbstractClassDefinition> types = this.getVariableTypes();
+
 					switch (this.currentToken.type) {
 						case ASSIGN_OPERATOR -> {
 							this.advance();
-							definition.addMemberVariableNode(isStatic, token.content, this.subExpression());
+							definition.addMemberVariableNode(isStatic, token.content, this.subExpression(), types);
 							this.throwIfNotType(Token.Type.SEMICOLON, "Expected ';'");
 							this.advance();
 						}
 						case SEMICOLON -> {
-							definition.addMemberVariableNode(isStatic, token.content, new NullNode(this.currentToken));
+							definition.addMemberVariableNode(isStatic, token.content, new NullNode(this.currentToken), types);
 							this.advance();
 						}
 						default -> {

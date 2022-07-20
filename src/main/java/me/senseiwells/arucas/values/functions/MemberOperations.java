@@ -1,6 +1,9 @@
 package me.senseiwells.arucas.values.functions;
 
+import me.senseiwells.arucas.api.ISyntax;
+import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.ArucasFunctionMap;
+import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.Value;
 
 @SuppressWarnings("BooleanMethodIsAlwaysInverted")
@@ -27,7 +30,7 @@ public interface MemberOperations {
 	/**
 	 * Change the value of a member inside this object
 	 */
-	boolean setMember(String name, Value value);
+	boolean setMember(Context context, ISyntax position, String name, Value value) throws RuntimeError;
 
 	/**
 	 * Returns a member of this object

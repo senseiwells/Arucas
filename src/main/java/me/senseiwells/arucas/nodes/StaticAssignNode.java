@@ -20,7 +20,7 @@ public class StaticAssignNode extends VariableAssignNode {
 	public Value visit(Context context) throws CodeError, ThrowValue {
 		Value newValue = this.getNewValue(context);
 
-		if (!this.classDefinition.hasMember(this.token.content) || !this.classDefinition.setMember(this.token.content, newValue)) {
+		if (!this.classDefinition.hasMember(this.token.content) || !this.classDefinition.setMember(context, this.syntaxPosition, this.token.content, newValue)) {
 			throw new RuntimeError(
 				"The member '%s' cannot be set for '%s'".formatted(this.token.content, this.classDefinition.getName()),
 				this.syntaxPosition,

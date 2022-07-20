@@ -12,7 +12,6 @@ import me.senseiwells.arucas.utils.ValueRef;
 import me.senseiwells.arucas.utils.impl.IArucasCollection;
 import me.senseiwells.arucas.values.BooleanValue;
 import me.senseiwells.arucas.values.NullValue;
-import me.senseiwells.arucas.values.TypeValue;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.values.functions.FunctionValue;
@@ -225,8 +224,8 @@ public abstract class LazyValue extends Value {
 	}
 
 	@Override
-	public TypeValue getType(Context context, ISyntax syntaxPosition) throws CodeError {
-		return this.get().getType(context, syntaxPosition);
+	public AbstractClassDefinition getDefinition(Context context) {
+		return this.get().getDefinition(context);
 	}
 
 	private static class Future extends LazyValue {

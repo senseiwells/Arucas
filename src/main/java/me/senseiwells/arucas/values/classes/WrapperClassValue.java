@@ -56,7 +56,7 @@ public class WrapperClassValue extends GenericValue<WrapperClassDefinition> impl
 	}
 
 	@Override
-	public boolean setMember(String name, Value value) {
+	public boolean setMember(Context context, ISyntax position, String name, Value value) {
 		ArucasMemberHandle handle = this.getHandle(name);
 		if (handle != null) {
 			return handle.set(this.wrapperClass, value);
@@ -198,7 +198,7 @@ public class WrapperClassValue extends GenericValue<WrapperClassDefinition> impl
 			);
 		}
 		Value value = valueGetter.apply(context);
-		if (!this.setMember(name, value)) {
+		if (!this.setMember(context, position, name, value)) {
 			throw new RuntimeError(
 				"The member '%s' cannot be set for the class '%s'".formatted(name, this.getTypeName()),
 				position, context
@@ -222,8 +222,8 @@ public class WrapperClassValue extends GenericValue<WrapperClassDefinition> impl
 	}
 
 	@Override
-	public TypeValue getType(Context context, ISyntax syntaxPosition) throws CodeError {
-		return this.value.getType();
+	public AbstractClassDefinition getDefinition(Context context) {
+		return this.value;
 	}
 
 	@Override

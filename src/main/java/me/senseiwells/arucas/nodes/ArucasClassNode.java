@@ -19,9 +19,9 @@ public class ArucasClassNode extends Node {
 
 	@Override
 	public Value visit(Context context) throws CodeError, ThrowValue {
-		// Class definition must come before statics
+		// Class definitions must come before statics
 		context.addClassDefinition(this.definition);
-		this.definition.init(context);
+		this.definition.init(context, this.syntaxPosition);
 		return NullValue.NULL;
 	}
 }

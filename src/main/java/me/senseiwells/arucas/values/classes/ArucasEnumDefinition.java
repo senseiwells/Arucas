@@ -7,6 +7,7 @@ import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.Arguments;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.TypedValue;
 import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.values.*;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
@@ -63,7 +64,7 @@ public class ArucasEnumDefinition extends ArucasClassDefinition {
 
 		EnumValue thisValue = new EnumValue(this, enumName, this.enums.size());
 
-		this.addClassProperties(thisValue, context);
+		this.addClassProperties(thisValue, context, syntaxPosition);
 
 		int parameterCount = parameters.size() + 1;
 		if (this.constructors.isEmpty() && parameterCount == 1) {
@@ -82,8 +83,8 @@ public class ArucasEnumDefinition extends ArucasClassDefinition {
 	}
 
 	@Override
-	protected void initialiseStatics(Context context) throws CodeError, ThrowValue {
-		Map<String, Value> staticMap = this.getStaticMemberVariables();
+	protected void initialiseStatics(Context context, ISyntax position) throws CodeError, ThrowValue {
+		Map<String, TypedValue> staticMap = this.getStaticMemberVariables();
 		for (Map.Entry<String, ListNode> entry : this.enumInitializerMap.entrySet()) {
 			String name = entry.getKey();
 			ListNode node = entry.getValue();
@@ -95,10 +96,10 @@ public class ArucasEnumDefinition extends ArucasClassDefinition {
 			EnumValue enumValue = this.createEnumValue(name, context, list.value, node.syntaxPosition);
 
 			this.enums.put(name, enumValue);
-			this.getStaticMemberVariables().put(name, enumValue);
+			this.getStaticMemberVariables().put(name, new TypedValue(List.of(this), enumValue));
 		}
 		this.enumInitializerMap = null;
-		super.initialiseStatics(context);
+		super.initialiseStatics(context, position);
 	}
 
 	@Override

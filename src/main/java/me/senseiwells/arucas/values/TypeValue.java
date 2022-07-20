@@ -72,7 +72,7 @@ public class TypeValue extends GenericValue<AbstractClassDefinition> {
 		)
 		private Value of(Arguments arguments) throws CodeError {
 			Value object = arguments.getNext();
-			return object.getType(arguments.getContext(), arguments.getPosition());
+			return object.getType(arguments.getContext());
 		}
 
 		@Override
