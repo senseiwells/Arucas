@@ -239,7 +239,7 @@ public abstract class LazyValue extends Value {
 
 		@Override
 		public boolean isReady() {
-			return this.future.isDone();
+			return this.future == null || this.future.isDone();
 		}
 
 		@Override
