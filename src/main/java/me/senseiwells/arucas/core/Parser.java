@@ -6,7 +6,6 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.*;
-import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.utils.impl.ArucasSet;
 import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.StringValue;
@@ -15,8 +14,8 @@ import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.values.classes.ArucasClassDefinition;
 import me.senseiwells.arucas.values.classes.ArucasEnumDefinition;
 import me.senseiwells.arucas.values.functions.Argument;
-import me.senseiwells.arucas.values.functions.UserDefinedClassFunction;
 import me.senseiwells.arucas.values.functions.FunctionValue;
+import me.senseiwells.arucas.values.functions.UserDefinedClassFunction;
 import me.senseiwells.arucas.values.functions.UserDefinedFunction;
 
 import java.io.IOException;
@@ -1581,6 +1580,11 @@ public class Parser {
 			}
 			case FUN -> {
 				return this.functionDefinition(true);
+			}
+			case LAZY -> {
+				this.advance();
+				Node statements = this.statements();
+				return new LazyNode(token, statements);
 			}
 			case NEW -> {
 				return this.newDefinition();

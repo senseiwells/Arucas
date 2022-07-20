@@ -120,6 +120,7 @@ public class Token {
 		THROW,
 		IMPORT,
 		FROM,
+		LAZY,
 
 		// Dot
 		DOT("."),

@@ -5,6 +5,7 @@ import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.Position;
+import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
 
 public abstract class Node {
@@ -30,6 +31,16 @@ public abstract class Node {
 	}
 
 	public abstract Value visit(Context context) throws CodeError;
+
+	protected final Value visitSafe(Context context) {
+		try {
+			return this.visit(context);
+		}
+		catch (CodeError e) {
+			context.getThreadHandler().tryError(context, e);
+			return NullValue.NULL;
+		}
+	}
 
 	/**
 	 * Returns true if we should keep running.

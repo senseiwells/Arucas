@@ -103,6 +103,7 @@ public class Lexer {
 			.addRule(Type.THROW, i -> i.addString("throw"))
 			.addRule(Type.IMPORT, i -> i.addString("import"))
 			.addRule(Type.FROM, i -> i.addString("from"))
+			.addRule(Type.LAZY, i -> i.addString("lazy"))
 
 			// Dot operator
 			.addRule(Type.ARBITRARY, i -> i.addString("..."))

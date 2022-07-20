@@ -29,6 +29,8 @@ public class MapNode extends Node {
 
 			valueMap.put(context, key, value);
 		}
+		this.mapNode.clear();
+
 		return new MapValue(valueMap);
 	}
 }

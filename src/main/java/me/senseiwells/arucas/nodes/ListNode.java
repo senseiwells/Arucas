@@ -24,6 +24,7 @@ public class ListNode extends Node {
 		for (Node elementNode : this.elementNodes) {
 			elements.add(elementNode.visit(context));
 		}
+		this.elementNodes.clear();
 
 		return new ListValue(elements);
 	}

@@ -159,7 +159,7 @@ public class StringValue extends GenericValue<String> {
 			try {
 				return NumberValue.of(StringUtils.parseNumber(thisValue.value));
 			}
-			catch (NumberFormatException e) {
+			catch (IllegalArgumentException e) {
 				throw arguments.getError("Cannot parse %s as a number", thisValue);
 			}
 		}

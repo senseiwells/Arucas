@@ -1,8 +1,11 @@
 package me.senseiwells.arucas.utils.impl;
 
 import me.senseiwells.arucas.api.ISyntax;
+import me.senseiwells.arucas.extensions.util.LazyValue;
+import me.senseiwells.arucas.throwables.BuiltInException;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.utils.Context;
+import me.senseiwells.arucas.utils.LazyGetter;
 import me.senseiwells.arucas.utils.StringUtils;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.ValueIdentifier;
@@ -280,13 +283,13 @@ public class ArucasList implements IArucasCollection, List<Value>, ValueIdentifi
 
 	private synchronized void checkAddIndex(int index) {
 		if (index < 0 || index > this.size) {
-			throw new IndexOutOfBoundsException();
+			throw new BuiltInException("Index out of bounds");
 		}
 	}
 
 	private synchronized void checkExistingIndex(int index) {
 		if (index < 0 || index >= this.size) {
-			throw new IndexOutOfBoundsException();
+			throw new BuiltInException("Index out of bounds");
 		}
 	}
 
@@ -441,6 +444,14 @@ public class ArucasList implements IArucasCollection, List<Value>, ValueIdentifi
 
 	public static ArucasList of(Value... values) {
 		return new ArucasList(values);
+	}
+
+	public static ArucasList ofLazy(LazyGetter... getters) {
+		ArucasList list = new ArucasList();
+		for (LazyGetter getter : getters) {
+			list.add(LazyValue.of(getter));
+		}
+		return list;
 	}
 
 	public static List<Value> arrayListOf(Value... values) {

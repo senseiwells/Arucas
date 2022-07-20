@@ -3,6 +3,7 @@ package me.senseiwells.arucas.values;
 import me.senseiwells.arucas.api.ArucasClassExtension;
 import me.senseiwells.arucas.api.docs.ClassDoc;
 import me.senseiwells.arucas.api.docs.FunctionDoc;
+import me.senseiwells.arucas.extensions.util.LazyValue;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.Arguments;
@@ -73,6 +74,7 @@ public class ThreadValue extends GenericValue<ArucasThread> {
 				BuiltInFunction.of("getCurrentThread", this::getCurrentThread),
 				BuiltInFunction.of("runThreaded", 1, this::runThreaded1),
 				BuiltInFunction.of("runThreaded", 2, this::runThreaded2),
+				BuiltInFunction.of("runAsync", 1, this::runAsync),
 				BuiltInFunction.of("freeze", this::freeze)
 			);
 		}
@@ -143,6 +145,26 @@ public class ThreadValue extends GenericValue<ArucasThread> {
 				stringValue.value
 			);
 			return ThreadValue.of(thread);
+		}
+
+		@FunctionDoc(
+			isStatic = true,
+			name = "runAsync",
+			desc = "This runs a function asynchronously returning a lazy value which can be accessed once the function is complete",
+			params = {FUNCTION, "function", "the function to run async"},
+			returns = {ANY, "the lazy value"},
+			example = """
+				lazy = Thread.runAsync(fun() {
+					return 10;
+				});
+				"""
+		)
+		private Value runAsync(Arguments arguments) throws RuntimeError {
+			Context context = arguments.getContext().createBranch();
+			FunctionValue functionValue = arguments.getNextFunction();
+			return LazyValue.of(context, context.getThreadHandler().runAsyncFunctionInThreadPoolCompletable(
+				context, branch -> functionValue.call(branch, new ArucasList())
+			));
 		}
 
 		@FunctionDoc(

@@ -16,8 +16,16 @@ public class RuntimeError extends CodeError {
 		this.context = context;
 	}
 
+	public RuntimeError(String details, Context context) {
+		this(details, ISyntax.empty(), context);
+	}
+
 	public RuntimeError(Throwable throwable, ISyntax syntaxHolder, Context context) {
 		this(throwableToString(throwable), syntaxHolder, context);
+	}
+
+	public RuntimeError(Throwable throwable, Context context) {
+		this(throwable, ISyntax.empty(), context);
 	}
 
 	private String generateTraceback(Context context, IArucasOutput output) {

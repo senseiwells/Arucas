@@ -285,6 +285,26 @@ public final class ArucasThreadHandler {
 		});
 	}
 
+	public CompletableFuture<Value> runAsyncFunctionInThreadPoolCompletable(Context context, ContextConsumerReturnable consumer) {
+		if (context.getThreadHandler() != this || !this.isRunning()) {
+			return CompletableFuture.completedFuture(null);
+		}
+
+		CompletableFuture<Value> future = new CompletableFuture<>();
+		this.asyncThreads.execute(() -> {
+			if (context.isDebug()) {
+				context.getOutput().log("Running Async Thread\n");
+			}
+			try {
+				future.complete(consumer.accept(context));
+			}
+			catch (Throwable t) {
+				this.tryError(context, t);
+			}
+		});
+		return future;
+	}
+
 	public ScheduledFuture<?> scheduleAsyncFunctionInThreadPool(int delay, TimeUnit timeUnit, Context context, ContextConsumer consumer) {
 		if (context.getThreadHandler() != this || !this.isRunning()) {
 			return null;
@@ -336,5 +356,10 @@ public final class ArucasThreadHandler {
 	@FunctionalInterface
 	public interface ContextConsumer {
 		void accept(Context obj) throws Throwable;
+	}
+
+	@FunctionalInterface
+	public interface ContextConsumerReturnable {
+		Value accept(Context obj) throws Throwable;
 	}
 }
