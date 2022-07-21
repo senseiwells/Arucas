@@ -1,6 +1,8 @@
 package me.senseiwells.arucas.utils;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.awt.*;
@@ -17,7 +19,7 @@ import java.util.Collections;
 
 public class NetworkUtils {
 	private static final String LIBRARY_URL = "https://api.github.com/repos/senseiwells/ArucasLibraries/contents/libs";
-	private static final Gson GSON = new Gson();
+	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
 	public static String getStringFromUrl(String url) {
 		try {
@@ -73,19 +75,34 @@ public class NetworkUtils {
 		}
 	}
 
-	public static void downloadLibrary(Path importPath, String scriptName) {
+	public static void downloadLibrary(Path importPath, Path filePath, String scriptName) throws IOException {
+		Path cachePath = importPath.resolve("ArucasCache.json");
+		JsonObject arucasCache = Files.exists(cachePath) ? GSON.fromJson(Files.readString(cachePath), JsonObject.class) : new JsonObject();
+		JsonElement element = arucasCache.get(scriptName);
+		String currentSha = element == null ? null : element.getAsJsonObject().get("sha").getAsString();
+
 		String response = getStringFromUrl(LIBRARY_URL + "/" + scriptName);
-		if (response != null) {
-			JsonObject responseObject = ExceptionUtils.catchAsNull(() -> GSON.fromJson(response, JsonObject.class));
-			if (responseObject != null) {
-				String libraryContent = getStringFromUrl(responseObject.get("download_url").getAsString());
-				if (libraryContent != null) {
-					ExceptionUtils.runSafe(() -> {
-						Files.createDirectories(importPath.getParent());
-						Files.write(importPath, Collections.singleton(libraryContent));
-					});
-				}
-			}
+		if (response == null) {
+			return;
+		}
+		JsonObject responseObject = ExceptionUtils.catchAsNull(() -> GSON.fromJson(response, JsonObject.class));
+		if (responseObject == null) {
+			return;
+		}
+		JsonElement newSha = responseObject.get("sha");
+		if (newSha.getAsString().equals(currentSha)) {
+			return;
+		}
+		String libraryContent = getStringFromUrl(responseObject.get("download_url").getAsString());
+		if (libraryContent != null) {
+			JsonObject object = new JsonObject();
+			object.add("sha", newSha);
+			arucasCache.add(scriptName, object);
+			ExceptionUtils.runSafe(() -> {
+				Files.createDirectories(filePath.getParent());
+				Files.write(filePath, Collections.singleton(libraryContent));
+				Files.write(cachePath, Collections.singleton(GSON.toJson(arucasCache)));
+			});
 		}
 	}
 }

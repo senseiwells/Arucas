@@ -4,7 +4,6 @@ import me.senseiwells.arucas.api.IArucasExtension;
 import me.senseiwells.arucas.api.docs.FunctionDoc;
 import me.senseiwells.arucas.core.Arucas;
 import me.senseiwells.arucas.core.Run;
-import me.senseiwells.arucas.throwables.BuiltInException;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowStop;
 import me.senseiwells.arucas.utils.Arguments;
@@ -168,7 +167,7 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		context.getOutput().println(stringValue.value);
 		String input = ExceptionUtils.catchAsNull(() -> context.getInput().takeInput().get());
 		if (input == null) {
-			throw new BuiltInException("Could not take input");
+			throw arguments.getError("Could not take input");
 		}
 		return StringValue.of(input);
 	}

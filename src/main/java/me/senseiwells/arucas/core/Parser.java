@@ -236,9 +236,7 @@ public class Parser {
 			try {
 				Path importPath = this.context.getImportPath();
 				Path filePath = importPath.resolve(fileName + ".arucas");
-				if (!Files.exists(filePath)) {
-					NetworkUtils.downloadLibrary(filePath, fileName.replaceAll("\\\\", "/") + ".arucas");
-				}
+				NetworkUtils.downloadLibrary(importPath, filePath, fileName.replaceAll("\\\\", "/") + ".arucas");
 				String fileContent = Files.readString(filePath);
 				Context childContext = this.context.createChildContext("Import - " + className.content + " from " + fileName, false);
 				importDefinitions = Run.importClasses(childContext, fileName, fileContent);
