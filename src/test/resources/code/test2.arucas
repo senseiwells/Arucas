@@ -1,7 +1,9 @@
 // run(File.getDirectory().getPath() + "/src/test/resources/code/test2.arucas");
 
-import StringBuilder from util.StringUtils;
+map = {
+    "name" : "name",
+    "subcommands": "this.internalMapBuild(),",
+    "arguments" : "this.internalGetArgMap()"
+};
 
-sb = new StringBuilder();
-
-print(sb.toString());
+print(map);
