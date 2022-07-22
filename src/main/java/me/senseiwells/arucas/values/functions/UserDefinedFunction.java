@@ -7,6 +7,7 @@ import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.TypedValue;
 import me.senseiwells.arucas.utils.impl.ArucasList;
+import me.senseiwells.arucas.values.GenericValue;
 import me.senseiwells.arucas.values.ListValue;
 import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
@@ -106,9 +107,22 @@ public class UserDefinedFunction extends FunctionValue {
 		return NullValue.NULL;
 	}
 
+	@Override
+	public UserDefinedFunction copy(Context context) throws CodeError {
+		UserDefinedFunction copiedFunction = new UserDefinedFunction(this.getName(), this.arguments, this.getPosition());
+		copiedFunction.setReturnTypes(this.returnTypes);
+		copiedFunction.setLocalContext(this.localContext);
+		copiedFunction.complete(this.bodyNode);
+		return copiedFunction;
+	}
+
 	public static final class Arbitrary extends UserDefinedFunction {
 		public Arbitrary(String name, String argumentName, ISyntax position) {
-			super(name, List.of(new Argument(argumentName)), position);
+			this(name, List.of(new Argument(argumentName)), position);
+		}
+
+		private Arbitrary(String name, List<Argument> arguments, ISyntax position) {
+			super(name, arguments, position);
 		}
 
 		@Override
@@ -124,6 +138,11 @@ public class UserDefinedFunction extends FunctionValue {
 				list.addAll(arguments);
 			}
 			context.setLocal(this.arguments.get(0).getName(), new ListValue(list));
+		}
+
+		@Override
+		public UserDefinedFunction copy(Context context) throws CodeError {
+			return new Arbitrary(this.getName(), this.arguments, this.getPosition());
 		}
 	}
 }

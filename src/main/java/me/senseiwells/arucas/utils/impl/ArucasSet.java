@@ -113,7 +113,7 @@ public class ArucasSet implements IArucasCollection, ValueIdentifier {
 	}
 
 	@Override
-	public Collection<? extends Value> asCollection() {
+	public Collection<Value> asCollection() {
 		return this.map.keys();
 	}
 

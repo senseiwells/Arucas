@@ -58,6 +58,8 @@ public class Main {
 			 */
 
 			context.getThreadHandler().runOnMainThreadFuture(context, fileName, line).get();
+
+			context = builder.build();
 		}
 	}
 }

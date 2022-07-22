@@ -6,10 +6,7 @@ import me.senseiwells.arucas.core.Arucas;
 import me.senseiwells.arucas.core.Run;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowStop;
-import me.senseiwells.arucas.utils.Arguments;
-import me.senseiwells.arucas.utils.ArucasFunctionMap;
-import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.utils.ExceptionUtils;
+import me.senseiwells.arucas.utils.*;
 import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.values.*;
 import me.senseiwells.arucas.values.functions.BuiltInFunction;
@@ -24,6 +21,7 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Iterator;
 import java.util.Random;
 
 import static me.senseiwells.arucas.utils.ValueTypes.*;
@@ -60,6 +58,9 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		BuiltInFunction.of("isMain", this::isMain),
 		BuiltInFunction.of("getArucasVersion", this::getArucasVersion),
 		BuiltInFunction.of("random", 1, this::random),
+		BuiltInFunction.of("range", 1, this::range),
+		BuiltInFunction.of("range", 2, this::range1),
+		BuiltInFunction.of("range", 3, this::range2),
 		BuiltInFunction.of("getTime", this::getTime),
 		BuiltInFunction.of("getNanoTime", this::getNanoTime),
 		BuiltInFunction.of("getMilliTime", this::getMilliTime),
@@ -239,6 +240,64 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 			throw arguments.getError("The bound must be greater than 0");
 		}
 		return NumberValue.of(this.random.nextInt(bound));
+	}
+
+	@FunctionDoc(
+		name = "range",
+		desc = "This is used to generate a range of integers starting from 0",
+		params = {NUMBER, "bound", "the maximum bound (exclusive)"},
+		returns = {ITERATOR, "an iterator that returns the range of integers"},
+		example = "range(10);"
+	)
+	private Value range(Arguments arguments) throws CodeError {
+		double bound = arguments.getNextGeneric(NumberValue.class);
+		if (bound <= 0) {
+			throw arguments.getError("The bound must be greater than 0");
+		}
+		return new IteratorValue(() -> new RangeIterator(0, bound, 1));
+	}
+
+	@FunctionDoc(
+		name = "range",
+		desc = {
+			"This is used to generate a range of numbers starting",
+			"from a start value and ending at a bound value going up by 1"
+		},
+		params = {
+			NUMBER, "start", "the start value",
+			NUMBER, "bound", "the maximum bound (exclusive)"
+		},
+		returns = {ITERATOR, "an iterator that returns the range of numbers"},
+		example = "range(0, 10);"
+	)
+	private Value range1(Arguments arguments) throws CodeError {
+		double start = arguments.getNextGeneric(NumberValue.class);
+		double bound = arguments.getNextGeneric(NumberValue.class);
+		return new IteratorValue(() -> new RangeIterator(start, bound, 1));
+	}
+
+	@FunctionDoc(
+		name = "range",
+		desc = {
+			"This is used to generate a range of numbers starting",
+			"from a start value and ending at a bound value going up by a step value"
+		},
+		params = {
+			NUMBER, "start", "the start value",
+			NUMBER, "bound", "the maximum bound (exclusive)",
+			NUMBER, "step", "the step value"
+		},
+		returns = {ITERATOR, "an iterator that returns the range of numbers"},
+		example = "range(0, 10, 2);"
+	)
+	private Value range2(Arguments arguments) throws CodeError {
+		double start = arguments.getNextGeneric(NumberValue.class);
+		double bound = arguments.getNextGeneric(NumberValue.class);
+		double step = arguments.getNextGeneric(NumberValue.class);
+		if (step == 0) {
+			throw arguments.getError("The step value must not be 0");
+		}
+		return new IteratorValue(() -> new RangeIterator(start, bound, step));
 	}
 
 	@FunctionDoc(

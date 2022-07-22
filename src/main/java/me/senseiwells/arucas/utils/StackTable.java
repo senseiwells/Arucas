@@ -139,6 +139,20 @@ public class StackTable {
 	}
 
 	/**
+	 * Gets a class definitions if it's available in the stack
+	 */
+	public AbstractClassDefinition getClassDefinition(Class<? extends Value> clazz) {
+		if (this.classDefinitions != null) {
+			AbstractClassDefinition definition = this.classDefinitions.get(clazz);
+			if (definition != null) {
+				return definition;
+			}
+		}
+
+		return this.parentTable != null ? this.parentTable.getClassDefinition(clazz) : null;
+	}
+
+	/**
 	 * Checks whether a class definitions is available in the stack
 	 */
 	public boolean hasClassDefinition(String name) {
@@ -256,6 +270,7 @@ public class StackTable {
 
 	@Override
 	public String toString() {
-		return (this.parentTable == null ? "RootTable" : "StackTable") + (this.symbolMap == null ? "{}" : this.symbolMap.toString());
+		return (this.parentTable == null ? "RootTable" : "StackTable") + (this.symbolMap == null ? "{}" : this.symbolMap.toString()) +
+			" Parent: " + (this.parentTable != null ? this.parentTable.toString() : "");
 	}
 }

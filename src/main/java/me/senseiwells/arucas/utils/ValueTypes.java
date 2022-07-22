@@ -11,6 +11,7 @@ public class ValueTypes {
 		ERROR = "Error",
 		FILE = "File",
 		FUNCTION = "Function",
+		ITERATOR = "Iterator",
 		JAVA = "Java",
 		JSON = "Json",
 		LIST = "List",

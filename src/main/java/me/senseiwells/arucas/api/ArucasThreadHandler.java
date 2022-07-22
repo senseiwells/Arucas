@@ -299,6 +299,7 @@ public final class ArucasThreadHandler {
 				future.complete(consumer.accept(context));
 			}
 			catch (Throwable t) {
+				future.cancel(true);
 				this.tryError(context, t);
 			}
 		});

@@ -401,7 +401,7 @@ public class ArucasMap implements IArucasCollection, ValueIdentifier {
 	}
 
 	@Override
-	public Collection<? extends Value> asCollection() {
+	public Collection<Value> asCollection() {
 		return this.keys();
 	}
 

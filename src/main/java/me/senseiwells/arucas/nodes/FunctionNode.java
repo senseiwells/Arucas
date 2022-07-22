@@ -7,6 +7,7 @@ import me.senseiwells.arucas.utils.MutableSyntaxImpl;
 import me.senseiwells.arucas.values.Value;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.values.functions.Argument;
+import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.functions.UserDefinedFunction;
 
 import java.util.List;
@@ -42,8 +43,9 @@ public class FunctionNode extends Node {
 		String functionName = this.variableNameToken.content;
 		context.throwIfStackNameTaken(null, this.syntaxPosition);
 
-		this.functionValue.setLocalContext(context);
-		context.setVariable(functionName, this.functionValue);
-		return this.functionValue;
+		UserDefinedFunction copy = this.functionValue.copy(context);
+		copy.setLocalContext(context);
+		context.setVariable(functionName, copy);
+		return copy;
 	}
 }

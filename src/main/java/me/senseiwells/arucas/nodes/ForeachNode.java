@@ -3,7 +3,7 @@ package me.senseiwells.arucas.nodes;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.utils.Context;
-import me.senseiwells.arucas.utils.impl.IArucasCollection;
+import me.senseiwells.arucas.utils.impl.IArucasIterable;
 import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
 
@@ -23,18 +23,20 @@ public class ForeachNode extends Node {
 	public Value visit(Context context) throws CodeError, ThrowValue {
 		context.pushLoopScope(this.syntaxPosition);
 		Value forValue = this.list.visit(context);
-		if (!(forValue.isCollection())) {
-			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "For loop must contain a collection", this.syntaxPosition);
+		if (!(forValue.isIterable())) {
+			throw new CodeError(CodeError.ErrorType.ILLEGAL_OPERATION_ERROR, "For loop must contain an iterator", this.syntaxPosition);
 		}
-		IArucasCollection collection = forValue.asCollection(context, this.syntaxPosition);
+		IArucasIterable iterable = forValue.asIterable(context, this.syntaxPosition);
 
-		for (Value item : collection.asCollection()) {
+		for (Value item : iterable) {
 			// Throws an error if the thread has been interrupted
 			this.keepRunning();
 
+			context.pushScope(this.syntaxPosition);
 			context.setLocal(this.forParameterName, item);
 			try {
 				this.body.visit(context);
+				context.popScope();
 			}
 			catch (ThrowValue.Break tv) {
 				context.moveScope(context.getBreakScope());

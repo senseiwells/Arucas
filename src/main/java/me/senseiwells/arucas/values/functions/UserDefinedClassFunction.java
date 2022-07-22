@@ -2,7 +2,6 @@ package me.senseiwells.arucas.values.functions;
 
 import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.throwables.CodeError;
-import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.values.ListValue;
@@ -24,6 +23,15 @@ public class UserDefinedClassFunction extends UserDefinedFunction implements Del
 	@Override
 	protected Value execute(Context context, List<Value> arguments) throws CodeError {
 		return super.execute(context, arguments);
+	}
+
+	@Override
+	public UserDefinedFunction copy(Context context) throws CodeError {
+		UserDefinedFunction copiedFunction = new UserDefinedClassFunction(this.definition, this.getName(), this.arguments, this.getPosition());
+		copiedFunction.setReturnTypes(this.returnTypes);
+		copiedFunction.setLocalContext(this.localContext);
+		copiedFunction.complete(this.bodyNode);
+		return copiedFunction;
 	}
 
 	@Override

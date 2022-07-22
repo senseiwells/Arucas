@@ -164,7 +164,7 @@ public class Arguments {
 			if (value == null) {
 				throw this.function.getError(
 					this.context, "Must pass %s into parameter %d for %s()",
-					Value.getValueName(type), this.modifyIndex(index), this.function.getName()
+					type.getSimpleName(), this.modifyIndex(index), this.function.getName()
 				);
 			}
 		}

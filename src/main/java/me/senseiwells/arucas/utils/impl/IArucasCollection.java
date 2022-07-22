@@ -7,11 +7,12 @@ import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.values.Value;
 
 import java.util.Collection;
+import java.util.Iterator;
 
-public interface IArucasCollection {
+public interface IArucasCollection extends IArucasIterable {
 	String COLLECTION = "<collection>";
 
-	Collection<? extends Value> asCollection();
+	Collection<Value> asCollection();
 
 	default int size() {
 		return this.asCollection().size();
@@ -25,16 +26,16 @@ public interface IArucasCollection {
 		try {
 			StringBuilder builder = new StringBuilder();
 
-			Collection<? extends Value> values = this.asCollection();
-
-			for (Value value : values) {
+			Iterator<Value> iterator = this.iterator();
+			while (iterator.hasNext()) {
+				Value value = iterator.next();
 				String valueAsString = value.isCollection() ?
 					value.asCollection(context, position).getAsStringUnsafe(context, position) : value.getAsString(context);
-				builder.append(valueAsString).append(", ");
-			}
+				builder.append(valueAsString);
 
-			if (!values.isEmpty()) {
-				builder.delete(builder.length() - 2, builder.length());
+				if (iterator.hasNext()) {
+					builder.append(", ");
+				}
 			}
 
 			return builder.toString();
@@ -42,5 +43,10 @@ public interface IArucasCollection {
 		catch (StackOverflowError e) {
 			throw new RuntimeError("StackOverflow: String evaluation went too deep", position, context);
 		}
+	}
+
+	@Override
+	default Iterator<Value> iterator() {
+		return this.asCollection().iterator();
 	}
 }

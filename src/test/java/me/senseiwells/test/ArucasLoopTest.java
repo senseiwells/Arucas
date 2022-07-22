@@ -124,4 +124,30 @@ public class ArucasLoopTest {
 			"""
 		));
 	}
+
+	@Test
+	public void testIteratorLoop() {
+		assertEquals("35", ArucasHelper.runSafe(
+			"""
+			t = 0;
+			foreach (i : range(5, 10)) {
+				t = t + i;
+			}
+			return t;
+			"""
+		));
+		assertEquals("70", ArucasHelper.runSafe(
+			"""
+			t = 0;
+			r = range(5, 10);
+			foreach (i : r) {
+				t = t + i;
+			}
+			foreach (i : r) {
+				t = t + i;
+			}
+			return t;
+			"""
+		));
+	}
 }

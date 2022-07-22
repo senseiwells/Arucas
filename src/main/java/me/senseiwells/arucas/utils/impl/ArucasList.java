@@ -348,7 +348,7 @@ public class ArucasList implements IArucasCollection, List<Value>, ValueIdentifi
 	}
 
 	@Override
-	public Collection<? extends Value> asCollection() {
+	public Collection<Value> asCollection() {
 		return this;
 	}
 

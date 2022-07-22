@@ -336,6 +336,10 @@ public class Context {
 		return this.stackTable.getClassDefinition(name);
 	}
 
+	public AbstractClassDefinition getClassDefinition(Class<? extends Value> clazz) {
+		return this.stackTable.getClassDefinition(clazz);
+	}
+
 	public ArucasClassDefinitionMap getCachedDefinitions(String fileName) {
 		return this.stackTable.getCachedDefinitionMap(fileName);
 	}

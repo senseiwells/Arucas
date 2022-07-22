@@ -149,6 +149,11 @@ public class ArucasClassDefinitionMap implements Iterable<AbstractClassDefinitio
 		return null;
 	}
 
+	public AbstractClassDefinition get(Class<?> clazz) {
+		List<AbstractClassDefinition> definitions = this.classMap.get(clazz);
+		return definitions != null && !definitions.isEmpty() ? definitions.get(0) : null;
+	}
+
 	/**
 	 * Returns the class definitions of the specified name.
 	 */

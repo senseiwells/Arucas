@@ -1,9 +1,46 @@
 // run(File.getDirectory().getPath() + "/src/test/resources/code/test2.arucas");
 
-map = {
-    "name" : "name",
-    "subcommands": "this.internalMapBuild(),",
-    "arguments" : "this.internalGetArgMap()"
-};
+fun generateLambdaWithDelayed(ms, num) {
+    return fun() {
+        sleep(ms);
+        print("returning " + num);
+        return num;
+    };
+}
 
-print(map);
+lazyVals = [];/*
+foreach (nums : [6, 7, 8, 9, 10, 11, 12]) {
+    fun do() {
+        return nums;
+    }
+
+    if (nums < 8) {
+        continue;
+    }
+
+    t = nums;
+    lazyVals.append(Thread.runAsync(fun() {
+        sleep(1000);
+        n = do();
+        print(n);
+        return n;
+    }));
+}
+*/
+
+fun doSomething(i) {
+    sleep(1000);
+    print(i);
+}
+
+debug(true);
+
+vals = [];
+foreach (i : range(10)) {
+    vals.append(Thread.runAsync(fun() {
+        return i;
+    }));
+}
+return vals;
+
+print("done");

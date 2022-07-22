@@ -1,7 +1,6 @@
 package me.senseiwells.arucas.values;
 
 import me.senseiwells.arucas.api.ISyntax;
-import me.senseiwells.arucas.api.docs.ClassDoc;
 import me.senseiwells.arucas.throwables.BuiltInException;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
@@ -11,6 +10,7 @@ import me.senseiwells.arucas.utils.ExceptionUtils;
 import me.senseiwells.arucas.utils.Functions;
 import me.senseiwells.arucas.utils.ValueRef;
 import me.senseiwells.arucas.utils.impl.IArucasCollection;
+import me.senseiwells.arucas.utils.impl.IArucasIterable;
 import me.senseiwells.arucas.values.classes.AbstractClassDefinition;
 import me.senseiwells.arucas.values.functions.Delegatable;
 import me.senseiwells.arucas.values.functions.FunctionValue;
@@ -53,8 +53,11 @@ public abstract class Value implements ValueIdentifier {
 			return clazz.cast(this);
 		}
 
-		String valueName = Value.getValueName(clazz);
-		Value casted = ExceptionUtils.catchAsNull(() -> this.castAs(context, context.getClassDefinition(valueName), position));
+		AbstractClassDefinition definition = context.getClassDefinition(clazz);
+		if (definition == null) {
+			return null;
+		}
+		Value casted = ExceptionUtils.catchAsNull(() -> this.castAs(context, definition, position));
 		if (clazz.isInstance(casted)) {
 			return clazz.cast(casted);
 		}
@@ -77,6 +80,13 @@ public abstract class Value implements ValueIdentifier {
 	}
 
 	/**
+	 * This returns whether a value can be iterated
+	 */
+	public boolean isIterable() {
+		return this.isCollection();
+	}
+
+	/**
 	 * This gets the value as a collection
 	 *
 	 * @param context        The current context
@@ -86,6 +96,18 @@ public abstract class Value implements ValueIdentifier {
 	 */
 	public IArucasCollection asCollection(Context context, ISyntax syntaxPosition) throws CodeError {
 		throw new RuntimeError("'%s' is not a collection".formatted(this.getAsString(context)), syntaxPosition, context);
+	}
+
+	/**
+	 * This gets the value as an iterator
+	 *
+	 * @param context        The current context
+	 * @param syntaxPosition The current position
+	 * @return The value as an iterator
+	 * @throws CodeError If the value is not iterable
+	 */
+	public IArucasIterable asIterable(Context context, ISyntax syntaxPosition) throws CodeError {
+		return this.asCollection(context, syntaxPosition);
 	}
 
 	/**
@@ -528,11 +550,6 @@ public abstract class Value implements ValueIdentifier {
 			syntaxPosition,
 			context
 		);
-	}
-
-	public static String getValueName(Class<? extends Value> valueClass) {
-		ClassDoc doc = valueClass.getAnnotation(ClassDoc.class);
-		return doc == null ? valueClass.getSimpleName() : doc.name();
 	}
 
 	/**

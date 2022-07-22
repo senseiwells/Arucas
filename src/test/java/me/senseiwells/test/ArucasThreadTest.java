@@ -37,5 +37,18 @@ public class ArucasThreadTest {
 			return l;
 			"""
 		));
+		assertEquals("[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]", ArucasHelper.runSafe(
+			"""
+			vals = [];
+			foreach (i : range(10)) {
+				vals.append(Thread.runAsync(fun() {
+					sleep(100);
+					return i;
+				}));
+			}
+			// Have to unlazy the values
+			return vals.toString();
+			"""
+		));
 	}
 }
