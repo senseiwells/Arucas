@@ -13,6 +13,7 @@ import java.lang.reflect.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class ReflectionUtils {
 	private static final Map<MethodId, Method> methodCache = new HashMap<>();
@@ -181,9 +182,48 @@ public class ReflectionUtils {
 		for (Method method : callingClass.getMethods()) {
 			boolean matchingStatic = Modifier.isStatic(method.getModifiers()) == isStatic;
 			if (matchingStatic && (arguments < 0 || method.getParameterCount() == arguments) && method.getName().equals(methodName)) {
-				return method;
+				Method accessible = getAccessibleMethod(callingClass, callingObject, method);
+				return Objects.requireNonNullElse(accessible, method);
 			}
 		}
+		return null;
+	}
+
+	private static Method getAccessibleMethod(Class<?> callingClass, Object callingObject, Method method) {
+		// The direct method may be inaccessible (for example it's a member of an inaccessible inner class)
+		// but accessible via an interface or a superclass. Notably this happens for synthetic lambda classes.
+		// This is a workaround which looks for an accessible method in a superclass or interface.
+
+		if (method.canAccess(callingObject)) {
+			return method;
+		}
+
+		try {
+			method = callingClass.getMethod(method.getName(), method.getParameterTypes());
+			if (method.canAccess(callingObject)) {
+				return method;
+			}
+		} catch (NoSuchMethodException e) {
+			return null;
+		}
+
+		if (!callingClass.isInterface()) {
+			Class<?> superClass = callingClass.getSuperclass();
+			if (superClass != null) {
+				Method accessible = getAccessibleMethod(superClass, callingObject, method);
+				if (accessible != null) {
+					return accessible;
+				}
+			}
+		}
+
+		for (Class<?> itf : callingClass.getInterfaces()) {
+			Method accessible = getAccessibleMethod(itf, callingObject, method);
+			if (accessible != null) {
+				return accessible;
+			}
+		}
+
 		return null;
 	}
 

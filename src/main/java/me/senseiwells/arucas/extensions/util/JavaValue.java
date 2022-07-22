@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import static me.senseiwells.arucas.utils.ValueTypes.*;
@@ -181,6 +182,7 @@ public class JavaValue extends GenericValue<Object> {
 				BuiltInFunction.of("consumerOf", 1, this::consumerOf),
 				BuiltInFunction.of("supplierOf", 1, this::supplierOf),
 				BuiltInFunction.of("functionOf", 1, this::functionOf),
+				BuiltInFunction.of("predicateOf", 1, this::predicateOf),
 				BuiltInFunction.arbitrary("arrayOf", this::arrayOf),
 				BuiltInFunction.arbitrary("callStaticMethod", this::callStaticMethod),
 				BuiltInFunction.arbitrary("constructClass", this::constructClass)
@@ -650,6 +652,34 @@ public class JavaValue extends GenericValue<Object> {
 			return new JavaValue((Function<Object, Object>) o -> {
 				Value returnValue = functionValue.callSafe(branchContext.createBranch(), () -> ArucasList.arrayListOf(branchContext.convertValue(o)));
 				return returnValue == null ? null : returnValue.asJavaValue();
+			});
+		}
+
+		@FunctionDoc(
+			isStatic = true,
+			name = "predicateOf",
+			desc = "Creates a Java Predicate object from a given function",
+			params = {
+				FUNCTION, "function", "the function to be executed, this must have one parameter and must return a boolean"
+			},
+			returns = {JAVA, "the Java Predicate object"},
+			example = """
+				Java.predicateOf(fun(num) {
+				    return num == 42;
+				});
+				"""
+		)
+		private Value predicateOf(Arguments arguments) throws CodeError {
+			FunctionValue functionValue = arguments.getNext(FunctionValue.class);
+			Context branchContext = arguments.getContext().createBranch();
+			return new JavaValue((Predicate<Object>) o -> {
+				Context branch = branchContext.createBranch();
+				Value returnValue = functionValue.callSafe(branch, () -> ArucasList.arrayListOf(branchContext.convertValue(o)));
+				if (returnValue != null && returnValue.getValue() instanceof Boolean ret) {
+					return ret;
+				}
+				branch.getThreadHandler().tryError(branch, new RuntimeError("Predicate function must return a boolean", functionValue.getPosition(), branch));
+				return false;
 			});
 		}
 
