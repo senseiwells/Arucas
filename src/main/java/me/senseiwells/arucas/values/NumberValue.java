@@ -132,6 +132,14 @@ public class NumberValue extends GenericValue<Double> {
 	}
 
 	@Override
+	public int compareTo(Context context, Value other) {
+		if (other instanceof NumberValue otherValue) {
+			return Double.compare(this.value, otherValue.value);
+		}
+		return super.compareTo(context, other);
+	}
+
+	@Override
 	public Value xor(Context context, Value other, ISyntax syntaxPosition) throws CodeError {
 		if (other instanceof NumberValue otherValue) {
 			return NumberValue.of(this.value.longValue() ^ otherValue.value.longValue());

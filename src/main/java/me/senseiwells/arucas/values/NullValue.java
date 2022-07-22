@@ -18,6 +18,11 @@ public class NullValue extends GenericValue<Object> {
 	}
 
 	@Override
+	public int compareTo(Context context, Value other) {
+		return -1;
+	}
+
+	@Override
 	public int getHashCode(Context context) {
 		return 0;
 	}

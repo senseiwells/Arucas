@@ -170,6 +170,11 @@ public abstract class LazyValue extends Value {
 	}
 
 	@Override
+	public int compareTo(Context context, Value other) {
+		return this.get().compareTo(context, other);
+	}
+
+	@Override
 	public String getAsString(Context context) throws CodeError {
 		return this.get().getAsString(context);
 	}

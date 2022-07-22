@@ -33,6 +33,14 @@ public class StringValue extends GenericValue<String> {
 	}
 
 	@Override
+	public int compareTo(Context context, Value other) {
+		if (other instanceof StringValue stringValue) {
+			return this.value.compareTo(stringValue.value);
+		}
+		return super.compareTo(context, other);
+	}
+
+	@Override
 	public StringValue copy(Context context) {
 		return this;
 	}

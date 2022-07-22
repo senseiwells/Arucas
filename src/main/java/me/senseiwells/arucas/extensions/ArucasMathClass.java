@@ -52,6 +52,8 @@ public class ArucasMathClass extends ArucasClassExtension {
 			BuiltInFunction.of("clamp", 3, this::clamp),
 			BuiltInFunction.of("toRadians", 1, this::toRadians),
 			BuiltInFunction.of("toDegrees", 1, this::toDegrees),
+			BuiltInFunction.of("signum", 1, this::signum),
+			BuiltInFunction.of("lerp", 3, this::lerp),
 			BuiltInFunction.of("log", 1, this::log),
 			BuiltInFunction.of("log", 2, this::logBase),
 			BuiltInFunction.of("log10", 1, this::log10),
@@ -243,6 +245,38 @@ public class ArucasMathClass extends ArucasClassExtension {
 	private Value toDegrees(Arguments arguments) throws CodeError {
 		double number = arguments.getNextGeneric(NumberValue.class);
 		return NumberValue.of(Math.toDegrees(number));
+	}
+
+	@FunctionDoc(
+		isStatic = true,
+		name = "signum",
+		desc = "Returns the sign of a number, 1 if the number is positive, -1 if the number is negative, and 0 if the number is 0",
+		params = {NUMBER, "num", "the number to get the sign of"},
+		returns = {NUMBER, "the sign of the number"},
+		example = "Math.signum(3);"
+	)
+	private Value signum(Arguments arguments) throws CodeError {
+		double number = arguments.getNextGeneric(NumberValue.class);
+		return NumberValue.of(Math.signum(number));
+	}
+
+	@FunctionDoc(
+		isStatic = true,
+		name = "lerp",
+		desc = "Linear interpolation between two numbers",
+		params = {
+			NUMBER, "start", "the first number",
+			NUMBER, "end", "the second number",
+			NUMBER, "delta", "the interpolation factor"
+		},
+		returns = {NUMBER, "the interpolated number"},
+		example = "Math.lerp(0, 10, 0.5);"
+	)
+	private Value lerp(Arguments arguments) throws CodeError {
+		double start = arguments.getNextGeneric(NumberValue.class);
+		double end = arguments.getNextGeneric(NumberValue.class);
+		double delta = arguments.getNextGeneric(NumberValue.class);
+		return NumberValue.of(start + (end - start) * delta);
 	}
 
 	@FunctionDoc(

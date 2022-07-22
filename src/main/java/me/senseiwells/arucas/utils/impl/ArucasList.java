@@ -85,6 +85,15 @@ public class ArucasList implements IArucasCollection, List<Value>, ValueIdentifi
 		return true;
 	}
 
+	public synchronized void sort(Context context) {
+		this.sort((a, b) -> a.compareTo(context, b));
+	}
+
+	@Override
+	public synchronized void sort(Comparator<? super Value> c) {
+		Arrays.sort(this.valueData, 0, this.size, c);
+	}
+
 	public synchronized int indexOf(Context context, Value value) throws CodeError {
 		Value[] valueData = this.valueData;
 		for (int i = 0; i < this.size; i++) {

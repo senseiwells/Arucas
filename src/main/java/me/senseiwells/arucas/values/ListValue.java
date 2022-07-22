@@ -4,6 +4,7 @@ import me.senseiwells.arucas.api.ArucasClassExtension;
 import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.api.docs.ClassDoc;
 import me.senseiwells.arucas.api.docs.FunctionDoc;
+import me.senseiwells.arucas.throwables.BuiltInException;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.Arguments;
@@ -11,6 +12,7 @@ import me.senseiwells.arucas.utils.ArucasFunctionMap;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.impl.ArucasList;
 import me.senseiwells.arucas.utils.impl.IArucasCollection;
+import me.senseiwells.arucas.values.functions.FunctionValue;
 import me.senseiwells.arucas.values.functions.MemberFunction;
 
 import static me.senseiwells.arucas.utils.ValueTypes.*;
@@ -86,7 +88,7 @@ public class ListValue extends GenericValue<ArucasList> {
 
 	@ClassDoc(
 		name = LIST,
-		desc = "This class cannot be constructed since it has a literal, `[]`"
+		desc = "This class cannot be constructed since it has a literal, []"
 	)
 	public static class ArucasListClass extends ArucasClassExtension {
 		public ArucasListClass() {
@@ -115,6 +117,8 @@ public class ListValue extends GenericValue<ArucasList> {
 				MemberFunction.of("isEmpty", this::isEmpty),
 				MemberFunction.of("clear", this::clear),
 				MemberFunction.of("indexOf", 1, this::indexOf),
+				MemberFunction.of("sort", this::sort),
+				MemberFunction.of("sort", 1, this::sort1),
 				MemberFunction.of("toString", this::toString)
 			);
 		}
@@ -125,7 +129,7 @@ public class ListValue extends GenericValue<ArucasList> {
 			params = {NUMBER, "index", "the index of the value you want to get"},
 			returns = {ANY, "the value at the index"},
 			throwMsgs = "Index is out of bounds",
-			example = "`['object', 81, 96, 'case'].get(1);`"
+			example = "['object', 81, 96, 'case'].get(1);"
 		)
 		private Value getListIndex(Arguments arguments) throws CodeError {
 			ListValue thisValue = arguments.getNext(ListValue.class);
@@ -142,7 +146,7 @@ public class ListValue extends GenericValue<ArucasList> {
 			params = {NUMBER, "index", "the index of the value you want to remove"},
 			returns = {ANY, "the value that was removed"},
 			throwMsgs = "Index is out of bounds",
-			example = "`['object', 81, 96, 'case'].remove(1);`"
+			example = "['object', 81, 96, 'case'].remove(1);"
 		)
 		private Value removeListIndex(Arguments arguments) throws CodeError {
 			ListValue thisValue = arguments.getNext(ListValue.class);
@@ -158,7 +162,7 @@ public class ListValue extends GenericValue<ArucasList> {
 			desc = "This allows you to append a value to the end of the list",
 			params = {ANY, "value", "the value you want to append"},
 			returns = {LIST, "the list"},
-			example = "`['object', 81, 96, 'case'].append('foo');`"
+			example = "['object', 81, 96, 'case'].append('foo');"
 		)
 		private Value appendList(Arguments arguments) throws CodeError {
 			ListValue thisValue = arguments.getNext(ListValue.class);
@@ -176,7 +180,7 @@ public class ListValue extends GenericValue<ArucasList> {
 			},
 			returns = {LIST, "the list"},
 			throwMsgs = "Index is out of bounds",
-			example = "`['object', 81, 96, 'case'].insert('foo', 1);`"
+			example = "['object', 81, 96, 'case'].insert('foo', 1);"
 		)
 		private Value insertList(Arguments arguments) throws CodeError {
 			ListValue thisValue = arguments.getNext(ListValue.class);
@@ -199,7 +203,7 @@ public class ListValue extends GenericValue<ArucasList> {
 			},
 			returns = {LIST, "the list"},
 			throwMsgs = "Index is out of bounds",
-			example = "`['object', 81, 96, 'case'].set('foo', 1);`"
+			example = "['object', 81, 96, 'case'].set('foo', 1);"
 		)
 		private Value setList(Arguments arguments) throws CodeError {
 			ListValue thisValue = arguments.getNext(ListValue.class);
@@ -219,7 +223,7 @@ public class ListValue extends GenericValue<ArucasList> {
 			params = {COLLECTION, "collection", "the collection you want to add"},
 			returns = {LIST, "the list"},
 			throwMsgs = "... is not a collection",
-			example = "`['object', 81, 96, 'case'].addAll(['foo', 'bar']);`"
+			example = "['object', 81, 96, 'case'].addAll(['foo', 'bar']);"
 		)
 		private Value addAll(Arguments arguments) throws CodeError {
 			ListValue thisValue = arguments.getNext(ListValue.class);
@@ -230,12 +234,12 @@ public class ListValue extends GenericValue<ArucasList> {
 		}
 
 		@FunctionDoc(
-			deprecated = "You should use `<List>.addAll(collection)` instead",
+			deprecated = "You should use <List>.addAll(collection) instead",
 			name = "concat",
 			desc = "This allows you to concatenate two lists",
 			params = {LIST, "otherList", "the list you want to concatenate with"},
 			returns = {LIST, "the concatenated list"},
-			example = "`['object', 81, 96, 'case'].concat(['foo', 'bar']);`"
+			example = "['object', 81, 96, 'case'].concat(['foo', 'bar']);"
 		)
 		private Value concatList(Arguments arguments) throws CodeError {
 			ListValue thisValue = arguments.getNext(ListValue.class);
@@ -249,7 +253,7 @@ public class ListValue extends GenericValue<ArucasList> {
 			desc = "This allows you to check if the list contains a value",
 			params = {ANY, "value", "the value you want to check for"},
 			returns = {BOOLEAN, "true if the list contains the value, false otherwise"},
-			example = "`['object', 81, 96, 'case'].contains('foo');`"
+			example = "['object', 81, 96, 'case'].contains('foo');"
 		)
 		private BooleanValue listContains(Arguments arguments) throws CodeError {
 			ListValue thisValue = arguments.getNext(ListValue.class);
@@ -263,7 +267,7 @@ public class ListValue extends GenericValue<ArucasList> {
 			params = {COLLECTION, "collection", "the collection you want to check for"},
 			returns = {BOOLEAN, "true if the list contains all the values in the collection, false otherwise"},
 			throwMsgs = "... is not a collection",
-			example = "`['object', 81, 96, 'case'].containsAll(['foo', 'bar']);`"
+			example = "['object', 81, 96, 'case'].containsAll(['foo', 'bar']);"
 		)
 		private BooleanValue containsAll(Arguments arguments) throws CodeError {
 			ListValue thisValue = arguments.getNext(ListValue.class);
@@ -276,7 +280,7 @@ public class ListValue extends GenericValue<ArucasList> {
 			name = "isEmpty",
 			desc = "This allows you to check if the list is empty",
 			returns = {BOOLEAN, "true if the list is empty, false otherwise"},
-			example = "`['object', 81, 96, 'case'].isEmpty();`"
+			example = "['object', 81, 96, 'case'].isEmpty();"
 		)
 		private BooleanValue isEmpty(Arguments arguments) throws CodeError {
 			ListValue thisValue = arguments.getNext(ListValue.class);
@@ -286,7 +290,7 @@ public class ListValue extends GenericValue<ArucasList> {
 		@FunctionDoc(
 			name = "clear",
 			desc = "This allows you to clear all the values the list",
-			example = "`['object', 81, 96, 'case'].clear();`"
+			example = "['object', 81, 96, 'case'].clear();"
 		)
 		private Value clear(Arguments arguments) throws CodeError {
 			ListValue thisValue = arguments.getNext(ListValue.class);
@@ -299,19 +303,54 @@ public class ListValue extends GenericValue<ArucasList> {
 			desc = "This allows you to get the index of a value in the list",
 			params = {ANY, "value", "the value you want to check for"},
 			returns = {NUMBER, "the index of the value, -1 if the value is not in the list"},
-			example = "`['object', 81, 96, 'case'].indexOf('case');`"
+			example = "['object', 81, 96, 'case'].indexOf('case');"
 		)
 		private Value indexOf(Arguments arguments) throws CodeError {
 			ListValue thisValue = arguments.getNext(ListValue.class);
 			Value value = arguments.getNext();
 			return NumberValue.of(thisValue.value.indexOf(arguments.getContext(), value));
 		}
+		
+		@FunctionDoc(
+			name = "sort",
+			desc = "This allows you to sort the list based on the compareTo method of the values",
+			returns = {LIST, "the sorted list"},
+			example = "[0, 81, 96, 54].sort();"
+		)
+		private Value sort(Arguments arguments) throws CodeError {
+			ListValue thisValue = arguments.getNextList();
+			thisValue.value.sort(arguments.getContext());
+			return thisValue;
+		}
+		
+		@FunctionDoc(
+			name = "sort",
+			desc = {
+				"This allows you to sort the list with a given function taking",
+				"two values then returning a comparing number"
+			},
+			params = {FUNCTION, "function", "the function to use to compare the values"},
+			returns = {LIST, "the sorted list"},
+			example = "[0, 81, 96, 54].sort(fun(a, b) { return a - b; });"
+		)
+		private Value sort1(Arguments arguments) throws CodeError {
+			ListValue thisValue = arguments.getNext(ListValue.class);
+			FunctionValue function = arguments.getNextFunction();
+			thisValue.value.sort((a, b) -> {
+				Value returnValue = function.callSafe(arguments.getContext(), () -> ArucasList.arrayListOf(a, b));
+				if (!(returnValue instanceof NumberValue numberValue)) {
+					throw new BuiltInException("Sort function must return a number");
+				}
+				return numberValue.value.intValue();
+			});
+			return thisValue;
+		}
 
 		@FunctionDoc(
 			name = "toString",
 			desc = "This converts the list to a string and evaluating any collections inside it",
 			returns = {STRING, "the string representation of the set"},
-			example = "`['object', 81, 96, 'case'].toString();`"
+			example = "['object', 81, 96, 'case'].toString();"
 		)
 		private Value toString(Arguments arguments) throws CodeError {
 			ListValue thisValue = arguments.getNext(ListValue.class);

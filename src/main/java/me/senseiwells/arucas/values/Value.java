@@ -2,6 +2,7 @@ package me.senseiwells.arucas.values;
 
 import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.api.docs.ClassDoc;
+import me.senseiwells.arucas.throwables.BuiltInException;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.tokens.Token;
@@ -362,6 +363,18 @@ public abstract class Value implements ValueIdentifier {
 	 */
 	public Value unaryMinus(Context context, ISyntax syntaxPosition) throws CodeError {
 		throw this.cannotApplyError(context, "NEGATIVE", syntaxPosition);
+	}
+
+	/**
+	 * This is used to be able to sort values for example,
+	 * when values are in a list
+	 *
+	 * @param context The current context
+	 * @param other   The other value you are comparing
+	 * @return The result of the comparison
+	 */
+	public int compareTo(Context context, Value other) {
+		throw new BuiltInException("Cannot compare " + this.getTypeName() + " to " + other.getTypeName());
 	}
 
 	/**

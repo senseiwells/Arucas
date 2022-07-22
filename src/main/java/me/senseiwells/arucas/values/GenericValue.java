@@ -57,6 +57,7 @@ public abstract class GenericValue<T> extends Value {
 				MemberFunction.of("hashCode", this::hashCode),
 				MemberFunction.of("uniqueHash", this::uniqueHash),
 				MemberFunction.of("equals", 1, this::equals, "Use the '==' operator"),
+				MemberFunction.of("compareTo", 1, this::compareTo),
 				MemberFunction.of("toString", this::toString)
 			);
 		}
@@ -155,6 +156,22 @@ public abstract class GenericValue<T> extends Value {
 			Value thisValue = arguments.getNext();
 			Value otherValue = arguments.getNext();
 			return BooleanValue.of(thisValue.isEquals(arguments.getContext(), otherValue));
+		}
+
+		@FunctionDoc(
+			name = "compareTo",
+			desc = {
+				"This compares the value to another value",
+				"returns -1 if this is less than the other value, 0 if they are equal, 1 if this is greater than the other value"
+			},
+			params = {ANY, "other", "the other value you want to compare against"},
+			returns = {NUMBER, "the result of the comparison"},
+			example = "10.compareTo(20);"
+		)
+		private NumberValue compareTo(Arguments arguments) throws CodeError {
+			Value thisValue = arguments.getNext();
+			Value otherValue = arguments.getNext();
+			return NumberValue.of(thisValue.compareTo(arguments.getContext(), otherValue));
 		}
 
 		@FunctionDoc(

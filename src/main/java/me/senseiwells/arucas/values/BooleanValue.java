@@ -77,6 +77,14 @@ public class BooleanValue extends GenericValue<Boolean> {
 		return this.not();
 	}
 
+	@Override
+	public int compareTo(Context context, Value other) {
+		if (other instanceof BooleanValue booleanValue) {
+			return Boolean.compare(this.value, booleanValue.value);
+		}
+		return super.compareTo(context, other);
+	}
+
 	public BooleanValue not() {
 		return BooleanValue.of(!this.value);
 	}

@@ -1,6 +1,7 @@
 package me.senseiwells.arucas.values.classes;
 
 import me.senseiwells.arucas.api.ISyntax;
+import me.senseiwells.arucas.throwables.BuiltInException;
 import me.senseiwells.arucas.throwables.CodeError;
 import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.tokens.Token;
@@ -131,6 +132,19 @@ public class ArucasClassValue extends GenericValue<ArucasClassDefinition> implem
 			return function.call(context, ArucasList.arrayListOf(this, other));
 		}
 		return super.onBinaryOperation(context, other, type, syntaxPosition);
+	}
+
+	@Override
+	public int compareTo(Context context, Value other) {
+		FunctionValue memberFunction = this.getMember("compareTo", 2);
+		if (memberFunction != null) {
+			Value value = memberFunction.callSafe(context, () -> ArucasList.arrayListOf(this, other));
+			if (!(value instanceof NumberValue numberValue)) {
+				throw new BuiltInException("compareTo() must return a number");
+			}
+			return numberValue.value.intValue();
+		}
+		return super.compareTo(context, other);
 	}
 
 	@Override
