@@ -387,7 +387,7 @@ public class ArucasList implements IArucasCollection, List<Value>, ValueIdentifi
 			public synchronized Value next() {
 				final int i = this.cursor;
 				if (i >= ArucasList.this.size) {
-					throw new NoSuchElementException();
+					throw new BuiltInException("No such element, maybe you are iterating and modifying the list?");
 				}
 				Value[] valueData = ArucasList.this.valueData;
 				this.cursor = i + 1;

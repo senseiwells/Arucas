@@ -234,8 +234,11 @@ public class ArucasBuiltInExtension implements IArucasExtension {
 		example = "random(10);"
 	)
 	private Value random(Arguments arguments) throws CodeError {
-		NumberValue numValue = arguments.getNext(NumberValue.class);
-		return NumberValue.of(this.random.nextInt(numValue.value.intValue()));
+		int bound = arguments.getNextGeneric(NumberValue.class).intValue();
+		if (bound <= 0) {
+			throw arguments.getError("The bound must be greater than 0");
+		}
+		return NumberValue.of(this.random.nextInt(bound));
 	}
 
 	@FunctionDoc(
