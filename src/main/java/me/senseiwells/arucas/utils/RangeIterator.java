@@ -18,7 +18,7 @@ public class RangeIterator implements Iterator<Value> {
 
 	@Override
 	public boolean hasNext() {
-		return this.current < this.end;
+		return this.step > 0 ? this.current < this.end : this.end < this.current;
 	}
 
 	@Override
