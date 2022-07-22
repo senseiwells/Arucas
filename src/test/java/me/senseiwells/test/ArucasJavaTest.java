@@ -117,4 +117,20 @@ public class ArucasJavaTest {
 			""", BUILDER_WITH_JAVA.build()
 		));
 	}
+
+	@Test
+	public void testJavaFunctionalInterfaces() {
+		assertEquals("43.0", ArucasHelper.runSafe(
+			"""
+			f = Java.functionOf(fun(x) { return x + 1; });
+			return f.apply(Java.valueOf(42));
+			""", BUILDER_WITH_JAVA.build()
+		));
+		assertEquals("true", ArucasHelper.runSafe(
+			"""
+			p = Java.predicateOf(fun(x) { return x == 42; });
+			return p.test(Java.valueOf(42));
+			""", BUILDER_WITH_JAVA.build()
+		));
+	}
 }
