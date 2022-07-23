@@ -7,7 +7,6 @@ import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.utils.Context;
 import me.senseiwells.arucas.utils.TypedValue;
 import me.senseiwells.arucas.utils.impl.ArucasList;
-import me.senseiwells.arucas.values.GenericValue;
 import me.senseiwells.arucas.values.ListValue;
 import me.senseiwells.arucas.values.NullValue;
 import me.senseiwells.arucas.values.Value;
@@ -142,7 +141,11 @@ public class UserDefinedFunction extends FunctionValue {
 
 		@Override
 		public UserDefinedFunction copy(Context context) throws CodeError {
-			return new Arbitrary(this.getName(), this.arguments, this.getPosition());
+			UserDefinedFunction function = new Arbitrary(this.getName(), this.arguments, this.getPosition());
+			function.setReturnTypes(this.returnTypes);
+			function.setLocalContext(this.localContext);
+			function.complete(this.bodyNode);
+			return function;
 		}
 	}
 }
