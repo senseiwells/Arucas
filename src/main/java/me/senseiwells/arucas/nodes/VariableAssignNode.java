@@ -2,7 +2,6 @@ package me.senseiwells.arucas.nodes;
 
 import me.senseiwells.arucas.api.ISyntax;
 import me.senseiwells.arucas.throwables.CodeError;
-import me.senseiwells.arucas.throwables.RuntimeError;
 import me.senseiwells.arucas.throwables.ThrowValue;
 import me.senseiwells.arucas.tokens.Token;
 import me.senseiwells.arucas.utils.Context;
@@ -43,6 +42,7 @@ public class VariableAssignNode extends Node {
 		Value value = this.getNewValue(context);
 
 		if (this.isLocal) {
+			/* No longer experimental
 			if (!context.isExperimental()) {
 				throw new RuntimeError(
 					"Explicit local variable assigning is not supported in this version of Arucas",
@@ -50,6 +50,7 @@ public class VariableAssignNode extends Node {
 					context
 				);
 			}
+			*/
 			context.setLocal(name, value);
 			return value;
 		}

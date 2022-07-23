@@ -104,6 +104,7 @@ public class Lexer {
 			.addRule(Type.IMPORT, i -> i.addString("import"))
 			.addRule(Type.FROM, i -> i.addString("from"))
 			.addRule(Type.LAZY, i -> i.addString("lazy"))
+			.addRule(Type.LOCAL, i -> i.addString("local"))
 
 			// Dot operator
 			.addRule(Type.ARBITRARY, i -> i.addString("..."))

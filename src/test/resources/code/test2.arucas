@@ -1,46 +1,23 @@
 // run(File.getDirectory().getPath() + "/src/test/resources/code/test2.arucas");
-
-fun generateLambdaWithDelayed(ms, num) {
-    return fun() {
-        sleep(ms);
-        print("returning " + num);
-        return num;
-    };
-}
-
-lazyVals = [];/*
-foreach (nums : [6, 7, 8, 9, 10, 11, 12]) {
-    fun do() {
-        return nums;
-    }
-
-    if (nums < 8) {
-        continue;
-    }
-
-    t = nums;
-    lazyVals.append(Thread.runAsync(fun() {
-        sleep(1000);
-        n = do();
-        print(n);
-        return n;
-    }));
-}
-*/
-
-fun doSomething(i) {
-    sleep(1000);
-    print(i);
-}
-
 debug(true);
 
-vals = [];
-foreach (i : range(10)) {
-    vals.append(Thread.runAsync(fun() {
-        return i;
-    }));
+experimental(true);
+lazyValues = [];
+retVal = [];
+i = 0;
+foreach (a : range(8)){
+    _i = i;
+    lambdaAsync = fun (){
+        print("started Thread " + _i+ " at "+ getMilliTime());
+        result = a;
+        print("finished Thread " + _i+ " at "+ getMilliTime());
+        return result;
+    };
+    lazyValues.append(Thread.runAsync(lambdaAsync));
+    print("finished async call " + i + " at " + getMilliTime());
+    i ++;
 }
-return vals;
-
-print("done");
+foreach(values : lazyValues){
+    retVal.append(values);
+}
+print(retVal);

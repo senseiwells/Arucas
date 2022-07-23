@@ -1170,7 +1170,7 @@ public class Parser {
 			}
 		}
 
-		if (this.currentToken.type == Token.Type.VAR) {
+		if (this.currentToken.type == Token.Type.LOCAL) {
 			this.advance();
 			if (this.peekNextToken().type == Token.Type.ASSIGN_OPERATOR) {
 				VariableAssignNode assignNode = this.setVariable();

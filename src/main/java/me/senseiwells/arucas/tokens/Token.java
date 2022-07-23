@@ -121,6 +121,7 @@ public class Token {
 		IMPORT,
 		FROM,
 		LAZY,
+		LOCAL,
 
 		// Dot
 		DOT("."),
