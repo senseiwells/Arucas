@@ -1,13 +1,11 @@
 // ./src/test/resources/code/test.arucas
-// run(File.getDirectory().getPath() + "/src/test/resources/code/test.arucas");
 
-import * from util.Collections;
-
-stack = new LinkedStack();
-
-stack.push("Wow");
-stack.push(90);
-
-foreach (v : stack) {
-    print(v);
+lazy = [];
+for (i = 0; i < 10; i++) {
+    lazy.append(fun() i);
 }
+total = 0;
+for (l : lazy) {
+    total = total + l();
+}
+return total;

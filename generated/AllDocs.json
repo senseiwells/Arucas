@@ -1,0 +1,4287 @@
+{
+  "extensions": {
+    "BuiltInExtension": [
+      {
+        "name": "run",
+        "is_arbitrary": false,
+        "desc": [
+          "This is used to run a .arucas file, you can use on script to run other scripts"
+        ],
+        "params": [
+          {
+            "name": "path",
+            "type": "String",
+            "desc": "as a file path"
+          }
+        ],
+        "returns": {
+          "type": "Object",
+          "desc": "any value that the file returns"
+        },
+        "examples": [
+          "run('/home/user/script.arucas');"
+        ]
+      },
+      {
+        "name": "len",
+        "is_arbitrary": false,
+        "desc": [
+          "This is used to get the length of a collection or string"
+        ],
+        "params": [
+          {
+            "name": "sizable",
+            "type": "String",
+            "desc": "the collection or string"
+          }
+        ],
+        "examples": [
+          "len(\"Hello World\");"
+        ]
+      },
+      {
+        "name": "debug",
+        "is_arbitrary": false,
+        "desc": [
+          "This is used to enable or disable debug mode"
+        ],
+        "params": [
+          {
+            "name": "bool",
+            "type": "Boolean",
+            "desc": "true to enable debug mode, false to disable debug mode"
+          }
+        ],
+        "examples": [
+          "debug(true);"
+        ]
+      },
+      {
+        "name": "sleep",
+        "is_arbitrary": false,
+        "desc": [
+          "This pauses your program for a certain amount of milliseconds"
+        ],
+        "params": [
+          {
+            "name": "milliseconds",
+            "type": "Number",
+            "desc": "milliseconds to sleep"
+          }
+        ],
+        "examples": [
+          "sleep(1000);"
+        ]
+      },
+      {
+        "name": "stop",
+        "is_arbitrary": false,
+        "desc": [
+          "This is used to stop a script"
+        ],
+        "examples": [
+          "stop();"
+        ]
+      },
+      {
+        "name": "print",
+        "is_arbitrary": false,
+        "desc": [
+          "This prints a value to the output handler"
+        ],
+        "params": [
+          {
+            "name": "printValue",
+            "type": "Object",
+            "desc": "the value to print"
+          }
+        ],
+        "examples": [
+          "print('Hello World');"
+        ]
+      },
+      {
+        "name": "input",
+        "is_arbitrary": false,
+        "desc": [
+          "This is used to take an input from the user"
+        ],
+        "params": [
+          {
+            "name": "prompt",
+            "type": "String",
+            "desc": "the prompt to show the user"
+          }
+        ],
+        "returns": {
+          "type": "String",
+          "desc": "the input from the user"
+        },
+        "examples": [
+          "input('What is your name?');"
+        ]
+      },
+      {
+        "name": "random",
+        "is_arbitrary": false,
+        "desc": [
+          "This is used to generate a random integer between 0 and the bound"
+        ],
+        "params": [
+          {
+            "name": "bound",
+            "type": "Number",
+            "desc": "the maximum bound (exclusive)"
+          }
+        ],
+        "returns": {
+          "type": "Number",
+          "desc": "the random integer"
+        },
+        "examples": [
+          "random(10);"
+        ]
+      },
+      {
+        "name": "getTime",
+        "is_arbitrary": false,
+        "desc": [
+          "This is used to get the current time formatted with HH:mm:ss in your local time"
+        ],
+        "returns": {
+          "type": "String",
+          "desc": "the current time formatted with HH:mm:ss"
+        },
+        "examples": [
+          "getTime();"
+        ]
+      },
+      {
+        "name": "getDate",
+        "is_arbitrary": false,
+        "desc": [
+          "This is used to get the current date formatted with dd/MM/yyyy in your local time"
+        ],
+        "returns": {
+          "type": "String",
+          "desc": "the current date formatted with dd/MM/yyyy"
+        },
+        "examples": [
+          "getDate();"
+        ]
+      },
+      {
+        "name": "experimental",
+        "is_arbitrary": false,
+        "desc": [
+          "This is used to enable or disable experimental mode"
+        ],
+        "params": [
+          {
+            "name": "bool",
+            "type": "Boolean",
+            "desc": "true to enable experimental mode, false to disable experimental mode"
+          }
+        ],
+        "examples": [
+          "experimental(true);"
+        ]
+      },
+      {
+        "name": "isMain",
+        "is_arbitrary": false,
+        "desc": [
+          "This is used to check whether the script is the main script"
+        ],
+        "returns": {
+          "type": "Boolean",
+          "desc": "true if the script is the main script, false if it is not"
+        },
+        "examples": [
+          "isMain();"
+        ]
+      },
+      {
+        "name": "runFromString",
+        "is_arbitrary": false,
+        "deprecated": [
+          "This should be replaced with 'eval(code)'"
+        ],
+        "desc": [
+          "This is used to evaluate a string as code.",
+          "This will not inherit imports that are in the parent script"
+        ],
+        "params": [
+          {
+            "name": "code",
+            "type": "String",
+            "desc": "the code to run"
+          }
+        ],
+        "examples": [
+          "runFromString('print(\"Hello World\");');"
+        ]
+      },
+      {
+        "name": "getMilliTime",
+        "is_arbitrary": false,
+        "desc": [
+          "This is used to get the current time in milliseconds"
+        ],
+        "returns": {
+          "type": "Number",
+          "desc": "the current time in milliseconds"
+        },
+        "examples": [
+          "getMilliTime();"
+        ]
+      },
+      {
+        "name": "getArucasVersion",
+        "is_arbitrary": false,
+        "desc": [
+          "This is used to get the version of Arucas that is currently running"
+        ],
+        "returns": {
+          "type": "String",
+          "desc": "the version of Arucas that is currently running"
+        },
+        "examples": [
+          "getArucasVersion();"
+        ]
+      },
+      {
+        "name": "eval",
+        "is_arbitrary": false,
+        "desc": [
+          "This is used to evaluate a string as code.",
+          "This will not inherit imports that are in the parent script"
+        ],
+        "params": [
+          {
+            "name": "code",
+            "type": "String",
+            "desc": "the code to evaluate"
+          }
+        ],
+        "returns": {
+          "type": "Object",
+          "desc": "the result of the evaluation"
+        },
+        "examples": [
+          "eval('1 + 1');"
+        ]
+      },
+      {
+        "name": "getNanoTime",
+        "is_arbitrary": false,
+        "desc": [
+          "This is used to get the current time in nanoseconds"
+        ],
+        "returns": {
+          "type": "Number",
+          "desc": "the current time in nanoseconds"
+        },
+        "examples": [
+          "getNanoTime();"
+        ]
+      },
+      {
+        "name": "getUnixTime",
+        "is_arbitrary": false,
+        "desc": [
+          "This is used to get the current time in seconds since the Unix epoch"
+        ],
+        "returns": {
+          "type": "Number",
+          "desc": "the current time in seconds since the Unix epoch"
+        },
+        "examples": [
+          "getUnixTime();"
+        ]
+      },
+      {
+        "name": "suppressDeprecated",
+        "is_arbitrary": false,
+        "desc": [
+          "This is used to enable or disable suppressing deprecation warnings"
+        ],
+        "params": [
+          {
+            "name": "bool",
+            "type": "Boolean",
+            "desc": "true to enable, false to disable warnings"
+          }
+        ],
+        "examples": [
+          "suppressDeprecated(true);"
+        ]
+      },
+      {
+        "name": "print",
+        "is_arbitrary": true,
+        "desc": [
+          "This prints a number of values to the console",
+          "If there are no arguments then this will print a new line,",
+          "other wise it will print the contents without a new line"
+        ],
+        "params": [
+          {
+            "name": "printValue...",
+            "type": "Object",
+            "desc": "the value to print"
+          }
+        ],
+        "examples": [
+          "print('Hello World', 'This is a test', 123);"
+        ]
+      },
+      {
+        "name": "range",
+        "is_arbitrary": false,
+        "desc": [
+          "This is used to generate a range of numbers starting",
+          "from a start value and ending at a bound value incrementing by 1"
+        ],
+        "params": [
+          {
+            "name": "start",
+            "type": "Number",
+            "desc": "the start value"
+          },
+          {
+            "name": "bound",
+            "type": "Number",
+            "desc": "the maximum bound (exclusive)"
+          }
+        ],
+        "returns": {
+          "type": "Iterator",
+          "desc": "an iterable object that returns the range of integers"
+        },
+        "examples": [
+          "range(0, 10);"
+        ]
+      },
+      {
+        "name": "range",
+        "is_arbitrary": false,
+        "desc": [
+          "This is used to generate a range of integers starting from 0, incrementing by 1"
+        ],
+        "params": [
+          {
+            "name": "bound",
+            "type": "Number",
+            "desc": "the maximum bound (exclusive)"
+          }
+        ],
+        "returns": {
+          "type": "Iterator",
+          "desc": "an iterable object that returns the range of integers"
+        },
+        "examples": [
+          "range(10);"
+        ]
+      },
+      {
+        "name": "range",
+        "is_arbitrary": false,
+        "desc": [
+          "This is used to generate a range of numbers starting from a",
+          "start value and ending at a bound value incrementing by a step value"
+        ],
+        "params": [
+          {
+            "name": "start",
+            "type": "Number",
+            "desc": "the start value"
+          },
+          {
+            "name": "bound",
+            "type": "Number",
+            "desc": "the maximum bound (exclusive)"
+          },
+          {
+            "name": "step",
+            "type": "Number",
+            "desc": "the step value"
+          }
+        ],
+        "returns": {
+          "type": "Iterator",
+          "desc": "an iterable object that returns the range of integers"
+        },
+        "examples": [
+          "range(0, 10, 2);"
+        ]
+      }
+    ]
+  },
+  "classes": {
+    "Object": {
+      "name": "Object",
+      "desc": [
+        "This is the base class for every other class in Arucas.",
+        "This class cannot be instantiated from, you can extend it",
+        "however every class already extends this class by default"
+      ],
+      "import_path": null,
+      "static_members": [],
+      "constructors": [],
+      "methods": [
+        {
+          "name": "toString",
+          "is_arbitrary": false,
+          "desc": [
+            "This returns the string representation of the value"
+          ],
+          "returns": {
+            "type": "String",
+            "desc": "the string representation of the value"
+          },
+          "examples": [
+            "[10, 11, 12].toString(); // [10, 11, 12]"
+          ]
+        },
+        {
+          "name": "hashCode",
+          "is_arbitrary": false,
+          "desc": [
+            "This returns the hash code of the value, mainly used for maps and sets",
+            "the hash code of an object must remain consistent for objects to be able",
+            "to be used as keys in a map or set. If two objects are equal, they must",
+            "have the same hash code"
+          ],
+          "returns": {
+            "type": "Number",
+            "desc": "the hash code of the value"
+          },
+          "examples": [
+            "[10, 11, 12].hashCode(); // -1859087"
+          ]
+        },
+        {
+          "name": "copy",
+          "is_arbitrary": false,
+          "desc": [
+            "This returns a copy of the value if implemented.",
+            "Some objects that are immutable, such as Strings and Numbers",
+            "will not be copied, and will return the same instance.",
+            "Any object that has not implemented the copy method will also",
+            "return the same instance"
+          ],
+          "returns": {
+            "type": "Object",
+            "desc": "a copy of the value"
+          },
+          "examples": [
+            "[10, 11, 12].copy(); // [10, 11, 12]"
+          ]
+        },
+        {
+          "name": "instanceOf",
+          "is_arbitrary": false,
+          "desc": [
+            "This returns true if the value is an instance of the given type"
+          ],
+          "params": [
+            {
+              "name": "type",
+              "type": "Type",
+              "desc": "the type to check against"
+            }
+          ],
+          "returns": {
+            "type": "Boolean",
+            "desc": "true if the value is an instance of the given type"
+          },
+          "examples": [
+            "[10, 11, 12].instanceOf(List.type); // true"
+          ]
+        },
+        {
+          "name": "uniqueHash",
+          "is_arbitrary": false,
+          "desc": [
+            "This returns the unique hash of the value, this is different for every instance of a value"
+          ],
+          "returns": {
+            "type": "Number",
+            "desc": "the unique hash of the value"
+          },
+          "examples": [
+            "'thing'.uniqueHash();"
+          ]
+        }
+      ],
+      "static_methods": []
+    },
+    "String": {
+      "name": "String",
+      "desc": [
+        "This class represents an array of characters to form a string.",
+        "This class cannot be instantiated directly, instead use the literal",
+        "by using quotes. Strings are immutable in Arucas."
+      ],
+      "import_path": null,
+      "static_members": [],
+      "constructors": [
+        {
+          "desc": [
+            "This creates a new string object, not from the string pool, with the given string.",
+            "This cannot be called directly, only from child classes"
+          ],
+          "examples": [
+            "\n            class ChildString: String {\n                ChildString(): super(\"example\");\n            }\n            "
+          ]
+        }
+      ],
+      "methods": [
+        {
+          "name": "length",
+          "is_arbitrary": false,
+          "desc": [
+            "This returns the length of the string"
+          ],
+          "returns": {
+            "type": "Number",
+            "desc": "the length of the string"
+          },
+          "examples": [
+            "'hello'.length(); // 5"
+          ]
+        },
+        {
+          "name": "startsWith",
+          "is_arbitrary": false,
+          "desc": [
+            "This returns whether the string starts with the given string"
+          ],
+          "params": [
+            {
+              "name": "string",
+              "type": "String",
+              "desc": "the string to check"
+            }
+          ],
+          "returns": {
+            "type": "Boolean",
+            "desc": "whether the string starts with the given string"
+          },
+          "examples": [
+            "'hello'.startsWith('he'); // true"
+          ]
+        },
+        {
+          "name": "matches",
+          "is_arbitrary": false,
+          "desc": [
+            "This returns whether the string matches the given regex"
+          ],
+          "params": [
+            {
+              "name": "regex",
+              "type": "String",
+              "desc": "the regex to match the string with"
+            }
+          ],
+          "returns": {
+            "type": "Boolean",
+            "desc": "whether the string matches the given regex"
+          },
+          "examples": [
+            "'foo'.matches('f.*'); // true"
+          ]
+        },
+        {
+          "name": "replaceFirst",
+          "is_arbitrary": false,
+          "desc": [
+            "This replaces the first instance of a regex with the replace string"
+          ],
+          "params": [
+            {
+              "name": "regex",
+              "type": "String",
+              "desc": "the regex you want to replace"
+            },
+            {
+              "name": "replacement",
+              "type": "String",
+              "desc": "the string you want to replace it with"
+            }
+          ],
+          "returns": {
+            "type": "String",
+            "desc": "the modified string"
+          },
+          "examples": [
+            "'hello'.replaceFirst('l', 'x'); // 'hexlo'"
+          ]
+        },
+        {
+          "name": "replaceAll",
+          "is_arbitrary": false,
+          "desc": [
+            "This replaces all the instances of a regex with the replace string"
+          ],
+          "params": [
+            {
+              "name": "regex",
+              "type": "String",
+              "desc": "the regex you want to replace"
+            },
+            {
+              "name": "replacement",
+              "type": "String",
+              "desc": "the string you want to replace it with"
+            }
+          ],
+          "returns": {
+            "type": "String",
+            "desc": "the modified string"
+          },
+          "examples": [
+            "'hello'.replaceAll('l', 'x'); // 'hexxo'"
+          ]
+        },
+        {
+          "name": "split",
+          "is_arbitrary": false,
+          "desc": [
+            "This splits the string into a list of strings based on a regex"
+          ],
+          "params": [
+            {
+              "name": "regex",
+              "type": "String",
+              "desc": "the regex to split the string with"
+            }
+          ],
+          "returns": {
+            "type": "List",
+            "desc": "the list of strings"
+          },
+          "examples": [
+            "'foo/bar/baz'.split('/');"
+          ]
+        },
+        {
+          "name": "strip",
+          "is_arbitrary": false,
+          "desc": [
+            "This strips the whitespace from the string"
+          ],
+          "returns": {
+            "type": "String",
+            "desc": "the stripped string"
+          },
+          "examples": [
+            "'  hello  '.strip(); // 'hello'"
+          ]
+        },
+        {
+          "name": "toList",
+          "is_arbitrary": false,
+          "deprecated": [
+            "Use '<String>.chars()' instead"
+          ],
+          "desc": [
+            "This makes a list of all the characters in the string"
+          ],
+          "returns": {
+            "type": "List",
+            "desc": "the list of characters"
+          },
+          "examples": [
+            "'hello'.toList(); // [h, e, l, l, o]"
+          ]
+        },
+        {
+          "name": "format",
+          "is_arbitrary": true,
+          "desc": [
+            "This formats the string using the given arguments.",
+            "This internally uses the Java String.format() method.",
+            "For how to use see here: https://www.javatpoint.com/java-string-format"
+          ],
+          "params": [
+            {
+              "name": "objects...",
+              "type": "Object",
+              "desc": "the objects to insert"
+            }
+          ],
+          "returns": {
+            "type": "String",
+            "desc": "the formatted string"
+          },
+          "examples": [
+            "'%s %s'.format('hello', 'world'); // 'hello world'"
+          ]
+        },
+        {
+          "name": "endsWith",
+          "is_arbitrary": false,
+          "desc": [
+            "This returns whether the string ends with the given string"
+          ],
+          "params": [
+            {
+              "name": "string",
+              "type": "String",
+              "desc": "the string to check"
+            }
+          ],
+          "returns": {
+            "type": "Boolean",
+            "desc": "whether the string ends with the given string"
+          },
+          "examples": [
+            "'hello'.endsWith('lo'); // true"
+          ]
+        },
+        {
+          "name": "contains",
+          "is_arbitrary": false,
+          "desc": [
+            "This returns whether the string contains the given string"
+          ],
+          "params": [
+            {
+              "name": "string",
+              "type": "String",
+              "desc": "the string to check"
+            }
+          ],
+          "returns": {
+            "type": "Boolean",
+            "desc": "whether the string contains the given string"
+          },
+          "examples": [
+            "'hello'.contains('lo'); // true"
+          ]
+        },
+        {
+          "name": "chars",
+          "is_arbitrary": false,
+          "desc": [
+            "This makes a list of all the characters in the string"
+          ],
+          "returns": {
+            "type": "List",
+            "desc": "the list of characters"
+          },
+          "examples": [
+            "'hello'.chars(); // [h, e, l, l, o]"
+          ]
+        },
+        {
+          "name": "find",
+          "is_arbitrary": false,
+          "desc": [
+            "This finds all matches of the regex in the string,",
+            "this does not find groups, for that use `<String>.findGroups(regex)`"
+          ],
+          "params": [
+            {
+              "name": "regex",
+              "type": "String",
+              "desc": "the regex to search the string with"
+            }
+          ],
+          "returns": {
+            "type": "List",
+            "desc": "the list of all instances of the regex in the string"
+          },
+          "examples": [
+            "'102i 1i'.find('([\\\\d+])i'); // ['2i', '1i']"
+          ]
+        },
+        {
+          "name": "reverse",
+          "is_arbitrary": false,
+          "desc": [
+            "This returns the string in reverse"
+          ],
+          "returns": {
+            "type": "String",
+            "desc": "the string in reverse"
+          },
+          "examples": [
+            "'hello'.reverse(); // 'olleh'"
+          ]
+        },
+        {
+          "name": "findAll",
+          "is_arbitrary": false,
+          "desc": [
+            "This finds all matches and groups of a regex in the matches in the string",
+            "the first group of each match will be the complete match and following",
+            "will be the groups of the regex, a group may be empty if it doesn't exist"
+          ],
+          "params": [
+            {
+              "name": "regex",
+              "type": "String",
+              "desc": "the regex to search the string with"
+            }
+          ],
+          "returns": {
+            "type": "List",
+            "desc": "the list of lists containg the matches"
+          },
+          "examples": [
+            "'102i 1i'.find('([\\\\d+])i'); // [['2i', '2', 'i'], ['1i', '1', 'i']]"
+          ]
+        },
+        {
+          "name": "capitalize",
+          "is_arbitrary": false,
+          "desc": [
+            "This returns the string in capitalized form"
+          ],
+          "returns": {
+            "type": "String",
+            "desc": "the string in capitalized form"
+          },
+          "examples": [
+            "'hello'.capitalize(); // 'Hello'"
+          ]
+        },
+        {
+          "name": "uppercase",
+          "is_arbitrary": false,
+          "desc": [
+            "This returns the string in uppercase"
+          ],
+          "returns": {
+            "type": "String",
+            "desc": "the string in uppercase"
+          },
+          "examples": [
+            "'hello'.uppercase(); // 'HELLO'"
+          ]
+        },
+        {
+          "name": "lowercase",
+          "is_arbitrary": false,
+          "desc": [
+            "This returns the string in lowercase"
+          ],
+          "returns": {
+            "type": "String",
+            "desc": "the string in lowercase"
+          },
+          "examples": [
+            "'HELLO'.lowercase(); // 'hello'"
+          ]
+        },
+        {
+          "name": "toNumber",
+          "is_arbitrary": false,
+          "desc": [
+            "This tries to convert the string to a number.",
+            "This method can convert hex or denary into numbers.",
+            "If the string is not a number, it will throw an error"
+          ],
+          "returns": {
+            "type": "Number",
+            "desc": "the number"
+          },
+          "examples": [
+            "'99'.toNumber(); // 99"
+          ]
+        },
+        {
+          "name": "subString",
+          "is_arbitrary": false,
+          "desc": [
+            "This returns a substring of the string"
+          ],
+          "params": [
+            {
+              "name": "from",
+              "type": "Number",
+              "desc": "the start index (inclusive)"
+            },
+            {
+              "name": "to",
+              "type": "Number",
+              "desc": "the end index (exclusive)"
+            }
+          ],
+          "returns": {
+            "type": "String",
+            "desc": "the substring"
+          },
+          "examples": [
+            "'hello'.subString(1, 3); // 'el'"
+          ]
+        }
+      ],
+      "static_methods": []
+    },
+    "Number": {
+      "name": "Number",
+      "desc": [
+        "This class cannot be constructed as it has a literal representation.",
+        "For math related functions see the Math class."
+      ],
+      "import_path": null,
+      "static_members": [],
+      "constructors": [],
+      "methods": [
+        {
+          "name": "floor",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to round a number down to the nearest integer"
+          ],
+          "returns": {
+            "type": "Number",
+            "desc": "the rounded number"
+          },
+          "examples": [
+            "3.5.floor();"
+          ]
+        },
+        {
+          "name": "ceil",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to round a number up to the nearest integer"
+          ],
+          "returns": {
+            "type": "Number",
+            "desc": "the rounded number"
+          },
+          "examples": [
+            "3.5.ceil();"
+          ]
+        },
+        {
+          "name": "isInfinite",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to check if a number is infinite"
+          ],
+          "returns": {
+            "type": "Boolean",
+            "desc": "true if the number is infinite"
+          },
+          "examples": [
+            "(1/0).isInfinite();"
+          ]
+        },
+        {
+          "name": "round",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to round a number to the nearest integer"
+          ],
+          "returns": {
+            "type": "Number",
+            "desc": "the rounded number"
+          },
+          "examples": [
+            "3.5.round();"
+          ]
+        },
+        {
+          "name": "isNaN",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to check if a number is not a number"
+          ],
+          "returns": {
+            "type": "Boolean",
+            "desc": "true if the number is not a number"
+          },
+          "examples": [
+            "(0/0).isNaN();"
+          ]
+        }
+      ],
+      "static_methods": []
+    },
+    "Boolean": {
+      "name": "Boolean",
+      "desc": [
+        "This is the boolean type, representing either true or false.",
+        "This class cannot be instantiated, or extended"
+      ],
+      "import_path": null,
+      "static_members": [],
+      "constructors": [],
+      "methods": [],
+      "static_methods": []
+    },
+    "Function": {
+      "name": "Function",
+      "desc": [
+        "This class is used for functions, and this is the only type that can be called.",
+        "You are able to extend this class and implement an 'invoke' method to create",
+        "your own function types, this class cannot be instantiated directly"
+      ],
+      "import_path": null,
+      "static_members": [],
+      "constructors": [
+        {
+          "desc": [
+            "This creates a function, this cannot be called directly, only from child classes"
+          ],
+          "examples": [
+            "\n            class ChildFunction: Function {\n                ChildFunction(): super();\n            }\n            "
+          ]
+        }
+      ],
+      "methods": [],
+      "static_methods": []
+    },
+    "Null": {
+      "name": "Null",
+      "desc": [
+        "This class is used for the null object,",
+        "this cannot be instantiated or extended"
+      ],
+      "import_path": null,
+      "static_members": [],
+      "constructors": [],
+      "methods": [],
+      "static_methods": []
+    },
+    "List": {
+      "name": "List",
+      "desc": [
+        "This class is used for collections of ordered elements"
+      ],
+      "import_path": null,
+      "static_members": [],
+      "constructors": [
+        {
+          "desc": [
+            "This creates a list, this cannot be called directly, only from child classes"
+          ],
+          "examples": [
+            "\n            class ChildList: List {\n                ChildList(): super();\n            }\n            "
+          ]
+        }
+      ],
+      "methods": [
+        {
+          "name": "remove",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to remove the value at a specific index, alternative to bracket assignment.",
+            "This will throw an error if the index is out of bounds"
+          ],
+          "params": [
+            {
+              "name": "index",
+              "type": "Number",
+              "desc": "the index of the value you want to remove"
+            }
+          ],
+          "returns": {
+            "type": "Object",
+            "desc": "the value that was removed"
+          },
+          "examples": [
+            "['object', 81, 96, 'case'].remove(1); // 81"
+          ]
+        },
+        {
+          "name": "get",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to get the value at a specific index, alternative to bracket accessor,",
+            "this will throw an erroor if the index given is out of bounds"
+          ],
+          "params": [
+            {
+              "name": "index",
+              "type": "Number",
+              "desc": "the index of the value you want to get"
+            }
+          ],
+          "returns": {
+            "type": "Object",
+            "desc": "the value at the index"
+          },
+          "examples": [
+            "['object', 81, 96, 'case'].get(1); // 81"
+          ]
+        },
+        {
+          "name": "append",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to append a value to the end of the list"
+          ],
+          "params": [
+            {
+              "name": "value",
+              "type": "Object",
+              "desc": "the value you want to append"
+            }
+          ],
+          "returns": {
+            "type": "List",
+            "desc": "the list"
+          },
+          "examples": [
+            "['object', 81, 96, 'case'].append('foo'); // ['object', 81, 96, 'case', 'foo']"
+          ]
+        },
+        {
+          "name": "indexOf",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to get the index of a specific value"
+          ],
+          "params": [
+            {
+              "name": "value",
+              "type": "Object",
+              "desc": "the value you want to get the index of"
+            }
+          ],
+          "returns": {
+            "type": "Number",
+            "desc": "the index of the value"
+          },
+          "examples": [
+            "['object', 81, 96, 'case', 81].indexOf(81); // 1"
+          ]
+        },
+        {
+          "name": "insert",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to insert a value at a specific index, this will throw an error if the index is out of bounds"
+          ],
+          "params": [
+            {
+              "name": "value",
+              "type": "Object",
+              "desc": "the value you want to insert"
+            },
+            {
+              "name": "index",
+              "type": "Number",
+              "desc": "the index you want to insert the value at"
+            }
+          ],
+          "returns": {
+            "type": "List",
+            "desc": "the list"
+          },
+          "examples": [
+            "['object', 81, 96, 'case'].insert('foo', 1); // ['object', 'foo', 81, 96, 'case']"
+          ]
+        },
+        {
+          "name": "clear",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to clear the list"
+          ],
+          "examples": [
+            "['object', 81, 96, 'case'].clear(); // []"
+          ]
+        },
+        {
+          "name": "lastIndexOf",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to get the last index of a specific value"
+          ],
+          "params": [
+            {
+              "name": "value",
+              "type": "Object",
+              "desc": "the value you want to get the last index of"
+            }
+          ],
+          "returns": {
+            "type": "Number",
+            "desc": "the last index of the value"
+          },
+          "examples": [
+            "['object', 81, 96, 'case', 96].lastIndexOf(96); // 4"
+          ]
+        },
+        {
+          "name": "map",
+          "is_arbitrary": false,
+          "desc": [
+            "This maps the list using the mapper, a function that takes a value and",
+            "returns a new value, and returns a new list with the mapped elements"
+          ],
+          "params": [
+            {
+              "name": "mapper",
+              "type": "Function",
+              "desc": "a function that takes a value and returns a new value"
+            }
+          ],
+          "returns": {
+            "type": "List",
+            "desc": "the mapped collection"
+          },
+          "examples": [
+            "\n            (list = [1, 2, 3]).map(fun(v) {\n                return v * 2;\n            });\n            // list = [2, 4, 6]\n            "
+          ]
+        },
+        {
+          "name": "contains",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to check if the list contains a specific value"
+          ],
+          "params": [
+            {
+              "name": "value",
+              "type": "Object",
+              "desc": "the value you want to check"
+            }
+          ],
+          "returns": {
+            "type": "Boolean",
+            "desc": "true if the list contains the value"
+          },
+          "examples": [
+            "['object', 81, 96, 'case'].contains('case'); // true"
+          ]
+        },
+        {
+          "name": "addAll",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to add all the values in another collection to the list"
+          ],
+          "params": [
+            {
+              "name": "collection",
+              "type": "Collection",
+              "desc": "the collection you want to add to the list"
+            }
+          ],
+          "returns": {
+            "type": "List",
+            "desc": "the list"
+          },
+          "examples": [
+            "['object', 81, 96, 'case'].addAll(['foo', 'object']); // ['object', 81, 96, 'case', 'foo', 'object']"
+          ]
+        },
+        {
+          "name": "filter",
+          "is_arbitrary": false,
+          "desc": [
+            "This filters the list using the predicate, a function that either returns",
+            "true or false, based on the element on whether it should be kept or not,",
+            "and returns a new list with the filtered elements"
+          ],
+          "params": [
+            {
+              "name": "predicate",
+              "type": "Function",
+              "desc": "a function that takes a value and returns Boolean"
+            }
+          ],
+          "returns": {
+            "type": "List",
+            "desc": "the filtered collection"
+          },
+          "examples": [
+            "\n            (list = [1, 2, 3]).filter(fun(v) {\n                return v > 1;\n            });\n            // list = [2, 3]\n            "
+          ]
+        },
+        {
+          "name": "set",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to set the value at a specific index, alternative to bracket assignment,",
+            "this will throw an erroor if the index given is out of bounds"
+          ],
+          "params": [
+            {
+              "name": "value",
+              "type": "Object",
+              "desc": "the value you want to set"
+            },
+            {
+              "name": "index",
+              "type": "Number",
+              "desc": "the index you want to set the value at"
+            }
+          ],
+          "returns": {
+            "type": "List",
+            "desc": "the list"
+          },
+          "examples": [
+            "['object', 81, 96, 'case'].set('foo', 1); // ['object', 'foo', 96, 'case']"
+          ]
+        },
+        {
+          "name": "reverse",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to reverse the list"
+          ],
+          "returns": {
+            "type": "List",
+            "desc": "the reversed list"
+          },
+          "examples": [
+            "['a', 'b', 'c', 'd'].reverse(); // ['d', 'c', 'b', 'a']"
+          ]
+        },
+        {
+          "name": "reduce",
+          "is_arbitrary": false,
+          "desc": [
+            "This reduces the list using the reducer, a function that takes an",
+            "accumulated value and a new value and returns the next accumulated value"
+          ],
+          "params": [
+            {
+              "name": "reducer",
+              "type": "Function",
+              "desc": "a function that takes a value and returns a new value"
+            }
+          ],
+          "returns": {
+            "type": "Object",
+            "desc": "the reduced value"
+          },
+          "examples": [
+            "\n            // a will start at 1 and b at 2\n            // next accumulator will be 3\n            // a will be 3 and b will be 3 = 6\n            (list = [1, 2, 3]).reduce(fun(a, b) {\n                return a + b;\n            });\n            // 6\n            "
+          ]
+        },
+        {
+          "name": "sort",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to sort the list using the elements compare method"
+          ],
+          "returns": {
+            "type": "List",
+            "desc": "the sorted list"
+          },
+          "examples": [
+            "['d', 'a', 'c', 'b'].sort(); // ['a', 'b', 'c', 'd']"
+          ]
+        },
+        {
+          "name": "removeAll",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to remove all the values in another collection from the list"
+          ],
+          "params": [
+            {
+              "name": "collection",
+              "type": "Collection",
+              "desc": "the collection you want to remove from the list"
+            }
+          ],
+          "returns": {
+            "type": "List",
+            "desc": "the list"
+          },
+          "examples": [
+            "['object', 81, 96, 'case'].removeAll(['foo', 'object']); // [81, 96, 'case']"
+          ]
+        },
+        {
+          "name": "retainAll",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to retain only the values that are in both lists"
+          ],
+          "params": [
+            {
+              "name": "list",
+              "type": "List",
+              "desc": "the list you want to retain values from"
+            }
+          ],
+          "returns": {
+            "type": "List",
+            "desc": "the list"
+          },
+          "examples": [
+            "['object', 81, 96, 'case'].retainAll(['case', 'object', 54]); // ['object', 'case']"
+          ]
+        },
+        {
+          "name": "containsAll",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to check if the list contains all the values in another collection"
+          ],
+          "params": [
+            {
+              "name": "collection",
+              "type": "Collection",
+              "desc": "the collection you want to check agains"
+            }
+          ],
+          "returns": {
+            "type": "Boolean",
+            "desc": "true if the list contains all the values in the collection"
+          },
+          "examples": [
+            "['object', 81, 96, 'case'].containsAll(['foo', 'object']); // false"
+          ]
+        },
+        {
+          "name": "prepend",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to prepend a value to the beginning of the list"
+          ],
+          "params": [
+            {
+              "name": "value",
+              "type": "Object",
+              "desc": "the value you want to prepend"
+            }
+          ],
+          "returns": {
+            "type": "List",
+            "desc": "the list"
+          },
+          "examples": [
+            "['object', 81, 96].prepend('foo'); // ['foo', 'object', 81, 96]"
+          ]
+        },
+        {
+          "name": "shuffle",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to shuffle the list"
+          ],
+          "returns": {
+            "type": "List",
+            "desc": "the shuffled list"
+          },
+          "examples": [
+            "['a', 'b', 'c', 'd'].shuffle(); // some random order ¯\\_(ツ)_/¯"
+          ]
+        },
+        {
+          "name": "flatten",
+          "is_arbitrary": false,
+          "desc": [
+            "If there are any objects in the list that are collections they will",
+            "be expanded and added to the list. However collections inside those",
+            "collections will not be flattened, this is returned as a new list"
+          ],
+          "returns": {
+            "type": "List",
+            "desc": "the flattened list"
+          },
+          "examples": [
+            "\n            (list = [1, 2, 3, [4, 5], [6, [7]]]).flatten();\n            // list = [1, 2, 3, 4, 5, 6, [7]]\n            "
+          ]
+        },
+        {
+          "name": "sort",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to sort the list using a comparator function"
+          ],
+          "params": [
+            {
+              "name": "comparator",
+              "type": "Function",
+              "desc": "the comparator function"
+            }
+          ],
+          "returns": {
+            "type": "List",
+            "desc": "the sorted list"
+          },
+          "examples": [
+            "['d', 'a', 'c', 'b'].sort(function(a, b) { return a < b; }); // ['a', 'b', 'c', 'd']"
+          ]
+        }
+      ],
+      "static_methods": []
+    },
+    "Map": {
+      "name": "Map",
+      "desc": [
+        "This class is used to create a map of objects, using keys and values.",
+        "This class cannot be directly instantiated, but can be extended to create a map of your own type."
+      ],
+      "import_path": null,
+      "static_members": [],
+      "constructors": [
+        {
+          "desc": [
+            "This creates an empty map, this cannot be called directly, only from child classes"
+          ],
+          "examples": [
+            "\n            class ChildMap: Map {\n                ChildMap(): super();\n            }\n            "
+          ]
+        }
+      ],
+      "methods": [
+        {
+          "name": "remove",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to remove a key and its value from the map"
+          ],
+          "params": [
+            {
+              "name": "key",
+              "type": "Object",
+              "desc": "the key you want to remove"
+            }
+          ],
+          "returns": {
+            "type": "Object",
+            "desc": "the value associated with the key, null if none"
+          },
+          "examples": [
+            "{'key': 'value'}.remove('key'); // 'value'"
+          ]
+        },
+        {
+          "name": "get",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to get the value of a key in the map"
+          ],
+          "params": [
+            {
+              "name": "key",
+              "type": "Object",
+              "desc": "the key you want to get the value of"
+            }
+          ],
+          "returns": {
+            "type": "Object",
+            "desc": "the value of the key, will return null if non-existent"
+          },
+          "examples": [
+            "{'key': 'value'}.get('key'); // 'value'"
+          ]
+        },
+        {
+          "name": "put",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to put a key and value in the map"
+          ],
+          "params": [
+            {
+              "name": "key",
+              "type": "Object",
+              "desc": "the key you want to put"
+            },
+            {
+              "name": "value",
+              "type": "Object",
+              "desc": "the value you want to put"
+            }
+          ],
+          "returns": {
+            "type": "Object",
+            "desc": "the previous value associated with the key, null if none"
+          },
+          "examples": [
+            "{'key': 'value'}.put('key2', 'value2'); // null"
+          ]
+        },
+        {
+          "name": "clear",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to clear the map of all the keys and values"
+          ],
+          "examples": [
+            "(map = {'key': 'value'}).clear(); // map = {}"
+          ]
+        },
+        {
+          "name": "map",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to map the values in the map and returns a new map"
+          ],
+          "params": [
+            {
+              "name": "remapper",
+              "type": "Function",
+              "desc": "the function you want to map the values with"
+            }
+          ],
+          "returns": {
+            "type": "Map",
+            "desc": "a new map with the mapped values"
+          },
+          "examples": [
+            "\n            map = {'key': 'value', 'key2': 'value2'}\n            map.map(fun(k, v) {\n                return [v, k];\n            });\n            // map = {'value': 'key', 'value2': 'key2'}\n            "
+          ]
+        },
+        {
+          "name": "putAll",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to put all the keys and values of another map into this map"
+          ],
+          "params": [
+            {
+              "name": "another map",
+              "type": "Map",
+              "desc": "the map you want to merge into this map"
+            }
+          ],
+          "examples": [
+            "(map = {'key': 'value'}).putAll({'key2': 'value2'}); // map = {'key': 'value', 'key2': 'value2'}"
+          ]
+        },
+        {
+          "name": "putIfAbsent",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to put a key and value in the map if it doesn't exist"
+          ],
+          "params": [
+            {
+              "name": "key",
+              "type": "Object",
+              "desc": "the key you want to put"
+            },
+            {
+              "name": "value",
+              "type": "Object",
+              "desc": "the value you want to put"
+            }
+          ],
+          "examples": [
+            "(map = {'key': 'value'}).putIfAbsent('key2', 'value2'); // map = {'key': 'value', 'key2': 'value2'}"
+          ]
+        },
+        {
+          "name": "containsKey",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to check if the map contains a specific key"
+          ],
+          "params": [
+            {
+              "name": "key",
+              "type": "Object",
+              "desc": "the key you want to check"
+            }
+          ],
+          "returns": {
+            "type": "Boolean",
+            "desc": "true if the map contains the key, false otherwise"
+          },
+          "examples": [
+            "{'key': 'value'}.containsKey('key'); // true"
+          ]
+        },
+        {
+          "name": "containsValue",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to check if the map contains a specific value"
+          ],
+          "params": [
+            {
+              "name": "value",
+              "type": "Object",
+              "desc": "the value you want to check"
+            }
+          ],
+          "returns": {
+            "type": "Boolean",
+            "desc": "true if the map contains the value, false otherwise"
+          },
+          "examples": [
+            "{'key': 'value'}.containsValue('foo'); // false"
+          ]
+        },
+        {
+          "name": "getKeys",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to get the keys in the map"
+          ],
+          "returns": {
+            "type": "List",
+            "desc": "a complete list of all the keys"
+          },
+          "examples": [
+            "{'key': 'value', 'key2': 'value2'}.getKeys(); // ['key', 'key2']"
+          ]
+        },
+        {
+          "name": "getValues",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to get the values in the map"
+          ],
+          "returns": {
+            "type": "List",
+            "desc": "a complete list of all the values"
+          },
+          "examples": [
+            "{'key': 'value', 'key2': 'value2'}.getValues(); // ['value', 'value2']"
+          ]
+        }
+      ],
+      "static_methods": [
+        {
+          "name": "unordered",
+          "is_arbitrary": false,
+          "desc": [
+            "This function allows you to create an unordered map"
+          ],
+          "returns": {
+            "type": "Map",
+            "desc": "an unordered map"
+          },
+          "examples": [
+            "Map.unordered();"
+          ]
+        }
+      ]
+    },
+    "Set": {
+      "name": "Set",
+      "desc": [
+        "Sets are collections of unique values. Similar to maps, without the values.",
+        "An instance of the class can be created by using `Set.of(values...)`"
+      ],
+      "import_path": null,
+      "static_members": [],
+      "constructors": [
+        {
+          "desc": [
+            "This creates an empty set"
+          ],
+          "examples": [
+            "new Set();"
+          ]
+        }
+      ],
+      "methods": [
+        {
+          "name": "add",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to add a value to the set"
+          ],
+          "params": [
+            {
+              "name": "value",
+              "type": "Object",
+              "desc": "the value you want to add to the set"
+            }
+          ],
+          "returns": {
+            "type": "Boolean",
+            "desc": "whether the value was successfully added to the set"
+          },
+          "examples": [
+            "Set.of().add('object');"
+          ]
+        },
+        {
+          "name": "remove",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to remove a value from the set"
+          ],
+          "params": [
+            {
+              "name": "value",
+              "type": "Object",
+              "desc": "the value you want to remove from the set"
+            }
+          ],
+          "returns": {
+            "type": "Boolean",
+            "desc": "whether the value was removed from the set"
+          },
+          "examples": [
+            "Set.of('object').remove('object');"
+          ]
+        },
+        {
+          "name": "get",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to get a value from in the set.",
+            "The reason this might be useful is if you want to retrieve something",
+            "from the set that will have the same hashcode but be in a different state",
+            "as the value you are passing in"
+          ],
+          "params": [
+            {
+              "name": "value",
+              "type": "Object",
+              "desc": "the value you want to get from the set"
+            }
+          ],
+          "returns": {
+            "type": "Object",
+            "desc": "the value you wanted to get, null if it wasn't in the set"
+          },
+          "examples": [
+            "Set.of('object').get('object');"
+          ]
+        },
+        {
+          "name": "clear",
+          "is_arbitrary": false,
+          "desc": [
+            "This removes all values from inside the set"
+          ],
+          "examples": [
+            "Set.of('object').clear();"
+          ]
+        },
+        {
+          "name": "map",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to map the set"
+          ],
+          "params": [
+            {
+              "name": "function",
+              "type": "Function",
+              "desc": "the function you want to map the set by"
+            }
+          ],
+          "returns": {
+            "type": "Set",
+            "desc": "the mapped set"
+          },
+          "examples": [
+            "Set.of(-9, 81, 96, 15).map(function(value) { return value * 2; });"
+          ]
+        },
+        {
+          "name": "toList",
+          "is_arbitrary": false,
+          "desc": [
+            "This returns a list of all the values in the set"
+          ],
+          "returns": {
+            "type": "List",
+            "desc": "the list of values in the set"
+          },
+          "examples": [
+            "Set.of('object', 81, 96, 'case').toList();"
+          ]
+        },
+        {
+          "name": "contains",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to check whether a value is in the set"
+          ],
+          "params": [
+            {
+              "name": "value",
+              "type": "Object",
+              "desc": "the value that you want to check in the set"
+            }
+          ],
+          "returns": {
+            "type": "Boolean",
+            "desc": "whether the value is in the set"
+          },
+          "examples": [
+            "Set.of('object').contains('object');"
+          ]
+        },
+        {
+          "name": "addAll",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to add all the values in a collection into the set"
+          ],
+          "params": [
+            {
+              "name": "collection",
+              "type": "Collection",
+              "desc": "the collection of values you want to add"
+            }
+          ],
+          "returns": {
+            "type": "Set",
+            "desc": "the modified set"
+          },
+          "examples": [
+            "Set.of().addAll(Set.of('object', 81, 96, 'case'));"
+          ]
+        },
+        {
+          "name": "filter",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to filter the set"
+          ],
+          "params": [
+            {
+              "name": "function",
+              "type": "Function",
+              "desc": "the function you want to filter the set by"
+            }
+          ],
+          "returns": {
+            "type": "Set",
+            "desc": "the filtered set"
+          },
+          "examples": [
+            "Set.of(-9, 81, 96, 15).filter(function(value) { return value > 80; });"
+          ]
+        },
+        {
+          "name": "reduce",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to reduce the set"
+          ],
+          "params": [
+            {
+              "name": "function",
+              "type": "Function",
+              "desc": "the function you want to reduce the set by"
+            }
+          ],
+          "returns": {
+            "type": "Object",
+            "desc": "the reduced set"
+          },
+          "examples": [
+            "Set.of(-9, 81, 96, 15).reduce(function(value, next) { return value + next; });"
+          ]
+        },
+        {
+          "name": "removeAll",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to remove all values in a collection from the set"
+          ],
+          "params": [
+            {
+              "name": "value",
+              "type": "Collection",
+              "desc": "the values you want to remove from the set"
+            }
+          ],
+          "returns": {
+            "type": "Set",
+            "desc": "the set with the values removed"
+          },
+          "examples": [
+            "Set.of('object', 'object').removeAll(Set.of('object'));"
+          ]
+        },
+        {
+          "name": "containsAll",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to check whether a collection of values are all in the set"
+          ],
+          "params": [
+            {
+              "name": "collection",
+              "type": "Collection",
+              "desc": "the collection of values you want to check in the set"
+            }
+          ],
+          "returns": {
+            "type": "Boolean",
+            "desc": "whether all the values are in the set"
+          },
+          "examples": [
+            "Set.of('object').containsAll(Set.of('object', 81, 96, 'case'));"
+          ]
+        }
+      ],
+      "static_methods": [
+        {
+          "name": "of",
+          "is_arbitrary": true,
+          "desc": [
+            "This allows you to create a set with an arbitrary number of values"
+          ],
+          "params": [
+            {
+              "name": "values...",
+              "type": "Object",
+              "desc": "the values you want to add to the set"
+            }
+          ],
+          "returns": {
+            "type": "Set",
+            "desc": "the set you created"
+          },
+          "examples": [
+            "Set.of('object', 81, 96, 'case');"
+          ]
+        },
+        {
+          "name": "unordered",
+          "is_arbitrary": false,
+          "desc": [
+            "This creates an unordered set"
+          ],
+          "returns": {
+            "type": "Set",
+            "desc": "the unordered set"
+          },
+          "examples": [
+            "Set.unordered();"
+          ]
+        }
+      ]
+    },
+    "Iterator": {
+      "name": "Iterator",
+      "desc": [
+        "This class represents an object that can be iterated over.",
+        "This class is used internally to denote whether an object can be",
+        "iterated over inside a foreach loop, this class cannot be extended",
+        "or instantiated"
+      ],
+      "import_path": null,
+      "static_members": [],
+      "constructors": [],
+      "methods": [],
+      "static_methods": []
+    },
+    "Error": {
+      "name": "Error",
+      "desc": [
+        "This class is used for errors, and this is the only type that can be thrown.",
+        "You are able to extend this class to create your own error types"
+      ],
+      "import_path": null,
+      "static_members": [],
+      "constructors": [
+        {
+          "desc": [
+            "This creates a new Error value with no message"
+          ],
+          "examples": [
+            "new Error();"
+          ]
+        },
+        {
+          "desc": [
+            "This creates a new Error value with the given details as a message"
+          ],
+          "params": [
+            {
+              "name": "details",
+              "type": "String",
+              "desc": "the details of the error"
+            }
+          ],
+          "examples": [
+            "new Error('This is an error');"
+          ]
+        },
+        {
+          "desc": [
+            "This creates a new Error value with the given details as a message and the given value"
+          ],
+          "params": [
+            {
+              "name": "details",
+              "type": "String",
+              "desc": "the details of the error"
+            },
+            {
+              "name": "value",
+              "type": "Object",
+              "desc": "the value that is related to the error"
+            }
+          ],
+          "examples": [
+            "new Error('This is an error', [1, 2, 3]);"
+          ]
+        }
+      ],
+      "methods": [
+        {
+          "name": "getValue",
+          "is_arbitrary": false,
+          "desc": [
+            "This returns the value that is related to the error"
+          ],
+          "returns": {
+            "type": "Object",
+            "desc": "the value that is related to the error"
+          },
+          "examples": [
+            "error.getValue();"
+          ]
+        },
+        {
+          "name": "getDetails",
+          "is_arbitrary": false,
+          "desc": [
+            "This returns the raw message of the error"
+          ],
+          "returns": {
+            "type": "String",
+            "desc": "the details of the error"
+          },
+          "examples": [
+            "error.getDetails();"
+          ]
+        }
+      ],
+      "static_methods": []
+    },
+    "Enum": {
+      "name": "Enum",
+      "desc": [
+        "This class is the super class of all enums in Arucas.",
+        "Enums cannot be instantiated or extended"
+      ],
+      "import_path": null,
+      "static_members": [],
+      "constructors": [],
+      "methods": [
+        {
+          "name": "getName",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to get the name of an enum value"
+          ],
+          "returns": {
+            "type": "String",
+            "desc": "the name of the enum value"
+          },
+          "examples": [
+            "enum.getName();"
+          ]
+        },
+        {
+          "name": "ordinal",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to get the ordinal of the enum value"
+          ],
+          "returns": {
+            "type": "Number",
+            "desc": "the ordinal of the enum value"
+          },
+          "examples": [
+            "enum.ordinal();"
+          ]
+        }
+      ],
+      "static_methods": []
+    },
+    "Type": {
+      "name": "Type",
+      "desc": [
+        "This class lets you get the type of another class"
+      ],
+      "import_path": null,
+      "static_members": [],
+      "constructors": [],
+      "methods": [
+        {
+          "name": "inheritsFrom",
+          "is_arbitrary": false,
+          "desc": [
+            "This checks whether a type is a subtype of another type"
+          ],
+          "params": [
+            {
+              "name": "type",
+              "type": "Type",
+              "desc": "the other type you want to check against"
+            }
+          ],
+          "returns": {
+            "type": "Boolean",
+            "desc": "whether the type is of that type"
+          },
+          "examples": [
+            "String.type.inheritsFrom(Number.type);"
+          ]
+        },
+        {
+          "name": "instanceOf",
+          "is_arbitrary": false,
+          "deprecated": [
+            "Use '<Type>.inheritsFrom(type)'"
+          ],
+          "desc": [
+            "This checks whether a type is a subtype of another type"
+          ],
+          "params": [
+            {
+              "name": "type",
+              "type": "Type",
+              "desc": "the other type you want to check against"
+            }
+          ],
+          "returns": {
+            "type": "Boolean",
+            "desc": "whether the type is of that type"
+          },
+          "examples": [
+            "String.type.instanceOf(Number.type);"
+          ]
+        }
+      ],
+      "static_methods": [
+        {
+          "name": "of",
+          "is_arbitrary": false,
+          "desc": [
+            "This gets the specific type of a value"
+          ],
+          "params": [
+            {
+              "name": "value",
+              "type": "Object",
+              "desc": "the value you want to get the type of"
+            }
+          ],
+          "returns": {
+            "type": "Type",
+            "desc": "the type of the value"
+          },
+          "examples": [
+            "Type.of(0);"
+          ]
+        }
+      ]
+    },
+    "Collection": {
+      "name": "Collection",
+      "desc": [
+        "This class is used to represent a collection of objects,",
+        "this class is used internally as the parent of maps, lists, and sets.",
+        "This cannot be extended or instantiated directly.",
+        "All collections inherit Iterable, and thus can be iterated over"
+      ],
+      "import_path": null,
+      "static_members": [],
+      "constructors": [],
+      "methods": [
+        {
+          "name": "isEmpty",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to check if the collection is empty"
+          ],
+          "returns": {
+            "type": "Boolean",
+            "desc": "true if the collection is empty"
+          },
+          "examples": [
+            "['object', 81, 96, 'case'].isEmpty(); // false"
+          ]
+        },
+        {
+          "name": "size",
+          "is_arbitrary": false,
+          "desc": [
+            "This allows you to get the size of the collection"
+          ],
+          "returns": {
+            "type": "Number",
+            "desc": "the size of the list"
+          },
+          "examples": [
+            "['object', 81, 96, 'case'].size();"
+          ]
+        }
+      ],
+      "static_methods": []
+    },
+    "File": {
+      "name": "File",
+      "desc": [
+        "This class allows you to read and write files"
+      ],
+      "import_path": null,
+      "static_members": [],
+      "constructors": [
+        {
+          "desc": [
+            "This creates a new File object with set path"
+          ],
+          "params": [
+            {
+              "name": "path",
+              "type": "String",
+              "desc": "the path of the file"
+            }
+          ],
+          "examples": [
+            "new File('foo/bar/script.arucas')"
+          ]
+        }
+      ],
+      "methods": [],
+      "static_methods": [
+        {
+          "name": "getDirectory",
+          "is_arbitrary": false,
+          "desc": [
+            "This returns the file of the working directory"
+          ],
+          "returns": {
+            "type": "File",
+            "desc": "the file of the working directory"
+          },
+          "examples": [
+            "File.getDirectory()"
+          ]
+        }
+      ]
+    },
+    "Thread": {
+      "name": "Thread",
+      "desc": [
+        "This class allows to to create threads for async executions.",
+        "This class cannot be instantiated or extended. To create a new",
+        "thread use the static method 'Thread.runThreaded()'"
+      ],
+      "import_path": null,
+      "static_members": [],
+      "constructors": [],
+      "methods": [
+        {
+          "name": "getName",
+          "is_arbitrary": false,
+          "desc": [
+            "This gets the name of the thread"
+          ],
+          "returns": {
+            "type": "String",
+            "desc": "the name of the thread"
+          },
+          "examples": [
+            "Thread.getCurrentThread().getName();"
+          ]
+        },
+        {
+          "name": "isAlive",
+          "is_arbitrary": false,
+          "desc": [
+            "This checks if the thread is alive (still running)"
+          ],
+          "returns": {
+            "type": "Boolean",
+            "desc": "true if the thread is alive, false if not"
+          },
+          "examples": [
+            "Thread.getCurrentThread().isAlive();"
+          ]
+        },
+        {
+          "name": "stop",
+          "is_arbitrary": false,
+          "desc": [
+            "This stops the thread from executing, anything that was running will be instantly stopped.",
+            "This method will fail if the thread is not alive"
+          ],
+          "examples": [
+            "Thread.getCurrentThread().stop();"
+          ]
+        },
+        {
+          "name": "thaw",
+          "is_arbitrary": false,
+          "desc": [
+            "This will thaw the thread from its frozen state, if the thread is not frozen then an",
+            "error will be thrown"
+          ],
+          "examples": [
+            "Thread.getCurrentThread().thaw();"
+          ]
+        },
+        {
+          "name": "getAge",
+          "is_arbitrary": false,
+          "desc": [
+            "This gets the age of the thread in milliseconds"
+          ],
+          "returns": {
+            "type": "Number",
+            "desc": "the age of the thread"
+          },
+          "examples": [
+            "Thread.getCurrentThread().getAge();"
+          ]
+        },
+        {
+          "name": "freeze",
+          "is_arbitrary": false,
+          "desc": [
+            "This serves the same purpose as 'Thread.freeze()' however this works on the current",
+            "thread instance, unlike 'Thread.freeze()' this cannot throw an error."
+          ],
+          "examples": [
+            "Thread.getCurrentThread().freeze()"
+          ]
+        }
+      ],
+      "static_methods": [
+        {
+          "name": "freeze",
+          "is_arbitrary": false,
+          "desc": [
+            "This freezes the current thread, stops anything else from executing on the thread.",
+            "This may fail if you try to freeze a non Arucas Thread in which case an error will be thrown"
+          ],
+          "examples": [
+            "Thread.freeze();"
+          ]
+        },
+        {
+          "name": "runThreaded",
+          "is_arbitrary": false,
+          "desc": [
+            "This starts a new thread with a specific name and runs a function on it"
+          ],
+          "params": [
+            {
+              "name": "name",
+              "type": "String",
+              "desc": "the name of the thread"
+            },
+            {
+              "name": "function",
+              "type": "Function",
+              "desc": "the function you want to run on a new thread"
+            }
+          ],
+          "returns": {
+            "type": "Thread",
+            "desc": "the new thread"
+          },
+          "examples": [
+            "\n            Thread.runThreaded(\"MyThread\", fun() {\n                print(\"Running asynchronously on MyThread\");\n            });\n            "
+          ]
+        },
+        {
+          "name": "runThreaded",
+          "is_arbitrary": false,
+          "desc": [
+            "This starts a new thread and runs a function on it, the thread will",
+            "terminate when it finishes executing the function, threads will stop automatically",
+            "when the program stops, you are also able to stop threads by using the Thread object"
+          ],
+          "params": [
+            {
+              "name": "function",
+              "type": "Function",
+              "desc": "the function you want to run on a new thread"
+            }
+          ],
+          "returns": {
+            "type": "Thread",
+            "desc": "the new thread"
+          },
+          "examples": [
+            "\n            Thread.runThreaded(fun() {\n                print(\"Running asynchronously!\");\n            });\n            "
+          ]
+        },
+        {
+          "name": "getCurrentThread",
+          "is_arbitrary": false,
+          "desc": [
+            "This gets the current thread that the code is running on,",
+            "this may throw an error if the thread is not safe to get,",
+            "which happens when running outside of Arucas Threads"
+          ],
+          "returns": {
+            "type": "Thread",
+            "desc": "the current thread"
+          },
+          "examples": [
+            "Thread.getCurrentThread();"
+          ]
+        }
+      ]
+    },
+    "Json": {
+      "name": "Json",
+      "desc": [
+        "This class allows you to create and manipulate JSON objects.",
+        "This class cannot be instantiated or extended"
+      ],
+      "import_path": "util.Json",
+      "static_members": [],
+      "constructors": [],
+      "methods": [
+        {
+          "name": "getValue",
+          "is_arbitrary": false,
+          "desc": [
+            "This converts the Json back into an object"
+          ],
+          "returns": {
+            "type": "Object",
+            "desc": "the Value parsed from the Json"
+          },
+          "examples": [
+            "json.getValue();"
+          ]
+        },
+        {
+          "name": "writeToFile",
+          "is_arbitrary": false,
+          "desc": [
+            "This writes the Json to a file",
+            "if the file given is a directory or cannot be",
+            "written to, an error will be thrown"
+          ],
+          "params": [
+            {
+              "name": "file",
+              "type": "File",
+              "desc": "the file that you want to write to"
+            }
+          ],
+          "examples": [
+            "json.writeToFile(new File('D:/cool/realDirectory'));"
+          ]
+        }
+      ],
+      "static_methods": [
+        {
+          "name": "fromList",
+          "is_arbitrary": false,
+          "desc": [
+            "This converts a list into a Json, an important thing to note is that",
+            "any values that are not Numbers, Booleans, Lists, Maps, or Null will use their",
+            "toString() member to convert them to a string"
+          ],
+          "params": [
+            {
+              "name": "list",
+              "type": "List",
+              "desc": "the list that you want to parse into a Json"
+            }
+          ],
+          "returns": {
+            "type": "Json",
+            "desc": "the Json parsed from the list"
+          },
+          "examples": [
+            "Json.fromList(['value', 1, true]);"
+          ]
+        },
+        {
+          "name": "fromString",
+          "is_arbitrary": false,
+          "desc": [
+            "This converts a string into a Json provided it is formatted correctly,",
+            "otherwise throwing an error"
+          ],
+          "params": [
+            {
+              "name": "string",
+              "type": "String",
+              "desc": "the string that you want to parse into a Json"
+            }
+          ],
+          "returns": {
+            "type": "Json",
+            "desc": "the Json parsed from the string"
+          },
+          "examples": [
+            "Json.fromString('{\"key\":\"value\"}');"
+          ]
+        },
+        {
+          "name": "fromMap",
+          "is_arbitrary": false,
+          "desc": [
+            "This converts a map into a Json, an important thing to note is that",
+            "any values that are not Numbers, Booleans, Lists, Maps, or Null will use their",
+            "toString() member to convert them to a string"
+          ],
+          "params": [
+            {
+              "name": "map",
+              "type": "Map",
+              "desc": "the map that you want to parse into a Json"
+            }
+          ],
+          "returns": {
+            "type": "Json",
+            "desc": "the Json parsed from the map"
+          },
+          "examples": [
+            "Json.fromMap({'key': ['value1', 'value2']});"
+          ]
+        },
+        {
+          "name": "fromFile",
+          "is_arbitrary": false,
+          "desc": [
+            "This will read a file and parse it into a Json"
+          ],
+          "params": [
+            {
+              "name": "file",
+              "type": "File",
+              "desc": "the file that you want to parse into a Json"
+            }
+          ],
+          "returns": {
+            "type": "Json",
+            "desc": "the Json parsed from the file"
+          },
+          "examples": [
+            "Json.fromFile(new File('this/path/is/an/example.json'));"
+          ]
+        }
+      ]
+    },
+    "Math": {
+      "name": "Math",
+      "desc": [
+        "Provides many basic math functions. This is a utility class, and cannot be constructed"
+      ],
+      "import_path": null,
+      "static_members": [
+        {
+          "name": "pi",
+          "assignable": false,
+          "desc": [
+            "The value of pi"
+          ],
+          "type": "Number",
+          "examples": [
+            "Math.pi;"
+          ]
+        },
+        {
+          "name": "e",
+          "assignable": false,
+          "desc": [
+            "The value of e"
+          ],
+          "type": "Number",
+          "examples": [
+            "Math.e;"
+          ]
+        },
+        {
+          "name": "root2",
+          "assignable": false,
+          "desc": [
+            "The value of root 2"
+          ],
+          "type": "Number",
+          "examples": [
+            "Math.root2;"
+          ]
+        }
+      ],
+      "constructors": [],
+      "methods": [],
+      "static_methods": [
+        {
+          "name": "abs",
+          "is_arbitrary": false,
+          "desc": [
+            "Returns the absolute value of a number"
+          ],
+          "params": [
+            {
+              "name": "num",
+              "type": "Number",
+              "desc": "the number to get the absolute value of"
+            }
+          ],
+          "returns": {
+            "type": "Number",
+            "desc": "the absolute value of the number"
+          },
+          "examples": [
+            "Math.abs(-3);"
+          ]
+        },
+        {
+          "name": "sin",
+          "is_arbitrary": false,
+          "desc": [
+            "Returns the sine of a number"
+          ],
+          "params": [
+            {
+              "name": "num",
+              "type": "Number",
+              "desc": "the number to get the sine of"
+            }
+          ],
+          "returns": {
+            "type": "Number",
+            "desc": "the sine of the number"
+          },
+          "examples": [
+            "Math.sin(Math.pi);"
+          ]
+        },
+        {
+          "name": "cos",
+          "is_arbitrary": false,
+          "desc": [
+            "Returns the cosine of a number"
+          ],
+          "params": [
+            {
+              "name": "num",
+              "type": "Number",
+              "desc": "the number to get the cosine of"
+            }
+          ],
+          "returns": {
+            "type": "Number",
+            "desc": "the cosine of the number"
+          },
+          "examples": [
+            "Math.cos(Math.pi);"
+          ]
+        },
+        {
+          "name": "tan",
+          "is_arbitrary": false,
+          "desc": [
+            "Returns the tangent of a number"
+          ],
+          "params": [
+            {
+              "name": "num",
+              "type": "Number",
+              "desc": "the number to get the tangent of"
+            }
+          ],
+          "returns": {
+            "type": "Number",
+            "desc": "the tangent of the number"
+          },
+          "examples": [
+            "Math.tan(Math.pi);"
+          ]
+        },
+        {
+          "name": "sqrt",
+          "is_arbitrary": false,
+          "desc": [
+            "Returns the square root of a number"
+          ],
+          "params": [
+            {
+              "name": "num",
+              "type": "Number",
+              "desc": "the number to square root"
+            }
+          ],
+          "returns": {
+            "type": "Number",
+            "desc": "the square root of the number"
+          },
+          "examples": [
+            "Math.sqrt(9);"
+          ]
+        },
+        {
+          "name": "log",
+          "is_arbitrary": false,
+          "desc": [
+            "Returns the logarithm of a number with a specified base"
+          ],
+          "params": [
+            {
+              "name": "base",
+              "type": "Number",
+              "desc": "the base"
+            },
+            {
+              "name": "num",
+              "type": "Number",
+              "desc": "the number to get the logarithm of"
+            }
+          ],
+          "returns": {
+            "type": "Number",
+            "desc": "the logarithm of the number"
+          },
+          "examples": [
+            "Math.log(2, 4);"
+          ]
+        },
+        {
+          "name": "log10",
+          "is_arbitrary": false,
+          "desc": [
+            "Returns the base 10 logarithm of a number"
+          ],
+          "params": [
+            {
+              "name": "num",
+              "type": "Number",
+              "desc": "the number to get the logarithm of"
+            }
+          ],
+          "returns": {
+            "type": "Number",
+            "desc": "the base 10 logarithm of the number"
+          },
+          "examples": [
+            "Math.log10(100);"
+          ]
+        },
+        {
+          "name": "min",
+          "is_arbitrary": false,
+          "desc": [
+            "Returns the smallest number"
+          ],
+          "params": [
+            {
+              "name": "num1",
+              "type": "Number",
+              "desc": "the first number to compare"
+            },
+            {
+              "name": "num2",
+              "type": "Number",
+              "desc": "the second number to compare"
+            }
+          ],
+          "returns": {
+            "type": "Number",
+            "desc": "the smallest number"
+          },
+          "examples": [
+            "Math.min(5, 2);"
+          ]
+        },
+        {
+          "name": "max",
+          "is_arbitrary": false,
+          "desc": [
+            "Returns the largest number"
+          ],
+          "params": [
+            {
+              "name": "num1",
+              "type": "Number",
+              "desc": "the first number to compare"
+            },
+            {
+              "name": "num2",
+              "type": "Number",
+              "desc": "the second number to compare"
+            }
+          ],
+          "returns": {
+            "type": "Number",
+            "desc": "the largest number"
+          },
+          "examples": [
+            "Math.max(5, 2);"
+          ]
+        },
+        {
+          "name": "floor",
+          "is_arbitrary": false,
+          "desc": [
+            "Rounds a number down to the nearest integer"
+          ],
+          "params": [
+            {
+              "name": "num",
+              "type": "Number",
+              "desc": "the number to round"
+            }
+          ],
+          "returns": {
+            "type": "Number",
+            "desc": "the rounded number"
+          },
+          "examples": [
+            "Math.floor(3.5);"
+          ]
+        },
+        {
+          "name": "ceil",
+          "is_arbitrary": false,
+          "desc": [
+            "Rounds a number up to the nearest integer"
+          ],
+          "params": [
+            {
+              "name": "num",
+              "type": "Number",
+              "desc": "the number to round"
+            }
+          ],
+          "returns": {
+            "type": "Number",
+            "desc": "the rounded number"
+          },
+          "examples": [
+            "Math.ceil(3.5);"
+          ]
+        },
+        {
+          "name": "signum",
+          "is_arbitrary": false,
+          "desc": [
+            "Returns the sign of a number, 1 if the number is positive,",
+            "-1 if the number is negative, and 0 if the number is 0"
+          ],
+          "params": [
+            {
+              "name": "num",
+              "type": "Number",
+              "desc": "the number to get the sign of"
+            }
+          ],
+          "returns": {
+            "type": "Number",
+            "desc": "the sign of the number"
+          },
+          "examples": [
+            "Math.signum(3);"
+          ]
+        },
+        {
+          "name": "mod",
+          "is_arbitrary": false,
+          "desc": [
+            "Returns the modulus of a division"
+          ],
+          "params": [
+            {
+              "name": "num1",
+              "type": "Number",
+              "desc": "the number to divide"
+            },
+            {
+              "name": "num2",
+              "type": "Number",
+              "desc": "the divisor"
+            }
+          ],
+          "returns": {
+            "type": "Number",
+            "desc": "the modulus of the division"
+          },
+          "examples": [
+            "Math.mod(5, 2);"
+          ]
+        },
+        {
+          "name": "ln",
+          "is_arbitrary": false,
+          "desc": [
+            "Returns the natural logarithm of a number"
+          ],
+          "params": [
+            {
+              "name": "num",
+              "type": "Number",
+              "desc": "the number to get the logarithm of"
+            }
+          ],
+          "returns": {
+            "type": "Number",
+            "desc": "the natural logarithm of the number"
+          },
+          "examples": [
+            "Math.ln(Math.e);"
+          ]
+        },
+        {
+          "name": "rem",
+          "is_arbitrary": false,
+          "desc": [
+            "Returns the remainder of a division"
+          ],
+          "params": [
+            {
+              "name": "num1",
+              "type": "Number",
+              "desc": "the number to divide"
+            },
+            {
+              "name": "num2",
+              "type": "Number",
+              "desc": "the divisor"
+            }
+          ],
+          "returns": {
+            "type": "Number",
+            "desc": "the remainder of the division"
+          },
+          "examples": [
+            "Math.rem(5, 2);"
+          ]
+        },
+        {
+          "name": "toRadians",
+          "is_arbitrary": false,
+          "desc": [
+            "Converts a number from degrees to radians"
+          ],
+          "params": [
+            {
+              "name": "num",
+              "type": "Number",
+              "desc": "the number to convert"
+            }
+          ],
+          "returns": {
+            "type": "Number",
+            "desc": "the number in radians"
+          },
+          "examples": [
+            "Math.toRadians(90);"
+          ]
+        },
+        {
+          "name": "toDegrees",
+          "is_arbitrary": false,
+          "desc": [
+            "Converts a number from radians to degrees"
+          ],
+          "params": [
+            {
+              "name": "num",
+              "type": "Number",
+              "desc": "the number to convert"
+            }
+          ],
+          "returns": {
+            "type": "Number",
+            "desc": "the number in degrees"
+          },
+          "examples": [
+            "Math.toDegrees(Math.pi);"
+          ]
+        },
+        {
+          "name": "round",
+          "is_arbitrary": false,
+          "desc": [
+            "Rounds a number to the nearest integer"
+          ],
+          "params": [
+            {
+              "name": "num",
+              "type": "Number",
+              "desc": "the number to round"
+            }
+          ],
+          "returns": {
+            "type": "Number",
+            "desc": "the rounded number"
+          },
+          "examples": [
+            "Math.round(3.5);"
+          ]
+        },
+        {
+          "name": "sec",
+          "is_arbitrary": false,
+          "desc": [
+            "Returns the secant of a number"
+          ],
+          "params": [
+            {
+              "name": "num",
+              "type": "Number",
+              "desc": "the number to get the secant of"
+            }
+          ],
+          "returns": {
+            "type": "Number",
+            "desc": "the secant of the number"
+          },
+          "examples": [
+            "Math.sec(Math.pi);"
+          ]
+        },
+        {
+          "name": "lerp",
+          "is_arbitrary": false,
+          "desc": [
+            "Linear interpolation between two numbers"
+          ],
+          "params": [
+            {
+              "name": "start",
+              "type": "Number",
+              "desc": "the first number"
+            },
+            {
+              "name": "end",
+              "type": "Number",
+              "desc": "the second number"
+            },
+            {
+              "name": "delta",
+              "type": "Number",
+              "desc": "the interpolation factor"
+            }
+          ],
+          "returns": {
+            "type": "Number",
+            "desc": "the interpolated number"
+          },
+          "examples": [
+            "Math.lerp(0, 10, 0.5);"
+          ]
+        },
+        {
+          "name": "clamp",
+          "is_arbitrary": false,
+          "desc": [
+            "Clamps a value between a minimum and maximum"
+          ],
+          "params": [
+            {
+              "name": "value",
+              "type": "Number",
+              "desc": "the value to clamp"
+            },
+            {
+              "name": "min",
+              "type": "Number",
+              "desc": "the minimum"
+            },
+            {
+              "name": "max",
+              "type": "Number",
+              "desc": "the maximum"
+            }
+          ],
+          "returns": {
+            "type": "Number",
+            "desc": "the clamped value"
+          },
+          "examples": [
+            "Math.clamp(10, 2, 8);"
+          ]
+        },
+        {
+          "name": "arcsin",
+          "is_arbitrary": false,
+          "desc": [
+            "Returns the arc sine of a number"
+          ],
+          "params": [
+            {
+              "name": "num",
+              "type": "Number",
+              "desc": "the number to get the arc sine of"
+            }
+          ],
+          "returns": {
+            "type": "Number",
+            "desc": "the arc sine of the number"
+          },
+          "examples": [
+            "Math.arcsin(Math.sin(Math.pi));"
+          ]
+        },
+        {
+          "name": "arccos",
+          "is_arbitrary": false,
+          "desc": [
+            "Returns the arc cosine of a number"
+          ],
+          "params": [
+            {
+              "name": "num",
+              "type": "Number",
+              "desc": "the number to get the arc cosine of"
+            }
+          ],
+          "returns": {
+            "type": "Number",
+            "desc": "the arc cosine of the number"
+          },
+          "examples": [
+            "Math.arccos(Math.cos(Math.pi));"
+          ]
+        },
+        {
+          "name": "cosec",
+          "is_arbitrary": false,
+          "desc": [
+            "Returns the cosecant of a number"
+          ],
+          "params": [
+            {
+              "name": "num",
+              "type": "Number",
+              "desc": "the number to get the cosecant of"
+            }
+          ],
+          "returns": {
+            "type": "Number",
+            "desc": "the cosecant of the number"
+          },
+          "examples": [
+            "Math.cosec(Math.pi);"
+          ]
+        },
+        {
+          "name": "cot",
+          "is_arbitrary": false,
+          "desc": [
+            "Returns the cotangent of a number"
+          ],
+          "params": [
+            {
+              "name": "num",
+              "type": "Number",
+              "desc": "the number to get the cotangent of"
+            }
+          ],
+          "returns": {
+            "type": "Number",
+            "desc": "the cotangent of the number"
+          },
+          "examples": [
+            "Math.cot(Math.pi);"
+          ]
+        },
+        {
+          "name": "arctan",
+          "is_arbitrary": false,
+          "desc": [
+            "Returns the arc tangent of a number"
+          ],
+          "params": [
+            {
+              "name": "num",
+              "type": "Number",
+              "desc": "the number to get the arc tangent of"
+            }
+          ],
+          "returns": {
+            "type": "Number",
+            "desc": "the arc tangent of the number"
+          },
+          "examples": [
+            "Math.arctan(Math.tan(Math.pi));"
+          ]
+        },
+        {
+          "name": "arctan2",
+          "is_arbitrary": false,
+          "desc": [
+            "Returns the angle theta of the polar coordinates (r, theta) that correspond to the rectangular",
+            "coordinates (x, y) by computing the arc tangent of the value y / x"
+          ],
+          "params": [
+            {
+              "name": "y",
+              "type": "Number",
+              "desc": "the ordinate coordinate"
+            },
+            {
+              "name": "x",
+              "type": "Number",
+              "desc": "the abscissa coordinate"
+            }
+          ],
+          "returns": {
+            "type": "Number",
+            "desc": "the theta component of the point (r, theta)"
+          },
+          "examples": [
+            "Math.arctan2(Math.tan(Math.pi), Math.cos(Math.pi)); // -3.141592"
+          ]
+        }
+      ]
+    },
+    "Network": {
+      "name": "Network",
+      "desc": [
+        "Allows you to do http requests. This is a utility class and cannot be constructed."
+      ],
+      "import_path": "util.Network",
+      "static_members": [],
+      "constructors": [],
+      "methods": [],
+      "static_methods": [
+        {
+          "name": "requestUrl",
+          "is_arbitrary": false,
+          "desc": [
+            "Requests an url and returns the response"
+          ],
+          "params": [
+            {
+              "name": "url",
+              "type": "String",
+              "desc": "the url to request"
+            }
+          ],
+          "returns": {
+            "type": "String",
+            "desc": "the response from the url"
+          },
+          "examples": [
+            "Network.requestUrl('https://google.com');"
+          ]
+        },
+        {
+          "name": "downloadFile",
+          "is_arbitrary": false,
+          "desc": [
+            "Downloads a file from an url to a file"
+          ],
+          "params": [
+            {
+              "name": "url",
+              "type": "String",
+              "desc": "the url to download from"
+            },
+            {
+              "name": "file",
+              "type": "File",
+              "desc": "the file to download to"
+            }
+          ],
+          "returns": {
+            "type": "Boolean",
+            "desc": "whether the download was successful"
+          },
+          "examples": [
+            "Network.downloadFile('https://arucas.com', new File('dir/downloads'));"
+          ]
+        },
+        {
+          "name": "openUrl",
+          "is_arbitrary": false,
+          "desc": [
+            "Opens an url in the default browser"
+          ],
+          "params": [
+            {
+              "name": "url",
+              "type": "String",
+              "desc": "the url to open"
+            }
+          ],
+          "examples": [
+            "Network.openUrl('https://google.com');"
+          ]
+        }
+      ]
+    },
+    "Java": {
+      "name": "Java",
+      "desc": [
+        "This class wraps Java values allowing for interactions between Java and Arucas.",
+        "This class cannot be instantiated or extended but you can create Java values by",
+        "using the static method 'Java.valueOf()' to convert Arucas to Java"
+      ],
+      "import_path": "util.Internal",
+      "static_members": [],
+      "constructors": [],
+      "methods": [
+        {
+          "name": "getField",
+          "is_arbitrary": false,
+          "deprecated": [
+            "You should call the method directly on the value: `Java.constructClass('me.senseiwells.impl.Test').A;`"
+          ],
+          "desc": [
+            "This returns the Java wrapped value of the specified field.",
+            "There is no reason for you to be using this method, it will be removed in future versions"
+          ],
+          "params": [
+            {
+              "name": "fieldName",
+              "type": "String",
+              "desc": "the name of the field"
+            }
+          ],
+          "returns": {
+            "type": "Java",
+            "desc": "the Java wrapped value of the field"
+          },
+          "examples": [
+            "Java.constructClass('me.senseiwells.impl.Test').getField('A');"
+          ]
+        },
+        {
+          "name": "setField",
+          "is_arbitrary": false,
+          "deprecated": [
+            "You should assign the value directly on the value: Java.constructClass('me.senseiwells.impl.Test').A = 'Hello';"
+          ],
+          "desc": [
+            "This sets the specified field to the specified value",
+            "There is no reason for you to be using this method, it will be removed in future versions"
+          ],
+          "params": [
+            {
+              "name": "fieldName",
+              "type": "String",
+              "desc": "the name of the field"
+            },
+            {
+              "name": "value",
+              "type": "Object",
+              "desc": "the value to set the field to, the value type must match the type of the field"
+            }
+          ],
+          "examples": [
+            "Java.constructClass('me.senseiwells.impl.Test').setField('A', 'Hello');"
+          ]
+        },
+        {
+          "name": "callMethod",
+          "is_arbitrary": true,
+          "deprecated": [
+            "You should call the method directly on the value: Java.valueOf('').isBlank();"
+          ],
+          "desc": [
+            "This calls the specified method with the specified parameters, calling the method",
+            "with this function has no benefits unless you are calling a function that also is",
+            "native to Arucas. For example `object.copy()` will use the Arucas 'copy' function.",
+            "But this is extremely rare so almost all of the time you should all the method normally."
+          ],
+          "params": [
+            {
+              "name": "methodName",
+              "type": "String",
+              "desc": "the name of the method"
+            },
+            {
+              "name": "parameters...",
+              "type": "Object",
+              "desc": "the parameters to call the method with"
+            }
+          ],
+          "returns": {
+            "type": "Java",
+            "desc": "the return value of the method call wrapped in the Java wrapper"
+          },
+          "examples": [
+            "Java.valueOf('').callMethod('isBlank');"
+          ]
+        },
+        {
+          "name": "toArucas",
+          "is_arbitrary": false,
+          "desc": [
+            "This converts the Java value to an Arucas Value if possible, this may still",
+            "be of a Java value if it cannot be converted. For example, Strings, Numbers, Lists",
+            "will be converted but "
+          ],
+          "returns": {
+            "type": "Object",
+            "desc": "the Value in Arucas, this may still be of Java value if the value cannot be converted into an Arucas value, values like Strings, Numbers, Lists, etc... will be converted"
+          },
+          "examples": [
+            "Java.valueOf([1, 2, 3]).toArucas();"
+          ]
+        },
+        {
+          "name": "getMethodDelegate",
+          "is_arbitrary": false,
+          "deprecated": [
+            "Consider wrapping the method in a lambda instead"
+          ],
+          "desc": [
+            "This returns a method delegate for the specified method name and parameters.",
+            "This should be avoided and replaced with a Arucas function wrapping the call instead.",
+            "For example: `delegate = (fun() { Java.valueOf('').isBlank(); });`.",
+            "Another thing to note is that the parameter count parameter is no longer",
+            "used and ignored internally, instead the parameters are calculated when you",
+            "call the delegate. The parameter remains for backwards compatability."
+          ],
+          "params": [
+            {
+              "name": "methodName",
+              "type": "String",
+              "desc": "the name of the method"
+            },
+            {
+              "name": "parameters",
+              "type": "Number",
+              "desc": "the number of parameters"
+            }
+          ],
+          "returns": {
+            "type": "Function",
+            "desc": "the function containing the Java method delegate"
+          },
+          "examples": [
+            "Java.valueOf('string!').getMethodDelegate('isBlank', 0);"
+          ]
+        }
+      ],
+      "static_methods": [
+        {
+          "name": "valueOf",
+          "is_arbitrary": false,
+          "desc": [
+            "Converts any Arucas value into a Java value then wraps it in the Java wrapper and returns it"
+          ],
+          "params": [
+            {
+              "name": "value",
+              "type": "Object",
+              "desc": "any value to get the Java value of"
+            }
+          ],
+          "examples": [
+            "Java.valueOf('Hello World!');"
+          ]
+        },
+        {
+          "name": "byteArray",
+          "is_arbitrary": false,
+          "desc": [
+            "Creates a Java byte array with a given size, the array is filled with 0's",
+            "by default and can be filled with only bytes"
+          ],
+          "params": [
+            {
+              "name": "size",
+              "type": "Number",
+              "desc": "the size of the array"
+            }
+          ],
+          "returns": {
+            "type": "Java",
+            "desc": "the Java byte array"
+          },
+          "examples": [
+            "Java.byteArray(10);"
+          ]
+        },
+        {
+          "name": "booleanArray",
+          "is_arbitrary": false,
+          "desc": [
+            "Creates a Java boolean array with a given size, the array is filled with false",
+            "by default and can be filled with only booleans"
+          ],
+          "params": [
+            {
+              "name": "size",
+              "type": "Number",
+              "desc": "the size of the array"
+            }
+          ],
+          "returns": {
+            "type": "Java",
+            "desc": "the Java boolean array"
+          },
+          "examples": [
+            "Java.booleanArray(10);"
+          ]
+        },
+        {
+          "name": "shortArray",
+          "is_arbitrary": false,
+          "desc": [
+            "Creates a Java short array with a given size, the array is filled with 0's",
+            "by default and can be filled with only shorts"
+          ],
+          "params": [
+            {
+              "name": "size",
+              "type": "Number",
+              "desc": "the size of the array"
+            }
+          ],
+          "returns": {
+            "type": "Java",
+            "desc": "the Java short array"
+          },
+          "examples": [
+            "Java.shortArray(10);"
+          ]
+        },
+        {
+          "name": "charArray",
+          "is_arbitrary": false,
+          "desc": [
+            "Creates a Java char array with a given size, the array is filled with null characters's",
+            "by default and can be filled with only chars"
+          ],
+          "params": [
+            {
+              "name": "size",
+              "type": "Number",
+              "desc": "the size of the array"
+            }
+          ],
+          "returns": {
+            "type": "Java",
+            "desc": "the Java char array"
+          },
+          "examples": [
+            "Java.charArray(10);"
+          ]
+        },
+        {
+          "name": "intArray",
+          "is_arbitrary": false,
+          "desc": [
+            "Creates a Java int array with a given size, the array is filled with 0's",
+            "by default and can be filled with only ints"
+          ],
+          "params": [
+            {
+              "name": "size",
+              "type": "Number",
+              "desc": "the size of the array"
+            }
+          ],
+          "returns": {
+            "type": "Java",
+            "desc": "the Java int array"
+          },
+          "examples": [
+            "Java.intArray(10);"
+          ]
+        },
+        {
+          "name": "longArray",
+          "is_arbitrary": false,
+          "desc": [
+            "Creates a Java long array with a given size, the array is filled with 0's",
+            "by default and can be filled with only longs"
+          ],
+          "params": [
+            {
+              "name": "size",
+              "type": "Number",
+              "desc": "the size of the array"
+            }
+          ],
+          "returns": {
+            "type": "Java",
+            "desc": "the Java long array"
+          },
+          "examples": [
+            "Java.longArray(10);"
+          ]
+        },
+        {
+          "name": "floatArray",
+          "is_arbitrary": false,
+          "desc": [
+            "Creates a Java float array with a given size, the array is filled with 0's",
+            "by default and can be filled with only floats"
+          ],
+          "params": [
+            {
+              "name": "size",
+              "type": "Number",
+              "desc": "the size of the array"
+            }
+          ],
+          "returns": {
+            "type": "Java",
+            "desc": "the Java float array"
+          },
+          "examples": [
+            "Java.floatArray(10);"
+          ]
+        },
+        {
+          "name": "doubleArray",
+          "is_arbitrary": false,
+          "desc": [
+            "Creates a Java double array with a given size, the array is filled with 0's",
+            "by default and can be filled with only doubles"
+          ],
+          "params": [
+            {
+              "name": "size",
+              "type": "Number",
+              "desc": "the size of the array"
+            }
+          ],
+          "returns": {
+            "type": "Java",
+            "desc": "the Java double array"
+          },
+          "examples": [
+            "Java.doubleArray(10);"
+          ]
+        },
+        {
+          "name": "getStaticMethodDelegate",
+          "is_arbitrary": false,
+          "deprecated": [
+            "You should use 'Java.classOf(name)' then wrap the static method"
+          ],
+          "desc": [
+            "Gets a static method delegate from a Java class, this should",
+            "be avoided and instance use 'classOf' to get the class instance",
+            "and then call the method on that class instance. The parameter count",
+            "parameter is no longer used internally but remains for backwards compatibility"
+          ],
+          "params": [
+            {
+              "name": "className",
+              "type": "String",
+              "desc": "the name of the class"
+            },
+            {
+              "name": "methodName",
+              "type": "String",
+              "desc": "the name of the method"
+            },
+            {
+              "name": "parameters",
+              "type": "Number",
+              "desc": "the number of parameters"
+            }
+          ],
+          "returns": {
+            "type": "Function",
+            "desc": "the delegated Java method in an Arucas Function"
+          },
+          "examples": [
+            "Java.getStaticMethodDelegate('java.lang.Integer', 'parseInt', 1);"
+          ]
+        },
+        {
+          "name": "callStaticMethod",
+          "is_arbitrary": true,
+          "deprecated": [
+            "You should use 'Java.classOf(name)' then call the static method"
+          ],
+          "desc": [
+            "Calls a static method of a Java class.",
+            "This should be avoided and instead use 'classOf' to get the",
+            "instance of the class then call the static method on that"
+          ],
+          "params": [
+            {
+              "name": "className",
+              "type": "String",
+              "desc": "the name of the class"
+            },
+            {
+              "name": "methodName",
+              "type": "String",
+              "desc": "the name of the method"
+            },
+            {
+              "name": "parameters...",
+              "type": "Object",
+              "desc": "any parameters to call the method with"
+            }
+          ],
+          "returns": {
+            "type": "Java",
+            "desc": "the return value of the method wrapped in the Java wrapper"
+          },
+          "examples": [
+            "Java.callStaticMethod('java.lang.Integer', 'parseInt', '123');"
+          ]
+        },
+        {
+          "name": "shortOf",
+          "is_arbitrary": false,
+          "desc": [
+            "Creates a Java value short, to be used in Java"
+          ],
+          "params": [
+            {
+              "name": "num",
+              "type": "Number",
+              "desc": "the number to convert to a Java short"
+            }
+          ],
+          "returns": {
+            "type": "Java",
+            "desc": "the short in Java wrapper"
+          },
+          "examples": [
+            "Java.shortOf(1);"
+          ]
+        },
+        {
+          "name": "longOf",
+          "is_arbitrary": false,
+          "desc": [
+            "Creates a Java value long, to be used in Java"
+          ],
+          "params": [
+            {
+              "name": "num",
+              "type": "Number",
+              "desc": "the number to convert to a Java long"
+            }
+          ],
+          "returns": {
+            "type": "Java",
+            "desc": "the long in Java wrapper"
+          },
+          "examples": [
+            "Java.longOf(1);"
+          ]
+        },
+        {
+          "name": "byteOf",
+          "is_arbitrary": false,
+          "desc": [
+            "Creates a Java value byte, to be used in Java"
+          ],
+          "params": [
+            {
+              "name": "num",
+              "type": "Number",
+              "desc": "the number to convert to a Java byte"
+            }
+          ],
+          "returns": {
+            "type": "Java",
+            "desc": "the byte in Java wrapper"
+          },
+          "examples": [
+            "Java.byteOf(1);"
+          ]
+        },
+        {
+          "name": "floatOf",
+          "is_arbitrary": false,
+          "desc": [
+            "Creates a Java value float, to be used in Java"
+          ],
+          "params": [
+            {
+              "name": "num",
+              "type": "Number",
+              "desc": "the number to convert to a Java float"
+            }
+          ],
+          "returns": {
+            "type": "Java",
+            "desc": "the float in Java wrapper"
+          },
+          "examples": [
+            "Java.floatOf(1.0);"
+          ]
+        },
+        {
+          "name": "intOf",
+          "is_arbitrary": false,
+          "desc": [
+            "Creates a Java value int, to be used in Java"
+          ],
+          "params": [
+            {
+              "name": "num",
+              "type": "Number",
+              "desc": "the number to convert to a Java int"
+            }
+          ],
+          "returns": {
+            "type": "Java",
+            "desc": "the int in Java wrapper"
+          },
+          "examples": [
+            "Java.intOf(1);"
+          ]
+        },
+        {
+          "name": "classOf",
+          "is_arbitrary": false,
+          "desc": [
+            "Gets a Java class from the name of the class"
+          ],
+          "params": [
+            {
+              "name": "className",
+              "type": "String",
+              "desc": "the name of the class you want to get"
+            }
+          ],
+          "returns": {
+            "type": "JavaClass",
+            "desc": "the Java class value which can be used as a class reference"
+          },
+          "examples": [
+            "Java.classOf('java.util.ArrayList');"
+          ]
+        },
+        {
+          "name": "getStaticField",
+          "is_arbitrary": false,
+          "deprecated": [
+            "You should use 'Java.classOf(name)' then access the static field"
+          ],
+          "desc": [
+            "Gets a static field Java value from a Java class"
+          ],
+          "params": [
+            {
+              "name": "className",
+              "type": "String",
+              "desc": "the name of the class"
+            },
+            {
+              "name": "fieldName",
+              "type": "String",
+              "desc": "the name of the field"
+            }
+          ],
+          "returns": {
+            "type": "Java",
+            "desc": "the Java value of the field wrapped in the Java wrapper"
+          },
+          "examples": [
+            "Java.getStaticField('java.lang.Integer', 'MAX_VALUE');"
+          ]
+        },
+        {
+          "name": "doubleOf",
+          "is_arbitrary": false,
+          "desc": [
+            "Creates a Java value double, to be used in Java"
+          ],
+          "params": [
+            {
+              "name": "num",
+              "type": "Number",
+              "desc": "the number to convert to a Java double"
+            }
+          ],
+          "returns": {
+            "type": "Java",
+            "desc": "the double in Java wrapper"
+          },
+          "examples": [
+            "Java.doubleOf(1.0);"
+          ]
+        },
+        {
+          "name": "setStaticField",
+          "is_arbitrary": false,
+          "deprecated": [
+            "You should use 'Java.classOf(name)' then assign the static field"
+          ],
+          "desc": [
+            "Sets a static field in a Java class with a new value"
+          ],
+          "params": [
+            {
+              "name": "className",
+              "type": "String",
+              "desc": "the name of the class"
+            },
+            {
+              "name": "fieldName",
+              "type": "String",
+              "desc": "the name of the field"
+            },
+            {
+              "name": "newValue",
+              "type": "Object",
+              "desc": "the new value"
+            }
+          ],
+          "examples": [
+            "\n            // Obviously this won't work, but it's just an example\n            Java.setStaticField('java.lang.Integer', 'MAX_VALUE', Java.intOf(100));\"\n            "
+          ]
+        },
+        {
+          "name": "constructClass",
+          "is_arbitrary": true,
+          "deprecated": [
+            "You should use 'Java.classOf(name)' then call the result to construct the class"
+          ],
+          "desc": [
+            "This constructs a Java class with specified class name and parameters.",
+            "This should be avoided and instead use 'classOf' to get the class",
+            "instance then call the constructor on that instance"
+          ],
+          "params": [
+            {
+              "name": "className",
+              "type": "String",
+              "desc": "the name of the class"
+            },
+            {
+              "name": "parameters...",
+              "type": "Object",
+              "desc": "any parameters to pass to the constructor"
+            }
+          ],
+          "returns": {
+            "type": "Java",
+            "desc": "the constructed Java Object wrapped in the Java wrapper"
+          },
+          "examples": [
+            "Java.constructClass('java.util.ArrayList');"
+          ]
+        },
+        {
+          "name": "classFromName",
+          "is_arbitrary": false,
+          "deprecated": [
+            "You should use 'Java.classOf(name)' instead"
+          ],
+          "desc": [
+            "Gets a Java class from the name of the class"
+          ],
+          "params": [
+            {
+              "name": "className",
+              "type": "String",
+              "desc": "the name of the class you want to get"
+            }
+          ],
+          "returns": {
+            "type": "Java",
+            "desc": "the Java Class<?> value wrapped in the Java wrapper"
+          },
+          "examples": [
+            "Java.classFromName('java.util.ArrayList');"
+          ]
+        },
+        {
+          "name": "consumerOf",
+          "is_arbitrary": false,
+          "desc": [
+            "Creates a Java Consumer object from a given function, it must have one",
+            "parameter and any return values will be ignored"
+          ],
+          "params": [
+            {
+              "name": "function",
+              "type": "Function",
+              "desc": "the function to be executed"
+            }
+          ],
+          "returns": {
+            "type": "Java",
+            "desc": "the Java Consumer object"
+          },
+          "examples": [
+            "\n            Java.consumerOf(fun(something) {\n                print(something);\n            });\n            "
+          ]
+        },
+        {
+          "name": "predicateOf",
+          "is_arbitrary": false,
+          "desc": [
+            "Creates a Java Predicate object from a given function"
+          ],
+          "params": [
+            {
+              "name": "function",
+              "type": "Function",
+              "desc": "the function to be executed, this must have one parameter and must return a boolean"
+            }
+          ],
+          "returns": {
+            "type": "Java",
+            "desc": "the Java Predicate object"
+          },
+          "examples": [
+            "\n            Java.predicateOf(fun(something) {\n                return something == 'something';\n            });\n            "
+          ]
+        },
+        {
+          "name": "charOf",
+          "is_arbitrary": false,
+          "desc": [
+            "Creates a Java value char, to be used in Java"
+          ],
+          "params": [
+            {
+              "name": "char",
+              "type": "String",
+              "desc": "the char to convert to a Java char"
+            }
+          ],
+          "returns": {
+            "type": "Java",
+            "desc": "the char in Java wrapper"
+          },
+          "examples": [
+            "Java.charOf('a');"
+          ]
+        },
+        {
+          "name": "functionOf",
+          "is_arbitrary": false,
+          "desc": [
+            "Creates a Java Function object from a given function"
+          ],
+          "params": [
+            {
+              "name": "function",
+              "type": "Function",
+              "desc": "the function to be executed, this must have one parameter and must return a value"
+            }
+          ],
+          "returns": {
+            "type": "Java",
+            "desc": "the Java Function object"
+          },
+          "examples": [
+            "\n            Java.functionOf(fun(something) {\n                return something;\n            });\n            "
+          ]
+        },
+        {
+          "name": "runnableOf",
+          "is_arbitrary": false,
+          "desc": [
+            "Creates a Java Runnable object from a given function, this must",
+            "have no paramters and any return values will be ignored"
+          ],
+          "params": [
+            {
+              "name": "function",
+              "type": "Function",
+              "desc": "the function to be executed"
+            }
+          ],
+          "returns": {
+            "type": "Java",
+            "desc": "the Java Runnable object"
+          },
+          "examples": [
+            "\n            Java.runnableOf(fun() {\n                print('runnable');\n            });\n            "
+          ]
+        },
+        {
+          "name": "objectArray",
+          "is_arbitrary": false,
+          "desc": [
+            "Creates a Java Object array with a given size, the array is filled with null values",
+            "by default and can be filled with any Java values, this array cannot be expanded"
+          ],
+          "params": [
+            {
+              "name": "size",
+              "type": "Number",
+              "desc": "the size of the array"
+            }
+          ],
+          "returns": {
+            "type": "Java",
+            "desc": "the Java Object array"
+          },
+          "examples": [
+            "Java.arrayWithSize(10);"
+          ]
+        },
+        {
+          "name": "arrayOf",
+          "is_arbitrary": true,
+          "desc": [
+            "Creates a Java Object array with a given values, this will be the size of the array,",
+            "this cannot be used to create primitive arrays"
+          ],
+          "params": [
+            {
+              "name": "values...",
+              "type": "Object",
+              "desc": "the values to add to the array"
+            }
+          ],
+          "returns": {
+            "type": "Java",
+            "desc": "the Java Object array"
+          },
+          "examples": [
+            "Java.arrayOf(1, 2, 3, 'string!', false);"
+          ]
+        },
+        {
+          "name": "supplierOf",
+          "is_arbitrary": false,
+          "desc": [
+            "Creates a Java Supplier object from a given function"
+          ],
+          "params": [
+            {
+              "name": "function",
+              "type": "Function",
+              "desc": "the function to be executed, this must have no parameters and must return (supply) a value"
+            }
+          ],
+          "returns": {
+            "type": "Java",
+            "desc": "the Java Supplier object"
+          },
+          "examples": [
+            "\n            Java.supplierOf(fun() {\n                return 'supplier';\n            });\n            "
+          ]
+        },
+        {
+          "name": "booleanOf",
+          "is_arbitrary": false,
+          "desc": [
+            "Creates a Java value boolean, to be used in Java"
+          ],
+          "params": [
+            {
+              "name": "bool",
+              "type": "Boolean",
+              "desc": "the boolean to convert to a Java boolean"
+            }
+          ],
+          "returns": {
+            "type": "Java",
+            "desc": "the boolean in Java wrapper"
+          },
+          "examples": [
+            "Java.booleanOf(true);"
+          ]
+        }
+      ]
+    },
+    "JavaClass": {
+      "name": "JavaClass",
+      "desc": [
+        "This class 'acts' as a Java class. You are able to call this class which",
+        "will invoke the Java class' constructor, and access and assign the static",
+        "fields of the class. This class cannot be instantiated or extended."
+      ],
+      "import_path": "util.Internal",
+      "static_members": [],
+      "constructors": [],
+      "methods": [],
+      "static_methods": []
+    }
+  }
+}
