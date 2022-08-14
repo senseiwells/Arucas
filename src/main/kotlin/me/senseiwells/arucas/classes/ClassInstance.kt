@@ -97,10 +97,13 @@ class ClassInstance internal constructor(val definition: ClassDefinition) {
 
     fun compare(interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace = Trace.INTERNAL) = this.definition.compare(this, interpreter, other, trace)
 
+    @JvmOverloads
     fun hashCode(interpreter: Interpreter, trace: LocatableTrace = Trace.INTERNAL) = this.definition.hashCode(this, interpreter, trace)
 
+    @JvmOverloads
     fun toString(interpreter: Interpreter, trace: LocatableTrace = Trace.INTERNAL) = this.definition.toString(this, interpreter, trace)
 
+    @JvmOverloads
     fun equals(interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace = Trace.INTERNAL) = this.definition.equals(this, interpreter, other, trace)
 
     @Deprecated("ClassInstances should be compared with interpreter context", ReplaceWith("instance.equals(interpreter, other)"))
