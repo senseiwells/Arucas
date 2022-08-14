@@ -27,6 +27,10 @@ import java.time.format.DateTimeFormatter
 import kotlin.random.Random
 
 class BuiltInExtension: ArucasExtension {
+    private companion object {
+        val INPUT_LOCK = Any()
+    }
+
     override fun getName() = "BuiltInExtension"
 
     override fun getBuiltInFunctions(): List<BuiltInFunction> {
@@ -101,10 +105,14 @@ class BuiltInExtension: ArucasExtension {
         examples = ["input('What is your name?');"]
     )
     private fun input(arguments: Arguments): String {
-        val prompt = arguments.nextPrimitive(StringDef::class)
-        arguments.interpreter.api.getOutput().println(prompt)
-        return arguments.interpreter.interuptable {
-            arguments.interpreter.api.getInput().takeInput().get()
+        // This just ensures that we don't try to take
+        // multiple inputs from different threads
+        synchronized(INPUT_LOCK) {
+            val prompt = arguments.nextPrimitive(StringDef::class)
+            arguments.interpreter.api.getOutput().println(prompt)
+            return arguments.interpreter.interuptable {
+                arguments.interpreter.api.getInput().takeInput().get()
+            }
         }
     }
 

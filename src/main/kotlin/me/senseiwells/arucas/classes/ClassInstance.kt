@@ -15,6 +15,7 @@ class ClassInstance internal constructor(val definition: ClassDefinition) {
     @Deprecated("This method should not be called directly", ReplaceWith("interpreter.visitCall(instance, args)"))
     internal fun call(interpreter: Interpreter, args: List<ClassInstance>) = this.definition.call(this, interpreter, args)
 
+    @JvmOverloads
     fun callMember(interpreter: Interpreter, name: String, args: List<ClassInstance>, trace: LocatableTrace, functionName: String = "<${this.definition.name}>.$name::${args.size}"): ClassInstance {
         val callTrace = CallTrace(trace, functionName)
         val arguments = ArrayList(args)

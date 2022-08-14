@@ -10,6 +10,7 @@ fun runtimeError(details: String, cause: Exception): Nothing {
     throw RuntimeError(details, cause, Trace.INTERNAL)
 }
 
+@JvmOverloads
 fun runtimeError(details: String, trace: Trace = Trace.INTERNAL): Nothing {
     throw RuntimeError(details, null, trace)
 }

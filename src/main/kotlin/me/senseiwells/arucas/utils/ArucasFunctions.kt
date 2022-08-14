@@ -220,6 +220,7 @@ sealed class BuiltInFunction(
 ): ArucasFunction(name, parameters) {
     companion object {
         @JvmStatic
+        @JvmOverloads
         fun of(
             name: String,
             parameters: Int,
@@ -230,6 +231,7 @@ sealed class BuiltInFunction(
         }
 
         @JvmStatic
+        @JvmOverloads
         fun of(
             name: String,
             function: (arguments: Arguments) -> Any?,
@@ -239,6 +241,7 @@ sealed class BuiltInFunction(
         }
 
         @JvmStatic
+        @JvmOverloads
         fun arb(
             name: String,
             function: (arguments: Arguments) -> Any?,
@@ -277,6 +280,7 @@ sealed class MemberFunction(
 ): BuiltInFunction(name, parameters, deprecation) {
     companion object {
         @JvmStatic
+        @JvmOverloads
         fun of(
             name: String,
             parameters: Int,
@@ -287,6 +291,7 @@ sealed class MemberFunction(
         }
 
         @JvmStatic
+        @JvmOverloads
         fun of(
             name: String,
             function: (arguments: Arguments) -> Any?,
@@ -296,6 +301,7 @@ sealed class MemberFunction(
         }
 
         @JvmStatic
+        @JvmOverloads
         fun arb(
             name: String,
             function: (arguments: Arguments) -> Any?,
@@ -323,6 +329,8 @@ sealed class ConstructorFunction(
     deprecation: String?
 ): MemberFunction("", parameters, deprecation) {
     companion object {
+        @JvmStatic
+        @JvmOverloads
         fun of(
             parameters: Int,
             function: (arguments: Arguments) -> Unit,
@@ -331,6 +339,8 @@ sealed class ConstructorFunction(
             return NonReturnable(parameters + 1, function, deprecation)
         }
 
+        @JvmStatic
+        @JvmOverloads
         fun of(
             function: (arguments: Arguments) -> Unit,
             deprecation: String? = null
@@ -338,6 +348,8 @@ sealed class ConstructorFunction(
             return NonReturnable(1, function, deprecation)
         }
 
+        @JvmStatic
+        @JvmOverloads
         fun arb(
             function: (arguments: Arguments) -> Unit,
             deprecation: String? = null
