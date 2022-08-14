@@ -15,7 +15,8 @@ fun runtimeError(details: String, trace: Trace = Trace.INTERNAL): Nothing {
     throw RuntimeError(details, null, trace)
 }
 
-open class RuntimeError(
+
+open class RuntimeError @JvmOverloads constructor(
     message: String,
     cause: Exception? = null,
     var topTrace: Trace? = null,

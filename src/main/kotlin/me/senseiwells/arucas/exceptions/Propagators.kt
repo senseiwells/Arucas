@@ -3,7 +3,7 @@ package me.senseiwells.arucas.exceptions
 import me.senseiwells.arucas.classes.ClassInstance
 import kotlin.RuntimeException
 
-sealed class Propagator(message: String? = null): RuntimeException(message) {
+abstract class Propagator(message: String? = null): RuntimeException(message) {
     override fun fillInStackTrace(): Throwable {
         return this
     }
