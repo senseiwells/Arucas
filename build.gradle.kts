@@ -38,7 +38,7 @@ tasks.jar {
     enabled = false
 }
 
-tasks.withType<ShadowJar> {
+tasks.shadowJar {
     configurations = listOf(shade)
 
     from("LICENSE")
@@ -49,8 +49,6 @@ tasks.withType<ShadowJar> {
     relocate("kotlin", "shadow.kotlin")
 
     archiveFileName.set("${rootProject.name}-${archiveVersion.get()}.jar")
-
-    // manifest.attributes["Main-Class"] = "me.senseiwells.arucas.MainKt"
 }
 
 tasks.distTar {
@@ -71,7 +69,8 @@ application {
 
 publishing {
     publications {
-        val publication = create<MavenPublication>("shadow")
-        project.shadow.component(publication)
+        register("mavenJava", MavenPublication::class) {
+            artifact(tasks["shadowJar"])
+        }
     }
 }
