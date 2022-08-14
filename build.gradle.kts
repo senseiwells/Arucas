@@ -6,6 +6,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "7.1.2"
     id("me.champeau.jmh") version "0.6.6"
 
+    `maven-publish`
     application
 }
 
