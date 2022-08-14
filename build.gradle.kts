@@ -1,5 +1,3 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-
 plugins {
     kotlin("jvm") version "1.7.10"
 
@@ -35,7 +33,8 @@ tasks.test {
 }
 
 tasks.jar {
-    enabled = false
+    // enabled = false
+    dependsOn("shadowJar")
 }
 
 tasks.shadowJar {
@@ -70,7 +69,7 @@ application {
 publishing {
     publications {
         register("mavenJava", MavenPublication::class) {
-            artifact(tasks["shadowJar"])
+            artifact(tasks["jar"])
         }
     }
 }
