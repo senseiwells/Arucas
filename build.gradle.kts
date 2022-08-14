@@ -33,8 +33,7 @@ tasks.test {
 }
 
 tasks.jar {
-    // enabled = false
-    dependsOn("shadowJar")
+    enabled = false
 }
 
 tasks.shadowJar {
@@ -69,7 +68,7 @@ application {
 publishing {
     publications {
         register("mavenJava", MavenPublication::class) {
-            artifact(tasks["jar"])
+            artifact(tasks["shadowJar"])
         }
     }
 }
