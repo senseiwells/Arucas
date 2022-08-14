@@ -71,11 +71,7 @@ application {
 
 publishing {
     publications {
-        register("mavenJava", MavenPublication::class) {
-            groupId = "com.github.senseiwells"
-            artifactId = "Arucas"
-            // from(components["java"])
-            artifact(tasks["shadowJar"])
-        }
+        val publication = create<MavenPublication>("shadow")
+        project.shadow.component(publication)
     }
 }
