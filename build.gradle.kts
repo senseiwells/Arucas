@@ -68,3 +68,14 @@ tasks.startScripts {
 application {
     mainClass.set("me.senseiwells.arucas.MainKt")
 }
+
+publishing {
+    publications {
+        register("mavenJava", MavenPublication::class) {
+            groupId = "com.github.senseiwells"
+            artifactId = "Arucas"
+            // from(components["java"])
+            artifact(tasks["shadowJar"])
+        }
+    }
+}

@@ -37,7 +37,7 @@ class ArucasSet(private val map: ArucasMap): ArucasCollection {
     }
 
     fun remove(interpreter: Interpreter, value: ClassInstance): Boolean {
-        return this.map.remove(interpreter, value) != null
+        return this.map.remove(interpreter, value) !== null
     }
 
     fun contains(interpreter: Interpreter, value: ClassInstance): Boolean {

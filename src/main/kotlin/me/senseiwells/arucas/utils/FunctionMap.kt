@@ -36,7 +36,7 @@ class FunctionMap: Iterable<ClassInstance> {
 
     fun has(name: String) = this.map.isInitialized() && this.map.value.containsKey(name)
 
-    fun has(name: String, parameters: Int) = this.map.isInitialized() && this.map.value[name]?.get(parameters) != null
+    fun has(name: String, parameters: Int) = this.map.isInitialized() && this.map.value[name]?.get(parameters) !== null
 
     fun get(name: String): ClassInstance? {
         if (!this.map.isInitialized()) {
