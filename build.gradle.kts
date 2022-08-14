@@ -34,6 +34,8 @@ tasks.test {
 
 tasks.jar {
     enabled = false
+
+    archiveClassifier.set("default")
 }
 
 tasks.shadowJar {
@@ -46,7 +48,10 @@ tasks.shadowJar {
     relocate("kotlinx", "shadow.kotlinx")
     relocate("kotlin", "shadow.kotlin")
 
-    archiveFileName.set("${rootProject.name}-${archiveVersion.get()}.jar")
+    val name: String? = null
+    archiveClassifier.set(name)
+
+    // archiveFileName.set("${rootProject.name}-${archiveVersion.get()}.jar")
 }
 
 tasks.distTar {
