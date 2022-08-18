@@ -107,6 +107,13 @@ object Util {
     }
 
     object Json {
+        @JvmStatic
+        val GSON: Gson = GsonBuilder().setPrettyPrinting().disableHtmlEscaping().serializeNulls().create()
+
+        fun serialize(element: JsonElement): String {
+            return GSON.toJson(element)
+        }
+
         fun toInstance(interpreter: Interpreter, element: JsonElement): ClassInstance {
             return when {
                 element.isJsonPrimitive -> {
