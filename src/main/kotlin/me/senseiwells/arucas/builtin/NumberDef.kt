@@ -32,15 +32,9 @@ class NumberDef(interpreter: Interpreter): CreatableDefinition<Double>(NUMBER, i
         val DECIMAL_FORMAT = DecimalFormat("#.############", DecimalFormatSymbols.getInstance(Locale.UK))
     }
 
-    private val pool = HashMap<Double, ClassInstance>()
-
     fun literal(string: String) = this.create(StringUtils.parseNumber(string))
 
     override fun canExtend() = false
-
-    override fun create(value: Double): ClassInstance {
-        return this.pool.getOrPut(value) { super.create(value) }
-    }
 
     override fun plus(instance: ClassInstance, interpreter: Interpreter, trace: LocatableTrace): ClassInstance {
         return instance
