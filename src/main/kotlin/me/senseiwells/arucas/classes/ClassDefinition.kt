@@ -628,6 +628,14 @@ class EnumDefinition(
         this.enums.value[name] = enum
     }
 
+    fun getEnum(name: String): ClassInstance? {
+        return if (this.enums.isInitialized()) this.enums.value[name] else null;
+    }
+
+    fun getNames(): Collection<String> {
+        return if (this.enums.isInitialized()) listOf() else this.enums.value.keys
+    }
+
     override fun canExtend(): Boolean {
         return false
     }
@@ -661,10 +669,7 @@ class EnumDefinition(
     }
 
     private fun fromString(arguments: Arguments): ClassInstance {
-        if (!this.enums.isInitialized()) {
-            return arguments.interpreter.getNull()
-        }
         val name = arguments.nextPrimitive(StringDef::class)
-        return this.enums.value[name] ?: arguments.interpreter.getNull()
+        return this.getEnum(name) ?: arguments.interpreter.getNull()
     }
 }
