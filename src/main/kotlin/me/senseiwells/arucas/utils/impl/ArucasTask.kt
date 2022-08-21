@@ -10,26 +10,25 @@ import java.util.concurrent.Future
 abstract class Task(interpreter: Interpreter) {
     protected val interpreter = interpreter.branch()
 
-    abstract fun isRunning(): Boolean
+    abstract fun canModify(): Boolean
 
     abstract fun addTask(function: ArucasFunction)
 
     abstract fun run(): Future<ClassInstance?>
 
     protected fun throwIfRunning() {
-        if (this.isRunning()) {
-            runtimeError("Cannot modify a task while its running")
+        if (this.canModify()) {
+            runtimeError("Cannot modify a task after it has been run")
         }
     }
 }
 
 class ArucasTask(interpreter: Interpreter): Task(interpreter) {
     private val tasks = ConcurrentLinkedQueue<ArucasFunction>()
-    @Volatile
-    private var running = 0
+    private var hasRun = false
 
-    override fun isRunning(): Boolean {
-        return this.running > 0
+    override fun canModify(): Boolean {
+        return this.hasRun
     }
 
     override fun addTask(function: ArucasFunction) {
@@ -38,23 +37,19 @@ class ArucasTask(interpreter: Interpreter): Task(interpreter) {
     }
 
     override fun run(): Future<ClassInstance?> {
+        this.hasRun = true
         return this.interpreter.threadHandler.runAsync {
-            try {
-                this.running++
-                val branch = this.interpreter.branch()
-                val iterator = this.tasks.iterator()
+            val branch = this.interpreter.branch()
+            val iterator = this.tasks.iterator()
 
-                while (iterator.hasNext()) {
-                    val task = iterator.next()
-                    if (!iterator.hasNext()) {
-                        return@runAsync task.invoke(branch, listOf())
-                    }
-                    task.invoke(branch, listOf())
+            while (iterator.hasNext()) {
+                val task = iterator.next()
+                if (!iterator.hasNext()) {
+                    return@runAsync task.invoke(branch, listOf())
                 }
-                branch.getNull()
-            } finally {
-                this.running--
+                task.invoke(branch, listOf())
             }
+            branch.getNull()
         }
     }
 }
