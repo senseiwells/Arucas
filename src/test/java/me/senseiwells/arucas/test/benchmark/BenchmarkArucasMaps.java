@@ -1,26 +1,16 @@
 package me.senseiwells.arucas.test.benchmark;
 
-import kotlin.Unit;
-import kotlin.coroutines.Continuation;
-import kotlin.jvm.functions.Function1;
-import kotlin.sequences.Sequence;
-import kotlinx.coroutines.*;
-import kotlinx.coroutines.selects.SelectClause0;
 import me.senseiwells.arucas.api.ArucasAPI;
 import me.senseiwells.arucas.api.ThreadHandler;
-import me.senseiwells.arucas.api.docs.ClassDoc;
 import me.senseiwells.arucas.builtin.NumberDef;
 import me.senseiwells.arucas.builtin.StringDef;
 import me.senseiwells.arucas.classes.ClassInstance;
 import me.senseiwells.arucas.core.Interpreter;
 import me.senseiwells.arucas.utils.impl.ArucasOrderedMap;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.openjdk.jmh.annotations.*;
 
 import java.util.LinkedHashMap;
 import java.util.Random;
-import java.util.concurrent.CancellationException;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
