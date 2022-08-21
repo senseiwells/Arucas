@@ -213,6 +213,7 @@ object Util {
         const val ERROR = "Error"
         const val FILE = "File"
         const val FUNCTION = "Function"
+        const val FUTURE = "Future"
         const val ITERABLE = "Iterator"
         const val JAVA = "Java"
         const val JAVA_CLASS = "JavaClass"
@@ -226,6 +227,7 @@ object Util {
         const val OBJECT = "Object"
         const val SET = "Set"
         const val STRING = "String"
+        const val TASK = "Task"
         const val THREAD = "Thread"
         const val TYPE = "Type"
     }

@@ -19,7 +19,7 @@ repositories {
 
 dependencies {
     // This is super shady... (no pun intended)
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")?.let { shade(it) }
+    // implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")?.let { shade(it) }
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.7.10")?.let { shade(it) }
     implementation("com.google.code.gson:gson:2.9.0")?.let { shade(it) }
 

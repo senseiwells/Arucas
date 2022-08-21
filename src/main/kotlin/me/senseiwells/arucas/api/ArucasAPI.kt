@@ -7,10 +7,8 @@ import me.senseiwells.arucas.classes.ClassDefinition
 import me.senseiwells.arucas.classes.PrimitiveDefinition
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.exceptions.RuntimeError
-import me.senseiwells.arucas.builtin.BuiltInExtension
-import me.senseiwells.arucas.extensions.JavaDef
-import me.senseiwells.arucas.builtin.MathDef
 import me.senseiwells.arucas.extensions.JavaClassDef
+import me.senseiwells.arucas.extensions.JavaDef
 import me.senseiwells.arucas.extensions.JsonDef
 import me.senseiwells.arucas.extensions.NetworkDef
 import me.senseiwells.arucas.utils.ArucasFunction
@@ -23,6 +21,7 @@ import me.senseiwells.arucas.utils.impl.*
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
+import java.util.concurrent.Future
 import java.util.stream.Stream
 import kotlin.reflect.KClass
 
@@ -233,6 +232,8 @@ interface ArucasAPI {
                 ::CollectionDef,
                 ::FileDef,
                 ::ThreadDef,
+                ::TaskDef,
+                ::FutureDef,
                 ::JsonDef,
                 ::MathDef,
                 ::NetworkDef
@@ -283,6 +284,8 @@ interface ArucasAPI {
             this.addConversion(File::class) { f, i -> i.create(FileDef::class, f) }
             this.addConversion(Path::class) { p, i -> i.create(FileDef::class, p.toFile()) }
             this.addConversion(ArucasThread::class) { a, i -> i.create(ThreadDef::class, a) }
+            this.addConversion(Task::class) { t, i -> i.create(TaskDef::class, t) }
+            this.addConversion(Future::class) { f, i -> i.create(FutureDef::class, f) }
             return this
         }
 

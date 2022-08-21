@@ -9,10 +9,11 @@ import me.senseiwells.arucas.exceptions.RuntimeError
 import me.senseiwells.arucas.exceptions.runtimeError
 import me.senseiwells.arucas.nodes.*
 import me.senseiwells.arucas.utils.*
+import me.senseiwells.arucas.utils.Properties
 import me.senseiwells.arucas.utils.impl.ArucasList
 import me.senseiwells.arucas.utils.impl.ArucasOrderedMap
 import me.senseiwells.arucas.utils.impl.ArucasThread
-import java.util.Stack
+import java.util.*
 import kotlin.reflect.KClass
 
 sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstance> {
@@ -817,6 +818,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
             this.api.getBuiltInDefinitions()?.forEach { p ->
                 val primitive = p(this)
                 this.primitives.add(primitive)
+                this.modules.addBuiltIn(primitive)
                 this.globalTable.addModule(primitive)
             }
             this.primitives.forEach { it.merge() }
@@ -855,7 +857,10 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         override lateinit var localCache: LocalCache
 
         override fun loadApi() {
-            // API already loaded by parent
+            // Most of API already loaded by parent
+            this.modules.forEachBuiltIn {
+                this.globalTable.addModule(it)
+            }
         }
 
         override fun defineClass(table: StackTable, definition: ClassDefinition) {

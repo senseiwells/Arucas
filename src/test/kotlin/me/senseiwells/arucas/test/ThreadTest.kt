@@ -45,4 +45,15 @@ class ThreadTest {
 			"""
         )
     }
+
+    @Test
+    fun testTasks() {
+        assertEquals(10,
+            """
+            task = new Task()
+                .then(fun() 10);
+            return task.run().await();
+            """
+        )
+    }
 }

@@ -10,8 +10,14 @@ import me.senseiwells.arucas.classes.ClassDefinition
  * the map directly as that could lead to a CME.
  */
 class ModuleMap {
+    private val builtIns = HashMap<String, ClassDefinition>()
     private val map = HashMap<String, HashMap<String, ClassDefinition>>()
     private val tried = HashSet<String>()
+
+    @Synchronized
+    fun addBuiltIn(definition: ClassDefinition) {
+        this.builtIns[definition.name] = definition
+    }
 
     @Synchronized
     fun add(importPath: String, definition: ClassDefinition) {
@@ -33,6 +39,11 @@ class ModuleMap {
     @Synchronized
     fun get(importPath: String, name: String): ClassDefinition? {
         return this.map[importPath]?.get(name)
+    }
+
+    @Synchronized
+    fun forEachBuiltIn(function: (ClassDefinition) -> Unit) {
+        this.builtIns.values.forEach(function)
     }
 
     @Synchronized

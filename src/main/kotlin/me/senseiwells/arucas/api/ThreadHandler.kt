@@ -1,6 +1,5 @@
 package me.senseiwells.arucas.api
 
-import kotlinx.coroutines.*
 import me.senseiwells.arucas.classes.ClassInstance
 import me.senseiwells.arucas.core.Arucas
 import me.senseiwells.arucas.core.Interpreter
@@ -8,7 +7,10 @@ import me.senseiwells.arucas.exceptions.ArucasError
 import me.senseiwells.arucas.exceptions.Propagator
 import me.senseiwells.arucas.utils.InternalTrace
 import me.senseiwells.arucas.utils.impl.ArucasThread
-import java.lang.Runnable
+import org.jetbrains.annotations.TestOnly
+import java.util.concurrent.ExecutionException
+import java.util.concurrent.Future
+import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledThreadPoolExecutor
 
 open class ThreadHandler(
@@ -16,19 +18,19 @@ open class ThreadHandler(
 ) {
     private val shutdown = ArrayList<Runnable>()
     protected open val threadGroup = ThreadGroup("Arucas Thread Group")
-    protected open val dispatcher = this.createDispatcher()
+    protected open val executor = this.createExecutor()
 
     private var errored = false
     var running: Boolean = false
         private set
 
-    fun executeAsync(): Deferred<ClassInstance?> {
+    fun executeAsync(): Future<ClassInstance?> {
         if (this.running) {
             throw IllegalStateException("This handler is occupied")
         }
         this.running = true
 
-        return this.coroutineAsync {
+        return this.async {
             Arucas.run(this.interpreter).also {
                 this.stop()
             }
@@ -36,11 +38,11 @@ open class ThreadHandler(
     }
 
     fun executeBlocking(): ClassInstance? {
-        return runBlocking { this@ThreadHandler.executeAsync().await() }
+        return this.executeAsync().get()
     }
 
-    fun runAsync(function: () -> ClassInstance): Deferred<ClassInstance?> {
-        return this.coroutineAsync { function() }
+    fun runAsync(function: () -> ClassInstance): Future<ClassInstance?> {
+        return this.async { function() }
     }
 
     fun runThreaded(runnable: Runnable, name: String): ArucasThread {
@@ -49,21 +51,12 @@ open class ThreadHandler(
 
     fun functionThreaded(callable: ClassInstance, interpreter: Interpreter, name: String = "Arucas Async Thread"): ArucasThread {
         val branch = interpreter.branch()
-        return this.runThreaded(this.runnableSafe {
+        return this.runThreaded(this.safe {
             branch.call(callable, listOf(), InternalTrace("Async Thread Function Call"))
         }, name)
     }
 
-    fun <T> wrapSafe(function: () -> T): T? {
-        return try {
-            function()
-        } catch (throwable: Throwable) {
-            this.handleError(throwable)
-            null
-        }
-    }
-
-    fun runnableSafe(runnable: Runnable): () -> Unit {
+    fun safe(runnable: Runnable): () -> Unit {
         return {
             try {
                 runnable.run()
@@ -73,35 +66,48 @@ open class ThreadHandler(
         }
     }
 
-    private fun <T> coroutineAsync(function: () -> T): Deferred<T?> {
-        return CoroutineScope(this@ThreadHandler.dispatcher).async {
-            return@async this@ThreadHandler.wrapSafe(function)
+    fun <T> safeReturnable(supplier: () -> T): () -> T? {
+        return {
+            try {
+                supplier()
+            } catch (throwable: Throwable) {
+                this.handleError(throwable)
+                null
+            }
         }
     }
 
-    // Intended for testing purposes only!
+    private fun <T> async(function: () -> T): Future<T?> {
+        return this.unsafeAsync(safeReturnable(function))
+    }
 
-    fun testAsync(): Deferred<ClassInstance> {
+    @TestOnly
+    fun testAsync(): Future<ClassInstance> {
         if (this.running) {
             throw IllegalStateException("This handler is occupied")
         }
         this.running = true
 
-        return this.coroutineUnsafeAsync {
+        return this.unsafeAsync {
             Arucas.run(this.interpreter).also {
                 this.stop()
             }
         }
     }
 
+    @TestOnly
     fun testBlocking(): ClassInstance {
-        return runBlocking { this@ThreadHandler.testAsync().await() }
+        try {
+            return this.testAsync().get()
+        } catch (e: ExecutionException) {
+            val cause = e.cause
+            cause ?: throw e
+            throw cause
+        }
     }
 
-    private fun <T> coroutineUnsafeAsync(function: () -> T): Deferred<T> {
-        return CoroutineScope(this@ThreadHandler.dispatcher).async {
-            return@async function()
-        }
+    private fun <T> unsafeAsync(function: () -> T): Future<T> {
+        return this.executor.submit(function)
     }
 
     @Synchronized
@@ -158,9 +164,9 @@ open class ThreadHandler(
 
     }
 
-    private fun createDispatcher(): ExecutorCoroutineDispatcher {
+    private fun createExecutor(): ScheduledExecutorService {
         return ScheduledThreadPoolExecutor(2) { runnable ->
             ArucasThread(this.interpreter, this.threadGroup, runnable, "Arucas Async Thread")
-        }.asCoroutineDispatcher()
+        }
     }
 }

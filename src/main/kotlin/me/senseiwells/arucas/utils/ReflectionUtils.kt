@@ -8,11 +8,7 @@ import java.lang.invoke.MethodHandle
 import java.lang.invoke.MethodHandles
 import java.lang.invoke.VarHandle
 import java.lang.invoke.WrongMethodTypeException
-import java.lang.reflect.Constructor
-import java.lang.reflect.Executable
-import java.lang.reflect.Field
-import java.lang.reflect.Method
-import java.lang.reflect.Modifier
+import java.lang.reflect.*
 
 object ReflectionUtils {
     private val methodCache = HashMap<MethodId, MethodHandle>()
@@ -27,7 +23,7 @@ object ReflectionUtils {
             val method = this.getMethod(callingClass, callingObject, obfuscator.obfuscateMethodName(callingClass, name), types)
             if (method == null) {
                 val typeNames = types.joinToString(prefix = "(", postfix = ")") { obfuscator.deobfuscateClass(it) }
-                runtimeError("No such method '$name' with type parameters $typeNames exists for '${obfuscator.deobfuscateClass(callingClass)}'")
+                runtimeError("No such method '$name' with type parameters $typeNames exists for Java type '${obfuscator.deobfuscateClass(callingClass)}'")
             }
             methodHandle = this.getMethodHandle(method)
             this.methodCache[id] = methodHandle

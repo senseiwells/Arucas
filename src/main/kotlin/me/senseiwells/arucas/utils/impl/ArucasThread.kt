@@ -10,7 +10,7 @@ class ArucasThread(
     group: ThreadGroup,
     runnable: Runnable,
     name: String
-): Thread(group, interpreter.threadHandler.runnableSafe(runnable), name) {
+): Thread(group, interpreter.threadHandler.safe(runnable), name) {
     private val freezeLock = ReentrantLock()
     private val condition = this.freezeLock.newCondition()
 
