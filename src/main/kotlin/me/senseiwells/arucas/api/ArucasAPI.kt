@@ -104,18 +104,18 @@ interface ArucasAPI {
 
         dummy.globalTable.getModules().sort().let {
             val generationPath = rootPath.resolve("BuiltIn.arucas").ensureParentExists()
-            Files.write(generationPath, listOf(docParser.parseClasses(it)))
+            Files.writeString(generationPath, docParser.parseClasses(it))
         }
 
         dummy.modules.forEach { p, c ->
             val path = p.replace('.', '/') + ".arucas"
             val generationPath = rootPath.resolve(path).ensureParentExists()
-            Files.write(generationPath, listOf(docParser.parseClasses(c.sort())))
+            Files.writeString(generationPath, docParser.parseClasses(c.sort()))
         }
 
         this.getBuiltInExtensions()?.let {
             val generationPath = rootPath.resolve("Extensions.arucas").ensureParentExists()
-            Files.write(generationPath, listOf(docParser.parseExtensions(it)))
+            Files.writeString(generationPath, docParser.parseExtensions(it))
         }
     }
 

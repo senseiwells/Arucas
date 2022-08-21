@@ -9,7 +9,6 @@ import me.senseiwells.arucas.utils.Util.Exception
 import me.senseiwells.arucas.utils.Util.File.ensureParentExists
 import java.nio.file.Files
 import java.nio.file.Path
-import kotlin.io.path.exists
 
 private const val LIBRARY_URL = "https://api.github.com/repos/senseiwells/ArucasLibraries/contents/libs"
 private val GSON = GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create()
@@ -40,7 +39,7 @@ open class ImplArucasLibrary(
         }
 
         val cachePath = this.getCachePath()
-        val cacheContent = if (cachePath.exists()) Files.readString(cachePath) else null
+        val cacheContent = if (Files.exists(cachePath)) Files.readString(cachePath) else null
         val cache = cacheContent?.let { Exception.catchAsNull { GSON.fromJson(cacheContent, JsonObject::class.java) } } ?: JsonObject()
         val thisCache = cache.get(name)?.asJsonObject ?: JsonObject()
 
@@ -78,7 +77,7 @@ open class ImplArucasLibrary(
     private fun updateCacheAndWrite(cache: JsonObject, thisCache: JsonObject, name: String) {
         thisCache.addProperty("last", System.currentTimeMillis() / 1_000)
         cache.add(name, thisCache)
-        Files.write(this.getCachePath(), listOf(GSON.toJson(cache)))
+        Files.writeString(this.getCachePath(), GSON.toJson(cache))
     }
 
     private fun updateLastAndRead(cache: JsonObject, thisCache: JsonObject, name: String, filePath: Path, interpreter: Interpreter): String? {

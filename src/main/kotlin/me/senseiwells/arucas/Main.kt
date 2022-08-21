@@ -9,9 +9,8 @@ import me.senseiwells.arucas.utils.ArgumentParser
 import me.senseiwells.arucas.utils.Properties
 import me.senseiwells.arucas.utils.Util.File.ensureExists
 import java.nio.file.Files
+import java.nio.file.Path
 import java.util.regex.Pattern
-import kotlin.io.path.Path
-import kotlin.io.path.writeText
 import kotlin.system.exitProcess
 
 private val FILE_MATCHER = Pattern.compile("^.*?\\.arucas\$")
@@ -33,8 +32,8 @@ fun main(args: Array<String>) {
         p.addBool("-cmdLine") { cmdLine = it }
         p.addStr("-run") { runFile(api, it) }
         p.addStr("-generate") {
-            val path = Path(it).ensureExists()
-            path.resolve("AllDocs.json").writeText(JsonParser.of(api).parse())
+            val path = Path.of(it).ensureExists()
+            Files.writeString(path.resolve("AllDocs.json"), JsonParser.of(api).parse())
             api.generateNativeFiles(path.resolve("libs"))
         }
 
@@ -70,7 +69,7 @@ fun commandLine(api: ArucasAPI) {
 
 fun runFile(api: ArucasAPI, filePath: String): Boolean {
     return try {
-        val path = Path(filePath)
+        val path = Path.of(filePath)
         val fileName = path.fileName?.toString() ?: filePath
         val content = Files.readString(path)
         Interpreter.of(content, fileName, api, ::ThreadHandler).threadHandler.executeBlocking()
