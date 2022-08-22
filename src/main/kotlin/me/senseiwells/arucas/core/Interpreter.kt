@@ -29,8 +29,8 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         }
 
         @JvmStatic
-        fun dummy(): Interpreter {
-            return of("", "dummy").also { it.loadApi() }
+        fun dummy(api: ArucasAPI = ArucasAPI.Builder().addDefault().build()): Interpreter {
+            return of("", "dummy", api).also { it.loadApi() }
         }
     }
 

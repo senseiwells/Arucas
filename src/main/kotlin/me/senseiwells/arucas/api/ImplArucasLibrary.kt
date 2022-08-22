@@ -16,7 +16,8 @@ private val GSON = GsonBuilder().setPrettyPrinting().disableHtmlEscaping().creat
 /**
  * Default Implementation of the Arucas Library Manager.
  */
-open class ImplArucasLibrary(
+
+open class ImplArucasLibrary @JvmOverloads constructor(
     override val importPath: Path = Arucas.PATH.resolve("libs"),
     private val libraryURL: String = LIBRARY_URL
 ): ArucasLibrary {

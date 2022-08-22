@@ -100,7 +100,7 @@ interface ArucasAPI {
      */
     fun generateNativeFiles(rootPath: Path = this.getLibraryManager().importPath) {
         val docParser = CodeDocParser()
-        val dummy = Interpreter.dummy()
+        val dummy = Interpreter.dummy(this)
 
         dummy.globalTable.getModules().sort().let {
             val generationPath = rootPath.resolve("BuiltIn.arucas").ensureParentExists()
