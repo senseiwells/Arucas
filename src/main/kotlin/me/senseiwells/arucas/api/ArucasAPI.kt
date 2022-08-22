@@ -92,7 +92,7 @@ interface ArucasAPI {
      * This method should return the properties
      * you want for the interpreter.
      */
-    fun getProperties(): Properties
+    fun getProperties(): () -> Properties
 
     /**
      * This method generates the BuiltIn libraries as
@@ -138,7 +138,7 @@ interface ArucasAPI {
             private set
         var library: ArucasLibrary = ImplArucasLibrary()
             private set
-        var properties = Properties()
+        var properties = { Properties() }
             private set
 
         init {
@@ -183,7 +183,7 @@ interface ArucasAPI {
             return this
         }
 
-        fun setInterpreterProperties(properties: Properties): Builder {
+        fun setInterpreterProperties(properties: () -> Properties): Builder {
             this.properties = properties
             return this
         }

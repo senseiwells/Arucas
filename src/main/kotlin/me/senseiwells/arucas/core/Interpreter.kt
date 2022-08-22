@@ -806,7 +806,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         threadHandlerFactory: (Interpreter) -> ThreadHandler
     ): Interpreter() {
         override val threadHandler = threadHandlerFactory(this)
-        override val properties = this.api.getProperties()
+        override val properties = this.api.getProperties()()
         override val modules = ModuleMap()
         override val functions = FunctionMap()
         override val primitives = PrimitiveDefinitionMap()
