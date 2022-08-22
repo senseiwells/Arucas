@@ -3,6 +3,7 @@ package me.senseiwells.arucas.api.docs.parser
 import com.google.gson.*
 import me.senseiwells.arucas.api.ArucasAPI
 import me.senseiwells.arucas.api.docs.FunctionDoc
+import me.senseiwells.arucas.core.Arucas
 
 class JsonParser private constructor(): DocParser() {
     companion object {
@@ -21,6 +22,7 @@ class JsonParser private constructor(): DocParser() {
 
     fun toJson(): JsonObject {
         val jsonObject = JsonObject()
+        jsonObject.addProperty("version", Arucas.VERSION)
         jsonObject.add("extensions", this.getExtensionsAsJson())
         jsonObject.add("classes", this.getClassesAsJson())
         return jsonObject
@@ -41,7 +43,7 @@ class JsonParser private constructor(): DocParser() {
 
     private fun getClassesAsJson(): JsonElement {
         val allClasses = JsonObject()
-        for (definition in definitions) {
+        for (definition in this.definitions) {
             val classObject = JsonObject()
             val docs = ParsedClassDocs(definition)
             val classDoc = docs.classDoc ?: throw IllegalStateException("Class '${definition.name}' was not documented")
@@ -53,6 +55,7 @@ class JsonParser private constructor(): DocParser() {
             }
             classObject.add("desc", description)
             classObject.add("import_path", importPath)
+            classObject.addProperty("superclass", definition.superclass().name)
             val staticMembers = JsonArray()
             for (doc in docs.staticFields) {
                 val memberObject = JsonObject()
