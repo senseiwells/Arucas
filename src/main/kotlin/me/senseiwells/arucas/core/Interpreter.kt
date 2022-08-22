@@ -248,7 +248,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         if (!this.modules.tried(importPath)) {
             val content = this.api.getLibraryManager().getImport(importPath.split("."), local, this)
             content ?: return false
-            val child: Interpreter = Child(content, name, true, this)
+            val child: Interpreter = Child(content, importPath, true, this)
             child.interpret()
             this.localCache.mergeWith(child.localCache)
             val definitions = child.globalTable.getClasses()

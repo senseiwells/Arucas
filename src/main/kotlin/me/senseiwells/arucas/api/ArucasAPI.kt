@@ -234,7 +234,6 @@ interface ArucasAPI {
                 ::ThreadDef,
                 ::TaskDef,
                 ::FutureDef,
-                ::JsonDef,
                 ::MathDef,
                 ::NetworkDef
             )
@@ -243,6 +242,7 @@ interface ArucasAPI {
 
         fun addDefaultClassDefinitions(): Builder {
             this.addClassDefinitions("util.Internal", ::JavaDef, ::JavaClassDef)
+            this.addClassDefinitions("util.Json", ::JsonDef)
             return this
         }
 

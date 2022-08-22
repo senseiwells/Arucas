@@ -1,56 +1,7 @@
 // ./src/test/resources/code/test.arucas
 
-buf = [];
+/*
+ * Comment
+ */
 
-// Parameters
-r=153;s=8;jitter=0.8;deg=50;
-t=s+2;
-for(i=0;i<t;i++){
-    for(j=0;j<t;j++){
-        k=2*(i*t+j); // k cycles through (0,2,...,t*t-2)
-        for(l=0;l<2;l++){
-            //megabuf(k+l,jitter*(random()-0.5)+l*i+(1-l)*j+0.5)
-            buf.insert(jitter*(random(999999)/999999-0.5)+l*i+(1-l)*j+0.5,k+l);
-        }
-    }
-}
-
-for(x=0; x<r; x++){
-    for(y=0; y<r/2; y++){
-        for(z=0; z<r; z++){
-            //print(" x: " + x + ",  z: " + z);
-            ox=0.5*s*(((2*x/r)-1)+1)*0.9999+1;
-            oz=0.5*s*(((2*z/r)-1)+1)*0.9999+1;
-            oy=((4*y/r)-1);
-            //print("ox: " + ox + ", oz: " + oz);
-
-            cx=0;cz=0;d=99999;
-            // Calculate the closest (previously generated) point to current block
-            // store grid coords as cx and cz, and distance as d
-            for(i=-1;i<=1;i++){
-                for(j=-1;j<=1;j++){
-                    ix=Math.floor(ox)+i;
-                    iz=Math.floor(oz)+j;
-                    k=2*(ix*t+iz);
-                    px=buf.get(k+1);
-                    pz=buf.get(k);
-                    dx=px-ox;
-                    dz=pz-oz;
-                    nd=Math.sqrt(dz*dz+dx*dx);
-                    if(nd<d){
-                        d=nd;cx=ix;cz=iz;
-                    }
-                }
-            }
-            // unique number for every generated point
-            p=cx*t+cz; // in [0,1,2,...,t²]
-            vx=Math.sin(deg);
-            vz=Math.cos(deg);
-            h=(vx*(ox-cx)+vz*(oz-cz))/Math.sqrt(vx*vx+vz*vz)*0.5+1;
-
-            if(h>oy+1){
-                // player.say("/setblock " + (startingPos.getX()+x) + " " + (startingPos.getY()+y) + " " + (startingPos.getZ()+z) + " white_concrete");
-            }
-        }
-    }
-}
+prin(;P0);
