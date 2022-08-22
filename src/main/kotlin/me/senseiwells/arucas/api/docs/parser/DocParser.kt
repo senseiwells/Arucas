@@ -16,15 +16,15 @@ abstract class DocParser protected constructor() {
     abstract fun parse(): String
 
     protected fun fromApi(api: ArucasAPI) {
-        val interpreter = Interpreter.dummy()
+        val interpreter = Interpreter.dummy(api)
         api.getBuiltInExtensions()?.forEach {
             this.extensions.add(it)
         }
-        api.getBuiltInDefinitions()?.forEach {
-            this.definitions.add(it(interpreter))
+        interpreter.modules.forEachBuiltIn {
+            this.definitions.add(it)
         }
-        api.getClassDefinitions()?.values?.flatten()?.forEach {
-            this.definitions.add(it(interpreter))
+        interpreter.modules.forEach { _, d ->
+            d.forEach(this.definitions::add)
         }
     }
 
