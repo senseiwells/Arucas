@@ -11,6 +11,7 @@ import me.senseiwells.arucas.utils.BuiltInFunction
 import me.senseiwells.arucas.utils.MemberFunction
 import me.senseiwells.arucas.utils.Util.Types.BOOLEAN
 import me.senseiwells.arucas.utils.Util.Types.OBJECT
+import me.senseiwells.arucas.utils.Util.Types.STRING
 import me.senseiwells.arucas.utils.Util.Types.TYPE
 
 @ClassDoc(name = TYPE, desc = ["This class lets you get the type of another class"])
@@ -40,7 +41,8 @@ class TypeDef(interpreter: Interpreter): CreatableDefinition<ClassDefinition>(TY
     override fun defineMethods(): List<MemberFunction> {
         return listOf(
             MemberFunction.of("instanceOf", 1, this::instanceOf, "Use '<Type>.inheritsFrom(type)'"),
-            MemberFunction.of("inheritsFrom", 1, this::inheritsFrom)
+            MemberFunction.of("inheritsFrom", 1, this::inheritsFrom),
+            MemberFunction.of("getName", this::getName),
         )
     }
 
@@ -67,5 +69,16 @@ class TypeDef(interpreter: Interpreter): CreatableDefinition<ClassDefinition>(TY
         val instance = arguments.nextPrimitive(this)
         val otherType = arguments.nextPrimitive(this)
         return instance.inheritsFrom(otherType)
+    }
+
+    @FunctionDoc(
+        name = "getName",
+        desc = ["This gets the name of the type"],
+        returns = [STRING, "the name of the type"],
+        examples = ["String.type.getName();"]
+    )
+    private fun getName(arguments: Arguments): String {
+        val instance = arguments.nextPrimitive(this)
+        return instance.name
     }
 }
