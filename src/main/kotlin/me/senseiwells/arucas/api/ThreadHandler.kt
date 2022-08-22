@@ -137,7 +137,7 @@ open class ThreadHandler(
     }
 
     @Synchronized
-    protected fun stop() {
+    fun stop() {
         if (this.running) {
             this.shutdown.forEach(Runnable::run)
             this.shutdown.clear()
