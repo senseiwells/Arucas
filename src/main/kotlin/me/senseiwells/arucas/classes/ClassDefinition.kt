@@ -479,7 +479,7 @@ abstract class PrimitiveDefinition<T: Any>(
         return instance.asPrimitive(this).toString()
     }
 
-    override fun asJavaValue(instance: ClassInstance): T? = instance.asPrimitive(this)
+    override fun asJavaValue(instance: ClassInstance): Any? = instance.asPrimitive(this)
 }
 
 abstract class CreatableDefinition<T: Any>(
