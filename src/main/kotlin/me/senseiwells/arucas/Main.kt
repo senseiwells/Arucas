@@ -20,7 +20,7 @@ fun main(args: Array<String>) {
         .addDefault()
 
     val properties = Properties()
-    builder.setInterpreterProperties(properties)
+    builder.setInterpreterProperties { properties }
     val api = builder.build()
 
     var cmdLine = true
