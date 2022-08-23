@@ -6,7 +6,6 @@ import me.senseiwells.arucas.classes.PrimitiveDefinition
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.core.Type
 import me.senseiwells.arucas.utils.LocatableTrace
-import me.senseiwells.arucas.utils.Util
 import me.senseiwells.arucas.utils.Util.Types.BOOLEAN
 
 @ClassDoc(
@@ -27,7 +26,7 @@ class BooleanDef(interpreter: Interpreter): PrimitiveDefinition<Boolean>(BOOLEAN
     override fun binary(instance: ClassInstance, interpreter: Interpreter, type: Type, other: () -> ClassInstance, trace: LocatableTrace): ClassInstance {
         return when (type) {
             Type.AND -> if (!instance.asPrimitive(this)) FALSE else this.from(this.and(instance, interpreter, other(), trace) as Boolean)
-            Type.OR -> if (instance.asPrimitive(this)) TRUE else this.from(this.and(instance, interpreter, other(), trace) as Boolean)
+            Type.OR -> if (instance.asPrimitive(this)) TRUE else this.from(this.or(instance, interpreter, other(), trace) as Boolean)
             else -> super.binary(instance, interpreter, type, other, trace)
         }
     }
