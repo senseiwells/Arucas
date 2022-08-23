@@ -23,16 +23,15 @@ class ArucasList private constructor(
     @Volatile
     override var size: Int = 0
 
-    init {
-        this.size = this.data.size
-        this.data = if (this.size == 0) DEFAULT_DATA else Array(this.data.size) { this.data[it] }
-    }
-
     constructor(): this(DEFAULT_DATA)
 
-    constructor(list: ArucasList): this(list.toArrayNullable())
+    constructor(list: ArucasList): this(list.toArrayNullable()) {
+        this.size = this.data.size
+    }
 
-    constructor(collection: Collection<ClassInstance>): this(collection.toTypedArray())
+    constructor(collection: Collection<ClassInstance>): this(collection.toTypedArray()) {
+        this.size = this.data.size
+    }
 
     fun toArray(): Array<ClassInstance> = Array(this.size) { this.data[it]!! }
 
@@ -159,6 +158,7 @@ class ArucasList private constructor(
         for (i in 0 until size) {
             data[i] = null
         }
+        this.size = 0
     }
 
     @Synchronized
