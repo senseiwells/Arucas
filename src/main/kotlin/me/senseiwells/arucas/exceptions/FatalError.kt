@@ -7,8 +7,16 @@ import java.util.*
 class FatalError(
     message: String,
     override val cause: Throwable,
-    private val stackTrace: Stack<Trace>
+    stackTrace: Stack<Trace>
 ): ArucasError(message) {
+    private val stackTrace = Stack<Trace>()
+
+    init {
+        for (trace in stackTrace) {
+            this.stackTrace.push(trace)
+        }
+    }
+
     override fun format(interpreter: Interpreter): String {
         val builder = StringBuilder()
         for (trace in this.stackTrace) {
