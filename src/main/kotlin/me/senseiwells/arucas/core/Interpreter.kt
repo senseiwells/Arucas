@@ -145,7 +145,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         } catch (fatal: FatalError) {
             throw fatal
         } catch (propagator: Propagator) {
-            throw propagator;
+            throw propagator
         } catch (throwable: Throwable) {
             throw FatalError("An unexpected error was thrown", throwable, this.stackTrace)
         } finally {
