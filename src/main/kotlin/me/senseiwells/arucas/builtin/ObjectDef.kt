@@ -8,7 +8,10 @@ import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.core.Type
 import me.senseiwells.arucas.core.Type.*
 import me.senseiwells.arucas.exceptions.runtimeError
-import me.senseiwells.arucas.utils.*
+import me.senseiwells.arucas.utils.Arguments
+import me.senseiwells.arucas.utils.LocatableTrace
+import me.senseiwells.arucas.utils.MemberFunction
+import me.senseiwells.arucas.utils.Trace
 import me.senseiwells.arucas.utils.Util.Types.BOOLEAN
 import me.senseiwells.arucas.utils.Util.Types.NUMBER
 import me.senseiwells.arucas.utils.Util.Types.OBJECT
@@ -113,7 +116,7 @@ class ObjectDef(interpreter: Interpreter): PrimitiveDefinition<Any>(OBJECT, inte
         return 0
     }
 
-    override fun notEquals(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace) = !this.equals(instance, interpreter, other, trace)
+    override fun notEquals(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace) = !instance.equals(interpreter, other, trace)
 
     override fun equals(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace) = instance === other
 
