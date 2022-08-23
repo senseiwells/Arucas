@@ -142,6 +142,8 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         } catch (runtime: RuntimeError) {
             runtime.fillStackTrace(this.stackTrace)
             throw runtime
+        } catch (fatal: FatalError) {
+            throw fatal
         } catch (throwable: Throwable) {
             throw FatalError("An unexpected error was thrown", throwable, this.stackTrace)
         } finally {
