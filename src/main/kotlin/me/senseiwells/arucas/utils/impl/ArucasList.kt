@@ -16,7 +16,9 @@ class ArucasList private constructor(
 
         @JvmStatic
         fun of(vararg elements: ClassInstance): ArucasList {
-            return ArucasList(arrayOf(*elements))
+            return ArucasList(arrayOf(*elements)).also {
+                it.size = elements.size
+            }
         }
     }
 
