@@ -4,6 +4,7 @@ import me.senseiwells.arucas.classes.ClassInstance
 import me.senseiwells.arucas.core.Arucas
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.exceptions.ArucasError
+import me.senseiwells.arucas.exceptions.FatalError
 import me.senseiwells.arucas.exceptions.Propagator
 import me.senseiwells.arucas.utils.InternalTrace
 import me.senseiwells.arucas.utils.impl.ArucasThread
@@ -124,6 +125,7 @@ open class ThreadHandler(
             when (throwable) {
                 is Propagator.Stop -> return
                 is Propagator -> this.handleInvalidPropagator(throwable)
+                is FatalError -> this.handleFatalError(throwable)
                 is ArucasError -> this.handleArucasError(throwable)
                 else -> this.handleFatalError(throwable)
             }
@@ -154,6 +156,10 @@ open class ThreadHandler(
 
     protected open fun handleInvalidPropagator(propagator: Propagator) {
         this.interpreter.api.getOutput().println(propagator.message)
+    }
+
+    protected open fun handleFatalError(fatalError: FatalError) {
+        this.interpreter.api.getOutput().printError(fatalError.format(this.interpreter))
     }
 
     protected open fun handleFatalError(throwable: Throwable) {

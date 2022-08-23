@@ -4,6 +4,7 @@ import me.senseiwells.arucas.api.ArucasAPI
 import me.senseiwells.arucas.api.ThreadHandler
 import me.senseiwells.arucas.builtin.*
 import me.senseiwells.arucas.classes.*
+import me.senseiwells.arucas.exceptions.FatalError
 import me.senseiwells.arucas.exceptions.Propagator
 import me.senseiwells.arucas.exceptions.RuntimeError
 import me.senseiwells.arucas.exceptions.runtimeError
@@ -141,6 +142,8 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         } catch (runtime: RuntimeError) {
             runtime.fillStackTrace(this.stackTrace)
             throw runtime
+        } catch (throwable: Throwable) {
+            throw FatalError("An unexpected error was thrown", throwable, this.stackTrace)
         } finally {
             this.stackTrace.pop()
         }
