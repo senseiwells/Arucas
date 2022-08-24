@@ -141,9 +141,9 @@ open class ThreadHandler(
     @Synchronized
     fun stop() {
         if (this.running) {
-            val i = 0;
+            var i = 0;
             while (i < this.shutdown.size) {
-                this.shutdown[i].run()
+                this.shutdown[i++].run()
             }
             this.shutdown.clear()
 
