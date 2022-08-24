@@ -141,7 +141,10 @@ open class ThreadHandler(
     @Synchronized
     fun stop() {
         if (this.running) {
-            this.shutdown.forEach(Runnable::run)
+            val i = 0;
+            while (i < this.shutdown.size) {
+                this.shutdown[i].run()
+            }
             this.shutdown.clear()
 
             this.threadGroup.interrupt()
