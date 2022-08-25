@@ -4,7 +4,6 @@
 gradle/
 build/
 out/
-# classes/
 
 # idea
 
@@ -24,3 +23,7 @@ bin/
 # fabric
 
 run/
+
+# obsidian
+
+.obsidian/
