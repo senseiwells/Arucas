@@ -35,7 +35,7 @@ class FileDef(interpreter: Interpreter): CreatableDefinition<File>(FILE, interpr
     @ConstructorDoc(
         desc = ["This creates a new File object with set path"],
         params = [STRING, "path", "the path of the file"],
-        examples = ["new File('foo/bar/script.arucas')"]
+        examples = ["new File('foo/bar/script.arucas');"]
     )
     private fun construct(arguments: Arguments) {
         val instance = arguments.next()
@@ -54,7 +54,7 @@ class FileDef(interpreter: Interpreter): CreatableDefinition<File>(FILE, interpr
         name = "getDirectory",
         desc = ["This returns the file of the working directory"],
         returns = [FILE, "the file of the working directory"],
-        examples = ["File.getDirectory()"]
+        examples = ["File.getDirectory();"]
     )
     @Suppress("UNUSED_PARAMETER")
     private fun getDirectory(arguments: Arguments): ClassInstance {
@@ -81,7 +81,7 @@ class FileDef(interpreter: Interpreter): CreatableDefinition<File>(FILE, interpr
         name = "getName",
         desc = ["This returns the name of the file"],
         returns = [STRING, "the name of the file"],
-        examples = ["File.getName()"]
+        examples = ["File.getName();"]
     )
     private fun getName(arguments: Arguments): String {
         val file = arguments.nextPrimitive(this)
@@ -92,7 +92,7 @@ class FileDef(interpreter: Interpreter): CreatableDefinition<File>(FILE, interpr
         name = "read",
         desc = ["This reads the file and returns the contents as a string"],
         returns = [STRING, "the contents of the file"],
-        examples = ["file.read()"]
+        examples = ["file.read();"]
     )
     private fun read(arguments: Arguments): String {
         val file = arguments.nextPrimitive(this)
@@ -107,7 +107,7 @@ class FileDef(interpreter: Interpreter): CreatableDefinition<File>(FILE, interpr
         name = "write",
         desc = ["This writes a string to a file"],
         params = [STRING, "string", "the string to write to the file"],
-        examples = ["file.write('Hello World!')"]
+        examples = ["file.write('Hello World!');"]
     )
     private fun write(arguments: Arguments) {
         val file = arguments.nextPrimitive(this)
@@ -123,7 +123,7 @@ class FileDef(interpreter: Interpreter): CreatableDefinition<File>(FILE, interpr
         name = "delete",
         desc = ["This deletes the file"],
         returns = [BOOLEAN, "true if the file was deleted"],
-        examples = ["file.delete()"]
+        examples = ["file.delete();"]
     )
     private fun delete(arguments: Arguments): Boolean {
         val file = arguments.nextPrimitive(this)
@@ -134,7 +134,7 @@ class FileDef(interpreter: Interpreter): CreatableDefinition<File>(FILE, interpr
         name = "exists",
         desc = ["This returns if the file exists"],
         returns = [BOOLEAN, "true if the file exists"],
-        examples = ["file.exists()"]
+        examples = ["file.exists();"]
     )
     private fun exists(arguments: Arguments): Boolean {
         val file = arguments.nextPrimitive(this)
@@ -145,7 +145,7 @@ class FileDef(interpreter: Interpreter): CreatableDefinition<File>(FILE, interpr
         name = "getSubFiles",
         desc = ["This returns a list of all the sub files in the directory"],
         returns = [LIST, "a list of all the sub files in the directory"],
-        examples = ["file.getSubFiles()"]
+        examples = ["file.getSubFiles();"]
     )
     private fun getSubFiles(arguments: Arguments): ArucasList {
         val file = arguments.nextPrimitive(this)
@@ -162,7 +162,7 @@ class FileDef(interpreter: Interpreter): CreatableDefinition<File>(FILE, interpr
         name = "createDirectory",
         desc = ["This creates all parent directories of the file if they don't already exist"],
         returns = [BOOLEAN, "true if the directories were created"],
-        examples = ["file.createDirectory()"]
+        examples = ["file.createDirectory();"]
     )
     private fun createDirectory(arguments: Arguments): Boolean {
         val file = arguments.nextPrimitive(this)
@@ -173,7 +173,7 @@ class FileDef(interpreter: Interpreter): CreatableDefinition<File>(FILE, interpr
         name = "getPath",
         desc = ["This returns the path of the file"],
         returns = [STRING, "the path of the file"],
-        examples = ["file.getPath()"]
+        examples = ["file.getPath();"]
     )
     private fun getPath(arguments: Arguments): String {
         val file = arguments.nextPrimitive(this)
@@ -184,7 +184,7 @@ class FileDef(interpreter: Interpreter): CreatableDefinition<File>(FILE, interpr
         name = "getAbsolutePath",
         desc = ["This returns the absolute path of the file"],
         returns = [STRING, "the absolute path of the file"],
-        examples = ["file.getAbsolutePath()"]
+        examples = ["file.getAbsolutePath();"]
     )
     private fun getAbsolutePath(arguments: Arguments): String {
         val file = arguments.nextPrimitive(this)
@@ -194,7 +194,7 @@ class FileDef(interpreter: Interpreter): CreatableDefinition<File>(FILE, interpr
     @FunctionDoc(
         name = "open",
         desc = ["This opens the file (as in opens it on your os)"],
-        examples = ["file.open()"]
+        examples = ["file.open();"]
     )
     private fun open(arguments: Arguments) {
         val file = arguments.nextPrimitive(this)

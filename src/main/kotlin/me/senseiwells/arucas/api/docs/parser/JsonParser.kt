@@ -9,6 +9,7 @@ class JsonParser private constructor(): DocParser() {
     companion object {
         private val GSON = GsonBuilder().setPrettyPrinting().serializeNulls().disableHtmlEscaping().create()
 
+        @JvmStatic
         fun of(api: ArucasAPI): JsonParser {
             val parser = JsonParser()
             parser.fromApi(api)
@@ -30,7 +31,7 @@ class JsonParser private constructor(): DocParser() {
 
     private fun getExtensionsAsJson(): JsonElement {
         val allExtensions = JsonObject()
-        for (extension in extensions) {
+        for (extension in this.extensions) {
             val docs = ParsedExtensionDocs(extension)
             val array = JsonArray()
             for (doc in docs.functionDocs) {
@@ -46,7 +47,7 @@ class JsonParser private constructor(): DocParser() {
         for (definition in this.definitions) {
             val classObject = JsonObject()
             val docs = ParsedClassDocs(definition)
-            val classDoc = docs.classDoc ?: throw IllegalStateException("Class '${definition.name}' was not documented")
+            val classDoc = docs.classDocOrThrow()
             classObject.addProperty("name", classDoc.name)
             val description = arrayToJson(*classDoc.desc)
             var importPath: JsonElement? = JsonNull.INSTANCE

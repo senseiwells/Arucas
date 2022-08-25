@@ -3,11 +3,10 @@ package me.senseiwells.arucas
 import me.senseiwells.arucas.api.ArucasAPI
 import me.senseiwells.arucas.api.ImplArucasIO
 import me.senseiwells.arucas.api.ThreadHandler
-import me.senseiwells.arucas.api.docs.parser.JsonParser
+import me.senseiwells.arucas.api.docs.parser.DocParser
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.utils.ArgumentParser
 import me.senseiwells.arucas.utils.Properties
-import me.senseiwells.arucas.utils.Util.File.ensureExists
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.regex.Pattern
@@ -31,11 +30,7 @@ fun main(args: Array<String>) {
         p.addBool("-suppressDeprecated") { properties.logDeprecated = it }
         p.addBool("-cmdLine") { cmdLine = it }
         p.addStr("-run") { runFile(api, it) }
-        p.addStr("-generate") {
-            val path = Path.of(it).ensureExists()
-            Files.writeString(path.resolve("AllDocs.json"), JsonParser.of(api).parse())
-            api.generateNativeFiles(path.resolve("libs"))
-        }
+        p.addStr("-generate") { DocParser.generateAll(Path.of(it), api) }
 
         p.parse(args)
     }

@@ -6,24 +6,6 @@
  */
 class Java {
     /*
-     * Deprecated: You should call the method directly on the value: `Java.constructClass('me.senseiwells.impl.Test').A;`
-     * This returns the Java wrapped value of the specified field.
-     * There is no reason for you to be using this method, it will be removed in future versions
-     * Parameter - String (fieldName): the name of the field
-     * Returns - Java: the Java wrapped value of the field
-     */
-    fun getField(fieldName: String): Java;
-
-    /*
-     * Deprecated: You should assign the value directly on the value: Java.constructClass('me.senseiwells.impl.Test').A = 'Hello';
-     * This sets the specified field to the specified value
-     * There is no reason for you to be using this method, it will be removed in future versions
-     * Parameter - String (fieldName): the name of the field
-     * Parameter - Object (value): the value to set the field to, the value type must match the type of the field
-     */
-    fun setField(fieldName: String, value: Object): Null;
-
-    /*
      * Deprecated: You should call the method directly on the value: Java.valueOf('').isBlank();
      * This calls the specified method with the specified parameters, calling the method
      * with this function has no benefits unless you are calling a function that also is
@@ -36,12 +18,13 @@ class Java {
     fun callMethod(methodName: String, parameters...: Object): Java;
 
     /*
-     * This converts the Java value to an Arucas Value if possible, this may still
-     * be of a Java value if it cannot be converted. For example, Strings, Numbers, Lists
-     * will be converted but 
-     * Returns - Object: the Value in Arucas, this may still be of Java value if the value cannot be converted into an Arucas value, values like Strings, Numbers, Lists, etc... will be converted
+     * Deprecated: You should call the method directly on the value: `Java.constructClass('me.senseiwells.impl.Test').A;`
+     * This returns the Java wrapped value of the specified field.
+     * There is no reason for you to be using this method, it will be removed in future versions
+     * Parameter - String (fieldName): the name of the field
+     * Returns - Java: the Java wrapped value of the field
      */
-    fun toArucas(): Object;
+    fun getField(fieldName: String): Java;
 
     /*
      * Deprecated: Consider wrapping the method in a lambda instead
@@ -58,18 +41,29 @@ class Java {
     fun getMethodDelegate(methodName: String, parameters: Number): Function;
 
     /*
-     * Converts any Arucas value into a Java value then wraps it in the Java wrapper and returns it
-     * Parameter - Object (value): any value to get the Java value of
+     * Deprecated: You should assign the value directly on the value: Java.constructClass('me.senseiwells.impl.Test').A = 'Hello';
+     * This sets the specified field to the specified value
+     * There is no reason for you to be using this method, it will be removed in future versions
+     * Parameter - String (fieldName): the name of the field
+     * Parameter - Object (value): the value to set the field to, the value type must match the type of the field
      */
-    static fun valueOf(value: Object): Null;
+    fun setField(fieldName: String, value: Object): Null;
 
     /*
-     * Creates a Java byte array with a given size, the array is filled with 0's
-     * by default and can be filled with only bytes
-     * Parameter - Number (size): the size of the array
-     * Returns - Java: the Java byte array
+     * This converts the Java value to an Arucas Value if possible, this may still
+     * be of a Java value if it cannot be converted. For example, Strings, Numbers, Lists
+     * will be converted but 
+     * Returns - Object: the Value in Arucas, this may still be of Java value if the value cannot be converted into an Arucas value, values like Strings, Numbers, Lists, etc... will be converted
      */
-    static fun byteArray(size: Number): Java;
+    fun toArucas(): Object;
+
+    /*
+     * Creates a Java Object array with a given values, this will be the size of the array,
+     * this cannot be used to create primitive arrays
+     * Parameter - Object (values...): the values to add to the array
+     * Returns - Java: the Java Object array
+     */
+    static fun arrayOf(values...: Object): Java;
 
     /*
      * Creates a Java boolean array with a given size, the array is filled with false
@@ -80,12 +74,38 @@ class Java {
     static fun booleanArray(size: Number): Java;
 
     /*
-     * Creates a Java short array with a given size, the array is filled with 0's
-     * by default and can be filled with only shorts
-     * Parameter - Number (size): the size of the array
-     * Returns - Java: the Java short array
+     * Creates a Java value boolean, to be used in Java
+     * Parameter - Boolean (bool): the boolean to convert to a Java boolean
+     * Returns - Java: the boolean in Java wrapper
      */
-    static fun shortArray(size: Number): Java;
+    static fun booleanOf(bool: Boolean): Java;
+
+    /*
+     * Creates a Java byte array with a given size, the array is filled with 0's
+     * by default and can be filled with only bytes
+     * Parameter - Number (size): the size of the array
+     * Returns - Java: the Java byte array
+     */
+    static fun byteArray(size: Number): Java;
+
+    /*
+     * Creates a Java value byte, to be used in Java
+     * Parameter - Number (num): the number to convert to a Java byte
+     * Returns - Java: the byte in Java wrapper
+     */
+    static fun byteOf(num: Number): Java;
+
+    /*
+     * Deprecated: You should use 'Java.classOf(name)' then call the static method
+     * Calls a static method of a Java class.
+     * This should be avoided and instead use 'classOf' to get the
+     * instance of the class then call the static method on that
+     * Parameter - String (className): the name of the class
+     * Parameter - String (methodName): the name of the method
+     * Parameter - Object (parameters...): any parameters to call the method with
+     * Returns - Java: the return value of the method wrapped in the Java wrapper
+     */
+    static fun callStaticMethod(className: String, methodName: String, parameters...: Object): Java;
 
     /*
      * Creates a Java char array with a given size, the array is filled with null characters's
@@ -96,20 +116,60 @@ class Java {
     static fun charArray(size: Number): Java;
 
     /*
-     * Creates a Java int array with a given size, the array is filled with 0's
-     * by default and can be filled with only ints
-     * Parameter - Number (size): the size of the array
-     * Returns - Java: the Java int array
+     * Creates a Java value char, to be used in Java
+     * Parameter - String (char): the char to convert to a Java char
+     * Returns - Java: the char in Java wrapper
      */
-    static fun intArray(size: Number): Java;
+    static fun charOf(char: String): Java;
 
     /*
-     * Creates a Java long array with a given size, the array is filled with 0's
-     * by default and can be filled with only longs
-     * Parameter - Number (size): the size of the array
-     * Returns - Java: the Java long array
+     * Deprecated: You should use 'Java.classOf(name)' instead
+     * Gets a Java class from the name of the class
+     * Parameter - String (className): the name of the class you want to get
+     * Returns - Java: the Java Class<?> value wrapped in the Java wrapper
      */
-    static fun longArray(size: Number): Java;
+    static fun classFromName(className: String): Java;
+
+    /*
+     * Gets a Java class from the name of the class
+     * Parameter - String (className): the name of the class you want to get
+     * Returns - JavaClass: the Java class value which can be used as a class reference
+     */
+    static fun classOf(className: String): JavaClass;
+
+    /*
+     * Deprecated: You should use 'Java.classOf(name)' then call the result to construct the class
+     * This constructs a Java class with specified class name and parameters.
+     * This should be avoided and instead use 'classOf' to get the class
+     * instance then call the constructor on that instance
+     * Parameter - String (className): the name of the class
+     * Parameter - Object (parameters...): any parameters to pass to the constructor
+     * Returns - Java: the constructed Java Object wrapped in the Java wrapper
+     */
+    static fun constructClass(className: String, parameters...: Object): Java;
+
+    /*
+     * Creates a Java Consumer object from a given function, it must have one
+     * parameter and any return values will be ignored
+     * Parameter - Function (function): the function to be executed
+     * Returns - Java: the Java Consumer object
+     */
+    static fun consumerOf(function: Function): Java;
+
+    /*
+     * Creates a Java double array with a given size, the array is filled with 0's
+     * by default and can be filled with only doubles
+     * Parameter - Number (size): the size of the array
+     * Returns - Java: the Java double array
+     */
+    static fun doubleArray(size: Number): Java;
+
+    /*
+     * Creates a Java value double, to be used in Java
+     * Parameter - Number (num): the number to convert to a Java double
+     * Returns - Java: the double in Java wrapper
+     */
+    static fun doubleOf(num: Number): Java;
 
     /*
      * Creates a Java float array with a given size, the array is filled with 0's
@@ -120,12 +180,27 @@ class Java {
     static fun floatArray(size: Number): Java;
 
     /*
-     * Creates a Java double array with a given size, the array is filled with 0's
-     * by default and can be filled with only doubles
-     * Parameter - Number (size): the size of the array
-     * Returns - Java: the Java double array
+     * Creates a Java value float, to be used in Java
+     * Parameter - Number (num): the number to convert to a Java float
+     * Returns - Java: the float in Java wrapper
      */
-    static fun doubleArray(size: Number): Java;
+    static fun floatOf(num: Number): Java;
+
+    /*
+     * Creates a Java Function object from a given function
+     * Parameter - Function (function): the function to be executed, this must have one parameter and must return a value
+     * Returns - Java: the Java Function object
+     */
+    static fun functionOf(function: Function): Java;
+
+    /*
+     * Deprecated: You should use 'Java.classOf(name)' then access the static field
+     * Gets a static field Java value from a Java class
+     * Parameter - String (className): the name of the class
+     * Parameter - String (fieldName): the name of the field
+     * Returns - Java: the Java value of the field wrapped in the Java wrapper
+     */
+    static fun getStaticField(className: String, fieldName: String): Java;
 
     /*
      * Deprecated: You should use 'Java.classOf(name)' then wrap the static method
@@ -141,44 +216,12 @@ class Java {
     static fun getStaticMethodDelegate(className: String, methodName: String, parameters: Number): Function;
 
     /*
-     * Deprecated: You should use 'Java.classOf(name)' then call the static method
-     * Calls a static method of a Java class.
-     * This should be avoided and instead use 'classOf' to get the
-     * instance of the class then call the static method on that
-     * Parameter - String (className): the name of the class
-     * Parameter - String (methodName): the name of the method
-     * Parameter - Object (parameters...): any parameters to call the method with
-     * Returns - Java: the return value of the method wrapped in the Java wrapper
+     * Creates a Java int array with a given size, the array is filled with 0's
+     * by default and can be filled with only ints
+     * Parameter - Number (size): the size of the array
+     * Returns - Java: the Java int array
      */
-    static fun callStaticMethod(className: String, methodName: String, parameters...: Object): Java;
-
-    /*
-     * Creates a Java value short, to be used in Java
-     * Parameter - Number (num): the number to convert to a Java short
-     * Returns - Java: the short in Java wrapper
-     */
-    static fun shortOf(num: Number): Java;
-
-    /*
-     * Creates a Java value long, to be used in Java
-     * Parameter - Number (num): the number to convert to a Java long
-     * Returns - Java: the long in Java wrapper
-     */
-    static fun longOf(num: Number): Java;
-
-    /*
-     * Creates a Java value byte, to be used in Java
-     * Parameter - Number (num): the number to convert to a Java byte
-     * Returns - Java: the byte in Java wrapper
-     */
-    static fun byteOf(num: Number): Java;
-
-    /*
-     * Creates a Java value float, to be used in Java
-     * Parameter - Number (num): the number to convert to a Java float
-     * Returns - Java: the float in Java wrapper
-     */
-    static fun floatOf(num: Number): Java;
+    static fun intArray(size: Number): Java;
 
     /*
      * Creates a Java value int, to be used in Java
@@ -188,27 +231,42 @@ class Java {
     static fun intOf(num: Number): Java;
 
     /*
-     * Gets a Java class from the name of the class
-     * Parameter - String (className): the name of the class you want to get
-     * Returns - JavaClass: the Java class value which can be used as a class reference
+     * Creates a Java long array with a given size, the array is filled with 0's
+     * by default and can be filled with only longs
+     * Parameter - Number (size): the size of the array
+     * Returns - Java: the Java long array
      */
-    static fun classOf(className: String): JavaClass;
+    static fun longArray(size: Number): Java;
 
     /*
-     * Deprecated: You should use 'Java.classOf(name)' then access the static field
-     * Gets a static field Java value from a Java class
-     * Parameter - String (className): the name of the class
-     * Parameter - String (fieldName): the name of the field
-     * Returns - Java: the Java value of the field wrapped in the Java wrapper
+     * Creates a Java value long, to be used in Java
+     * Parameter - Number (num): the number to convert to a Java long
+     * Returns - Java: the long in Java wrapper
      */
-    static fun getStaticField(className: String, fieldName: String): Java;
+    static fun longOf(num: Number): Java;
 
     /*
-     * Creates a Java value double, to be used in Java
-     * Parameter - Number (num): the number to convert to a Java double
-     * Returns - Java: the double in Java wrapper
+     * Creates a Java Object array with a given size, the array is filled with null values
+     * by default and can be filled with any Java values, this array cannot be expanded
+     * Parameter - Number (size): the size of the array
+     * Returns - Java: the Java Object array
      */
-    static fun doubleOf(num: Number): Java;
+    static fun objectArray(size: Number): Java;
+
+    /*
+     * Creates a Java Predicate object from a given function
+     * Parameter - Function (function): the function to be executed, this must have one parameter and must return a boolean
+     * Returns - Java: the Java Predicate object
+     */
+    static fun predicateOf(function: Function): Java;
+
+    /*
+     * Creates a Java Runnable object from a given function, this must
+     * have no paramters and any return values will be ignored
+     * Parameter - Function (function): the function to be executed
+     * Returns - Java: the Java Runnable object
+     */
+    static fun runnableOf(function: Function): Java;
 
     /*
      * Deprecated: You should use 'Java.classOf(name)' then assign the static field
@@ -220,76 +278,19 @@ class Java {
     static fun setStaticField(className: String, fieldName: String, newValue: Object): Null;
 
     /*
-     * Deprecated: You should use 'Java.classOf(name)' then call the result to construct the class
-     * This constructs a Java class with specified class name and parameters.
-     * This should be avoided and instead use 'classOf' to get the class
-     * instance then call the constructor on that instance
-     * Parameter - String (className): the name of the class
-     * Parameter - Object (parameters...): any parameters to pass to the constructor
-     * Returns - Java: the constructed Java Object wrapped in the Java wrapper
-     */
-    static fun constructClass(className: String, parameters...: Object): Java;
-
-    /*
-     * Deprecated: You should use 'Java.classOf(name)' instead
-     * Gets a Java class from the name of the class
-     * Parameter - String (className): the name of the class you want to get
-     * Returns - Java: the Java Class<?> value wrapped in the Java wrapper
-     */
-    static fun classFromName(className: String): Java;
-
-    /*
-     * Creates a Java Consumer object from a given function, it must have one
-     * parameter and any return values will be ignored
-     * Parameter - Function (function): the function to be executed
-     * Returns - Java: the Java Consumer object
-     */
-    static fun consumerOf(function: Function): Java;
-
-    /*
-     * Creates a Java Predicate object from a given function
-     * Parameter - Function (function): the function to be executed, this must have one parameter and must return a boolean
-     * Returns - Java: the Java Predicate object
-     */
-    static fun predicateOf(function: Function): Java;
-
-    /*
-     * Creates a Java value char, to be used in Java
-     * Parameter - String (char): the char to convert to a Java char
-     * Returns - Java: the char in Java wrapper
-     */
-    static fun charOf(char: String): Java;
-
-    /*
-     * Creates a Java Function object from a given function
-     * Parameter - Function (function): the function to be executed, this must have one parameter and must return a value
-     * Returns - Java: the Java Function object
-     */
-    static fun functionOf(function: Function): Java;
-
-    /*
-     * Creates a Java Runnable object from a given function, this must
-     * have no paramters and any return values will be ignored
-     * Parameter - Function (function): the function to be executed
-     * Returns - Java: the Java Runnable object
-     */
-    static fun runnableOf(function: Function): Java;
-
-    /*
-     * Creates a Java Object array with a given size, the array is filled with null values
-     * by default and can be filled with any Java values, this array cannot be expanded
+     * Creates a Java short array with a given size, the array is filled with 0's
+     * by default and can be filled with only shorts
      * Parameter - Number (size): the size of the array
-     * Returns - Java: the Java Object array
+     * Returns - Java: the Java short array
      */
-    static fun objectArray(size: Number): Java;
+    static fun shortArray(size: Number): Java;
 
     /*
-     * Creates a Java Object array with a given values, this will be the size of the array,
-     * this cannot be used to create primitive arrays
-     * Parameter - Object (values...): the values to add to the array
-     * Returns - Java: the Java Object array
+     * Creates a Java value short, to be used in Java
+     * Parameter - Number (num): the number to convert to a Java short
+     * Returns - Java: the short in Java wrapper
      */
-    static fun arrayOf(values...: Object): Java;
+    static fun shortOf(num: Number): Java;
 
     /*
      * Creates a Java Supplier object from a given function
@@ -299,11 +300,10 @@ class Java {
     static fun supplierOf(function: Function): Java;
 
     /*
-     * Creates a Java value boolean, to be used in Java
-     * Parameter - Boolean (bool): the boolean to convert to a Java boolean
-     * Returns - Java: the boolean in Java wrapper
+     * Converts any Arucas value into a Java value then wraps it in the Java wrapper and returns it
+     * Parameter - Object (value): any value to get the Java value of
      */
-    static fun booleanOf(bool: Boolean): Java;
+    static fun valueOf(value: Object): Null;
 }
 
 /* Native, implemented in Kotlin
@@ -314,5 +314,4 @@ class Java {
  */
 class JavaClass {
 }
-
 

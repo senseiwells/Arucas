@@ -47,7 +47,7 @@ class CodeDocParser: DocParser() {
     private fun parseClass(definition: ClassDefinition): String {
         val builder = StringBuilder()
         val docs = ParsedClassDocs(definition)
-        val classDoc = docs.classDoc ?: throw IllegalStateException("Class '${definition.name}' was not documented!")
+        val classDoc = docs.classDocOrThrow()
         builder.append("/* Native, implemented in ${classDoc.language}\n")
         for (desc in classDoc.desc) {
             builder.append(" * ").append(desc).append("\n")
