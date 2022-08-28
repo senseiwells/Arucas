@@ -202,9 +202,8 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
                 throw IllegalArgumentException("Failed to fetch class at cached location")
             }
             this.globalTable.getClass(name)?.let { return it }
-        } else {
-            this.currentTable.getClass(name)?.let { return it }
         }
+        this.currentTable.getClass(name)?.let { return it }
         runtimeError("No such class '$name' exists", trace)
     }
 

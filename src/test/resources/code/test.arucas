@@ -1,14 +1,5 @@
 // ./src/test/resources/code/test.arucas
 
-class Example {
-	var number = 10;
+import ClassA from A;
 
-	operator + (other: Example) {
-		return this.number + other.number;
-	}
-}
-
-e1 = new Example();
-e1.number = 22;
-e2 = new Example();
-print(e1 + e2); // prints 32
+ClassA.a();
