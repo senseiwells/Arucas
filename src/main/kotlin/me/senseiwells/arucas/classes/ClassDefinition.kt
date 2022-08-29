@@ -633,7 +633,7 @@ class EnumDefinition(
     }
 
     fun getNames(): Collection<String> {
-        return if (this.enums.isInitialized()) listOf() else this.enums.value.keys
+        return if (!this.enums.isInitialized()) listOf() else this.enums.value.keys
     }
 
     override fun canExtend(): Boolean {
