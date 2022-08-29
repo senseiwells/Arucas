@@ -4,9 +4,11 @@ import me.senseiwells.arucas.classes.ClassDefinition
 import me.senseiwells.arucas.classes.PrimitiveDefinition
 import me.senseiwells.arucas.exceptions.compileError
 import me.senseiwells.arucas.nodes.*
-import me.senseiwells.arucas.utils.*
+import me.senseiwells.arucas.utils.ArucasFunction
+import me.senseiwells.arucas.utils.LocalCache
+import me.senseiwells.arucas.utils.Parameter
+import me.senseiwells.arucas.utils.Trace
 import java.util.*
-import kotlin.collections.HashSet
 import kotlin.reflect.KMutableProperty0
 
 class Resolver(
@@ -144,7 +146,8 @@ class Resolver(
                 return true
             }
         }
-        return false
+
+        return parameters != -1 && this.cacheFunction(visitable, name, -1)
     }
 
     private fun cacheClass(visitable: Visitable, name: String) {
