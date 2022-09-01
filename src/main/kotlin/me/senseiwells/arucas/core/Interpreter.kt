@@ -45,8 +45,8 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
     abstract val modules: ModuleMap
 
     protected abstract val functions: FunctionMap
+    protected abstract val localCache: LocalCache
     protected abstract var currentTable: StackTable
-    protected abstract var localCache: LocalCache
 
     protected val stackTrace = Stack<Trace>()
 
@@ -61,7 +61,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         val compileStart = System.nanoTime()
         return Arucas.compile(this.content, this.name).also {
             val resolver = Resolver(it, this.primitives, this.functions.map { f -> f.getPrimitive(FunctionDef::class)!! })
-            this.localCache = resolver.run()
+            this.localCache.mergeWith(resolver.run())
             val compileTime = Util.nanosToString(System.nanoTime() - compileStart)
             this.logDebug("Compile time for '${this.name}' was $compileTime")
         }
@@ -817,8 +817,8 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         override val functions = FunctionMap()
         override val primitives = PrimitiveDefinitionMap()
         override val globalTable = StackTable()
+        override val localCache = LocalCache()
         override var currentTable = this.globalTable
-        override lateinit var localCache: LocalCache
 
         override fun loadApi() {
             this.api.getBuiltInDefinitions()?.forEach { p ->
@@ -860,7 +860,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         override val modules = parent.modules
         override val functions = parent.functions
         override val primitives = parent.primitives
-        override lateinit var localCache: LocalCache
+        override val localCache = parent.localCache
 
         override fun loadApi() {
             // Most of API already loaded by parent
