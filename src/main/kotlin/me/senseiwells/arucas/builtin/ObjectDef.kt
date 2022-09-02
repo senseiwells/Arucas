@@ -138,7 +138,7 @@ class ObjectDef(interpreter: Interpreter): PrimitiveDefinition<Any>(OBJECT, inte
             MemberFunction.of("hashCode", this::hashCode),
             MemberFunction.of("uniqueHash", this::uniqueHash),
             MemberFunction.of("copy", this::copy),
-            MemberFunction.of("instanceOf", this::instanceOf)
+            MemberFunction.of("instanceOf", 1, this::instanceOf)
         )
     }
 
