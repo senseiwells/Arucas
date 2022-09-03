@@ -746,7 +746,7 @@ this will throw an erroor if the index given is out of bounds- Parameters:
 - Returns - List: the sorted list
 - Example:
 ```kotlin
-['d', 'a', 'c', 'b'].sort(function(a, b) { return a < b; }); // ['a', 'b', 'c', 'd']
+[6, 5, 9, -10].sort(fun(a, b) { return a - b; }); // [-10, 5, 6, 9]
 ```
 
 

@@ -6,6 +6,7 @@ import me.senseiwells.arucas.api.docs.FunctionDoc
 import me.senseiwells.arucas.classes.ClassInstance
 import me.senseiwells.arucas.classes.CreatableDefinition
 import me.senseiwells.arucas.core.Interpreter
+import me.senseiwells.arucas.core.Type
 import me.senseiwells.arucas.exceptions.runtimeError
 import me.senseiwells.arucas.utils.*
 import me.senseiwells.arucas.utils.Util.Types.BOOLEAN
@@ -36,6 +37,22 @@ class StringDef(interpreter: Interpreter): CreatableDefinition<String>(STRING, i
 
     override fun plus(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace): String {
         return instance.toString(interpreter, trace) + other.toString(interpreter, trace)
+    }
+
+    override fun compare(instance: ClassInstance, interpreter: Interpreter, type: Type, other: ClassInstance, trace: LocatableTrace): Any? {
+        val otherString = other.getPrimitive(this) ?: return super.compare(instance, interpreter, type, other, trace)
+        return when (type) {
+            Type.LESS_THAN -> instance.asPrimitive(this) < otherString
+            Type.LESS_THAN_EQUAL -> instance.asPrimitive(this) <= otherString
+            Type.MORE_THAN -> instance.asPrimitive(this) > otherString
+            Type.MORE_THAN_EQUAL -> instance.asPrimitive(this) >= otherString
+            else -> super.compare(instance, interpreter, type, other, trace)
+        }
+    }
+
+    override fun compare(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace): Int {
+        val otherString = other.getPrimitive(this) ?: return super.compare(instance, interpreter, other, trace)
+        return instance.asPrimitive(this).compareTo(otherString)
     }
 
     override fun bracketAccess(instance: ClassInstance, interpreter: Interpreter, index: ClassInstance, trace: LocatableTrace): ClassInstance {

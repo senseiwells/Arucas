@@ -314,7 +314,7 @@ class ListDef(interpreter: Interpreter): CreatableDefinition<ArucasList>(LIST, i
         desc = ["This allows you to sort the list using a comparator function"],
         params = [FUNCTION, "comparator", "the comparator function"],
         returns = [LIST, "the sorted list"],
-        examples = ["['d', 'a', 'c', 'b'].sort(function(a, b) { return a < b; }); // ['a', 'b', 'c', 'd']"]
+        examples = ["[6, 5, 9, -10].sort(fun(a, b) { return a - b; }); // [-10, 5, 6, 9]"]
     )
     private fun sort1(arguments: Arguments): ClassInstance {
         val list = arguments.nextList()

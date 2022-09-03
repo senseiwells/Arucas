@@ -3,6 +3,7 @@ package me.senseiwells.arucas.utils.impl
 import me.senseiwells.arucas.classes.ClassInstance
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.exceptions.runtimeError
+import java.util.*
 import kotlin.math.max
 
 class ArucasList private constructor(
@@ -151,6 +152,15 @@ class ArucasList private constructor(
     @Synchronized
     override fun addAll(elements: Collection<ClassInstance>): Boolean {
         return this.addAll(ArucasCollection.safeCollection(elements))
+    }
+
+    @Synchronized
+    override fun sort(c: Comparator<in ClassInstance>?) {
+        val array = this.toArray()
+        Arrays.sort(array, c)
+        for (i in array.indices) {
+            this[i] = array[i]
+        }
     }
 
     @Synchronized
