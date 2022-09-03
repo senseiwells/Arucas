@@ -49,9 +49,7 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
     override fun memberFunctionAccess(instance: ClassInstance, name: String, args: MutableList<ClassInstance>, trace: Trace): ClassInstance {
         if (!this.hasMemberFunction(name, args.size)) {
             val java = this.asJavaNotNull(instance, trace)
-            return this.interpreter.create(FunctionDef::class, BuiltInFunction.arb("\$java.delegate", {
-                return@arb ReflectionUtils.callMethod(java::class.java, java, name, args, this.interpreter.api.getObfuscator())
-            }))
+            return this.interpreter.create(FunctionDef::class, BuiltInFunction.java(java::class.java, java, name))
         }
         return super.memberFunctionAccess(instance, name, args, trace)
     }
@@ -215,9 +213,7 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
         val name = arguments.nextPrimitive(StringDef::class)
         // val parameters = arguments.nextPrimitive(NumberDef::class).toInt()
         val clazz = ReflectionUtils.getClass(className, arguments.interpreter.api.getObfuscator())
-        return arguments.interpreter.create(FunctionDef::class, BuiltInFunction.arb("\$java.delegate", {
-            return@arb ReflectionUtils.callMethod(clazz, null, name, it.arguments, arguments.interpreter.api.getObfuscator())
-        }))
+        return arguments.interpreter.create(FunctionDef::class, BuiltInFunction.java(clazz, null, name))
     }
 
     @FunctionDoc(
@@ -772,8 +768,6 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
         val java = arguments.next().asJava() ?: Null
         val name = arguments.nextPrimitive(StringDef::class)
         // val parameters = arguments.nextPrimitive(NumberDef::class).toInt()
-        return arguments.interpreter.create(FunctionDef::class, BuiltInFunction.arb("\$java.delegate", {
-            return@arb ReflectionUtils.callMethod(java::class.java, java, name, it.arguments, arguments.interpreter.api.getObfuscator())
-        }))
+        return arguments.interpreter.create(FunctionDef::class, BuiltInFunction.java(java::class.java, java, name))
     }
 }

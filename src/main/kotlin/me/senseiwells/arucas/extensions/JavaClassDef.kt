@@ -30,9 +30,7 @@ class JavaClassDef(interpreter: Interpreter): CreatableDefinition<Class<*>>(JAVA
 
     override fun memberFunctionAccess(instance: ClassInstance, name: String, args: MutableList<ClassInstance>, trace: Trace): ClassInstance {
         if (!this.hasMemberFunction(name, args.size)) {
-            return this.interpreter.create(FunctionDef::class, BuiltInFunction.arb("\$java.delegate", {
-                return@arb ReflectionUtils.callMethod(instance.asPrimitive(this), null, name, args, interpreter.api.getObfuscator())
-            }))
+            return this.interpreter.create(FunctionDef::class, BuiltInFunction.java(instance.asPrimitive(this), null, name))
         }
         return super.memberFunctionAccess(instance, name, args, trace)
     }

@@ -7,6 +7,7 @@ import me.senseiwells.arucas.classes.ClassInstance
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.exceptions.Propagator
 import me.senseiwells.arucas.exceptions.runtimeError
+import me.senseiwells.arucas.extensions.JavaDef
 import me.senseiwells.arucas.nodes.Statement
 import me.senseiwells.arucas.utils.impl.ArucasList
 
@@ -249,6 +250,11 @@ sealed class BuiltInFunction(
         ): BuiltInFunction {
             return this.of(name, -1, function, deprecation)
         }
+
+        @JvmStatic
+        fun java(clazz: Class<*>, any: Any?, name: String): BuiltInFunction {
+            return Java(clazz, any, name)
+        }
     }
 
     protected fun checkDeprecation(interpreter: Interpreter) {
@@ -269,6 +275,23 @@ sealed class BuiltInFunction(
         override fun invoke(interpreter: Interpreter, arguments: List<ClassInstance>): ClassInstance {
             this.checkDeprecation(interpreter)
             return interpreter.convertValue(this.function(Arguments(arguments, interpreter, this)))
+        }
+    }
+
+    private class Java(
+        val clazz: Class<*>,
+        val instance: Any?,
+        val methodName: String
+    ): BuiltInFunction("\$java.delegate.${clazz.simpleName}.${methodName}", -1) {
+        override fun invoke(interpreter: Interpreter, arguments: List<ClassInstance>): ClassInstance {
+            val def = interpreter.getPrimitive(JavaDef::class)
+            return def.createNullable(ReflectionUtils.callMethod(
+                this.clazz,
+                this.instance,
+                this.methodName,
+                arguments,
+                interpreter.api.getObfuscator()
+            ))
         }
     }
 }
