@@ -87,7 +87,7 @@ object ReflectionUtils {
             val argument = arguments[i].asJava()
             args.add(argument)
             if (argument != null) {
-                argument::class.java
+                this.wrapClass(argument::class.java)
             } else {
                 Void.TYPE
             }
@@ -142,7 +142,10 @@ object ReflectionUtils {
                 return true
             }
             val givenClass = given[i]
-            if (givenClass != Void.TYPE && required[i].isAssignableFrom(givenClass)) {
+            if (required[i].isPrimitive && givenClass == Void.TYPE) {
+                return false
+            }
+            if (givenClass != Void.TYPE && !required[i].isAssignableFrom(givenClass)) {
                 return false
             }
         }
@@ -252,6 +255,22 @@ object ReflectionUtils {
         } catch (e: Exception) {
             runtimeError("An unexpected error was thrown during java field access", e)
         }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun <T> wrapClass(type: Class<T>): Class<T> {
+        return when (type) {
+            Boolean::class.java -> java.lang.Boolean::class.java
+            Byte::class.java -> java.lang.Byte::class.java
+            Char::class.java -> java.lang.Character::class.java
+            Double::class.java -> java.lang.Double::class.java
+            Float::class.java -> java.lang.Float::class.java
+            Int::class.java -> java.lang.Integer::class.java
+            Long::class.java -> java.lang.Long::class.java
+            Short::class.java -> java.lang.Short::class.java
+            Void.TYPE -> Void::class.java
+            else -> type
+        } as Class<T>
     }
 
     private data class MethodId(val clazz: Class<*>, val name: String, val types: Array<Class<*>>) {

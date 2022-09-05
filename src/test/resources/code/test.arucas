@@ -1,5 +1,13 @@
 // ./src/test/resources/code/test.arucas
 
-import ClassA from A;
+import Java from util.Internal;
 
-ClassA.a();
+ArrayList = Java.classOf("java.util.ArrayList");
+
+list = ArrayList();
+list.add(0);
+print(list);
+
+aList = list.toArucas();
+print(Type.of(aList));
+print(aList);
