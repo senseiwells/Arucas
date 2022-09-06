@@ -65,9 +65,16 @@ abstract class ClassDefinition(
 
     open fun canConstructDirectly(): Boolean = this.constructors.isInitialized() && !this.constructors.value.isEmpty()
 
+    open fun interfaces(): Set<InterfaceDefinition> = setOf()
+
     open fun superclass(): ClassDefinition = this.getPrimitiveDef(ObjectDef::class)
 
-    open fun interfaces(): Set<InterfaceDefinition> = setOf()
+    open fun superclassOf(name: String): ClassDefinition {
+        if (this.name == name) {
+            return this.superclass()
+        }
+        return this.superclass().superclassOf(name)
+    }
 
     abstract fun asJavaValue(instance: ClassInstance): Any?
 

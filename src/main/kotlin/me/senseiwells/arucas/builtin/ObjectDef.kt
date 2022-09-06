@@ -2,6 +2,7 @@ package me.senseiwells.arucas.builtin
 
 import me.senseiwells.arucas.api.docs.ClassDoc
 import me.senseiwells.arucas.api.docs.FunctionDoc
+import me.senseiwells.arucas.classes.ClassDefinition
 import me.senseiwells.arucas.classes.ClassInstance
 import me.senseiwells.arucas.classes.PrimitiveDefinition
 import me.senseiwells.arucas.core.Interpreter
@@ -27,6 +28,11 @@ import me.senseiwells.arucas.utils.Util.Types.TYPE
     ]
 )
 class ObjectDef(interpreter: Interpreter): PrimitiveDefinition<Any>(OBJECT, interpreter) {
+    override fun superclassOf(name: String): ClassDefinition {
+        // No super classes
+        return this
+    }
+
     override fun cacheSuperclasses() {
         // We have no super classes
     }

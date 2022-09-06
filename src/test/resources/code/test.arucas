@@ -1,13 +1,25 @@
 // ./src/test/resources/code/test.arucas
 
-import Java from util.Internal;
+class A {
+    fun f() {
+        print("A");
+    }
+}
 
-ArrayList = Java.classOf("java.util.ArrayList");
+class B: A {
+    B(): super();
 
-list = ArrayList();
-list.add(0);
-print(list);
+    fun f() {
+        super.f();
+    }
+}
 
-aList = list.toArucas();
-print(Type.of(aList));
-print(aList);
+class C: B {
+    C(): super();
+
+    fun f() {
+        super.f();
+    }
+}
+
+new C().f();

@@ -25,7 +25,7 @@ class Resolver(
     private val functionScope = Stack<HashSet<Id>>()
     private val classScope = Stack<HashSet<String>>()
 
-    private var inClass = false
+    private var currentClass: String? = null
     private var inConstructor = false
     private var inFinally = false
     private var inLoop = false
@@ -352,7 +352,7 @@ class Resolver(
 
     override fun visitClass(classStatement: ClassStatement) {
         this.defineClass(classStatement.name, classStatement.trace)
-        this.pushState(this::inClass, true) {
+        this.pushState(this::currentClass, classStatement.name) {
             this.pushScope()
             this.defineVar("this", classStatement.trace)
             this.resolve(classStatement.body)
@@ -362,7 +362,7 @@ class Resolver(
 
     override fun visitEnum(enumStatement: EnumStatement) {
         this.defineClass(enumStatement.name, enumStatement.trace)
-        this.pushState(this::inClass, true) {
+        this.pushState(this::currentClass, enumStatement.name) {
             this.pushScope()
             this.defineVar("this", enumStatement.trace)
             this.resolve(enumStatement.body)
@@ -444,17 +444,14 @@ class Resolver(
     }
 
     override fun visitThis(thisExpression: ThisExpression) {
-        if (!this.inClass) {
-            compileError("Cannot use 'this' outside of classes", thisExpression.trace)
-        }
+        this.currentClass ?: compileError("Cannot use 'this' outside of classes", thisExpression.trace)
         this.cacheVar(thisExpression, "this")
     }
 
     override fun visitSuper(superExpression: SuperExpression) {
-        if (!this.inClass) {
-            compileError("Cannot use 'super' outside of classes", superExpression.trace)
-        }
+        val clazz = this.currentClass ?: compileError("Cannot use 'super' outside of classes", superExpression.trace)
         this.cacheVar(superExpression, "this")
+        this.localCache.setSuper(superExpression, clazz)
     }
 
     override fun visitMemberAccess(access: MemberAccessExpression) {

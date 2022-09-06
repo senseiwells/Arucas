@@ -330,9 +330,10 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         }
     }
 
-    private fun visitSuper(visitable: Visitable, trace: Trace): Pair<ClassInstance, ClassDefinition> {
-        val instance = this.getVariable("this", trace, visitable)
-        return instance to instance.definition.superclass()
+    private fun visitSuper(superExpression: SuperExpression, trace: Trace): Pair<ClassInstance, ClassDefinition> {
+        val instance = this.getVariable("this", trace, superExpression)
+        val name = this.localCache.getSuper(superExpression) ?: throw IllegalStateException("Could not get super context name")
+        return instance to instance.definition.superclassOf(name)
     }
 
     override fun visitVoid(void: VoidStatement) = Unit
@@ -765,7 +766,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
             is SuperExpression -> {
                 this.visitSuper(expression, expression.trace).let { (i, d) ->
                     val function = d.memberFunctionAccess(i, call.name , arguments, call.trace)
-                    val callTrace = CallTrace(call.trace, "<${i.definition.name}>.super.${call.name}::${arguments.size - 1}")
+                    val callTrace = CallTrace(call.trace, "<${d.name}>.super.${call.name}::${arguments.size - 1}")
                     return this.call(function, arguments, callTrace)
                 }
             }
