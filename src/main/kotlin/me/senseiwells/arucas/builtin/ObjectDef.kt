@@ -29,7 +29,6 @@ import me.senseiwells.arucas.utils.Util.Types.TYPE
 )
 class ObjectDef(interpreter: Interpreter): PrimitiveDefinition<Any>(OBJECT, interpreter) {
     override fun superclassOf(name: String): ClassDefinition {
-        // No super classes
         return this
     }
 
