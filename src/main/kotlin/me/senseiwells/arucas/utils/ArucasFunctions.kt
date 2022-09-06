@@ -176,8 +176,8 @@ open class UserConstructorFunction(
         val instance = arguments[0]
         this.checkAndPopulate(interpreter, localTable, arguments)
         val definition = when (this.constructorInit.type) {
-            ConstructorInit.InitType.SUPER -> instance.definition.superclass()
-            ConstructorInit.InitType.THIS -> instance.definition
+            ConstructorInit.InitType.SUPER -> this.definition.superclass()
+            ConstructorInit.InitType.THIS -> this.definition
             else -> null
         }
         definition?.let {

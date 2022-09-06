@@ -146,6 +146,11 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
             throw fatal
         } catch (propagator: Propagator) {
             throw propagator
+        } catch (stackOverflow: StackOverflowError) {
+            RuntimeError("Ran out of space on the stack", stackOverflow, trace).also {
+                it.fillStackTrace(this.stackTrace)
+                throw it
+            }
         } catch (throwable: Throwable) {
             throw FatalError("An unexpected error was thrown", throwable, this.stackTrace)
         } finally {

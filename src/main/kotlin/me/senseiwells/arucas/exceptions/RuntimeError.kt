@@ -6,7 +6,7 @@ import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.utils.Trace
 import java.util.*
 
-fun runtimeError(details: String, cause: Exception): Nothing {
+fun runtimeError(details: String, cause: Throwable): Nothing {
     throw RuntimeError(details, cause, Trace.INTERNAL)
 }
 
@@ -17,7 +17,7 @@ fun runtimeError(details: String, trace: Trace = Trace.INTERNAL): Nothing {
 
 open class RuntimeError @JvmOverloads constructor(
     message: String,
-    cause: Exception? = null,
+    cause: Throwable? = null,
     var topTrace: Trace? = null,
     private var stackTrace: Stack<Trace>? = null
 ): ArucasError(message, cause) {
