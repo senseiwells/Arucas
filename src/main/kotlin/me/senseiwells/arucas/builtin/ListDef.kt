@@ -321,7 +321,8 @@ class ListDef(interpreter: Interpreter): CreatableDefinition<ArucasList>(LIST, i
         val comparator = arguments.next()
         list.asPrimitive(this).sortWith { a, b ->
             val returnValue = arguments.interpreter.call(comparator, listOf(a, b))
-            returnValue.getPrimitive(NumberDef::class)?.toInt() ?: runtimeError("Comparator function must return a number")
+            val num = returnValue.getPrimitive(NumberDef::class) ?: runtimeError("Comparator function must return a number")
+            if (num > 0) 1 else if (num < 0) -1 else 0
         }
         return list
     }
