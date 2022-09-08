@@ -1,11 +1,7 @@
 // ./src/test/resources/code/test.arucas
 
-class E_Map: Map {
-    E_Map(): super();
+import StringBuilder from util.StringUtils;
 
-    fun addAll() {
-        super.addAll();
-    }
-}
+b = new StringBuilder("hi");
 
-new E_Map().addAll();
+print(b);

@@ -804,7 +804,7 @@
             "This creates a function, this cannot be called directly, only from child classes"
           ],
           "examples": [
-            "\n            class ChildFunction: Function {\n                ChildFunction(): super();\n            }\n            "
+            "class ChildFunction: Function {\n    ChildFunction(): super();\n}"
           ]
         }
       ],
@@ -1321,7 +1321,7 @@
             "desc": "the Java Consumer object"
           },
           "examples": [
-            "\n            Java.consumerOf(fun(something) {\n                print(something);\n            });\n            "
+            "Java.consumerOf(fun(something) {\n    print(something);\n});"
           ]
         },
         {
@@ -1428,7 +1428,7 @@
             "desc": "the Java Function object"
           },
           "examples": [
-            "\n            Java.functionOf(fun(something) {\n                return something;\n            });\n            "
+            "Java.functionOf(fun(something) {\n    return something;\n});"
           ]
         },
         {
@@ -1623,7 +1623,7 @@
             "desc": "the Java Predicate object"
           },
           "examples": [
-            "\n            Java.predicateOf(fun(something) {\n                return something == 'something';\n            });\n            "
+            "Java.predicateOf(fun(something) {\n    return something == 'something';\n});"
           ]
         },
         {
@@ -1645,7 +1645,7 @@
             "desc": "the Java Runnable object"
           },
           "examples": [
-            "\n            Java.runnableOf(fun() {\n                print('runnable');\n            });\n            "
+            "Java.runnableOf(fun() {\n    print('runnable');\n});"
           ]
         },
         {
@@ -1675,7 +1675,7 @@
             }
           ],
           "examples": [
-            "\n            // Obviously this won't work, but it's just an example\n            Java.setStaticField('java.lang.Integer', 'MAX_VALUE', Java.intOf(100));\"\n            "
+            "// Obviously this won't work, but it's just an example\nJava.setStaticField('java.lang.Integer', 'MAX_VALUE', Java.intOf(100));\""
           ]
         },
         {
@@ -1739,7 +1739,7 @@
             "desc": "the Java Supplier object"
           },
           "examples": [
-            "\n            Java.supplierOf(fun() {\n                return 'supplier';\n            });\n            "
+            "Java.supplierOf(fun() {\n    return 'supplier';\n});"
           ]
         },
         {
@@ -1926,7 +1926,7 @@
             "This creates a list, this cannot be called directly, only from child classes"
           ],
           "examples": [
-            "\n            class ChildList: List {\n                ChildList(): super();\n            }\n            "
+            "class ChildList: List {\n    ChildList(): super();\n}"
           ]
         }
       ],
@@ -2045,7 +2045,7 @@
             "desc": "the filtered collection"
           },
           "examples": [
-            "\n            (list = [1, 2, 3]).filter(fun(v) {\n                return v > 1;\n            });\n            // list = [2, 3]\n            "
+            "(list = [1, 2, 3]).filter(fun(v) {\n    return v > 1;\n});\n// list = [2, 3]"
           ]
         },
         {
@@ -2061,7 +2061,7 @@
             "desc": "the flattened list"
           },
           "examples": [
-            "\n            (list = [1, 2, 3, [4, 5], [6, [7]]]).flatten();\n            // list = [1, 2, 3, 4, 5, 6, [7]]\n            "
+            "(list = [1, 2, 3, [4, 5], [6, [7]]]).flatten();\n// list = [1, 2, 3, 4, 5, 6, [7]]"
           ]
         },
         {
@@ -2173,7 +2173,7 @@
             "desc": "the mapped collection"
           },
           "examples": [
-            "\n            (list = [1, 2, 3]).map(fun(v) {\n                return v * 2;\n            });\n            // list = [2, 4, 6]\n            "
+            "(list = [1, 2, 3]).map(fun(v) {\n    return v * 2;\n});\n// list = [2, 4, 6]"
           ]
         },
         {
@@ -2216,7 +2216,7 @@
             "desc": "the reduced value"
           },
           "examples": [
-            "\n            // a will start at 1 and b at 2\n            // next accumulator will be 3\n            // a will be 3 and b will be 3 = 6\n            (list = [1, 2, 3]).reduce(fun(a, b) {\n                return a + b;\n            });\n            // 6\n            "
+            "// a will start at 1 and b at 2\n// next accumulator will be 3\n// a will be 3 and b will be 3 = 6\n(list = [1, 2, 3]).reduce(fun(a, b) {\n    return a + b;\n});\n// 6"
           ]
         },
         {
@@ -2391,7 +2391,7 @@
             "This creates an empty map, this cannot be called directly, only from child classes"
           ],
           "examples": [
-            "\n            class ChildMap: Map {\n                ChildMap(): super();\n            }\n            "
+            "class ChildMap: Map {\n    ChildMap(): super();\n}"
           ]
         }
       ],
@@ -2515,7 +2515,7 @@
             "desc": "a new map with the mapped values"
           },
           "examples": [
-            "\n            map = {'key': 'value', 'key2': 'value2'}\n            map.map(fun(k, v) {\n                return [v, k];\n            });\n            // map = {'value': 'key', 'value2': 'key2'}\n            "
+            "map = {'key': 'value', 'key2': 'value2'}\nmap.map(fun(k, v) {\n    return [v, k];\n});\n// map = {'value': 'key', 'value2': 'key2'}"
           ]
         },
         {
@@ -3874,7 +3874,7 @@
             "This cannot be called directly, only from child classes"
           ],
           "examples": [
-            "\n            class ChildString: String {\n                ChildString(): super(\"example\");\n            }\n            "
+            "class ChildString: String {\n    ChildString(): super(\"example\");\n}"
           ]
         }
       ],
@@ -4286,6 +4286,29 @@
       ],
       "methods": [
         {
+          "name": "loopIf",
+          "is_arbitrary": false,
+          "desc": [
+            "This loops the task, essentially just calling 'task.run', the",
+            "task will run async from the original task, the loop will continue",
+            "if the function provided returns true"
+          ],
+          "params": [
+            {
+              "name": "boolSupplier",
+              "type": "Function",
+              "desc": "the function to check if the loop should run"
+            }
+          ],
+          "returns": {
+            "type": "Task",
+            "desc": "the task, this allows for chaining"
+          },
+          "examples": [
+            "task = new Task()\n    .then(fun() print(\"hello\"))\n    .then(fun() print(\" \"))\n    .then(fun() print(\"world\"))\n    .loopIf(fun() true); // Always loop"
+          ]
+        },
+        {
           "name": "run",
           "is_arbitrary": false,
           "desc": [
@@ -4297,7 +4320,7 @@
             "desc": "the future value that can be awaited"
           },
           "examples": [
-            "\n            task = new Task()\n                .then(fun() print(\"hello\"))\n                .then(fun() print(\" \"))\n                .then(fun() print(\"world\"))\n                .then(fun() 10);\n            f = task.run(); // prints 'hello world'\n            print(f.await()); // prints 10\n            "
+            "task = new Task()\n    .then(fun() print(\"hello\"))\n    .then(fun() print(\" \"))\n    .then(fun() print(\"world\"))\n    .then(fun() 10);\nf = task.run(); // prints 'hello world'\nprint(f.await()); // prints 10"
           ]
         },
         {
@@ -4320,7 +4343,7 @@
             "desc": "the task, this allows for chaining"
           },
           "examples": [
-            "\n            task = new Task()\n                .then(fun() print(\"hello\"))\n                .then(fun() print(\" \"))\n                .then(fun() print(\"world\"))\n                .then(fun() 10);\n            f = task.run(); // prints 'hello world'\n            print(f.await()); // prints 10\n            "
+            "task = new Task()\n    .then(fun() print(\"hello\"))\n    .then(fun() print(\" \"))\n    .then(fun() print(\"world\"))\n    .then(fun() 10);\nf = task.run(); // prints 'hello world'\nprint(f.await()); // prints 10"
           ]
         }
       ],
@@ -4462,7 +4485,7 @@
             "desc": "the new thread"
           },
           "examples": [
-            "\n            Thread.runThreaded(fun() {\n                print(\"Running asynchronously!\");\n            });\n            "
+            "Thread.runThreaded(fun() {\n    print(\"Running asynchronously!\");\n});"
           ]
         },
         {
@@ -4488,7 +4511,7 @@
             "desc": "the new thread"
           },
           "examples": [
-            "\n            Thread.runThreaded(\"MyThread\", fun() {\n                print(\"Running asynchronously on MyThread\");\n            });\n            "
+            "Thread.runThreaded(\"MyThread\", fun() {\n    print(\"Running asynchronously on MyThread\");\n});"
           ]
         }
       ]

@@ -280,11 +280,9 @@ Class does not need to be imported
 ### `new Function()`
 - Description: This creates a function, this cannot be called directly, only from child classes- Example:
 ```kotlin
-
-            class ChildFunction: Function {
-                ChildFunction(): super();
-            }
-            
+class ChildFunction: Function {
+    ChildFunction(): super();
+}
 ```
 
 
@@ -536,11 +534,9 @@ Class does not need to be imported
 ### `new List()`
 - Description: This creates a list, this cannot be called directly, only from child classes- Example:
 ```kotlin
-
-            class ChildList: List {
-                ChildList(): super();
-            }
-            
+class ChildList: List {
+    ChildList(): super();
+}
 ```
 
 ## Methods
@@ -590,12 +586,10 @@ and returns a new list with the filtered elements- Parameter - Function (`predic
 - Returns - List: the filtered collection
 - Example:
 ```kotlin
-
-            (list = [1, 2, 3]).filter(fun(v) {
-                return v > 1;
-            });
-            // list = [2, 3]
-            
+(list = [1, 2, 3]).filter(fun(v) {
+    return v > 1;
+});
+// list = [2, 3]
 ```
 
 ### `<List>.flatten()`
@@ -604,10 +598,8 @@ be expanded and added to the list. However collections inside those
 collections will not be flattened, this is returned as a new list- Returns - List: the flattened list
 - Example:
 ```kotlin
-
-            (list = [1, 2, 3, [4, 5], [6, [7]]]).flatten();
-            // list = [1, 2, 3, 4, 5, 6, [7]]
-            
+(list = [1, 2, 3, [4, 5], [6, [7]]]).flatten();
+// list = [1, 2, 3, 4, 5, 6, [7]]
 ```
 
 ### `<List>.get(index)`
@@ -651,12 +643,10 @@ returns a new value, and returns a new list with the mapped elements- Parameter 
 - Returns - List: the mapped collection
 - Example:
 ```kotlin
-
-            (list = [1, 2, 3]).map(fun(v) {
-                return v * 2;
-            });
-            // list = [2, 4, 6]
-            
+(list = [1, 2, 3]).map(fun(v) {
+    return v * 2;
+});
+// list = [2, 4, 6]
 ```
 
 ### `<List>.prepend(value)`
@@ -673,15 +663,13 @@ accumulated value and a new value and returns the next accumulated value- Parame
 - Returns - Object: the reduced value
 - Example:
 ```kotlin
-
-            // a will start at 1 and b at 2
-            // next accumulator will be 3
-            // a will be 3 and b will be 3 = 6
-            (list = [1, 2, 3]).reduce(fun(a, b) {
-                return a + b;
-            });
-            // 6
-            
+// a will start at 1 and b at 2
+// next accumulator will be 3
+// a will be 3 and b will be 3 = 6
+(list = [1, 2, 3]).reduce(fun(a, b) {
+    return a + b;
+});
+// 6
 ```
 
 ### `<List>.remove(index)`
@@ -763,11 +751,9 @@ Class does not need to be imported
 ### `new Map()`
 - Description: This creates an empty map, this cannot be called directly, only from child classes- Example:
 ```kotlin
-
-            class ChildMap: Map {
-                ChildMap(): super();
-            }
-            
+class ChildMap: Map {
+    ChildMap(): super();
+}
 ```
 
 ## Methods
@@ -821,13 +807,11 @@ Class does not need to be imported
 - Returns - Map: a new map with the mapped values
 - Example:
 ```kotlin
-
-            map = {'key': 'value', 'key2': 'value2'}
-            map.map(fun(k, v) {
-                return [v, k];
-            });
-            // map = {'value': 'key', 'value2': 'key2'}
-            
+map = {'key': 'value', 'key2': 'value2'}
+map.map(fun(k, v) {
+    return [v, k];
+});
+// map = {'value': 'key', 'value2': 'key2'}
 ```
 
 ### `<Map>.put(key, value)`
@@ -915,13 +899,11 @@ Class does not need to be imported
 - Returns - Map: a new map with the mapped values
 - Example:
 ```kotlin
-
-            map = {'key': 'value', 'key2': 'value2'}
-            map.map(fun(k, v) {
-                return [v, k];
-            });
-            // map = {'value': 'key', 'value2': 'key2'}
-            
+map = {'key': 'value', 'key2': 'value2'}
+map.map(fun(k, v) {
+    return [v, k];
+});
+// map = {'value': 'key', 'value2': 'key2'}
 ```
 
 ### `Map.put(key, value)`
@@ -1343,11 +1325,9 @@ Class does not need to be imported
 - Description: This creates a new string object, not from the string pool, with the given string.
 This cannot be called directly, only from child classes- Example:
 ```kotlin
-
-            class ChildString: String {
-                ChildString(): super("example");
-            }
-            
+class ChildString: String {
+    ChildString(): super("example");
+}
 ```
 
 ## Methods
@@ -1536,20 +1516,32 @@ task = new Task();
 
 ## Methods
 
+### `<Task>.loopIf(boolSupplier)`
+- Description: This loops the task, essentially just calling 'task.run', the
+task will run async from the original task, the loop will continue
+if the function provided returns true- Parameter - Function (`boolSupplier`): the function to check if the loop should run
+- Returns - Task: the task, this allows for chaining
+- Example:
+```kotlin
+task = new Task()
+    .then(fun() print("hello"))
+    .then(fun() print(" "))
+    .then(fun() print("world"))
+    .loopIf(fun() true); // Always loop
+```
+
 ### `<Task>.run()`
 - Description: This runs the task asynchronously and returns a future which can be awaited.
 The last function in the task will be used as the return value for the future- Returns - Future: the future value that can be awaited
 - Example:
 ```kotlin
-
-            task = new Task()
-                .then(fun() print("hello"))
-                .then(fun() print(" "))
-                .then(fun() print("world"))
-                .then(fun() 10);
-            f = task.run(); // prints 'hello world'
-            print(f.await()); // prints 10
-            
+task = new Task()
+    .then(fun() print("hello"))
+    .then(fun() print(" "))
+    .then(fun() print("world"))
+    .then(fun() 10);
+f = task.run(); // prints 'hello world'
+print(f.await()); // prints 10
 ```
 
 ### `<Task>.then(function)`
@@ -1559,15 +1551,13 @@ value of the function will be the return value of the task.- Parameter - Functio
 - Returns - Task: the task, this allows for chaining
 - Example:
 ```kotlin
-
-            task = new Task()
-                .then(fun() print("hello"))
-                .then(fun() print(" "))
-                .then(fun() print("world"))
-                .then(fun() 10);
-            f = task.run(); // prints 'hello world'
-            print(f.await()); // prints 10
-            
+task = new Task()
+    .then(fun() print("hello"))
+    .then(fun() print(" "))
+    .then(fun() print("world"))
+    .then(fun() 10);
+f = task.run(); // prints 'hello world'
+print(f.await()); // prints 10
 ```
 
 

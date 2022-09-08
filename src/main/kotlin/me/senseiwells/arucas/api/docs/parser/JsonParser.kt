@@ -49,7 +49,7 @@ class JsonParser private constructor(): DocParser() {
             val docs = ParsedClassDocs(definition)
             val classDoc = docs.classDocOrThrow()
             classObject.addProperty("name", classDoc.name)
-            val description = arrayToJson(*classDoc.desc)
+            val description = this.arrayToJson(*classDoc.desc)
             var importPath: JsonElement? = JsonNull.INSTANCE
             if (classDoc.importPath.isNotBlank()) {
                 importPath = JsonPrimitive(classDoc.importPath)
@@ -62,16 +62,16 @@ class JsonParser private constructor(): DocParser() {
                 val memberObject = JsonObject()
                 memberObject.addProperty("name", doc.name)
                 memberObject.addProperty("assignable", doc.assignable)
-                memberObject.add("desc", arrayToJson(*doc.desc))
+                memberObject.add("desc", this.arrayToJson(*doc.desc))
                 memberObject.addProperty("type", doc.type)
-                memberObject.add("examples", arrayToJson(*doc.examples))
+                memberObject.add("examples", this.examplesToJson(*doc.examples))
                 staticMembers.add(memberObject)
             }
             classObject.add("static_members", staticMembers)
             val constructors = JsonArray()
             for (doc in docs.constructors) {
                 val constructor = JsonObject()
-                constructor.add("desc", arrayToJson(*doc.desc))
+                constructor.add("desc", this.arrayToJson(*doc.desc))
                 if (doc.params.size % 3 == 0) {
                     if (doc.params.isNotEmpty()) {
                         constructor.add("params", paramsToJson(doc.params))
@@ -79,7 +79,7 @@ class JsonParser private constructor(): DocParser() {
                 } else {
                     throw IllegalStateException("Invalid parameter documentation: '${doc.params.contentToString()}'")
                 }
-                constructor.add("examples", arrayToJson(*doc.examples))
+                constructor.add("examples", this.examplesToJson(*doc.examples))
                 constructors.add(constructor)
             }
             classObject.add("constructors", constructors)
@@ -104,9 +104,9 @@ class JsonParser private constructor(): DocParser() {
         jsonObject.addProperty("is_arbitrary", doc.isVarArgs)
         // object.addProperty("is_static", doc.isStatic());
         if (doc.deprecated.isNotEmpty()) {
-            jsonObject.add("deprecated", arrayToJson(*doc.deprecated))
+            jsonObject.add("deprecated", this.arrayToJson(*doc.deprecated))
         }
-        jsonObject.add("desc", arrayToJson(*doc.desc))
+        jsonObject.add("desc", this.arrayToJson(*doc.desc))
         if (doc.params.size % 3 == 0) {
             if (doc.params.isNotEmpty()) {
                 jsonObject.add("params", paramsToJson(doc.params))
@@ -120,7 +120,7 @@ class JsonParser private constructor(): DocParser() {
             returnObject.addProperty("desc", doc.returns[1])
             jsonObject.add("returns", returnObject)
         }
-        jsonObject.add("examples", arrayToJson(*doc.examples))
+        jsonObject.add("examples", this.examplesToJson(*doc.examples))
         return jsonObject
     }
 
@@ -144,6 +144,14 @@ class JsonParser private constructor(): DocParser() {
         val jsonArray = JsonArray()
         for (string in array) {
             jsonArray.add(string)
+        }
+        return jsonArray
+    }
+
+    private fun examplesToJson(vararg array: String): JsonArray {
+        val jsonArray = JsonArray()
+        for (string in array) {
+            jsonArray.add(string.trimIndent().replace("\t", "    "))
         }
         return jsonArray
     }

@@ -46,7 +46,7 @@ open class ImplArucasLibrary @JvmOverloads constructor(
 
         val lastUpdateTime = thisCache.get("last")?.asLong
         val currentTime = System.currentTimeMillis() / 1_000
-        if (lastUpdateTime != null && lastUpdateTime + 86_400 > currentTime ) {
+        if (lastUpdateTime != null && lastUpdateTime + 86_400 > currentTime && Files.exists(filePath)) {
             interpreter.logDebug("Import '$name' was read locally, last updated: ${currentTime - lastUpdateTime}s ago")
             return this.read(filePath)
         }
@@ -58,7 +58,7 @@ open class ImplArucasLibrary @JvmOverloads constructor(
             ?: return this.updateLastAndRead(cache, thisCache, name, filePath, interpreter)
 
         val newSha = response.get("sha")
-        if (newSha.asString == sha) {
+        if (newSha.asString == sha && Files.exists(filePath)) {
             this.read(filePath)?.let {
                 interpreter.logDebug("Import '$name' is up to date!")
                 this.updateCacheAndWrite(cache, thisCache, name)
@@ -69,11 +69,20 @@ open class ImplArucasLibrary @JvmOverloads constructor(
             ?: return this.updateLastAndRead(cache, thisCache, name, filePath, interpreter)
         interpreter.logDebug("Downloaded latest library for '$name'")
         thisCache.add("sha", newSha)
+        Files.writeString(filePath, library)
         this.updateCacheAndWrite(cache, thisCache, name)
         return library
     }
 
-    protected open fun getCachePath(): Path = this.importPath.resolve("ArucasCache.json").ensureParentExists()
+    protected open fun getCachePath(): Path {
+        return this.importPath.resolve(".ArucasCache.json").ensureParentExists().also {
+            // Will be removed in the future
+            val oldCache = this.importPath.resolve("ArucasCache.json")
+            if (Files.exists(oldCache)) {
+                Files.delete(oldCache)
+            }
+        }
+    }
 
     private fun updateCacheAndWrite(cache: JsonObject, thisCache: JsonObject, name: String) {
         thisCache.addProperty("last", System.currentTimeMillis() / 1_000)

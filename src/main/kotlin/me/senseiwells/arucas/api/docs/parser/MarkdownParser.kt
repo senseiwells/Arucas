@@ -198,7 +198,7 @@ class MarkdownParser private constructor(): DocParser() {
         builder.append(if (examples.size == 1) "- Example:\n" else "- Examples:\n")
         for (example in examples) {
             builder.append("```kotlin\n")
-            builder.append(example.replace("\t", "    "))
+            builder.append(example.trimIndent().replace("\t", "    "))
 
             while (builder.endsWith("\n")) {
                 builder.deleteAt(builder.length - 1)
