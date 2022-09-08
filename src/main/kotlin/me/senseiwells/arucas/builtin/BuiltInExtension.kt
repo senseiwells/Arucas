@@ -2,7 +2,6 @@ package me.senseiwells.arucas.builtin
 
 import me.senseiwells.arucas.api.ArucasExtension
 import me.senseiwells.arucas.api.docs.FunctionDoc
-import me.senseiwells.arucas.builtin.NumberDef
 import me.senseiwells.arucas.classes.ClassInstance
 import me.senseiwells.arucas.core.Arucas
 import me.senseiwells.arucas.exceptions.Propagator

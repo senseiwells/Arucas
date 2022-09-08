@@ -7,9 +7,9 @@ import me.senseiwells.arucas.classes.PrimitiveDefinition
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.utils.Arguments
 import me.senseiwells.arucas.utils.BuiltInFunction
+import me.senseiwells.arucas.utils.Util.Collection.to
 import me.senseiwells.arucas.utils.Util.Types.MATH
 import me.senseiwells.arucas.utils.Util.Types.NUMBER
-import me.senseiwells.arucas.utils.Util.Collection.to
 import kotlin.math.*
 
 @ClassDoc(
@@ -18,13 +18,13 @@ import kotlin.math.*
 )
 class MathDef(interpreter: Interpreter): PrimitiveDefinition<Unit>(MATH, interpreter) {
     @FieldDoc(name = "pi", desc = ["The value of pi"], type = NUMBER, examples = ["Math.pi;"])
-    val PI = Math.PI
+    val pi = Math.PI
 
     @FieldDoc(name = "e", desc = ["The value of e"], type = NUMBER, examples = ["Math.e;"])
-    val E = Math.E
+    val e = Math.E
 
     @FieldDoc(name = "root2", desc = ["The value of root 2"], type = NUMBER, examples = ["Math.root2;"])
-    val ROOT2 = sqrt(2.0)
+    val root2 = sqrt(2.0)
 
     override fun canExtend(): Boolean {
         return false
@@ -32,13 +32,13 @@ class MathDef(interpreter: Interpreter): PrimitiveDefinition<Unit>(MATH, interpr
 
     override fun defineStaticFields(): List<Triple<String, Any?, Boolean>> {
         return listOf(
-            "pi" to this.PI to false,
-            "e" to this.E to false,
-            "root2" to this.ROOT2 to false
+            "pi" to this.pi to false,
+            "e" to this.e to false,
+            "root2" to this.root2 to false
         )
     }
 
-    override fun defineStaticMethods(): List<BuiltInFunction>? {
+    override fun defineStaticMethods(): List<BuiltInFunction> {
         return listOf(
             BuiltInFunction.of("round", 1, this::round),
             BuiltInFunction.of("ceil", 1, this::ceil),

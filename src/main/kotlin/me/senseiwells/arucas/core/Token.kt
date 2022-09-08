@@ -123,6 +123,7 @@ enum class Type(private val asString: String? = null) {
     AS("as"),
     NEW("new"),
     STATIC("static"),
+    READONLY("readonly"),
     OPERATOR("operator"),
     THROW("throw"),
     IMPORT("import"),
