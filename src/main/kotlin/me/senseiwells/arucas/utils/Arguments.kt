@@ -103,7 +103,7 @@ open class Arguments(
      */
     fun get(index: Int, definition: ClassDefinition): ClassInstance {
         val value = this.get(index)
-        if (value.definition.inheritsFrom(definition)) {
+        if (value.isOf(definition)) {
             return value
         }
         runtimeError("Must pass ${definition.name} into parameter ${this.displayedIndex(index)} for '${this.getFunctionName()}'")
@@ -248,7 +248,7 @@ open class Arguments(
      * @return Whether the next ClassInstance is of the correct type.
      */
     fun isNext(definition: ClassDefinition): Boolean {
-        return this.index < this.size() && this.get(this.index).definition.inheritsFrom(definition)
+        return this.index < this.size() && this.get(this.index).isOf(definition)
     }
 
     /**
@@ -258,7 +258,7 @@ open class Arguments(
      * @return Whether the next ClassInstance is of the correct type.
      */
     fun <T: PrimitiveDefinition<*>> isNext(clazz: Class<T>): Boolean {
-        return this.index < this.size() && this.get(this.index).definition.inheritsFrom(this.interpreter.getPrimitive(clazz))
+        return this.index < this.size() && this.get(this.index).isOf(this.interpreter.getPrimitive(clazz))
     }
 
     /**
@@ -268,7 +268,7 @@ open class Arguments(
      * @return Whether the next ClassInstance is of the correct type.
      */
     fun <T: PrimitiveDefinition<*>> isNext(clazz: KClass<T>): Boolean {
-        return this.index < this.size() && this.get(this.index).definition.inheritsFrom(this.interpreter.getPrimitive(clazz))
+        return this.index < this.size() && this.get(this.index).isOf(this.interpreter.getPrimitive(clazz))
     }
 
     // Some functions to retrieve the basic built in types.

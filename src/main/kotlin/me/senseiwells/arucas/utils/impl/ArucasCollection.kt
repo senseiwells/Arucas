@@ -41,7 +41,7 @@ interface ArucasCollection: ArucasIterable {
         return this.formatCollection(builder.toString())
     }
 
-    override fun iterator(): Iterator<ClassInstance> = this.asCollection().iterator()
+    override fun iterator(): ArucasIterator = ArucasIterator.wrap(this.asCollection().iterator())
 
     @Deprecated("Need interpreter for this operation", replaceWith = ReplaceWith("collection.hashCode(interpreter)"))
     override fun hashCode(): Int
@@ -57,6 +57,32 @@ interface ArucasCollection: ArucasIterable {
     }
 
     companion object {
+        val EMPTY = object: ArucasCollection {
+            override fun length() = 0
+
+            override fun asCollection()= listOf<ClassInstance>()
+
+            override fun toSafeString() = "<collection>"
+
+            override fun formatCollection(elements: String) = elements
+
+            override fun iterator() = ArucasIterator.EMPTY
+
+            @Deprecated("Need interpreter for this operation", replaceWith = ReplaceWith("collection.toString(interpreter)"))
+            override fun toString(): String {
+                return this.toSafeString()
+            }
+            @Deprecated("Need interpreter for this operation", replaceWith = ReplaceWith("collection.hashCode(interpreter)"))
+            override fun hashCode(): Int {
+                return System.identityHashCode(this)
+            }
+
+            @Deprecated("Need interpreter for this operation", replaceWith = ReplaceWith("collection.equals(interpreter, other)"))
+            override fun equals(other: Any?): Boolean {
+                return this === other
+            }
+        }
+
         fun safeCollection(collection: Collection<ClassInstance>): Array<ClassInstance> {
             return if (collection is ArucasList) collection.toArray() else collection.toTypedArray()
         }

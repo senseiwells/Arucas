@@ -91,7 +91,7 @@ class ArucasList private constructor(
     }
 
     @Synchronized
-    override fun iterator(): MutableIterator<ClassInstance> {
+    override fun iterator(): ArucasListIterator {
         return this.listIterator()
     }
 
@@ -174,13 +174,13 @@ class ArucasList private constructor(
     }
 
     @Synchronized
-    override fun listIterator(): MutableListIterator<ClassInstance> {
-        return this.ArucasIterator()
+    override fun listIterator(): ArucasListIterator {
+        return this.ArucasListIterator()
     }
 
     @Synchronized
-    override fun listIterator(index: Int): MutableListIterator<ClassInstance> {
-        return this.ArucasIterator(index)
+    override fun listIterator(index: Int): ArucasListIterator {
+        return this.ArucasListIterator(index)
     }
 
     @Synchronized
@@ -417,7 +417,7 @@ class ArucasList private constructor(
         this.needInterpreterForThis()
     }
 
-    private inner class ArucasIterator(var cursor: Int = 0): MutableListIterator<ClassInstance> {
+    inner class ArucasListIterator(var cursor: Int = 0): MutableListIterator<ClassInstance>, ArucasIterator {
         var last = -1
 
         override fun hasPrevious(): Boolean {

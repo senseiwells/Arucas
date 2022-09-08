@@ -208,6 +208,6 @@ class ObjectDef(interpreter: Interpreter): PrimitiveDefinition<Any>(OBJECT, inte
     private fun instanceOf(arguments: Arguments): Boolean {
         val instance = arguments.next()
         val type = arguments.nextPrimitive(TypeDef::class)
-        return instance.definition.inheritsFrom(type)
+        return instance.isOf(type)
     }
 }

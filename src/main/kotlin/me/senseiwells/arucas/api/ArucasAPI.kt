@@ -226,6 +226,7 @@ interface ArucasAPI {
                 ::MapDef,
                 ::SetDef,
                 ::IterableDef,
+                ::IteratorDef,
                 ::ErrorDef,
                 ::EnumDef,
                 ::TypeDef,
@@ -273,6 +274,9 @@ interface ArucasAPI {
             this.addConversion(RuntimeError::class) { e, i -> e.getInstance(i) }
             this.addConversion(ClassDefinition::class) { c, _ -> c.getTypeInstance() }
             this.addConversion(ArucasIterable::class) { a, i -> i.create(IterableDef::class, a) }
+            this.addConversion(Iterable::class) { it, i -> i.create(IterableDef::class, ArucasIterable.wrap(i, it)) }
+            this.addConversion(ArucasIterator::class) { it, i -> i.create(IteratorDef::class, it) }
+            this.addConversion(Iterator::class) { it, i -> i.create(IteratorDef::class, ArucasIterator.wrap(i, it)) }
             this.addConversion(ArucasList::class) { a, i -> i.create(ListDef::class, a) }
             this.addConversion(List::class) { l, i -> i.create(ListDef::class, ArucasList(l.map { i.convertValue(it) })) }
             this.addConversion(ArucasMap::class) { m, i -> i.create(MapDef::class, m) }

@@ -7,10 +7,7 @@ import me.senseiwells.arucas.classes.ClassInstance
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.exceptions.RuntimeError
 import me.senseiwells.arucas.exceptions.runtimeError
-import me.senseiwells.arucas.utils.impl.ArucasIterable
-import me.senseiwells.arucas.utils.impl.ArucasList
-import me.senseiwells.arucas.utils.impl.ArucasMap
-import me.senseiwells.arucas.utils.impl.ArucasOrderedMap
+import me.senseiwells.arucas.utils.impl.*
 import java.io.FileOutputStream
 import java.io.IOException
 import java.net.URL
@@ -47,7 +44,7 @@ object Util {
 
         fun rangeIterable(interpreter: Interpreter, end: Double, start: Double = 0.0, step: Double = 1.0): ArucasIterable {
             return object: ArucasIterable {
-                override fun iterator(): Iterator<ClassInstance> {
+                override fun iterator(): ArucasIterator {
                     return RangeIterator(start, end, step) { interpreter.create(NumberDef::class, it) }
                 }
             }
@@ -58,7 +55,7 @@ object Util {
             val end: Double,
             val step: Double,
             val converter: (Double) -> ClassInstance
-        ): Iterator<ClassInstance> {
+        ): ArucasIterator {
             override fun hasNext(): Boolean {
                 return if (this.step > 0) this.current < this.end else this.end < this.current
             }
@@ -214,7 +211,8 @@ object Util {
         const val FILE = "File"
         const val FUNCTION = "Function"
         const val FUTURE = "Future"
-        const val ITERABLE = "Iterator"
+        const val ITERABLE = "Iterable"
+        const val ITERATOR = "Iterator"
         const val JAVA = "Java"
         const val JAVA_CLASS = "JavaClass"
         const val JSON = "Json"

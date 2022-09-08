@@ -40,7 +40,7 @@ class ClassInstance internal constructor(val definition: ClassDefinition) {
     fun getInstanceField(name: String) = this.instanceFields[name]
 
     fun <T: Any> setPrimitive(definition: PrimitiveDefinition<T>, value: T) {
-        if (!this.definition.inheritsFrom(definition)) {
+        if (!this.isOf(definition)) {
             throw IllegalStateException("Tried to set '${definition.name}' to '${this.definition}' instance")
         }
         this.primitive = value
@@ -55,7 +55,7 @@ class ClassInstance internal constructor(val definition: ClassDefinition) {
     }
 
     fun <T: Any> getPrimitive(definition: PrimitiveDefinition<T>): T? {
-        if (this.definition.inheritsFrom(definition)) {
+        if (this.isOf(definition)) {
             @Suppress("UNCHECKED_CAST")
             return this.primitive as? T
         }
@@ -66,10 +66,16 @@ class ClassInstance internal constructor(val definition: ClassDefinition) {
         return this.getPrimitive(definition)!!
     }
 
+    fun isOf(definition: ClassDefinition): Boolean = this.definition.inheritsFrom(definition)
+
+    fun isOf(klass: KClass<out PrimitiveDefinition<*>>): Boolean = this.isOf(this.definition.getPrimitiveDef(klass))
+
+    fun isOf(clazz: Class<out PrimitiveDefinition<*>>): Boolean = this.isOf(this.definition.getPrimitiveDef(clazz))
+
     fun callMember(interpreter: Interpreter, name: String, args: List<ClassInstance>, returnType: ClassDefinition, trace: LocatableTrace): ClassInstance {
         val functionName = "<${this.definition.name}>.$name::${args.size}"
         val instance = this.callMember(interpreter, name, args, trace, functionName)
-        if (!instance.definition.inheritsFrom(returnType)) {
+        if (!instance.isOf(returnType)) {
             runtimeError("Expected function '$functionName' to return '${returnType.name}'", trace)
         }
         return instance

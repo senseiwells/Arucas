@@ -1,11 +1,14 @@
 package me.senseiwells.arucas.builtin
 
 import me.senseiwells.arucas.api.docs.ClassDoc
+import me.senseiwells.arucas.api.docs.ConstructorDoc
 import me.senseiwells.arucas.api.docs.FunctionDoc
 import me.senseiwells.arucas.classes.ClassInstance
 import me.senseiwells.arucas.classes.PrimitiveDefinition
 import me.senseiwells.arucas.core.Interpreter
+import me.senseiwells.arucas.exceptions.runtimeError
 import me.senseiwells.arucas.utils.Arguments
+import me.senseiwells.arucas.utils.ConstructorFunction
 import me.senseiwells.arucas.utils.LocatableTrace
 import me.senseiwells.arucas.utils.MemberFunction
 import me.senseiwells.arucas.utils.Util.Types.BOOLEAN
@@ -18,18 +21,43 @@ import me.senseiwells.arucas.utils.impl.ArucasCollection
     desc = [
         "This class is used to represent a collection of objects,",
         "this class is used internally as the parent of maps, lists, and sets.",
-        "This cannot be extended or instantiated directly.",
+        "This cannot be instantiated directly.",
         "All collections inherit Iterable, and thus can be iterated over"
     ],
     superclass = IterableDef::class
 )
 class CollectionDef(interpreter: Interpreter): PrimitiveDefinition<ArucasCollection>(COLLECTION, interpreter) {
-    override fun canExtend() = false
+    override fun canConstructDirectly() = false
 
     override fun superclass(): PrimitiveDefinition<in ArucasCollection> = this.getPrimitiveDef(IterableDef::class)
 
     override fun toString(instance: ClassInstance, interpreter: Interpreter, trace: LocatableTrace): String {
         return instance.asPrimitive(this).toString(interpreter, trace)
+    }
+
+    override fun defineConstructors(): List<ConstructorFunction> {
+        return listOf(
+            ConstructorFunction.of(0, this::construct)
+        )
+    }
+
+    @ConstructorDoc(
+        desc = ["This creates a collection, this cannot be called directly, only from child classes"],
+        examples = [
+            """
+            class ChildCollection: Collection {
+                ChildCollection(): super();
+                
+                fun size() {
+                    return 0;
+                }
+            }
+            """
+        ]
+    )
+    private fun construct(arguments: Arguments) {
+        val instance = arguments.next()
+        instance.setPrimitive(this, ArucasCollection.EMPTY)
     }
 
     override fun defineMethods(): List<MemberFunction> {
@@ -47,6 +75,9 @@ class CollectionDef(interpreter: Interpreter): PrimitiveDefinition<ArucasCollect
     )
     private fun size(arguments: Arguments): Int {
         val collection = arguments.nextPrimitive(this)
+        if (collection === ArucasCollection.EMPTY) {
+            runtimeError("Collection has not properly overriden 'size' method")
+        }
         return collection.length()
     }
 
@@ -57,6 +88,6 @@ class CollectionDef(interpreter: Interpreter): PrimitiveDefinition<ArucasCollect
         examples = ["['object', 81, 96, 'case'].isEmpty(); // false"]
     )
     private fun isEmpty(arguments: Arguments): Boolean {
-        return arguments.nextPrimitive(this).length() == 0
+        return arguments.next().callMemberPrimitive(arguments.interpreter, "size", listOf(), NumberDef::class).toInt() == 0
     }
 }

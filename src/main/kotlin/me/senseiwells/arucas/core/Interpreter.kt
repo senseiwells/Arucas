@@ -244,7 +244,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         for (name in typeNames) {
             val definition = this.currentTable.getClass(name)
             definition ?: runtimeError("No such class with name '$name'", trace)
-            if (instance.definition.inheritsFrom(definition)) {
+            if (instance.isOf(definition)) {
                 return true
             }
         }
@@ -434,19 +434,25 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
     }
 
     override fun visitForeach(foreach: ForeachStatement) {
-        val iterable = this.evaluate(foreach.iterable).getPrimitive(IterableDef::class)
-        iterable ?: runtimeError("'foreach' loop must iterate over an Iterable value", foreach.trace)
+        val iterable = this.evaluate(foreach.iterable)
+        if (!iterable.isOf(IterableDef::class)) {
+            runtimeError("'foreach' loop must iterate over an Iterable value", foreach.trace)
+        }
 
-        for (value in iterable) {
+        val iterator = iterable.callMember(this, "iterator", listOf(), IteratorDef::class, foreach.trace)
+
+        val hasNext = { iterator.callMemberPrimitive(this, "hasNext", listOf(), BooleanDef::class, foreach.trace) }
+        val getNext = { iterator.callMember(this, "next", listOf(), ObjectDef::class, foreach.trace) }
+        while (hasNext()) {
             this.canRun()
             val shouldBreak = this.jumpNextTable {
-                this.currentTable.defineVar(foreach.name, value)
+                this.currentTable.defineVar(foreach.name, getNext())
                 try {
                     this.execute(foreach.body)
                 } catch (breakPropagator: Propagator.Break) {
                     return@jumpNextTable true
                 } catch (_: Propagator.Continue) { }
-                return@jumpNextTable false
+                false
             }
 
             if (shouldBreak) {
@@ -646,8 +652,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
 
     override fun visitUnpackAssign(assign: UnpackAssignExpression): ClassInstance {
         val list = this.evaluate(assign.assignee)
-        val listDef = this.getPrimitive(ListDef::class)
-        if (!list.definition.inheritsFrom(listDef)) {
+        if (!list.isOf(ListDef::class)) {
             runtimeError("Expression in unpacking assignment must result in an List value", assign.trace)
         }
 
