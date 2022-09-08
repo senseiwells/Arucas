@@ -765,7 +765,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
             }
             is SuperExpression -> {
                 this.visitSuper(expression, expression.trace).let { (i, d) ->
-                    val function = d.memberFunctionAccess(i, call.name , arguments, call.trace)
+                    val function = d.memberFunctionAccess(i, call.name , arguments, call.trace, d)
                     val callTrace = CallTrace(call.trace, "<${d.name}>.super.${call.name}::${arguments.size - 1}")
                     return this.call(function, arguments, callTrace)
                 }

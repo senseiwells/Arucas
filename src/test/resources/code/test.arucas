@@ -1,25 +1,11 @@
 // ./src/test/resources/code/test.arucas
 
-class A {
-    fun f() {
-        print("A");
+class E_Map: Map {
+    E_Map(): super();
+
+    fun addAll() {
+        super.addAll();
     }
 }
 
-class B: A {
-    B(): super();
-
-    fun f() {
-        super.f();
-    }
-}
-
-class C: B {
-    C(): super();
-
-    fun f() {
-        super.f();
-    }
-}
-
-new C().f();
+new E_Map().addAll();

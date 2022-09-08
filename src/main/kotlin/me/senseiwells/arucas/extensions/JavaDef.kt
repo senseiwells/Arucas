@@ -6,6 +6,7 @@ import me.senseiwells.arucas.builtin.BooleanDef
 import me.senseiwells.arucas.builtin.FunctionDef
 import me.senseiwells.arucas.builtin.NumberDef
 import me.senseiwells.arucas.builtin.StringDef
+import me.senseiwells.arucas.classes.ClassDefinition
 import me.senseiwells.arucas.classes.ClassInstance
 import me.senseiwells.arucas.classes.CreatableDefinition
 import me.senseiwells.arucas.core.Interpreter
@@ -46,12 +47,12 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
         return if (value != Null) value else null
     }
 
-    override fun memberFunctionAccess(instance: ClassInstance, name: String, args: MutableList<ClassInstance>, trace: Trace): ClassInstance {
+    override fun memberFunctionAccess(instance: ClassInstance, name: String, args: MutableList<ClassInstance>, trace: Trace, origin: ClassDefinition): ClassInstance {
         if (!this.hasMemberFunction(name, args.size)) {
             val java = this.asJavaNotNull(instance, trace)
             return this.interpreter.create(FunctionDef::class, BuiltInFunction.java(java::class.java, java, name))
         }
-        return super.memberFunctionAccess(instance, name, args, trace)
+        return super.memberFunctionAccess(instance, name, args, trace, origin)
     }
 
     override fun memberAccess(instance: ClassInstance, interpreter: Interpreter, name: String, trace: LocatableTrace): ClassInstance {

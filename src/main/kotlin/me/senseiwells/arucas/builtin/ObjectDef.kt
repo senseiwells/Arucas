@@ -40,7 +40,7 @@ class ObjectDef(interpreter: Interpreter): PrimitiveDefinition<Any>(OBJECT, inte
         runtimeError("Cannot call '${instance.definition.name}'")
     }
 
-    override fun memberFunctionAccess(instance: ClassInstance, name: String, args: MutableList<ClassInstance>, trace: Trace): ClassInstance {
+    override fun memberFunctionAccess(instance: ClassInstance, name: String, args: MutableList<ClassInstance>, trace: Trace, origin: ClassDefinition): ClassInstance {
         this.methods.value.get(name, args.size + 1)?.let {
             args.add(0, instance)
             return it
@@ -54,7 +54,7 @@ class ObjectDef(interpreter: Interpreter): PrimitiveDefinition<Any>(OBJECT, inte
         }
 
         val error = if (args.isEmpty()) "" else " with ${args.size} parameter${if (args.size == 1) "" else "s"}"
-        runtimeError("Method '<${instance.definition.name}>.$name'$error is not defined", trace)
+        runtimeError("Method '<${origin.name}>.$name'$error is not defined", trace)
     }
 
     override fun hasMemberFunction(name: String): Boolean {

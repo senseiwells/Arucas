@@ -110,14 +110,14 @@ abstract class ClassDefinition(
 
     internal open fun call(instance: ClassInstance, interpreter: Interpreter, args: List<ClassInstance>): ClassInstance = this.superclass().call(instance, interpreter, args)
 
-    internal open fun memberFunctionAccess(instance: ClassInstance, name: String, args: MutableList<ClassInstance>, trace: Trace): ClassInstance {
+    internal open fun memberFunctionAccess(instance: ClassInstance, name: String, args: MutableList<ClassInstance>, trace: Trace, origin: ClassDefinition = this): ClassInstance {
         if (this.methods.isInitialized()) {
             this.methods.value.get(name, args.size + 1)?.let {
                 args.add(0, instance)
                 return it
             }
         }
-        return this.superclass().memberFunctionAccess(instance, name, args, trace)
+        return this.superclass().memberFunctionAccess(instance, name, args, trace, origin)
     }
 
     internal open fun hasMemberFunction(name: String): Boolean {
@@ -376,7 +376,7 @@ class InterfaceDefinition(
         runtimeError("Cannot construct an interface class", trace)
     }
 
-    override fun memberFunctionAccess(instance: ClassInstance, name: String, args: MutableList<ClassInstance>, trace: Trace): ClassInstance {
+    override fun memberFunctionAccess(instance: ClassInstance, name: String, args: MutableList<ClassInstance>, trace: Trace, origin: ClassDefinition): ClassInstance {
         throw IllegalStateException("Tried to access method in an interface class, this is a bug!")
     }
 
