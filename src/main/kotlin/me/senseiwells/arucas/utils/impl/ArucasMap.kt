@@ -667,12 +667,12 @@ open class ArucasMap: ArucasCollection {
             while (true) {
                 var dir: Int
                 val ph = p!!.hash
-                var pk: ClassInstance
+                val pk = p.key
                 if (ph > h) {
                     dir = -1
                 } else if (ph < h) {
                     dir = 1
-                } else if (p.key.also { pk = it } === k || k.equals(interpreter, pk)) {
+                } else if (pk === k || k.equals(interpreter, pk)) {
                     return p
                 } else {
                     if (!searched) {
@@ -695,6 +695,9 @@ open class ArucasMap: ArucasCollection {
                     } else {
                         xp.right = x
                     }
+                    xp.next = x
+                    x.previous = xp
+                    x.parent = xp
                     if (xpn != null) {
                         (xpn as TreeNode).previous = x
                     }
