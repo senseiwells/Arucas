@@ -377,7 +377,7 @@ open class ArucasMap: ArucasCollection {
                     return oldValue
                 }
             }
-            if (this.size++ > this.threshold) {
+            if (++this.size > this.threshold) {
                 this.resize()
             }
             this.afterNodeInsertion(interpreter, evict)
