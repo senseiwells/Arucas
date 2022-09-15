@@ -18,8 +18,9 @@ import kotlin.reflect.KMutableProperty0
 
 class Parser(tokens: List<Token>): TokenReader(tokens) {
     private val cachedTrue = LiteralExpression(BooleanDef::class) { b -> b.TRUE }
-    private val cacheFalse = LiteralExpression(BooleanDef::class) { b -> b.FALSE }
+    private val cachedFalse = LiteralExpression(BooleanDef::class) { b -> b.FALSE }
     private val cachedNull = LiteralExpression(NullDef::class) { n -> n.NULL }
+    private val cachedOne = LiteralExpression(NumberDef::class) { n -> n.create(1.0) }
 
     private var canUnpack = true
     private var lambdaCount = 1
@@ -454,17 +455,21 @@ class Parser(tokens: List<Token>): TokenReader(tokens) {
 
     private fun assignment(): Expression {
         val left = this.logicalOr()
-        return when {
-            this.canUnpack && this.peekType() == COMMA -> this.unpackAssignment(left)
-            this.isMatch(ASSIGN_OPERATOR) -> {
-                if (left !is Assignable) {
-                    this.error("Cannot assign '$left'")
-                }
-                val right = this.assignment()
-                left.toAssignable(right)
-            }
-            else -> left
+        if (this.canUnpack && this.peekType() == COMMA) {
+            return this.unpackAssignment(left)
         }
+
+        if (this.isMatch(ASSIGN_OPERATOR)) {
+            if (left !is Assignable) {
+                this.error("Cannot assign '$left'")
+            }
+            return left.toAssignable(this.assignment())
+        }
+        Type.convertAssignment(this.peekType())?.let {
+            this.advance()
+            return this.binaryAssignment(left, it, this.assignment())
+        }
+        return left
     }
 
     private fun unpackAssignment(first: Expression): UnpackAssignExpression {
@@ -649,10 +654,10 @@ class Parser(tokens: List<Token>): TokenReader(tokens) {
                     expression = MemberAccessExpression(expression, name.content, name.trace)
                 }
                 this.isMatch(INCREMENT) -> {
-                    expression = this.modifyExpression(expression, PLUS)
+                    expression = this.binaryAssignment(expression, PLUS, this.cachedOne)
                 }
                 this.isMatch(DECREMENT) -> {
-                    expression = this.modifyExpression(expression, MINUS)
+                    expression = this.binaryAssignment(expression, MINUS, this.cachedOne)
                 }
                 else -> break
             }
@@ -664,7 +669,7 @@ class Parser(tokens: List<Token>): TokenReader(tokens) {
         val current = this.peek()
         return when {
             this.isMatch(TRUE) -> this.cachedTrue
-            this.isMatch(FALSE) -> this.cacheFalse
+            this.isMatch(FALSE) -> this.cachedFalse
             this.isMatch(NULL) -> this.cachedNull
             this.isMatch(IDENTIFIER) -> AccessExpression(current.content, current.trace)
             this.isMatch(NUMBER) -> LiteralExpression(NumberDef::class) { n -> n.literal(current.content) }
@@ -687,12 +692,11 @@ class Parser(tokens: List<Token>): TokenReader(tokens) {
         }
     }
 
-    private fun modifyExpression(expression: Expression, type: Type): AssignableExpression {
-        val one = LiteralExpression(NumberDef::class) { n -> n.create(1.0) }
+    private fun binaryAssignment(expression: Expression, type: Type, other: Expression): AssignableExpression {
         if (expression !is Assignable) {
-            this.error("Cannot increment a non assignable expression")
+            this.error("Cannot modify a non assignable expression")
         }
-        return expression.toAssignable(BinaryExpression(expression, type, one, this.peek().trace))
+        return expression.toAssignable(BinaryExpression(expression, type, other, this.peek().trace))
     }
 
     private fun listLiteral(): ListExpression {

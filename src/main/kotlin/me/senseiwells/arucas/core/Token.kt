@@ -42,7 +42,7 @@ sealed class TokenReader(private val tokens: List<Token>) {
     }
 }
 
-enum class Type(private val asString: String? = null) {
+enum class Type(private val asString: String? = null, val assignment: Boolean = false) {
     // Delimiters
     WHITESPACE,
     IDENTIFIER,
@@ -59,8 +59,8 @@ enum class Type(private val asString: String? = null) {
     STRING,
 
     // Arithmetics
-    PLUS("+"),
-    MINUS("-"),
+    PLUS("+", true),
+    MINUS("-", true),
     MULTIPLY("*"),
     DIVIDE("/"),
     POWER("^"),
@@ -89,6 +89,15 @@ enum class Type(private val asString: String? = null) {
     ASSIGN_OPERATOR("="),
     INCREMENT("++"),
     DECREMENT("--"),
+
+    PLUS_ASSIGN("+="),
+    MINUS_ASSIGN("-="),
+    MULTIPLY_ASSIGN("*="),
+    DIVIDE_ASSIGN("/="),
+    POWER_ASSIGN("^="),
+    AND_ASSIGN("&="),
+    OR_ASSIGN("|="),
+    XOR_ASSIGN("~="),
 
     // Comparisons
     EQUALS("=="),
@@ -150,6 +159,16 @@ enum class Type(private val asString: String? = null) {
             AND, OR, XOR, SHIFT_LEFT, SHIFT_RIGHT,
             BIT_AND, BIT_OR, LEFT_SQUARE_BRACKET
         )
+        private val ASSIGNMENTS = mapOf(
+            PLUS_ASSIGN to PLUS,
+            MINUS_ASSIGN to MINUS,
+            MULTIPLY_ASSIGN to MULTIPLY,
+            DIVIDE_ASSIGN to DIVIDE,
+            POWER_ASSIGN to POWER,
+            AND_ASSIGN to BIT_AND,
+            OR_ASSIGN to BIT_OR,
+            XOR_ASSIGN to XOR
+        )
 
         fun isOperatorOverridable(parameters: Int, type: Type): Boolean {
             return when (parameters) {
@@ -158,6 +177,10 @@ enum class Type(private val asString: String? = null) {
                 3 -> type == LEFT_SQUARE_BRACKET
                 else -> false
             }
+        }
+
+        fun convertAssignment(type: Type): Type? {
+            return ASSIGNMENTS[type]
         }
     }
 }

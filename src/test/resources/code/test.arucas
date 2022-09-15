@@ -1,7 +1,7 @@
 // ./src/test/resources/code/test.arucas
 
-import StringBuilder from util.StringUtils;
+e = 10;
 
-b = new StringBuilder("hi");
+e *= e;
 
-print(b);
+print(e);
