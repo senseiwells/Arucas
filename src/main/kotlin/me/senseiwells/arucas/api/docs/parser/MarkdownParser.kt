@@ -79,7 +79,7 @@ class MarkdownParser private constructor(): DocParser() {
 
         if (docs.staticMethods.isNotEmpty()) {
             builder.append("## Static Methods\n\n")
-            builder.append(docs.methods.joinToString("\n") { this.parseFunction(classDoc.name, it) })
+            builder.append(docs.staticMethods.joinToString("\n") { this.parseFunction(classDoc.name, it) })
             builder.append("\n")
         }
 
