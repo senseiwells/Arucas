@@ -1861,6 +1861,10 @@
               "desc": "any value to get the Java value of"
             }
           ],
+          "returns": {
+            "type": "Java",
+            "desc": "the Java wrapper value, null if argument was null"
+          },
           "examples": [
             "Java.valueOf('Hello World!');"
           ]

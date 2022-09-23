@@ -240,92 +240,12 @@ file.write('Hello World!');
 
 ## Static Methods
 
-### `File.createDirectory()`
-- Description: This creates all parent directories of the file if they don't already exist
-- Returns - Boolean: true if the directories were created
+### `File.getDirectory()`
+- Description: This returns the file of the working directory
+- Returns - File: the file of the working directory
 - Example:
 ```kotlin
-file.createDirectory();
-```
-
-### `File.delete()`
-- Description: This deletes the file
-- Returns - Boolean: true if the file was deleted
-- Example:
-```kotlin
-file.delete();
-```
-
-### `File.exists()`
-- Description: This returns if the file exists
-- Returns - Boolean: true if the file exists
-- Example:
-```kotlin
-file.exists();
-```
-
-### `File.getAbsolutePath()`
-- Description: This returns the absolute path of the file
-- Returns - String: the absolute path of the file
-- Example:
-```kotlin
-file.getAbsolutePath();
-```
-
-### `File.getName()`
-- Description: This returns the name of the file
-- Returns - String: the name of the file
-- Example:
-```kotlin
-File.getName();
-```
-
-### `File.getPath()`
-- Description: This returns the path of the file
-- Returns - String: the path of the file
-- Example:
-```kotlin
-file.getPath();
-```
-
-### `File.getSubFiles()`
-- Description: This returns a list of all the sub files in the directory
-- Returns - List: a list of all the sub files in the directory
-- Example:
-```kotlin
-file.getSubFiles();
-```
-
-### `File.open()`
-- Description: This opens the file (as in opens it on your os)
-- Example:
-```kotlin
-file.open();
-```
-
-### `File.read()`
-- Description: This reads the file and returns the contents as a string
-- Returns - String: the contents of the file
-- Example:
-```kotlin
-file.read();
-```
-
-### `File.resolve(filePath)`
-- Description: This gets a resolves file object from the current one
-- Parameter - String (`filePath`): the relative file path
-- Returns - File: the resolved file
-- Example:
-```kotlin
-file.resolve('child.txt');
-```
-
-### `File.write(string)`
-- Description: This writes a string to a file
-- Parameter - String (`string`): the string to write to the file
-- Example:
-```kotlin
-file.write('Hello World!');
+File.getDirectory();
 ```
 
 
@@ -380,21 +300,13 @@ future.isComplete();
 
 ## Static Methods
 
-### `Future.await()`
-- Description: This blocks the current thread until the future has
-been completed and then returns the value of the future
-- Returns - Object: The value of the future
+### `Future.completed(value)`
+- Description: This returns a future that with a complete value
+- Parameter - Object (`value`): The value to complete the future with
+- Returns - Future: The future that has been completed with the value
 - Example:
 ```kotlin
-future.await();
-```
-
-### `Future.isComplete()`
-- Description: This returns whether the future has been completed
-- Returns - Boolean: Whether the future has been completed
-- Example:
-```kotlin
-future.isComplete();
+future = Future.completed(true);
 ```
 
 
@@ -570,69 +482,331 @@ Java.valueOf([1, 2, 3]).toArucas();
 
 ## Static Methods
 
-### `Java.callMethod(methodName, parameters...)`
-- Deprecated: You should call the method directly on the value: Java.valueOf('').isBlank();
-- Description: This calls the specified method with the specified parameters, calling the method
-with this function has no benefits unless you are calling a function that also is
-native to Arucas. For example `object.copy()` will use the Arucas 'copy' function.
-But this is extremely rare so almost all of the time you should all the method normally.
+### `Java.arrayOf(values...)`
+- Description: Creates a Java Object array with a given values, this will be the size of the array,
+this cannot be used to create primitive arrays
+- Parameter - Object (`values...`): the values to add to the array
+- Returns - Java: the Java Object array
+- Example:
+```kotlin
+Java.arrayOf(1, 2, 3, 'string!', false);
+```
+
+### `Java.booleanArray(size)`
+- Description: Creates a Java boolean array with a given size, the array is filled with false
+by default and can be filled with only booleans
+- Parameter - Number (`size`): the size of the array
+- Returns - Java: the Java boolean array
+- Example:
+```kotlin
+Java.booleanArray(10);
+```
+
+### `Java.booleanOf(bool)`
+- Description: Creates a Java value boolean, to be used in Java
+- Parameter - Boolean (`bool`): the boolean to convert to a Java boolean
+- Returns - Java: the boolean in Java wrapper
+- Example:
+```kotlin
+Java.booleanOf(true);
+```
+
+### `Java.byteArray(size)`
+- Description: Creates a Java byte array with a given size, the array is filled with 0's
+by default and can be filled with only bytes
+- Parameter - Number (`size`): the size of the array
+- Returns - Java: the Java byte array
+- Example:
+```kotlin
+Java.byteArray(10);
+```
+
+### `Java.byteOf(num)`
+- Description: Creates a Java value byte, to be used in Java
+- Parameter - Number (`num`): the number to convert to a Java byte
+- Returns - Java: the byte in Java wrapper
+- Example:
+```kotlin
+Java.byteOf(1);
+```
+
+### `Java.callStaticMethod(className, methodName, parameters...)`
+- Deprecated: You should use 'Java.classOf(name)' then call the static method
+- Description: Calls a static method of a Java class.
+This should be avoided and instead use 'classOf' to get the
+instance of the class then call the static method on that
 - Parameters:
+  - String (`className`): the name of the class
   - String (`methodName`): the name of the method
-  - Object (`parameters...`): the parameters to call the method with
-- Returns - Java: the return value of the method call wrapped in the Java wrapper
+  - Object (`parameters...`): any parameters to call the method with
+- Returns - Java: the return value of the method wrapped in the Java wrapper
 - Example:
 ```kotlin
-Java.valueOf('').callMethod('isBlank');
+Java.callStaticMethod('java.lang.Integer', 'parseInt', '123');
 ```
 
-### `Java.getField(fieldName)`
-- Deprecated: You should call the method directly on the value: `Java.constructClass('me.senseiwells.impl.Test').A;`
-- Description: This returns the Java wrapped value of the specified field.
-There is no reason for you to be using this method, it will be removed in future versions
-- Parameter - String (`fieldName`): the name of the field
-- Returns - Java: the Java wrapped value of the field
+### `Java.charArray(size)`
+- Description: Creates a Java char array with a given size, the array is filled with null characters's
+by default and can be filled with only chars
+- Parameter - Number (`size`): the size of the array
+- Returns - Java: the Java char array
 - Example:
 ```kotlin
-Java.constructClass('me.senseiwells.impl.Test').getField('A');
+Java.charArray(10);
 ```
 
-### `Java.getMethodDelegate(methodName, parameters)`
-- Deprecated: Consider wrapping the method in a lambda instead
-- Description: This returns a method delegate for the specified method name and parameters.
-This should be avoided and replaced with a Arucas function wrapping the call instead.
-For example: `delegate = (fun() { Java.valueOf('').isBlank(); });`.
-Another thing to note is that the parameter count parameter is no longer
-used and ignored internally, instead the parameters are calculated when you
-call the delegate. The parameter remains for backwards compatability.
+### `Java.charOf(char)`
+- Description: Creates a Java value char, to be used in Java
+- Parameter - String (`char`): the char to convert to a Java char
+- Returns - Java: the char in Java wrapper
+- Example:
+```kotlin
+Java.charOf('a');
+```
+
+### `Java.classFromName(className)`
+- Deprecated: You should use 'Java.classOf(name)' instead
+- Description: Gets a Java class from the name of the class
+- Parameter - String (`className`): the name of the class you want to get
+- Returns - Java: the Java Class<?> value wrapped in the Java wrapper
+- Example:
+```kotlin
+Java.classFromName('java.util.ArrayList');
+```
+
+### `Java.classOf(className)`
+- Description: Gets a Java class from the name of the class
+- Parameter - String (`className`): the name of the class you want to get
+- Returns - JavaClass: the Java class value which can be used as a class reference
+- Example:
+```kotlin
+Java.classOf('java.util.ArrayList');
+```
+
+### `Java.constructClass(className, parameters...)`
+- Deprecated: You should use 'Java.classOf(name)' then call the result to construct the class
+- Description: This constructs a Java class with specified class name and parameters.
+This should be avoided and instead use 'classOf' to get the class
+instance then call the constructor on that instance
 - Parameters:
+  - String (`className`): the name of the class
+  - Object (`parameters...`): any parameters to pass to the constructor
+- Returns - Java: the constructed Java Object wrapped in the Java wrapper
+- Example:
+```kotlin
+Java.constructClass('java.util.ArrayList');
+```
+
+### `Java.consumerOf(function)`
+- Description: Creates a Java Consumer object from a given function, it must have one
+parameter and any return values will be ignored
+- Parameter - Function (`function`): the function to be executed
+- Returns - Java: the Java Consumer object
+- Example:
+```kotlin
+Java.consumerOf(fun(something) {
+    print(something);
+});
+```
+
+### `Java.doubleArray(size)`
+- Description: Creates a Java double array with a given size, the array is filled with 0's
+by default and can be filled with only doubles
+- Parameter - Number (`size`): the size of the array
+- Returns - Java: the Java double array
+- Example:
+```kotlin
+Java.doubleArray(10);
+```
+
+### `Java.doubleOf(num)`
+- Description: Creates a Java value double, to be used in Java
+- Parameter - Number (`num`): the number to convert to a Java double
+- Returns - Java: the double in Java wrapper
+- Example:
+```kotlin
+Java.doubleOf(1.0);
+```
+
+### `Java.floatArray(size)`
+- Description: Creates a Java float array with a given size, the array is filled with 0's
+by default and can be filled with only floats
+- Parameter - Number (`size`): the size of the array
+- Returns - Java: the Java float array
+- Example:
+```kotlin
+Java.floatArray(10);
+```
+
+### `Java.floatOf(num)`
+- Description: Creates a Java value float, to be used in Java
+- Parameter - Number (`num`): the number to convert to a Java float
+- Returns - Java: the float in Java wrapper
+- Example:
+```kotlin
+Java.floatOf(1.0);
+```
+
+### `Java.functionOf(function)`
+- Description: Creates a Java Function object from a given function
+- Parameter - Function (`function`): the function to be executed, this must have one parameter and must return a value
+- Returns - Java: the Java Function object
+- Example:
+```kotlin
+Java.functionOf(fun(something) {
+    return something;
+});
+```
+
+### `Java.getStaticField(className, fieldName)`
+- Deprecated: You should use 'Java.classOf(name)' then access the static field
+- Description: Gets a static field Java value from a Java class
+- Parameters:
+  - String (`className`): the name of the class
+  - String (`fieldName`): the name of the field
+- Returns - Java: the Java value of the field wrapped in the Java wrapper
+- Example:
+```kotlin
+Java.getStaticField('java.lang.Integer', 'MAX_VALUE');
+```
+
+### `Java.getStaticMethodDelegate(className, methodName, parameters)`
+- Deprecated: You should use 'Java.classOf(name)' then wrap the static method
+- Description: Gets a static method delegate from a Java class, this should
+be avoided and instance use 'classOf' to get the class instance
+and then call the method on that class instance. The parameter count
+parameter is no longer used internally but remains for backwards compatibility
+- Parameters:
+  - String (`className`): the name of the class
   - String (`methodName`): the name of the method
   - Number (`parameters`): the number of parameters
-- Returns - Function: the function containing the Java method delegate
+- Returns - Function: the delegated Java method in an Arucas Function
 - Example:
 ```kotlin
-Java.valueOf('string!').getMethodDelegate('isBlank', 0);
+Java.getStaticMethodDelegate('java.lang.Integer', 'parseInt', 1);
 ```
 
-### `Java.setField(fieldName, value)`
-- Deprecated: You should assign the value directly on the value: Java.constructClass('me.senseiwells.impl.Test').A = 'Hello';
-- Description: This sets the specified field to the specified value
-There is no reason for you to be using this method, it will be removed in future versions
+### `Java.intArray(size)`
+- Description: Creates a Java int array with a given size, the array is filled with 0's
+by default and can be filled with only ints
+- Parameter - Number (`size`): the size of the array
+- Returns - Java: the Java int array
+- Example:
+```kotlin
+Java.intArray(10);
+```
+
+### `Java.intOf(num)`
+- Description: Creates a Java value int, to be used in Java
+- Parameter - Number (`num`): the number to convert to a Java int
+- Returns - Java: the int in Java wrapper
+- Example:
+```kotlin
+Java.intOf(1);
+```
+
+### `Java.longArray(size)`
+- Description: Creates a Java long array with a given size, the array is filled with 0's
+by default and can be filled with only longs
+- Parameter - Number (`size`): the size of the array
+- Returns - Java: the Java long array
+- Example:
+```kotlin
+Java.longArray(10);
+```
+
+### `Java.longOf(num)`
+- Description: Creates a Java value long, to be used in Java
+- Parameter - Number (`num`): the number to convert to a Java long
+- Returns - Java: the long in Java wrapper
+- Example:
+```kotlin
+Java.longOf(1);
+```
+
+### `Java.objectArray(size)`
+- Description: Creates a Java Object array with a given size, the array is filled with null values
+by default and can be filled with any Java values, this array cannot be expanded
+- Parameter - Number (`size`): the size of the array
+- Returns - Java: the Java Object array
+- Example:
+```kotlin
+Java.arrayWithSize(10);
+```
+
+### `Java.predicateOf(function)`
+- Description: Creates a Java Predicate object from a given function
+- Parameter - Function (`function`): the function to be executed, this must have one parameter and must return a boolean
+- Returns - Java: the Java Predicate object
+- Example:
+```kotlin
+Java.predicateOf(fun(something) {
+    return something == 'something';
+});
+```
+
+### `Java.runnableOf(function)`
+- Description: Creates a Java Runnable object from a given function, this must
+have no paramters and any return values will be ignored
+- Parameter - Function (`function`): the function to be executed
+- Returns - Java: the Java Runnable object
+- Example:
+```kotlin
+Java.runnableOf(fun() {
+    print('runnable');
+});
+```
+
+### `Java.setStaticField(className, fieldName, newValue)`
+- Deprecated: You should use 'Java.classOf(name)' then assign the static field
+- Description: Sets a static field in a Java class with a new value
 - Parameters:
+  - String (`className`): the name of the class
   - String (`fieldName`): the name of the field
-  - Object (`value`): the value to set the field to, the value type must match the type of the field
+  - Object (`newValue`): the new value
 - Example:
 ```kotlin
-Java.constructClass('me.senseiwells.impl.Test').setField('A', 'Hello');
+// Obviously this won't work, but it's just an example
+Java.setStaticField('java.lang.Integer', 'MAX_VALUE', Java.intOf(100));"
 ```
 
-### `Java.toArucas()`
-- Description: This converts the Java value to an Arucas Value if possible, this may still
-be of a Java value if it cannot be converted. For example, Strings, Numbers, Lists
-will be converted but 
-- Returns - Object: the Value in Arucas, this may still be of Java value if the value cannot be converted into an Arucas value, values like Strings, Numbers, Lists, etc... will be converted
+### `Java.shortArray(size)`
+- Description: Creates a Java short array with a given size, the array is filled with 0's
+by default and can be filled with only shorts
+- Parameter - Number (`size`): the size of the array
+- Returns - Java: the Java short array
 - Example:
 ```kotlin
-Java.valueOf([1, 2, 3]).toArucas();
+Java.shortArray(10);
+```
+
+### `Java.shortOf(num)`
+- Description: Creates a Java value short, to be used in Java
+- Parameter - Number (`num`): the number to convert to a Java short
+- Returns - Java: the short in Java wrapper
+- Example:
+```kotlin
+Java.shortOf(1);
+```
+
+### `Java.supplierOf(function)`
+- Description: Creates a Java Supplier object from a given function
+- Parameter - Function (`function`): the function to be executed, this must have no parameters and must return (supply) a value
+- Returns - Java: the Java Supplier object
+- Example:
+```kotlin
+Java.supplierOf(fun() {
+    return 'supplier';
+});
+```
+
+### `Java.valueOf(value)`
+- Description: Converts any Arucas value into a Java value then wraps it in the Java wrapper and returns it
+- Parameter - Object (`value`): any value to get the Java value of
+- Returns - Java: the Java wrapper value, null if argument was null
+- Example:
+```kotlin
+Java.valueOf('Hello World!');
 ```
 
 
@@ -676,22 +850,45 @@ json.writeToFile(new File('D:/cool/realDirectory'));
 
 ## Static Methods
 
-### `Json.getValue()`
-- Description: This converts the Json back into an object
-- Returns - Object: the Value parsed from the Json
+### `Json.fromFile(file)`
+- Description: This will read a file and parse it into a Json
+- Parameter - File (`file`): the file that you want to parse into a Json
+- Returns - Json: the Json parsed from the file
 - Example:
 ```kotlin
-json.getValue();
+Json.fromFile(new File('this/path/is/an/example.json'));
 ```
 
-### `Json.writeToFile(file)`
-- Description: This writes the Json to a file
-if the file given is a directory or cannot be
-written to, an error will be thrown
-- Parameter - File (`file`): the file that you want to write to
+### `Json.fromList(list)`
+- Description: This converts a list into a Json, an important thing to note is that
+any values that are not Numbers, Booleans, Lists, Maps, or Null will use their
+toString() member to convert them to a string
+- Parameter - List (`list`): the list that you want to parse into a Json
+- Returns - Json: the Json parsed from the list
 - Example:
 ```kotlin
-json.writeToFile(new File('D:/cool/realDirectory'));
+Json.fromList(['value', 1, true]);
+```
+
+### `Json.fromMap(map)`
+- Description: This converts a map into a Json, an important thing to note is that
+any values that are not Numbers, Booleans, Lists, Maps, or Null will use their
+toString() member to convert them to a string
+- Parameter - Map (`map`): the map that you want to parse into a Json
+- Returns - Json: the Json parsed from the map
+- Example:
+```kotlin
+Json.fromMap({'key': ['value1', 'value2']});
+```
+
+### `Json.fromString(string)`
+- Description: This converts a string into a Json provided it is formatted correctly,
+otherwise throwing an error
+- Parameter - String (`string`): the string that you want to parse into a Json
+- Returns - Json: the Json parsed from the string
+- Example:
+```kotlin
+Json.fromString('{"key":"value"}');
 ```
 
 
@@ -1058,105 +1255,12 @@ map.map(fun(k, v) {
 
 ## Static Methods
 
-### `Map.clear()`
-- Description: This allows you to clear the map of all the keys and values
+### `Map.unordered()`
+- Description: This function allows you to create an unordered map
+- Returns - Map: an unordered map
 - Example:
 ```kotlin
-(map = {'key': 'value'}).clear(); // map = {}
-```
-
-### `Map.containsKey(key)`
-- Description: This allows you to check if the map contains a specific key
-- Parameter - Object (`key`): the key you want to check
-- Returns - Boolean: true if the map contains the key, false otherwise
-- Example:
-```kotlin
-{'key': 'value'}.containsKey('key'); // true
-```
-
-### `Map.containsValue(value)`
-- Description: This allows you to check if the map contains a specific value
-- Parameter - Object (`value`): the value you want to check
-- Returns - Boolean: true if the map contains the value, false otherwise
-- Example:
-```kotlin
-{'key': 'value'}.containsValue('foo'); // false
-```
-
-### `Map.get(key)`
-- Description: This allows you to get the value of a key in the map
-- Parameter - Object (`key`): the key you want to get the value of
-- Returns - Object: the value of the key, will return null if non-existent
-- Example:
-```kotlin
-{'key': 'value'}.get('key'); // 'value'
-```
-
-### `Map.getKeys()`
-- Description: This allows you to get the keys in the map
-- Returns - List: a complete list of all the keys
-- Example:
-```kotlin
-{'key': 'value', 'key2': 'value2'}.getKeys(); // ['key', 'key2']
-```
-
-### `Map.getValues()`
-- Description: This allows you to get the values in the map
-- Returns - List: a complete list of all the values
-- Example:
-```kotlin
-{'key': 'value', 'key2': 'value2'}.getValues(); // ['value', 'value2']
-```
-
-### `Map.map(remapper)`
-- Description: This allows you to map the values in the map and returns a new map
-- Parameter - Function (`remapper`): the function you want to map the values with
-- Returns - Map: a new map with the mapped values
-- Example:
-```kotlin
-map = {'key': 'value', 'key2': 'value2'}
-map.map(fun(k, v) {
-    return [v, k];
-});
-// map = {'value': 'key', 'value2': 'key2'}
-```
-
-### `Map.put(key, value)`
-- Description: This allows you to put a key and value in the map
-- Parameters:
-  - Object (`key`): the key you want to put
-  - Object (`value`): the value you want to put
-- Returns - Object: the previous value associated with the key, null if none
-- Example:
-```kotlin
-{'key': 'value'}.put('key2', 'value2'); // null
-```
-
-### `Map.putAll(another map)`
-- Description: This allows you to put all the keys and values of another map into this map
-- Parameter - Map (`another map`): the map you want to merge into this map
-- Example:
-```kotlin
-(map = {'key': 'value'}).putAll({'key2': 'value2'}); // map = {'key': 'value', 'key2': 'value2'}
-```
-
-### `Map.putIfAbsent(key, value)`
-- Description: This allows you to put a key and value in the map if it doesn't exist
-- Parameters:
-  - Object (`key`): the key you want to put
-  - Object (`value`): the value you want to put
-- Example:
-```kotlin
-(map = {'key': 'value'}).putIfAbsent('key2', 'value2'); // map = {'key': 'value', 'key2': 'value2'}
-```
-
-### `Map.remove(key)`
-- Description: This allows you to remove a key and its value from the map
-- Parameter - Object (`key`): the key you want to remove
-- Returns - Object: the value associated with the key, null if none
-- Example:
-```kotlin
-{'key': 'value'}.remove('key'); // 'value'
+Map.unordered();
 ```
 
 
@@ -1196,6 +1300,268 @@ Math.root2;
 
 ## Static Methods
 
+### `Math.abs(num)`
+- Description: Returns the absolute value of a number
+- Parameter - Number (`num`): the number to get the absolute value of
+- Returns - Number: the absolute value of the number
+- Example:
+```kotlin
+Math.abs(-3);
+```
+
+### `Math.arccos(num)`
+- Description: Returns the arc cosine of a number
+- Parameter - Number (`num`): the number to get the arc cosine of
+- Returns - Number: the arc cosine of the number
+- Example:
+```kotlin
+Math.arccos(Math.cos(Math.pi));
+```
+
+### `Math.arcsin(num)`
+- Description: Returns the arc sine of a number
+- Parameter - Number (`num`): the number to get the arc sine of
+- Returns - Number: the arc sine of the number
+- Example:
+```kotlin
+Math.arcsin(Math.sin(Math.pi));
+```
+
+### `Math.arctan(num)`
+- Description: Returns the arc tangent of a number
+- Parameter - Number (`num`): the number to get the arc tangent of
+- Returns - Number: the arc tangent of the number
+- Example:
+```kotlin
+Math.arctan(Math.tan(Math.pi));
+```
+
+### `Math.arctan2(y, x)`
+- Description: Returns the angle theta of the polar coordinates (r, theta) that correspond to the rectangular
+coordinates (x, y) by computing the arc tangent of the value y / x
+- Parameters:
+  - Number (`y`): the ordinate coordinate
+  - Number (`x`): the abscissa coordinate
+- Returns - Number: the theta component of the point (r, theta)
+- Example:
+```kotlin
+Math.arctan2(Math.tan(Math.pi), Math.cos(Math.pi)); // -3.141592
+```
+
+### `Math.ceil(num)`
+- Description: Rounds a number up to the nearest integer
+- Parameter - Number (`num`): the number to round
+- Returns - Number: the rounded number
+- Example:
+```kotlin
+Math.ceil(3.5);
+```
+
+### `Math.clamp(value, min, max)`
+- Description: Clamps a value between a minimum and maximum
+- Parameters:
+  - Number (`value`): the value to clamp
+  - Number (`min`): the minimum
+  - Number (`max`): the maximum
+- Returns - Number: the clamped value
+- Example:
+```kotlin
+Math.clamp(10, 2, 8);
+```
+
+### `Math.cos(num)`
+- Description: Returns the cosine of a number
+- Parameter - Number (`num`): the number to get the cosine of
+- Returns - Number: the cosine of the number
+- Example:
+```kotlin
+Math.cos(Math.pi);
+```
+
+### `Math.cosec(num)`
+- Description: Returns the cosecant of a number
+- Parameter - Number (`num`): the number to get the cosecant of
+- Returns - Number: the cosecant of the number
+- Example:
+```kotlin
+Math.cosec(Math.pi);
+```
+
+### `Math.cot(num)`
+- Description: Returns the cotangent of a number
+- Parameter - Number (`num`): the number to get the cotangent of
+- Returns - Number: the cotangent of the number
+- Example:
+```kotlin
+Math.cot(Math.pi);
+```
+
+### `Math.floor(num)`
+- Description: Rounds a number down to the nearest integer
+- Parameter - Number (`num`): the number to round
+- Returns - Number: the rounded number
+- Example:
+```kotlin
+Math.floor(3.5);
+```
+
+### `Math.lerp(start, end, delta)`
+- Description: Linear interpolation between two numbers
+- Parameters:
+  - Number (`start`): the first number
+  - Number (`end`): the second number
+  - Number (`delta`): the interpolation factor
+- Returns - Number: the interpolated number
+- Example:
+```kotlin
+Math.lerp(0, 10, 0.5);
+```
+
+### `Math.ln(num)`
+- Description: Returns the natural logarithm of a number
+- Parameter - Number (`num`): the number to get the logarithm of
+- Returns - Number: the natural logarithm of the number
+- Example:
+```kotlin
+Math.ln(Math.e);
+```
+
+### `Math.log(base, num)`
+- Description: Returns the logarithm of a number with a specified base
+- Parameters:
+  - Number (`base`): the base
+  - Number (`num`): the number to get the logarithm of
+- Returns - Number: the logarithm of the number
+- Example:
+```kotlin
+Math.log(2, 4);
+```
+
+### `Math.log10(num)`
+- Description: Returns the base 10 logarithm of a number
+- Parameter - Number (`num`): the number to get the logarithm of
+- Returns - Number: the base 10 logarithm of the number
+- Example:
+```kotlin
+Math.log10(100);
+```
+
+### `Math.max(num1, num2)`
+- Description: Returns the largest number
+- Parameters:
+  - Number (`num1`): the first number to compare
+  - Number (`num2`): the second number to compare
+- Returns - Number: the largest number
+- Example:
+```kotlin
+Math.max(5, 2);
+```
+
+### `Math.min(num1, num2)`
+- Description: Returns the smallest number
+- Parameters:
+  - Number (`num1`): the first number to compare
+  - Number (`num2`): the second number to compare
+- Returns - Number: the smallest number
+- Example:
+```kotlin
+Math.min(5, 2);
+```
+
+### `Math.mod(num1, num2)`
+- Description: Returns the modulus of a division
+- Parameters:
+  - Number (`num1`): the number to divide
+  - Number (`num2`): the divisor
+- Returns - Number: the modulus of the division
+- Example:
+```kotlin
+Math.mod(5, 2);
+```
+
+### `Math.rem(num1, num2)`
+- Description: Returns the remainder of a division
+- Parameters:
+  - Number (`num1`): the number to divide
+  - Number (`num2`): the divisor
+- Returns - Number: the remainder of the division
+- Example:
+```kotlin
+Math.rem(5, 2);
+```
+
+### `Math.round(num)`
+- Description: Rounds a number to the nearest integer
+- Parameter - Number (`num`): the number to round
+- Returns - Number: the rounded number
+- Example:
+```kotlin
+Math.round(3.5);
+```
+
+### `Math.sec(num)`
+- Description: Returns the secant of a number
+- Parameter - Number (`num`): the number to get the secant of
+- Returns - Number: the secant of the number
+- Example:
+```kotlin
+Math.sec(Math.pi);
+```
+
+### `Math.signum(num)`
+- Description: Returns the sign of a number, 1 if the number is positive,
+-1 if the number is negative, and 0 if the number is 0
+- Parameter - Number (`num`): the number to get the sign of
+- Returns - Number: the sign of the number
+- Example:
+```kotlin
+Math.signum(3);
+```
+
+### `Math.sin(num)`
+- Description: Returns the sine of a number
+- Parameter - Number (`num`): the number to get the sine of
+- Returns - Number: the sine of the number
+- Example:
+```kotlin
+Math.sin(Math.pi);
+```
+
+### `Math.sqrt(num)`
+- Description: Returns the square root of a number
+- Parameter - Number (`num`): the number to square root
+- Returns - Number: the square root of the number
+- Example:
+```kotlin
+Math.sqrt(9);
+```
+
+### `Math.tan(num)`
+- Description: Returns the tangent of a number
+- Parameter - Number (`num`): the number to get the tangent of
+- Returns - Number: the tangent of the number
+- Example:
+```kotlin
+Math.tan(Math.pi);
+```
+
+### `Math.toDegrees(num)`
+- Description: Converts a number from radians to degrees
+- Parameter - Number (`num`): the number to convert
+- Returns - Number: the number in degrees
+- Example:
+```kotlin
+Math.toDegrees(Math.pi);
+```
+
+### `Math.toRadians(num)`
+- Description: Converts a number from degrees to radians
+- Parameter - Number (`num`): the number to convert
+- Returns - Number: the number in radians
+- Example:
+```kotlin
+Math.toRadians(90);
+```
 
 
 
@@ -1207,6 +1573,33 @@ Import with `import Network from util.Network;`
 
 ## Static Methods
 
+### `Network.downloadFile(url, file)`
+- Description: Downloads a file from an url to a file
+- Parameters:
+  - String (`url`): the url to download from
+  - File (`file`): the file to download to
+- Returns - Boolean: whether the download was successful
+- Example:
+```kotlin
+Network.downloadFile('https://arucas.com', new File('dir/downloads'));
+```
+
+### `Network.openUrl(url)`
+- Description: Opens an url in the default browser
+- Parameter - String (`url`): the url to open
+- Example:
+```kotlin
+Network.openUrl('https://google.com');
+```
+
+### `Network.requestUrl(url)`
+- Description: Requests an url and returns the response
+- Parameter - String (`url`): the url to request
+- Returns - String: the response from the url
+- Example:
+```kotlin
+Network.requestUrl('https://google.com');
+```
 
 
 
@@ -1458,112 +1851,21 @@ Set.of('object', 81, 96, 'case').toList();
 
 ## Static Methods
 
-### `Set.add(value)`
-- Description: This allows you to add a value to the set
-- Parameter - Object (`value`): the value you want to add to the set
-- Returns - Boolean: whether the value was successfully added to the set
+### `Set.of(values...)`
+- Description: This allows you to create a set with an arbitrary number of values
+- Parameter - Object (`values...`): the values you want to add to the set
+- Returns - Set: the set you created
 - Example:
 ```kotlin
-Set.of().add('object');
+Set.of('object', 81, 96, 'case');
 ```
 
-### `Set.addAll(collection)`
-- Description: This allows you to add all the values in a collection into the set
-- Parameter - Collection (`collection`): the collection of values you want to add
-- Returns - Set: the modified set
+### `Set.unordered()`
+- Description: This creates an unordered set
+- Returns - Set: the unordered set
 - Example:
 ```kotlin
-Set.of().addAll(Set.of('object', 81, 96, 'case'));
-```
-
-### `Set.clear()`
-- Description: This removes all values from inside the set
-- Example:
-```kotlin
-Set.of('object').clear();
-```
-
-### `Set.contains(value)`
-- Description: This allows you to check whether a value is in the set
-- Parameter - Object (`value`): the value that you want to check in the set
-- Returns - Boolean: whether the value is in the set
-- Example:
-```kotlin
-Set.of('object').contains('object');
-```
-
-### `Set.containsAll(collection)`
-- Description: This allows you to check whether a collection of values are all in the set
-- Parameter - Collection (`collection`): the collection of values you want to check in the set
-- Returns - Boolean: whether all the values are in the set
-- Example:
-```kotlin
-Set.of('object').containsAll(Set.of('object', 81, 96, 'case'));
-```
-
-### `Set.filter(function)`
-- Description: This allows you to filter the set
-- Parameter - Function (`function`): the function you want to filter the set by
-- Returns - Set: the filtered set
-- Example:
-```kotlin
-Set.of(-9, 81, 96, 15).filter(function(value) { return value > 80; });
-```
-
-### `Set.get(value)`
-- Description: This allows you to get a value from in the set.
-The reason this might be useful is if you want to retrieve something
-from the set that will have the same hashcode but be in a different state
-as the value you are passing in
-- Parameter - Object (`value`): the value you want to get from the set
-- Returns - Object: the value you wanted to get, null if it wasn't in the set
-- Example:
-```kotlin
-Set.of('object').get('object');
-```
-
-### `Set.map(function)`
-- Description: This allows you to map the set
-- Parameter - Function (`function`): the function you want to map the set by
-- Returns - Set: the mapped set
-- Example:
-```kotlin
-Set.of(-9, 81, 96, 15).map(function(value) { return value * 2; });
-```
-
-### `Set.reduce(function)`
-- Description: This allows you to reduce the set
-- Parameter - Function (`function`): the function you want to reduce the set by
-- Returns - Object: the reduced set
-- Example:
-```kotlin
-Set.of(-9, 81, 96, 15).reduce(function(value, next) { return value + next; });
-```
-
-### `Set.remove(value)`
-- Description: This allows you to remove a value from the set
-- Parameter - Object (`value`): the value you want to remove from the set
-- Returns - Boolean: whether the value was removed from the set
-- Example:
-```kotlin
-Set.of('object').remove('object');
-```
-
-### `Set.removeAll(value)`
-- Description: This allows you to remove all values in a collection from the set
-- Parameter - Collection (`value`): the values you want to remove from the set
-- Returns - Set: the set with the values removed
-- Example:
-```kotlin
-Set.of('object', 'object').removeAll(Set.of('object'));
-```
-
-### `Set.toList()`
-- Description: This returns a list of all the values in the set
-- Returns - List: the list of values in the set
-- Example:
-```kotlin
-Set.of('object', 81, 96, 'case').toList();
+Set.unordered();
 ```
 
 
@@ -1906,51 +2208,47 @@ Thread.getCurrentThread().thaw();
 ## Static Methods
 
 ### `Thread.freeze()`
-- Description: This serves the same purpose as 'Thread.freeze()' however this works on the current
-thread instance, unlike 'Thread.freeze()' this cannot throw an error.
+- Description: This freezes the current thread, stops anything else from executing on the thread.
+This may fail if you try to freeze a non Arucas Thread in which case an error will be thrown
 - Example:
 ```kotlin
-Thread.getCurrentThread().freeze()
+Thread.freeze();
 ```
 
-### `Thread.getAge()`
-- Description: This gets the age of the thread in milliseconds
-- Returns - Number: the age of the thread
+### `Thread.getCurrentThread()`
+- Description: This gets the current thread that the code is running on,
+this may throw an error if the thread is not safe to get,
+which happens when running outside of Arucas Threads
+- Returns - Thread: the current thread
 - Example:
 ```kotlin
-Thread.getCurrentThread().getAge();
+Thread.getCurrentThread();
 ```
 
-### `Thread.getName()`
-- Description: This gets the name of the thread
-- Returns - String: the name of the thread
+### `Thread.runThreaded(function)`
+- Description: This starts a new thread and runs a function on it, the thread will
+terminate when it finishes executing the function, threads will stop automatically
+when the program stops, you are also able to stop threads by using the Thread object
+- Parameter - Function (`function`): the function you want to run on a new thread
+- Returns - Thread: the new thread
 - Example:
 ```kotlin
-Thread.getCurrentThread().getName();
+Thread.runThreaded(fun() {
+    print("Running asynchronously!");
+});
 ```
 
-### `Thread.isAlive()`
-- Description: This checks if the thread is alive (still running)
-- Returns - Boolean: true if the thread is alive, false if not
+### `Thread.runThreaded(name, function)`
+- Description: This starts a new thread with a specific name and runs a function on it
+- Parameters:
+  - String (`name`): the name of the thread
+  - Function (`function`): the function you want to run on a new thread
+- Returns - Thread: the new thread
 - Example:
 ```kotlin
-Thread.getCurrentThread().isAlive();
-```
-
-### `Thread.stop()`
-- Description: This stops the thread from executing, anything that was running will be instantly stopped.
-This method will fail if the thread is not alive
-- Example:
-```kotlin
-Thread.getCurrentThread().stop();
-```
-
-### `Thread.thaw()`
-- Description: This will thaw the thread from its frozen state, if the thread is not frozen then an
-error will be thrown
-- Example:
-```kotlin
-Thread.getCurrentThread().thaw();
+Thread.runThreaded("MyThread", fun() {
+    print("Running asynchronously on MyThread");
+});
 ```
 
 
@@ -1992,30 +2290,12 @@ String.type.instanceOf(Number.type);
 
 ## Static Methods
 
-### `Type.getName()`
-- Description: This gets the name of the type
-- Returns - String: the name of the type
+### `Type.of(value)`
+- Description: This gets the specific type of a value
+- Parameter - Object (`value`): the value you want to get the type of
+- Returns - Type: the type of the value
 - Example:
 ```kotlin
-String.type.getName();
-```
-
-### `Type.inheritsFrom(type)`
-- Description: This checks whether a type is a subtype of another type
-- Parameter - Type (`type`): the other type you want to check against
-- Returns - Boolean: whether the type is of that type
-- Example:
-```kotlin
-String.type.inheritsFrom(Number.type);
-```
-
-### `Type.instanceOf(type)`
-- Deprecated: Use '<Type>.inheritsFrom(type)'
-- Description: This checks whether a type is a subtype of another type
-- Parameter - Type (`type`): the other type you want to check against
-- Returns - Boolean: whether the type is of that type
-- Example:
-```kotlin
-String.type.instanceOf(Number.type);
+Type.of(0);
 ```
 

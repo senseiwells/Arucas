@@ -302,8 +302,9 @@ class Java {
     /*
      * Converts any Arucas value into a Java value then wraps it in the Java wrapper and returns it
      * Parameter - Object (value): any value to get the Java value of
+     * Returns - Java: the Java wrapper value, null if argument was null
      */
-    static fun valueOf(value: Object): Null;
+    static fun valueOf(value: Object): Java;
 }
 
 /* Native, implemented in Kotlin
