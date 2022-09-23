@@ -763,6 +763,27 @@
           ]
         },
         {
+          "name": "resolve",
+          "is_arbitrary": false,
+          "desc": [
+            "This gets a resolves file object from the current one"
+          ],
+          "params": [
+            {
+              "name": "filePath",
+              "type": "String",
+              "desc": "the relative file path"
+            }
+          ],
+          "returns": {
+            "type": "File",
+            "desc": "the resolved file"
+          },
+          "examples": [
+            "file.resolve('child.txt');"
+          ]
+        },
+        {
           "name": "write",
           "is_arbitrary": false,
           "desc": [

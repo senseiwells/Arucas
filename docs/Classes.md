@@ -221,6 +221,15 @@ file.open();
 file.read();
 ```
 
+### `<File>.resolve(filePath)`
+- Description: This gets a resolves file object from the current one
+- Parameter - String (`filePath`): the relative file path
+- Returns - File: the resolved file
+- Example:
+```kotlin
+file.resolve('child.txt');
+```
+
 ### `<File>.write(string)`
 - Description: This writes a string to a file
 - Parameter - String (`string`): the string to write to the file
@@ -300,6 +309,15 @@ file.open();
 - Example:
 ```kotlin
 file.read();
+```
+
+### `File.resolve(filePath)`
+- Description: This gets a resolves file object from the current one
+- Parameter - String (`filePath`): the relative file path
+- Returns - File: the resolved file
+- Example:
+```kotlin
+file.resolve('child.txt');
 ```
 
 ### `File.write(string)`

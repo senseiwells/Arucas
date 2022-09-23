@@ -153,6 +153,13 @@ class File {
     fun read(): String;
 
     /*
+     * This gets a resolves file object from the current one
+     * Parameter - String (filePath): the relative file path
+     * Returns - File: the resolved file
+     */
+    fun resolve(filePath: String): File;
+
+    /*
      * This writes a string to a file
      * Parameter - String (string): the string to write to the file
      */
