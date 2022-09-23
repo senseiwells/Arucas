@@ -17,7 +17,7 @@ jobs:
       - name: Generate Documentations
         run: |
           chmod -x gradlew
-          ./gradlew run --args="-cmdLine false -generate generated"
+          ./gradlew run --args="-cmdLine false -generate generated" --stacktrace --no-daemon
       - name: Commit Changes
         continue-on-error: true
         run: |
