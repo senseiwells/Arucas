@@ -18,10 +18,10 @@ open class JsonParser: DocParser() {
     }
 
     override fun parse(): String {
-        return GSON.toJson(toJson())
+        return GSON.toJson(this.toJson())
     }
 
-    fun toJson(): JsonObject {
+    open fun toJson(): JsonObject {
         val jsonObject = JsonObject()
         jsonObject.addProperty("version", Arucas.VERSION)
         jsonObject.add("extensions", this.getExtensionsAsJson())
