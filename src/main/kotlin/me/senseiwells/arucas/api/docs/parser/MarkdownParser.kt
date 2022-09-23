@@ -100,6 +100,7 @@ class MarkdownParser private constructor(): DocParser() {
         if (function.deprecated.isNotEmpty()) {
             builder.append("- Deprecated: ")
             builder.append(this.arrayToString(function.deprecated))
+            builder.append("\n")
         }
 
         this.parseDescription(builder, function.desc)
@@ -192,6 +193,7 @@ class MarkdownParser private constructor(): DocParser() {
     private fun parseDescription(builder: StringBuilder, desc: Array<String>) {
         builder.append("- Description: ")
         builder.append(this.arrayToString(desc))
+        builder.append("\n")
     }
 
     private fun parseExamples(builder: StringBuilder, examples: Array<String>) {
