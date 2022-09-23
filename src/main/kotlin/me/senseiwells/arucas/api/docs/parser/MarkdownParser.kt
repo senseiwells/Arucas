@@ -7,7 +7,7 @@ import me.senseiwells.arucas.api.docs.FieldDoc
 import me.senseiwells.arucas.api.docs.FunctionDoc
 import me.senseiwells.arucas.classes.ClassDefinition
 
-class MarkdownParser private constructor(): DocParser() {
+open class MarkdownParser: DocParser() {
     companion object {
         @JvmStatic
         fun of(api: ArucasAPI): MarkdownParser {
