@@ -27,7 +27,7 @@ jobs:
           source: "generated/markdown/Classes.md"
           target: "docs/"
       - name: Concatenate Docs
-        run: ./gradlew run --args="-cmdLine false -run ./.github/scripts/DocConcatenater.arucas" --stacktrace --no-daemon
+        run: ./gradlew run --args="-cmdLine false -run .github/scripts/ConcatenateDocs.arucas" --stacktrace --no-daemon
       - name: Commit Changes
         continue-on-error: true
         run: |

@@ -39,4 +39,3 @@ foreach (documentation : list) {
 
 compiledFile = documentationDir.resolve(size.toString() + ". Full.md");
 compiledFile.write(compiledDocumentation.toString());
-

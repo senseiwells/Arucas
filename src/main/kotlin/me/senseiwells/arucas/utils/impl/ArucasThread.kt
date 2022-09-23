@@ -5,7 +5,7 @@ import me.senseiwells.arucas.exceptions.Propagator
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
-class ArucasThread(
+class ArucasThread constructor(
     private val interpreter: Interpreter,
     group: ThreadGroup,
     runnable: Runnable,
@@ -19,6 +19,10 @@ class ArucasThread(
         private set
     var stopping: Boolean = false
         private set
+
+    init {
+        this.isDaemon = true
+    }
 
     fun freeze() {
         this.isFrozen = true
