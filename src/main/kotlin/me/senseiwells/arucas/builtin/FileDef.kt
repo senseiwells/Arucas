@@ -70,6 +70,7 @@ class FileDef(interpreter: Interpreter): CreatableDefinition<File>(FILE, interpr
             MemberFunction.of("delete", this::delete),
             MemberFunction.of("exists", this::exists),
             MemberFunction.of("getSubFiles", this::getSubFiles),
+            MemberFunction.of("resolve", 1, this::resolve),
             MemberFunction.of("createDirectory", this::createDirectory),
             MemberFunction.of("getPath", this::getPath),
             MemberFunction.of("getAbsolutePath", this::getAbsolutePath),
@@ -156,6 +157,19 @@ class FileDef(interpreter: Interpreter): CreatableDefinition<File>(FILE, interpr
             list.add(this.create(subFile))
         }
         return list
+    }
+
+    @FunctionDoc(
+        name = "resolve",
+        desc = ["This gets a resolves file object from the current one"],
+        params = [STRING, "filePath", "the relative file path"],
+        returns = [FILE, "the resolved file"],
+        examples = ["file.resolve('child.txt');"]
+    )
+    private fun resolve(arguments: Arguments): File {
+        val file = arguments.nextPrimitive(this)
+        val string = arguments.nextPrimitive(StringDef::class)
+        return file.resolve(string)
     }
 
     @FunctionDoc(
