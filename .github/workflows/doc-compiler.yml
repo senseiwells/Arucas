@@ -1,6 +1,6 @@
 name: Doc Compiler
 on:
-  pull_request:
+  push:
     branches: [ '*' ]
 jobs:
   compile-docs:
