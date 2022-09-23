@@ -16,6 +16,16 @@ jobs:
           java-version: 17
       - name: Generate Documentations
         run: ./gradlew run --args="-cmdLine false -generate generated" --stacktrace --no-daemon
+      - name: Copy Extensions
+        uses: canastro/copy-file-action@master
+        with:
+          source: "generated/markdown/Extensions.md"
+          target: "docs/Built-in Extensions.md"
+      - name: Copy Classes
+        uses: canastro/copy-file-action@master
+        with:
+          source: "generated/markdown/Classes.md"
+          target: "docs/Built-in Classes.md"
       - name: Commit Changes
         continue-on-error: true
         run: |
