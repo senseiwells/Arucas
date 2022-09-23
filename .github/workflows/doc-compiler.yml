@@ -20,12 +20,12 @@ jobs:
         uses: canastro/copy-file-action@master
         with:
           source: "generated/markdown/Extensions.md"
-          target: "docs/Built-in Extensions.md"
+          target: "docs/"
       - name: Copy Classes
         uses: canastro/copy-file-action@master
         with:
           source: "generated/markdown/Classes.md"
-          target: "docs/Built-in Classes.md"
+          target: "docs/"
       - name: Commit Changes
         continue-on-error: true
         run: |
