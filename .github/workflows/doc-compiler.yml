@@ -1,0 +1,25 @@
+name: Doc Compiler
+on:
+  pull_request:
+    branches: [ '*' ]
+jobs:
+  compile-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Arucas
+        uses: actions/checkout@v2
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 17
+      - name: Generate Documentations
+      - run: |
+          chmod -x gradlew
+          ./gradlew run --args="-cmdLine false -generate generated"
+      - name: Commit Changes
+        continue-on-error: true
+        run: |
+          git config --global user.name 'github-actions-bot'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git commit -am "Update generated documentation" || exit 0
+          git push

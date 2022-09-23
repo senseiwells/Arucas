@@ -21,8 +21,8 @@ abstract class DocParser protected constructor() {
             Files.writeString(jsonPath.resolve("AllDocs.json"), JsonParser.of(api).parse())
             api.generateNativeFiles(path.resolve("libs"))
             val markdownParser = MarkdownParser.of(api)
-            Files.writeString(mdPath.resolve("Extensions.md"), markdownParser.parseExtensions())
-            Files.writeString(mdPath.resolve("Classes.md"), markdownParser.parseClasses())
+            Files.writeString(mdPath.resolve("Built-in Extensions.md"), markdownParser.parseExtensions())
+            Files.writeString(mdPath.resolve("Built-in Classes.md"), markdownParser.parseClasses())
         }
     }
 
