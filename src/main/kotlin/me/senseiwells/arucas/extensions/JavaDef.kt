@@ -274,7 +274,7 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
         name = "valueOf",
         desc = ["Converts any Arucas value into a Java value then wraps it in the Java wrapper and returns it"],
         params = [OBJECT, "value", "any value to get the Java value of"],
-        returns = [JAVA, "the Java wrapper value", "null if argument was null"],
+        returns = [JAVA, "the Java wrapper value, null if argument was null"],
         examples = ["Java.valueOf('Hello World!');"]
     )
     private fun valueOf(arguments: Arguments): ClassInstance {
