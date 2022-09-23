@@ -4,6 +4,7 @@ on:
     branches: [ '*' ]
 jobs:
   compile-docs:
+    name: Generate Documentation
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Arucas
@@ -13,7 +14,7 @@ jobs:
         with:
           java-version: 17
       - name: Generate Documentations
-      - run: |
+        run: |
           chmod -x gradlew
           ./gradlew run --args="-cmdLine false -generate generated"
       - name: Commit Changes
