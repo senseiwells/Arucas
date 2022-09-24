@@ -112,7 +112,7 @@ class Lexer(private val text: String, private val fileName: String) {
         var input = this.text
         while (offset < length) {
             val lexerToken: LexerToken = LEXER_CONTEXT.nextToken(input) ?:
-                compileError("Invalid character", LocatableTrace(this.fileName, line, column))
+                compileError("Invalid character", LocatableTrace(this.fileName, this.text, line, column))
             if (lexerToken.length + offset > length) {
                 break
             }
@@ -130,14 +130,14 @@ class Lexer(private val text: String, private val fileName: String) {
             if (lexerToken.type !== Type.WHITESPACE) {
                 tokenList.add(Token(
                     lexerToken.type,
-                    LocatableTrace(this.fileName, oldLine, oldColumn),
+                    LocatableTrace(this.fileName, this.text, oldLine, oldColumn),
                     lexerToken.content
                 ))
             }
             input = input.substring(lexerToken.length)
             offset += lexerToken.length
         }
-        tokenList.add(Token(Type.EOF, LocatableTrace(this.fileName, line, column)))
+        tokenList.add(Token(Type.EOF, LocatableTrace(this.fileName, this.text, line, column)))
         return tokenList
     }
 }

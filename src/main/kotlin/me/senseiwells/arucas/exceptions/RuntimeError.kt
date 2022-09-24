@@ -4,7 +4,6 @@ import me.senseiwells.arucas.builtin.ErrorDef
 import me.senseiwells.arucas.classes.ClassInstance
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.utils.Trace
-import me.senseiwells.arucas.utils.error.ErrorUtils
 import java.util.*
 
 fun runtimeError(details: String, cause: Throwable): Nothing {
@@ -59,6 +58,9 @@ open class RuntimeError @JvmOverloads constructor(
         }
         this.cause?.let {
             builder.append("\nCaused by: ").append(it::class.simpleName).append(" - ").append(it.message)
+            if (it is ArucasError) {
+                builder.append("\n").append(it.format(interpreter))
+            }
             if (interpreter.properties.isDebug) {
                 builder.append("\nInternal StackTrace (Something went very wrong):\n").append(it.stackTraceToString())
             }

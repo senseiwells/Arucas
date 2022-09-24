@@ -2,7 +2,6 @@ package me.senseiwells.arucas.exceptions
 
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.utils.Trace
-import me.senseiwells.arucas.utils.error.ErrorUtils
 import java.util.*
 
 class FatalError(
@@ -25,6 +24,9 @@ class FatalError(
         }
         builder.append(if (builder.isEmpty()) "StackTrace was empty, happened in global scope!" else "StackTrace (most recent call last)")
         builder.append("\nCaused by: ").append(this.cause::class.simpleName).append(" - ").append(this.cause.message)
+        if (this.cause is ArucasError) {
+            builder.append("\n").append(this.cause.format(interpreter))
+        }
         if (interpreter.properties.isDebug) {
             builder.append("\nInternal StackTrace (Something went very wrong):\n").append(this.cause.stackTraceToString())
         }
