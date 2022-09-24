@@ -184,7 +184,7 @@ class Resolver(
         expression.visit(this)
     }
 
-    private fun <T> pushState(property: KMutableProperty0<T>, value: T, function: () -> Unit) {
+    private inline fun <T> pushState(property: KMutableProperty0<T>, value: T, function: () -> Unit) {
         val old = property.get()
         try {
             property.set(value)

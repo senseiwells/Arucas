@@ -78,11 +78,11 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         }
     }
 
-    fun safe(block: () -> Unit) {
+    inline fun safe(block: () -> Unit) {
         this.safe(Unit, block)
     }
 
-    fun <T> safe(default: T, block: () -> T): T {
+    inline fun <T> safe(default: T, block: () -> T): T {
         return try {
             block()
         } catch (e: Exception) {
@@ -91,7 +91,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         }
     }
 
-    fun <T> interuptable(block: () -> T): T {
+    inline fun <T> interuptable(block: () -> T): T {
         return try {
             block()
         } catch (e: InterruptedException) {
@@ -217,9 +217,9 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         runtimeError("No such function '$name'$error exists", trace)
     }
 
-    private fun <T> jumpNextTable(supplier: () -> T) = this.jumpTable(StackTable(this.currentTable), supplier)
+    private inline fun <T> jumpNextTable(supplier: () -> T) = this.jumpTable(StackTable(this.currentTable), supplier)
 
-    private fun <T> jumpTable(table: StackTable, supplier: () -> T): T {
+    private inline fun <T> jumpTable(table: StackTable, supplier: () -> T): T {
         val previous = this.currentTable
         try {
             this.currentTable = table

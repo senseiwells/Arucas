@@ -109,8 +109,8 @@ class BuiltInExtension: ArucasExtension {
         synchronized(INPUT_LOCK) {
             val prompt = arguments.nextPrimitive(StringDef::class)
             arguments.interpreter.api.getOutput().println(prompt)
-            return arguments.interpreter.interuptable {
-                arguments.interpreter.api.getInput().takeInput().get()
+            arguments.interpreter.interuptable {
+                return arguments.interpreter.api.getInput().takeInput().get()
             }
         }
     }

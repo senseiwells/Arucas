@@ -60,8 +60,8 @@ class FutureDef(interpreter: Interpreter): CreatableDefinition<Future<*>>(FUTURE
         examples = ["future.await();"]
     )
     private fun await(arguments: Arguments): Any? {
-        return arguments.interpreter.interuptable {
-            arguments.nextPrimitive(this).get()
+        arguments.interpreter.interuptable {
+            return arguments.nextPrimitive(this).get()
         }
     }
 
