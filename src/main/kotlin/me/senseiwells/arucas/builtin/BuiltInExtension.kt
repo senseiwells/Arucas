@@ -212,7 +212,7 @@ class BuiltInExtension: ArucasExtension {
         return try {
             Arucas.run(child)
         } catch (e: Exception) {
-            child.threadHandler.handleError(e)
+            child.threadHandler.handleError(e, child)
             runtimeError("Failed to evaluate '$code'", e)
         }
     }
@@ -234,7 +234,7 @@ class BuiltInExtension: ArucasExtension {
             return try {
                 Arucas.run(child)
             } catch (e: Exception) {
-                child.threadHandler.handleError(e)
+                child.threadHandler.handleError(e, child)
                 runtimeError("Failed to run '${fileName}'", e)
             }
         } catch (e: IOException) {

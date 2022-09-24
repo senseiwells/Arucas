@@ -19,19 +19,15 @@ open class RuntimeError @JvmOverloads constructor(
     message: String,
     cause: Throwable? = null,
     var topTrace: Trace? = null,
-    private var stackTrace: Stack<Trace>? = null,
-    private var content: String? = null
+    private var stackTrace: Stack<Trace>? = null
 ): ArucasError(message, cause) {
-    internal fun fillStackTrace(stackTrace: Stack<Trace>, content: String?) {
+    internal fun fillStackTrace(stackTrace: Stack<Trace>) {
         if (this.stackTrace == null) {
             val stack = Stack<Trace>()
             for (trace in stackTrace) {
                 stack.push(trace)
             }
             this.stackTrace = stack
-        }
-        if (this.content == null) {
-            this.content = content
         }
     }
 
@@ -49,9 +45,7 @@ open class RuntimeError @JvmOverloads constructor(
             }
         }
         this.topTrace?.let { t ->
-            val content = this.content
-            val traceString = if (content == null) t.toString() else t.toString(content)
-            builder.append("> ").append(traceString).append("\n")
+            builder.append("> ").append(t.toString(interpreter.content)).append("\n")
         }
         this.cause?.let {
             builder.append("\nCaused by: ").append(it::class.simpleName).append(" - ").append(it.message)

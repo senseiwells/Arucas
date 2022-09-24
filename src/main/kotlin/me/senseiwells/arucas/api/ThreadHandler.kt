@@ -117,17 +117,17 @@ open class ThreadHandler(
     }
 
     @Synchronized
-    fun handleError(throwable: Throwable) {
+    fun handleError(throwable: Throwable, interpreter: Interpreter = this.interpreter) {
         if (!this.running || this.errored) {
             return
         }
         try {
             when (throwable) {
                 is Propagator.Stop -> return
-                is Propagator -> this.handleInvalidPropagator(throwable)
-                is FatalError -> this.handleFatalError(throwable)
-                is ArucasError -> this.handleArucasError(throwable)
-                else -> this.handleFatalError(throwable)
+                is Propagator -> this.handleInvalidPropagator(throwable, interpreter)
+                is FatalError -> this.handleFatalError(throwable, interpreter)
+                is ArucasError -> this.handleArucasError(throwable, interpreter)
+                else -> this.handleFatalError(throwable, interpreter)
             }
         } finally {
             this.errored = true
@@ -153,19 +153,19 @@ open class ThreadHandler(
         }
     }
 
-    protected open fun handleArucasError(arucasError: ArucasError) {
-        this.interpreter.api.getOutput().printError(arucasError.format(this.interpreter))
+    protected open fun handleArucasError(arucasError: ArucasError, interpreter: Interpreter) {
+        interpreter.api.getOutput().printError(arucasError.format(interpreter))
     }
 
-    protected open fun handleInvalidPropagator(propagator: Propagator) {
-        this.interpreter.api.getOutput().println(propagator.message)
+    protected open fun handleInvalidPropagator(propagator: Propagator, interpreter: Interpreter) {
+        interpreter.api.getOutput().println(propagator.message)
     }
 
-    protected open fun handleFatalError(fatalError: FatalError) {
-        this.interpreter.api.getOutput().printError(fatalError.format(this.interpreter))
+    protected open fun handleFatalError(fatalError: FatalError, interpreter: Interpreter) {
+        interpreter.api.getOutput().printError(fatalError.format(interpreter))
     }
 
-    protected open fun handleFatalError(throwable: Throwable) {
+    protected open fun handleFatalError(throwable: Throwable, interpreter: Interpreter) {
         throwable.printStackTrace()
     }
 
