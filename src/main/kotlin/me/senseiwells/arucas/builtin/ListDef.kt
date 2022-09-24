@@ -109,7 +109,7 @@ class ListDef(interpreter: Interpreter): CreatableDefinition<ArucasList>(LIST, i
         name = "get",
         desc = [
             "This allows you to get the value at a specific index, alternative to bracket accessor,",
-            "this will throw an erroor if the index given is out of bounds"
+            "this will throw an error if the index given is out of bounds"
         ],
         params = [NUMBER, "index", "the index of the value you want to get"],
         returns = [OBJECT, "the value at the index"],

@@ -29,7 +29,10 @@ import java.util.regex.PatternSyntaxException
 class StringDef(interpreter: Interpreter): CreatableDefinition<String>(STRING, interpreter) {
     private val pool = HashMap<String, ClassInstance>()
 
-    fun literal(value: String) = this.create(StringUtils.unescapeString(value.substring(1, value.length - 1)))
+    fun literal(value: String): ClassInstance {
+        val string = StringUtils.unescapeString(value.substring(1, value.length - 1))
+        return this.pool.getOrPut(string) { super.create(string) }
+    }
 
     override fun create(value: String) = this.pool.getOrElse(value) { super.create(value) }
 
@@ -119,7 +122,7 @@ class StringDef(interpreter: Interpreter): CreatableDefinition<String>(STRING, i
         name = "toList",
         desc = ["This makes a list of all the characters in the string"],
         returns = [LIST, "the list of characters"],
-        examples = ["'hello'.toList(); // [h, e, l, l, o]"]
+        examples = ["'hello'.toList(); // ['h', 'e', 'l', 'l', 'o']"]
     )
     private fun toList(arguments: Arguments): ArucasList {
         return this.chars(arguments)
@@ -129,7 +132,7 @@ class StringDef(interpreter: Interpreter): CreatableDefinition<String>(STRING, i
         name = "chars",
         desc = ["This makes a list of all the characters in the string"],
         returns = [LIST, "the list of characters"],
-        examples = ["'hello'.chars(); // [h, e, l, l, o]"]
+        examples = ["'hello'.chars(); // ['h', 'e', 'l', 'l', 'o']"]
     )
     private fun chars(arguments: Arguments): ArucasList {
         val string = arguments.next().asPrimitive(this)
@@ -353,8 +356,8 @@ class StringDef(interpreter: Interpreter): CreatableDefinition<String>(STRING, i
             "will be the groups of the regex, a group may be empty if it doesn't exist"
         ],
         params = [STRING, "regex", "the regex to search the string with"],
-        returns = [LIST, "the list of lists containg the matches"],
-        examples = ["'102i 1i'.find('([\\\\d+])i'); // [['2i', '2', 'i'], ['1i', '1', 'i']]"]
+        returns = [LIST, "a list of match groups, which is a list containing matches"],
+        examples = ["'102i 1i'.findAll('([\\\\d+])i'); // [['2i', '2'], ['1i', '1']]"]
     )
     private fun findAll(arguments: Arguments): ArucasList {
         val string = arguments.nextPrimitive(this)

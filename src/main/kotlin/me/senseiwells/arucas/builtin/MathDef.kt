@@ -66,7 +66,10 @@ class MathDef(interpreter: Interpreter): PrimitiveDefinition<Unit>(MATH, interpr
             BuiltInFunction.of("arctan2", 2, this::arctan2),
             BuiltInFunction.of("cosec", 1, this::cosec),
             BuiltInFunction.of("sec", 1, this::sec),
-            BuiltInFunction.of("cot", 1, this::cot)
+            BuiltInFunction.of("cot", 1, this::cot),
+            BuiltInFunction.of("sinh", 1, this::sinh),
+            BuiltInFunction.of("cosh", 1, this::cosh),
+            BuiltInFunction.of("tanh", 1, this::tanh),
         )
     }
 
@@ -382,4 +385,34 @@ class MathDef(interpreter: Interpreter): PrimitiveDefinition<Unit>(MATH, interpr
         examples = ["Math.cot(Math.pi);"]
     )
     private fun cot(arguments: Arguments) = 1.0 / tan(arguments.nextPrimitive(NumberDef::class))
+
+    @FunctionDoc(
+        isStatic = true,
+        name = "sinh",
+        desc = ["Returns the hyperbolic sine of a number"],
+        params = [NUMBER, "num", "the number to get the hyperbolic sine of"],
+        returns = [NUMBER, "the hyperbolic sine of the number"],
+        examples = ["Math.sinh(1);"]
+    )
+    private fun sinh(arguments: Arguments) = sinh(arguments.nextPrimitive(NumberDef::class))
+
+    @FunctionDoc(
+        isStatic = true,
+        name = "cosh",
+        desc = ["Returns the hyperbolic cosine of a number"],
+        params = [NUMBER, "num", "the number to get the hyperbolic cosine of"],
+        returns = [NUMBER, "the hyperbolic cosine of the number"],
+        examples = ["Math.cosh(1);"]
+    )
+    private fun cosh(arguments: Arguments) = cosh(arguments.nextPrimitive(NumberDef::class))
+
+    @FunctionDoc(
+        isStatic = true,
+        name = "tanh",
+        desc = ["Returns the hyperbolic tangent of a number"],
+        params = [NUMBER, "num", "the number to get the hyperbolic tangent of"],
+        returns = [NUMBER, "the hyperbolic tangent of the number"],
+        examples = ["Math.tanh(1);"]
+    )
+    private fun tanh(arguments: Arguments) = tanh(arguments.nextPrimitive(NumberDef::class))
 }

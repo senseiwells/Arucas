@@ -223,7 +223,7 @@ class SetDef(interpreter: Interpreter): CreatableDefinition<ArucasSet>(SET, inte
         desc = ["This allows you to filter the set"],
         params = [FUNCTION, "function", "the function you want to filter the set by"],
         returns = [SET, "the filtered set"],
-        examples = ["Set.of(-9, 81, 96, 15).filter(function(value) { return value > 80; });"]
+        examples = ["Set.of(-9, 81, 96, 15).filter(fun(value) { return value > 80; });"]
     )
     private fun filter(arguments: Arguments): ClassInstance {
         val instance = arguments.nextPrimitive(this)
@@ -244,7 +244,7 @@ class SetDef(interpreter: Interpreter): CreatableDefinition<ArucasSet>(SET, inte
         desc = ["This allows you to map the set"],
         params = [FUNCTION, "function", "the function you want to map the set by"],
         returns = [SET, "the mapped set"],
-        examples = ["Set.of(-9, 81, 96, 15).map(function(value) { return value * 2; });"]
+        examples = ["Set.of(-9, 81, 96, 15).map(fun(value) { return value * 2; });"]
     )
     private fun map(arguments: Arguments): ClassInstance {
         val instance = arguments.nextPrimitive(this)
@@ -262,7 +262,7 @@ class SetDef(interpreter: Interpreter): CreatableDefinition<ArucasSet>(SET, inte
         desc = ["This allows you to reduce the set"],
         params = [FUNCTION, "function", "the function you want to reduce the set by"],
         returns = [OBJECT, "the reduced set"],
-        examples = ["Set.of(-9, 81, 96, 15).reduce(function(value, next) { return value + next; });"]
+        examples = ["Set.of(-9, 81, 96, 15).reduce(fun(value, next) { return value + next; });"]
     )
     private fun reduce(arguments: Arguments): ClassInstance {
         val collection = arguments.nextPrimitive(this).asCollection()

@@ -272,11 +272,11 @@ open class ArucasMap: ArucasCollection {
                         this.resize()
                     }
                 }
-                this.deadlockSafe(otherMap) { map ->
-                    for ((key, value) in map.pairSet()) {
-                        this.putVal(interpreter, this.hash(interpreter, key), key, value, false, evict)
-                    }
-                }
+            }
+        }
+        this.deadlockSafe(otherMap) { map ->
+            for ((key, value) in map.pairSet()) {
+                this.putVal(interpreter, this.hash(interpreter, key), key, value, false, evict)
             }
         }
     }

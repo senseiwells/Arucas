@@ -77,7 +77,7 @@ class IteratorDef(interpreter: Interpreter): CreatableDefinition<ArucasIterator>
     private fun hasNext(arguments: Arguments): Boolean {
         val instance = arguments.nextPrimitive(this)
         if (instance === ArucasIterator.EMPTY) {
-            runtimeError("Iterator has not properly overriden 'hasNext' method")
+            runtimeError("Iterator has not properly overridden 'hasNext' method")
         }
         return instance.hasNext()
     }
@@ -97,7 +97,7 @@ class IteratorDef(interpreter: Interpreter): CreatableDefinition<ArucasIterator>
     private fun next(arguments: Arguments): ClassInstance {
         val instance = arguments.nextPrimitive(this)
         if (instance === ArucasIterator.EMPTY) {
-            runtimeError("Iterator has not properly overriden 'next' method")
+            runtimeError("Iterator has not properly overridden 'next' method")
         }
         return instance.next()
     }

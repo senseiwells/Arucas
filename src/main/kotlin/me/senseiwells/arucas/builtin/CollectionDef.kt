@@ -76,7 +76,7 @@ class CollectionDef(interpreter: Interpreter): PrimitiveDefinition<ArucasCollect
     private fun size(arguments: Arguments): Int {
         val collection = arguments.nextPrimitive(this)
         if (collection === ArucasCollection.EMPTY) {
-            runtimeError("Collection has not properly overriden 'size' method")
+            runtimeError("Collection has not properly overridden 'size' method")
         }
         return collection.length()
     }

@@ -72,6 +72,7 @@ interface ArucasCollection: ArucasIterable {
             override fun toString(): String {
                 return this.toSafeString()
             }
+
             @Deprecated("Need interpreter for this operation", replaceWith = ReplaceWith("collection.hashCode(interpreter)"))
             override fun hashCode(): Int {
                 return System.identityHashCode(this)

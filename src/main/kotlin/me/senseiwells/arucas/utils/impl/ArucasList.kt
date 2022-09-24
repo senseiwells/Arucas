@@ -167,10 +167,10 @@ class ArucasList private constructor(
     override fun clear() {
         val data = this.data
         val size = this.size
+        this.size = 0
         for (i in 0 until size) {
             data[i] = null
         }
-        this.size = 0
     }
 
     @Synchronized

@@ -77,7 +77,7 @@ class IterableDef(interpreter: Interpreter): CreatableDefinition<ArucasIterable>
     private fun iterator(arguments: Arguments): ArucasIterator {
         val instance = arguments.nextPrimitive(this)
         if (instance === ArucasIterable.EMPTY) {
-            runtimeError("Iterable has not properly overriden 'iterator' method")
+            runtimeError("Iterable has not properly overridden 'iterator' method")
         }
         return instance.iterator()
     }

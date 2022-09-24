@@ -35,7 +35,7 @@ class BuiltInExtension: ArucasExtension {
     override fun getBuiltInFunctions(): List<BuiltInFunction> {
         return listOf(
             BuiltInFunction.of("print", 1, this::print),
-            BuiltInFunction.arb("print", this::printArb),
+            BuiltInFunction.arb("print", this::printVarArgs),
             BuiltInFunction.of("input", 1, this::input),
             BuiltInFunction.of("sleep", 1, this::sleep),
             BuiltInFunction.of("debug", 1, this::debug),
@@ -84,7 +84,7 @@ class BuiltInExtension: ArucasExtension {
         params = [OBJECT, "printValue...", "the value to print"],
         examples = ["print('Hello World', 'This is a test', 123);"]
     )
-    private fun printArb(arguments: Arguments) {
+    private fun printVarArgs(arguments: Arguments) {
         if (!arguments.hasNext()) {
             arguments.interpreter.api.getOutput().println()
             return
@@ -286,8 +286,11 @@ class BuiltInExtension: ArucasExtension {
         examples = ["random(10);"]
     )
     private fun random(arguments: Arguments): Number {
-        val bound = arguments.nextPrimitive(NumberDef::class)
-        return Random.nextInt(bound.toInt())
+        val bound = arguments.nextPrimitive(NumberDef::class).toInt()
+        if (bound <= 0) {
+            runtimeError("Bound must be positive")
+        }
+        return Random.nextInt(bound)
     }
 
     @FunctionDoc(
