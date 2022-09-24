@@ -82,6 +82,12 @@ class Error {
     fun getDetails(): String;
 
     /*
+     * This prints the stack trace of this error
+     * Returns - String: the stack trace converted to a string
+     */
+    fun getStackTraceString(): String;
+
+    /*
      * This returns the value that is related to the error
      * Returns - Object: the value that is related to the error
      */

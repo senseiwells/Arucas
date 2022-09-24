@@ -1,5 +1,5 @@
 {
-  "version": "2.0.0",
+  "version": "2.0.1",
   "extensions": {
     "BuiltInExtension": [
       {
@@ -595,6 +595,20 @@
           },
           "examples": [
             "error.getDetails();"
+          ]
+        },
+        {
+          "name": "getStackTraceString",
+          "is_arbitrary": false,
+          "desc": [
+            "This prints the stack trace of this error"
+          ],
+          "returns": {
+            "type": "String",
+            "desc": "the stack trace converted to a string"
+          },
+          "examples": [
+            "error.getStackTraceString();"
           ]
         },
         {

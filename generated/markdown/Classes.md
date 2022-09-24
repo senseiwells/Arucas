@@ -122,6 +122,14 @@ new Error('This is an error', [1, 2, 3]);
 error.getDetails();
 ```
 
+### `<Error>.getStackTraceString()`
+- Description: This prints the stack trace of this error
+- Returns - String: the stack trace converted to a string
+- Example:
+```kotlin
+error.getStackTraceString();
+```
+
 ### `<Error>.getValue()`
 - Description: This returns the value that is related to the error
 - Returns - Object: the value that is related to the error
