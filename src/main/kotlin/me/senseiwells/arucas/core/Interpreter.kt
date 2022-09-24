@@ -491,7 +491,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
     override fun visitThrow(throwStatement: ThrowStatement) {
         val error = this.evaluate(throwStatement.throwable).getPrimitive(ErrorDef::class)
         error ?: runtimeError("Tried to throw a non Error value", throwStatement.trace)
-        error.topTrace = throwStatement.trace
+        error.pushToTop(throwStatement.trace)
         throw error
     }
 

@@ -75,7 +75,8 @@ class ErrorDef(interpreter: Interpreter): PrimitiveDefinition<RuntimeError.Aruca
     override fun defineMethods(): List<MemberFunction> {
         return listOf(
             MemberFunction.of("getDetails", this::getDetails),
-            MemberFunction.of("getValue", this::getValue)
+            MemberFunction.of("getValue", this::getValue),
+            MemberFunction.of("getStackTraceString", this::getStackTraceString)
         )
     }
 
@@ -97,5 +98,15 @@ class ErrorDef(interpreter: Interpreter): PrimitiveDefinition<RuntimeError.Aruca
     )
     private fun getValue(arguments: Arguments): ClassInstance {
         return arguments.nextPrimitive(this).value
+    }
+
+    @FunctionDoc(
+        name = "getStackTraceString",
+        desc = ["This prints the stack trace of this error"],
+        returns = [STRING, "the stack trace converted to a string"],
+        examples = ["error.getStackTraceString();"]
+    )
+    private fun getStackTraceString(arguments: Arguments): String {
+        return arguments.nextPrimitive(this).format(arguments.interpreter)
     }
 }

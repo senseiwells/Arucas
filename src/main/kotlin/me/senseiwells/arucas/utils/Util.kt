@@ -74,7 +74,7 @@ object Util {
                 function()
             } catch (e: RuntimeError) {
                 if (e.topTrace == null || e.topTrace is InternalTrace) {
-                    e.topTrace = trace
+                    e.pushToTop(trace)
                 }
                 throw e
             }

@@ -4,6 +4,7 @@ import me.senseiwells.arucas.builtin.ErrorDef
 import me.senseiwells.arucas.classes.ClassInstance
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.utils.Trace
+import me.senseiwells.arucas.utils.error.ErrorUtils
 import java.util.*
 
 fun runtimeError(details: String, cause: Throwable): Nothing {
@@ -31,6 +32,15 @@ open class RuntimeError @JvmOverloads constructor(
         }
     }
 
+    fun pushToTop(trace: Trace) {
+        this.topTrace?.let {
+            val stack = this.stackTrace ?: Stack<Trace>()
+            stack.add(it)
+            this.stackTrace = stack
+        }
+        this.topTrace = trace
+    }
+
     open fun getInstance(interpreter: Interpreter): ClassInstance {
         return interpreter.getPrimitive(ErrorDef::class).create(this.message, interpreter.getNull())
     }
@@ -41,11 +51,11 @@ open class RuntimeError @JvmOverloads constructor(
         val builder = StringBuilder()
         this.stackTrace?.let {
             for (trace in it) {
-                builder.append("> ").append(trace).append("\n")
+                builder.append("> ").append(trace.toString(interpreter, null)).append("\n")
             }
         }
         this.topTrace?.let { t ->
-            builder.append("> ").append(t.toString(interpreter.content)).append("\n")
+            builder.append("> ").append(t.toString(interpreter, this.message)).append("\n")
         }
         this.cause?.let {
             builder.append("\nCaused by: ").append(it::class.simpleName).append(" - ").append(it.message)

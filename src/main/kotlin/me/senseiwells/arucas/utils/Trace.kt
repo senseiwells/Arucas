@@ -1,5 +1,8 @@
 package me.senseiwells.arucas.utils
 
+import me.senseiwells.arucas.core.Interpreter
+import me.senseiwells.arucas.utils.error.ErrorUtils
+
 abstract class Trace(val fileName: String) {
     companion object {
         @JvmStatic
@@ -10,7 +13,7 @@ abstract class Trace(val fileName: String) {
         return "File: ${this.fileName}"
     }
 
-    open fun toString(fileContent: String?): String {
+    open fun toString(interpreter: Interpreter?, message: String?): String {
         return this.toString()
     }
 }
@@ -20,9 +23,8 @@ open class LocatableTrace(fileName: String, val line: Int, val column: Int): Tra
         return "${super.toString()}, Line: ${this.line + 1}, Column: ${this.column + 1}"
     }
 
-    override fun toString(fileContent: String?): String {
-        // This should do some fancy line stuff
-        return super.toString(fileContent)
+    override fun toString(interpreter: Interpreter?, message: String?): String {
+        return "${toString()}${ErrorUtils.format(this, interpreter, message) ?: ""}"
     }
 }
 
