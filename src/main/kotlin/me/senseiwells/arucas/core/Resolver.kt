@@ -6,8 +6,8 @@ import me.senseiwells.arucas.exceptions.compileError
 import me.senseiwells.arucas.nodes.*
 import me.senseiwells.arucas.utils.ArucasFunction
 import me.senseiwells.arucas.utils.LocalCache
+import me.senseiwells.arucas.utils.LocatableTrace
 import me.senseiwells.arucas.utils.Parameter
-import me.senseiwells.arucas.utils.Trace
 import java.util.*
 import kotlin.reflect.KMutableProperty0
 
@@ -79,7 +79,7 @@ class Resolver(
         return Unit
     }
 
-    private fun defineVar(name: String, trace: Trace) {
+    private fun defineVar(name: String, trace: LocatableTrace) {
         this.isClassDefined(name) ?: this.alreadyDefined(name, "variable", "class", trace)
         this.isFunctionDefined(Id(name, -2)) ?: this.alreadyDefined(name, "variable", "function", trace)
         if (this.varScope.isNotEmpty()) {
@@ -91,7 +91,7 @@ class Resolver(
         }
     }
 
-    private fun defineFunction(name: String, parameters: Int, trace: Trace) {
+    private fun defineFunction(name: String, parameters: Int, trace: LocatableTrace) {
         val id = Id(name, parameters)
         this.isFunctionDefined(id) ?: this.alreadyDefined(name, "function", "function", trace, " with $parameters parameters")
         this.isVarDefined(name) ?: this.alreadyDefined(name, "function", "variable", trace)
@@ -101,7 +101,7 @@ class Resolver(
         }
     }
 
-    private fun defineClass(name: String, trace: Trace) {
+    private fun defineClass(name: String, trace: LocatableTrace) {
         this.isClassDefined(name) ?: this.alreadyDefined(name, "class", "class", trace)
         this.isVarDefined(name) ?: this.alreadyDefined(name, "class", "variable", trace)
         this.isFunctionDefined(Id(name, -2)) ?: this.alreadyDefined(name, "class", "function", trace)
@@ -110,7 +110,7 @@ class Resolver(
         }
     }
 
-    private fun alreadyDefined(name: String, new: String, old: String, trace: Trace, extra: String = ""): Nothing {
+    private fun alreadyDefined(name: String, new: String, old: String, trace: LocatableTrace, extra: String = ""): Nothing {
         compileError("$new '$name' cannot be defined because a $old$extra is already defined with that name", trace)
     }
 
@@ -194,16 +194,16 @@ class Resolver(
         }
     }
 
-    private fun visitParameter(parameter: Parameter, trace: Trace) {
+    private fun visitParameter(parameter: Parameter, trace: LocatableTrace) {
         this.defineVar(parameter.name, trace)
         // Should cache classes here?
     }
 
-    private fun visitParameters(parameters: List<Parameter>, trace: Trace) {
+    private fun visitParameters(parameters: List<Parameter>, trace: LocatableTrace) {
         parameters.forEach { this.visitParameter(it, trace) }
     }
 
-    private fun visitFunction(params: List<Parameter>, body: Statement, trace: Trace, constructor: (() -> Unit)? = null) {
+    private fun visitFunction(params: List<Parameter>, body: Statement, trace: LocatableTrace, constructor: (() -> Unit)? = null) {
         this.pushState(this::inFinally, false) {
             this.pushState(this::inLoop, false) {
                 this.pushState(this::inConstructor, constructor != null) {

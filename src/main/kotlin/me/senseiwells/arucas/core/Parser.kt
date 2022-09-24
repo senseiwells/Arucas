@@ -11,9 +11,6 @@ import me.senseiwells.arucas.utils.ConstructorInit
 import me.senseiwells.arucas.utils.LocatableTrace
 import me.senseiwells.arucas.utils.Parameter
 import me.senseiwells.arucas.utils.Trace
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
-import kotlin.collections.LinkedHashMap
 import kotlin.reflect.KMutableProperty0
 
 class Parser(tokens: List<Token>): TokenReader(tokens) {
@@ -805,7 +802,7 @@ class Parser(tokens: List<Token>): TokenReader(tokens) {
         return this.check(IDENTIFIER, message).content
     }
 
-    private fun error(message: String = "Unexpected token '${this.peek()}'", trace: Trace = this.peek().trace): Nothing {
+    private fun error(message: String = "Unexpected token '${this.peek()}'", trace: LocatableTrace = this.peek().trace): Nothing {
         compileError(message, trace)
     }
 

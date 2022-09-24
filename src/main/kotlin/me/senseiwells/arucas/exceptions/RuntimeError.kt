@@ -31,6 +31,15 @@ open class RuntimeError @JvmOverloads constructor(
         }
     }
 
+    fun pushToTop(trace: Trace) {
+        this.topTrace?.let {
+            val stack = this.stackTrace ?: Stack()
+            stack.add(it)
+            this.stackTrace = stack
+        }
+        this.topTrace = trace
+    }
+
     open fun getInstance(interpreter: Interpreter): ClassInstance {
         return interpreter.getPrimitive(ErrorDef::class).create(this.message, interpreter.getNull())
     }
@@ -41,14 +50,17 @@ open class RuntimeError @JvmOverloads constructor(
         val builder = StringBuilder()
         this.stackTrace?.let {
             for (trace in it) {
-                builder.append("> ").append(trace).append("\n")
+                builder.append("> ").append(trace.toString(interpreter, null)).append("\n")
             }
         }
         this.topTrace?.let { t ->
-            builder.append("> ").append(t.toString(interpreter.content)).append("\n")
+            builder.append("> ").append(t.toString(interpreter, this.message)).append("\n")
         }
         this.cause?.let {
             builder.append("\nCaused by: ").append(it::class.simpleName).append(" - ").append(it.message)
+            if (it is ArucasError) {
+                builder.append("\n").append(it.format(interpreter))
+            }
             if (interpreter.properties.isDebug) {
                 builder.append("\nInternal StackTrace (Something went very wrong):\n").append(it.stackTraceToString())
             }
