@@ -116,6 +116,7 @@ open class ThreadHandler(
         this.shutdown.add(runnable)
     }
 
+    @JvmOverloads
     @Synchronized
     fun handleError(throwable: Throwable, interpreter: Interpreter = this.interpreter) {
         if (!this.running || this.errored) {
