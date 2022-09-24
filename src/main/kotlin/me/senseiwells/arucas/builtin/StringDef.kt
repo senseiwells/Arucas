@@ -31,7 +31,7 @@ class StringDef(interpreter: Interpreter): CreatableDefinition<String>(STRING, i
 
     fun literal(value: String) = this.create(StringUtils.unescapeString(value.substring(1, value.length - 1)))
 
-    override fun create(value: String) = this.pool.getOrPut(value) { super.create(value) }
+    override fun create(value: String) = this.pool.getOrElse(value) { super.create(value) }
 
     override fun canConstructDirectly() = false
 
