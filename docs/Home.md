@@ -15,4 +15,4 @@ This is the wiki as of Arucas Version `v2.0.0+`
 > #### [Built-in Functions](https://github.com/senseiwells/Arucas/blob/master/docs/Extensions.md)
 > #### [Built-in Classes](https://github.com/senseiwells/Arucas/blob/master/docs/Classes.md)
 > #### [Arucas API](https://github.com/senseiwells/Arucas/blob/master/docs/ArucasAPI.md)
-> #### [Full Documentation](https://github.com/senseiwells/Arucas/blob/master/docs/Language%20Documentation/24.%20Full.md)
+> #### [Full Documentation](https://github.com/senseiwells/Arucas/blob/master/docs/Full.md)

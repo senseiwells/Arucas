@@ -13,20 +13,13 @@ fun listOfNulls(size): List {
     return nullList;
 }
 
-documentationDir = File.getDirectory().resolve("docs/Language Documentation");
-documentationFiles = documentationDir.getSubFiles();
-
-size = len(documentationFiles);
-list = listOfNulls(size);
+documentationDir = File.getDirectory().resolve("docs");
+documentationFiles = documentationDir.resolve("Language Documentation").getSubFiles();
+list = listOfNulls(len(documentationFiles));
 
 foreach (file : documentationFiles) {
-    if (file.getName().contains("Full.md")) {
-        file.delete();
-        size--;
-    } else {
-        fileIndex = file.getName().split(". ")[0].toNumber();
-        list[fileIndex] = file.read();
-    }
+    fileIndex = file.getName().split(". ")[0].toNumber();
+    list[fileIndex] = file.read();
 }
 
 compiledDocumentation = new StringBuilder();
@@ -37,5 +30,12 @@ foreach (documentation : list) {
     }
 }
 
-compiledFile = documentationDir.resolve(size.toString() + ". Full.md");
+compiledFile = documentationDir.resolve("FullLang.md");
 compiledFile.write(compiledDocumentation.toString());
+
+fullFile = documentationDir.resolve("Full.md");
+
+compiledDocumentation + documentationDir.resolve("Extensions.md").read() + "\n\n";
+compiledDocumentation + documentationDir.resolve("Classes.md").read();
+
+fullFile.write(compiledDocumentation.toString());
