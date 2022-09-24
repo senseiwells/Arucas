@@ -34,7 +34,7 @@ open class RuntimeError @JvmOverloads constructor(
 
     fun pushToTop(trace: Trace) {
         this.topTrace?.let {
-            val stack = this.stackTrace ?: Stack<Trace>()
+            val stack = this.stackTrace ?: Stack()
             stack.add(it)
             this.stackTrace = stack
         }

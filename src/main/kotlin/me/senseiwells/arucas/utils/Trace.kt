@@ -13,7 +13,7 @@ abstract class Trace(val fileName: String) {
         return "File: ${this.fileName}"
     }
 
-    open fun toString(interpreter: Interpreter?, message: String?): String {
+    open fun toString(interpreter: Interpreter, message: String?): String {
         return this.toString()
     }
 }
@@ -23,7 +23,7 @@ open class LocatableTrace(fileName: String, val line: Int, val column: Int): Tra
         return "${super.toString()}, Line: ${this.line + 1}, Column: ${this.column + 1}"
     }
 
-    override fun toString(interpreter: Interpreter?, message: String?): String {
+    override fun toString(interpreter: Interpreter, message: String?): String {
         return "${toString()}${ErrorUtils.format(this, interpreter, message) ?: ""}"
     }
 }
