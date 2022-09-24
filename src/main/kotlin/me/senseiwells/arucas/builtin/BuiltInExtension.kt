@@ -209,7 +209,12 @@ class BuiltInExtension: ArucasExtension {
     private fun eval(arguments: Arguments): ClassInstance {
         val code = arguments.nextPrimitive(StringDef::class)
         val child = arguments.interpreter.child("\$eval", code)
-        return Arucas.run(child)
+        return try {
+            Arucas.run(child)
+        } catch (e: Exception) {
+            child.threadHandler.handleError(e)
+            runtimeError("Failed to evaluate '$code'", e)
+        }
     }
 
     @FunctionDoc(
@@ -226,7 +231,12 @@ class BuiltInExtension: ArucasExtension {
             val fileName = path.fileName.toString()
             val content = Files.readString(path)
             val child = arguments.interpreter.child(content, fileName)
-            return Arucas.run(child)
+            return try {
+                Arucas.run(child)
+            } catch (e: Exception) {
+                child.threadHandler.handleError(e)
+                runtimeError("Failed to run '${fileName}'", e)
+            }
         } catch (e: IOException) {
             runtimeError("Failed to read file '$pathString'")
         } catch (e: InvalidPathException) {

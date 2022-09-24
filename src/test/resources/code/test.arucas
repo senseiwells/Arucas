@@ -1,7 +1,3 @@
 // ./src/test/resources/code/test.arucas
 
-e = 10;
-
-e *= e;
-
-print(e);
+l asd a;

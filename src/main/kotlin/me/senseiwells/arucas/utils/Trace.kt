@@ -9,11 +9,20 @@ abstract class Trace(val fileName: String) {
     override fun toString(): String {
         return "File: ${this.fileName}"
     }
+
+    open fun toString(fileContent: String?): String {
+        return this.toString()
+    }
 }
 
 open class LocatableTrace(fileName: String, val line: Int, val column: Int): Trace(fileName) {
     override fun toString(): String {
         return "${super.toString()}, Line: ${this.line + 1}, Column: ${this.column + 1}"
+    }
+
+    override fun toString(fileContent: String?): String {
+        // This should do some fancy line stuff
+        return super.toString(fileContent)
     }
 }
 

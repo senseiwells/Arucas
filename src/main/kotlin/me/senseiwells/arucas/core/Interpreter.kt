@@ -140,7 +140,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
             @Suppress("DEPRECATION")
             return instance.call(this, args)
         } catch (runtime: RuntimeError) {
-            runtime.fillStackTrace(this.stackTrace)
+            runtime.fillStackTrace(this.stackTrace, this.content)
             throw runtime
         } catch (fatal: FatalError) {
             throw fatal
@@ -148,7 +148,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
             throw propagator
         } catch (stackOverflow: StackOverflowError) {
             RuntimeError("Ran out of space on the stack", stackOverflow, trace).also {
-                it.fillStackTrace(this.stackTrace)
+                it.fillStackTrace(this.stackTrace, this.content)
                 throw it
             }
         } catch (throwable: Throwable) {
