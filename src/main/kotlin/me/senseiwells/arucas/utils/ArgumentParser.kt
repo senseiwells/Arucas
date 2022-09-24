@@ -11,6 +11,10 @@ class ArgumentParser {
         this.map[flag] = Action.Bool(action)
     }
 
+    fun addInt(flag: String, action: (Int) -> Unit) {
+        this.map[flag] = Action.IntZ(action)
+    }
+
     fun parse(args: Array<String>) {
         if (args.size % 2 != 0) {
             throw IllegalArgumentException("Incorrect number of arguments, each flag must have a parameter")
@@ -33,6 +37,10 @@ class ArgumentParser {
 
         class Str(consumer: (String) -> Unit): Action<String>(consumer) {
             override fun convert(string: String) = string
+        }
+
+        class IntZ(consumer: (Int) -> Unit): Action<Int>(consumer) {
+            override fun convert(string: String) = string.toInt()
         }
     }
 }

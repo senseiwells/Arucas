@@ -792,7 +792,8 @@ class Parser(tokens: List<Token>): TokenReader(tokens) {
     private fun check(type: Type, message: String = "Unexpected token '${this.peek()}', expected type '$type'"): Token {
         val current = this.peek()
         if (current.type != type) {
-            this.error(message, current.trace)
+            val trace = if (type == SEMICOLON) this.peek(-1).trace else current.trace
+            this.error(message, trace)
         }
         this.advance()
         return current

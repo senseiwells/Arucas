@@ -29,6 +29,7 @@ fun main(args: Array<String>) {
         p.addBool("-experimental") { properties.isExperimental = it }
         p.addBool("-suppressDeprecated") { properties.logDeprecated = it }
         p.addBool("-cmdLine") { cmdLine = it }
+        p.addInt("-maxErrorLength") { properties.errorMaxLength = it }
         p.addStr("-run") { runFile(api, it) }
         p.addStr("-generate") { DocParser.generateAll(Path.of(it), api) }
 

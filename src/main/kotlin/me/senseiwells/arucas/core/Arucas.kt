@@ -7,7 +7,7 @@ import java.nio.file.Path
 
 object Arucas {
     @JvmStatic
-    val VERSION = "2.0.0"
+    val VERSION = "2.0.1"
     @JvmStatic
     val PATH: Path = Path.of(System.getProperty("user.home")).resolve(".arucas")
 

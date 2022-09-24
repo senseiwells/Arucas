@@ -62,7 +62,7 @@ open class LocatableTrace(fileName: String, val fileContent: String, val line: I
     }
 
     open fun toString(interpreter: Interpreter, detail: String?, message: String?): String {
-        return "${toString()}${detail ?: ""}${errorFormat(message)}"
+        return "${toString()}${detail ?: ""}${errorFormat(message, interpreter.properties.errorMaxLength)}"
     }
 
     override fun toString(interpreter: Interpreter, message: String?): String {
