@@ -2,12 +2,12 @@
   "Boolean Class": {
     "prefix": "Boolean",
     "body": "Boolean",
-    "description": "The Boolean class.\nThis is the boolean type, representing either true or false.\nThis class cannot be instantiated, or extended"
+    "description": "The Boolean class.\nThis is the boolean type, representing either true or false.\nThis class cannot be instantiated, or extended\n"
   },
   "Collection Class": {
     "prefix": "Collection",
     "body": "Collection",
-    "description": "The Collection class.\nThis class is used to represent a collection of objects,\nthis class is used internally as the parent of maps, lists, and sets.\nThis cannot be instantiated directly.\nAll collections inherit Iterable, and thus can be iterated over"
+    "description": "The Collection class.\nThis class is used to represent a collection of objects,\nthis class is used internally as the parent of maps, lists, and sets.\nThis cannot be instantiated directly.\nAll collections inherit Iterable, and thus can be iterated over\n"
   },
   "Method <Collection>.isEmpty()": {
     "prefix": ".isEmpty()",
@@ -22,7 +22,7 @@
   "Enum Class": {
     "prefix": "Enum",
     "body": "Enum",
-    "description": "The Enum class.\nThis class is the super class of all enums in Arucas.\nEnums cannot be instantiated or extended"
+    "description": "The Enum class.\nThis class is the super class of all enums in Arucas.\nEnums cannot be instantiated or extended\n"
   },
   "Method <Enum>.getName()": {
     "prefix": ".getName()",
@@ -37,7 +37,7 @@
   "Error Class": {
     "prefix": "Error",
     "body": "Error",
-    "description": "The Error class.\nThis class is used for errors, and this is the only type that can be thrown.\nYou are able to extend this class to create your own error types"
+    "description": "The Error class.\nThis class is used for errors, and this is the only type that can be thrown.\nYou are able to extend this class to create your own error types\n"
   },
   "Method <Error>.getDetails()": {
     "prefix": ".getDetails()",
@@ -57,7 +57,7 @@
   "File Class": {
     "prefix": "File",
     "body": "File",
-    "description": "The File class.\nThis class allows you to read and write files"
+    "description": "The File class.\nThis class allows you to read and write files\n"
   },
   "Static Method File.getDirectory()": {
     "prefix": "File.getDirectory()",
@@ -122,12 +122,12 @@
   "Function Class": {
     "prefix": "Function",
     "body": "Function",
-    "description": "The Function class.\nThis class is used for functions, and this is the only type that can be called.\nYou are able to extend this class and implement an 'invoke' method to create\nyour own function types, this class cannot be instantiated directly"
+    "description": "The Function class.\nThis class is used for functions, and this is the only type that can be called.\nYou are able to extend this class and implement an 'invoke' method to create\nyour own function types, this class cannot be instantiated directly\n"
   },
   "Future Class": {
     "prefix": "Future",
     "body": "Future",
-    "description": "The Future class.\nThis class is used to represent values that are in the future.\nMore precisely values that are being evaluated on another thread,\nthis allows you to access those values once they've been processed"
+    "description": "The Future class.\nThis class is used to represent values that are in the future.\nMore precisely values that are being evaluated on another thread,\nthis allows you to access those values once they've been processed\n"
   },
   "Static Method Future.completed(value)": {
     "prefix": "Future.completed(value)",
@@ -147,7 +147,7 @@
   "Iterable Class": {
     "prefix": "Iterable",
     "body": "Iterable",
-    "description": "The Iterable class.\nThis class represents an object that can be iterated over.\nThis class is used internally to denote whether an object can be\niterated over inside a foreach loop"
+    "description": "The Iterable class.\nThis class represents an object that can be iterated over.\nThis class is used internally to denote whether an object can be\niterated over inside a foreach loop\n"
   },
   "Method <Iterable>.iterator()": {
     "prefix": ".iterator()",
@@ -157,7 +157,7 @@
   "Iterator Class": {
     "prefix": "Iterator",
     "body": "Iterator",
-    "description": "The Iterator class.\nThis class represents an object that iterates.\nThis is what is used internally to iterate in a\nforeach loop and you can create your own iterators\nto use be able to use them inside a foreach"
+    "description": "The Iterator class.\nThis class represents an object that iterates.\nThis is what is used internally to iterate in a\nforeach loop and you can create your own iterators\nto use be able to use them inside a foreach\n"
   },
   "Method <Iterator>.hasNext()": {
     "prefix": ".hasNext()",
@@ -172,7 +172,7 @@
   "Java Class": {
     "prefix": "Java",
     "body": "Java",
-    "description": "The Java class from util.Internal.\nThis class wraps Java values allowing for interactions between Java and Arucas.\nThis class cannot be instantiated or extended but you can create Java values by\nusing the static method 'Java.valueOf()' to convert Arucas to Java"
+    "description": "The Java class from util.Internal.\nThis class wraps Java values allowing for interactions between Java and Arucas.\nThis class cannot be instantiated or extended but you can create Java values by\nusing the static method 'Java.valueOf()' to convert Arucas to Java\n"
   },
   "Static Method Java.arrayOf(values...)": {
     "prefix": "Java.arrayOf(values...)",
@@ -357,12 +357,12 @@
   "JavaClass Class": {
     "prefix": "JavaClass",
     "body": "JavaClass",
-    "description": "The JavaClass class from util.Internal.\nThis class 'acts' as a Java class. You are able to call this class which\nwill invoke the Java class' constructor, and access and assign the static\nfields of the class. This class cannot be instantiated or extended."
+    "description": "The JavaClass class from util.Internal.\nThis class 'acts' as a Java class. You are able to call this class which\nwill invoke the Java class' constructor, and access and assign the static\nfields of the class. This class cannot be instantiated or extended.\n"
   },
   "Json Class": {
     "prefix": "Json",
     "body": "Json",
-    "description": "The Json class from util.Json.\nThis class allows you to create and manipulate JSON objects.\nThis class cannot be instantiated or extended"
+    "description": "The Json class from util.Json.\nThis class allows you to create and manipulate JSON objects.\nThis class cannot be instantiated or extended\n"
   },
   "Static Method Json.fromFile(file)": {
     "prefix": "Json.fromFile(file)",
@@ -397,7 +397,7 @@
   "List Class": {
     "prefix": "List",
     "body": "List",
-    "description": "The List class.\nThis class is used for collections of ordered elements"
+    "description": "The List class.\nThis class is used for collections of ordered elements\n"
   },
   "Method <List>.addAll(collection)": {
     "prefix": ".addAll($collection)",
@@ -512,7 +512,7 @@
   "Map Class": {
     "prefix": "Map",
     "body": "Map",
-    "description": "The Map class.\nThis class is used to create a map of objects, using keys and values.\nThis class cannot be directly instantiated, but can be extended to create a map of your own type."
+    "description": "The Map class.\nThis class is used to create a map of objects, using keys and values.\nThis class cannot be directly instantiated, but can be extended to create a map of your own type.\n"
   },
   "Static Method Map.unordered()": {
     "prefix": "Map.unordered()",
@@ -577,7 +577,7 @@
   "Math Class": {
     "prefix": "Math",
     "body": "Math",
-    "description": "The Math class.\nProvides many basic math functions. This is a utility class, and cannot be constructed"
+    "description": "The Math class.\nProvides many basic math functions. This is a utility class, and cannot be constructed\n"
   },
   "Static Field Math.e": {
     "prefix": "Math.e",
@@ -747,7 +747,7 @@
   "Network Class": {
     "prefix": "Network",
     "body": "Network",
-    "description": "The Network class from util.Network.\nAllows you to do http requests. This is a utility class and cannot be constructed."
+    "description": "The Network class from util.Network.\nAllows you to do http requests. This is a utility class and cannot be constructed.\n"
   },
   "Static Method Network.downloadFile(url, file)": {
     "prefix": "Network.downloadFile(url, file)",
@@ -767,12 +767,12 @@
   "Null Class": {
     "prefix": "Null",
     "body": "Null",
-    "description": "The Null class.\nThis class is used for the null object,\nthis cannot be instantiated or extended"
+    "description": "The Null class.\nThis class is used for the null object,\nthis cannot be instantiated or extended\n"
   },
   "Number Class": {
     "prefix": "Number",
     "body": "Number",
-    "description": "The Number class.\nThis class cannot be constructed as it has a literal representation.\nFor math related functions see the Math class."
+    "description": "The Number class.\nThis class cannot be constructed as it has a literal representation.\nFor math related functions see the Math class.\n"
   },
   "Method <Number>.ceil()": {
     "prefix": ".ceil()",
@@ -802,7 +802,7 @@
   "Object Class": {
     "prefix": "Object",
     "body": "Object",
-    "description": "The Object class.\nThis is the base class for every other class in Arucas.\nThis class cannot be instantiated from, you can extend it\nhowever every class already extends this class by default"
+    "description": "The Object class.\nThis is the base class for every other class in Arucas.\nThis class cannot be instantiated from, you can extend it\nhowever every class already extends this class by default\n"
   },
   "Method <Object>.copy()": {
     "prefix": ".copy()",
@@ -832,7 +832,7 @@
   "Set Class": {
     "prefix": "Set",
     "body": "Set",
-    "description": "The Set class.\nSets are collections of unique values. Similar to maps, without the values.\nAn instance of the class can be created by using `Set.of(values...)`"
+    "description": "The Set class.\nSets are collections of unique values. Similar to maps, without the values.\nAn instance of the class can be created by using `Set.of(values...)`\n"
   },
   "Static Method Set.of(values...)": {
     "prefix": "Set.of(values...)",
@@ -907,7 +907,7 @@
   "String Class": {
     "prefix": "String",
     "body": "String",
-    "description": "The String class.\nThis class represents an array of characters to form a string.\nThis class cannot be instantiated directly, instead use the literal\nby using quotes. Strings are immutable in Arucas."
+    "description": "The String class.\nThis class represents an array of characters to form a string.\nThis class cannot be instantiated directly, instead use the literal\nby using quotes. Strings are immutable in Arucas.\n"
   },
   "Method <String>.capitalize()": {
     "prefix": ".capitalize()",
@@ -1012,7 +1012,7 @@
   "Task Class": {
     "prefix": "Task",
     "body": "Task",
-    "description": "The Task class.\nThis class is used to create tasks that can be chained and\nrun asynchronously. Tasks can be executed as many times as needed\nand chained tasks will be executed in the order they are created."
+    "description": "The Task class.\nThis class is used to create tasks that can be chained and\nrun asynchronously. Tasks can be executed as many times as needed\nand chained tasks will be executed in the order they are created.\n"
   },
   "Method <Task>.loopIf(boolSupplier)": {
     "prefix": ".loopIf($boolSupplier)",
@@ -1032,7 +1032,7 @@
   "Thread Class": {
     "prefix": "Thread",
     "body": "Thread",
-    "description": "The Thread class.\nThis class allows to to create threads for async executions.\nThis class cannot be instantiated or extended. To create a new\nthread use the static method 'Thread.runThreaded()'"
+    "description": "The Thread class.\nThis class allows to to create threads for async executions.\nThis class cannot be instantiated or extended. To create a new\nthread use the static method 'Thread.runThreaded()'\n"
   },
   "Static Method Thread.freeze()": {
     "prefix": "Thread.freeze()",
@@ -1087,7 +1087,7 @@
   "Type Class": {
     "prefix": "Type",
     "body": "Type",
-    "description": "The Type class.\nThis class lets you get the type of another class"
+    "description": "The Type class.\nThis class lets you get the type of another class\n"
   },
   "Static Method Type.of(value)": {
     "prefix": "Type.of(value)",
