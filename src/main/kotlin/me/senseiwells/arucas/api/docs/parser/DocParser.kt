@@ -18,6 +18,8 @@ abstract class DocParser protected constructor() {
         fun generateAll(path: Path, api: ArucasAPI) {
             val jsonPath = path.ensureExists().resolve("json").ensureExists()
             val mdPath = path.resolve("markdown").ensureExists()
+            val snippetPath = path.resolve("snippets").ensureExists()
+            Files.writeString(snippetPath.resolve("ArucasSnippets.json"), SnippetParser.of(api).parse())
             Files.writeString(jsonPath.resolve("AllDocs.json"), JsonParser.of(api).parse())
             api.generateNativeFiles(path.resolve("libs"))
             val markdownParser = MarkdownParser.of(api)

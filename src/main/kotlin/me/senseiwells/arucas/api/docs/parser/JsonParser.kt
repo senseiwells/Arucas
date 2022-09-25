@@ -5,7 +5,7 @@ import me.senseiwells.arucas.api.ArucasAPI
 import me.senseiwells.arucas.api.docs.FunctionDoc
 import me.senseiwells.arucas.core.Arucas
 
-open class JsonParser: DocParser() {
+open class JsonParser protected constructor(): DocParser() {
     companion object {
         private val GSON = GsonBuilder().setPrettyPrinting().serializeNulls().disableHtmlEscaping().create()
 

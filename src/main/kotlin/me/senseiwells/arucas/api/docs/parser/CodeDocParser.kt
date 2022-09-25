@@ -6,7 +6,7 @@ import me.senseiwells.arucas.api.docs.FunctionDoc
 import me.senseiwells.arucas.classes.ClassDefinition
 import me.senseiwells.arucas.utils.Util
 
-class CodeDocParser: DocParser() {
+class CodeDocParser : DocParser() {
     companion object {
         private const val INDENT = "    "
         private const val NO_INDENT = ""
