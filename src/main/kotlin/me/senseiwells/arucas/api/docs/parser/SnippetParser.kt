@@ -48,7 +48,7 @@ open class SnippetParser protected constructor(): DocParser() {
             val id = "$className.${doc.name}"
             fieldJson.addProperty("prefix", id)
             fieldJson.addProperty("body", id)
-            fieldJson.addProperty("description", doc.desc.joinToString("\n"))
+            fieldJson.addProperty("description", id + "\n" + doc.desc.joinToString("\n"))
             json.add("Static Field $id", fieldJson)
         }
 
@@ -60,7 +60,7 @@ open class SnippetParser protected constructor(): DocParser() {
             val body = "$className.${doc.name}(${params.joinToString(", ") { "\$$it" }})"
             methodJson.addProperty("prefix", id)
             methodJson.addProperty("body", body)
-            methodJson.addProperty("description", doc.desc.joinToString("\n") + paramDesc)
+            methodJson.addProperty("description", id + "\n" + doc.desc.joinToString("\n") + paramDesc)
             json.add("Static Method $id", methodJson)
         }
 
@@ -73,7 +73,7 @@ open class SnippetParser protected constructor(): DocParser() {
             val body = ".${doc.name}(${params.joinToString(", ") { "\$$it" }})"
             methodJson.addProperty("prefix", body)
             methodJson.addProperty("body", body)
-            methodJson.addProperty("description", doc.desc.joinToString("\n") + paramDesc)
+            methodJson.addProperty("description", id + "\n" + doc.desc.joinToString("\n") + paramDesc)
             json.add("Method $id", methodJson)
         }
     }
