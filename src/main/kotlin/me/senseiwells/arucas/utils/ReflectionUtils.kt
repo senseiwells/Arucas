@@ -145,7 +145,7 @@ object ReflectionUtils {
             if (required[i].isPrimitive && givenClass == Void.TYPE) {
                 return false
             }
-            if (givenClass != Void.TYPE && !required[i].isAssignableFrom(givenClass)) {
+            if (givenClass != Void.TYPE && !this.wrapClass(required[i]).isAssignableFrom(givenClass)) {
                 return false
             }
         }
