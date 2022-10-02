@@ -322,9 +322,11 @@ open class Arguments(
     }
 
     fun nextConstant(): String {
+        val index = this.index
         val instance = this.next()
         instance.getPrimitive(StringDef::class)?.let { return it }
-        return this.nextPrimitive(EnumDef::class).name
+        instance.getPrimitive(EnumDef::class)?.let { return it.name }
+        runtimeError("Must pass a String or Enum into parameter ${this.displayedIndex(index)} for '${this.getFunctionName()}'")
     }
 
     protected open fun displayedIndex(index: Int) = index + 1
