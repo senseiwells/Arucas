@@ -321,6 +321,12 @@ open class Arguments(
         return this.next(TypeDef::class)
     }
 
+    fun nextConstant(): String {
+        val instance = this.next()
+        instance.getPrimitive(StringDef::class)?.let { return it }
+        return this.nextPrimitive(EnumDef::class).name
+    }
+
     protected open fun displayedIndex(index: Int) = index + 1
 
     protected open fun getFunctionName(): String = "${this.function.name}::${this.displayedIndex(this.function.count - 1)}"

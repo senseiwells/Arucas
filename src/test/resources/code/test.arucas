@@ -1,3 +1,497 @@
 // ./src/test/resources/code/test.arucas
+// ./src/test/resources/code/test.arucas
 
-l asd a;
+import UnsupportedError from util.Errors;
+import StringBuilder from util.StringUtils;
+
+fun unsupported(message: String) {
+    throw new UnsupportedError(message);
+}
+
+// Functions that cannot be accessed outside of this class
+newNode = null;
+newNodeIterator = null;
+
+/* private */ {
+    class Node {
+        var value;
+        var next;
+
+        Node(value) {
+            this.value = value;
+            this.next = null;
+        }
+
+        fun toString() {
+            return this.value.toString();
+        }
+    }
+
+    newNode = fun(value) {
+        return new Node(value);
+    };
+
+    class NodeIterator: Iterator {
+        var current;
+        NodeIterator(node): super() {
+            this.current = node;
+        }
+
+        fun hasNext() {
+            return this.current != null;
+        }
+
+        fun next() {
+            current = this.current;
+            this.current = current.next;
+            return current;
+        }
+    }
+
+    newNodeIterator = fun(node) {
+        return new NodeIterator(node);
+    };
+}
+
+interface Stack {
+    fun isEmpty();
+
+    fun push(value);
+
+    fun pop();
+
+    fun peek();
+}
+
+interface Queue {
+    fun isEmpty();
+
+    fun enqueue(value);
+
+    fun dequeue();
+
+    fun front();
+
+    fun end();
+}
+
+/**
+ * Stack data strucutre using linked nodes
+ * FIFO with basic methods
+ */
+class LinkedStack: Collection, Stack {
+    /**
+     * Size of the stack
+     */
+    var size: Number = 0;
+    /**
+     * Current node of the stack
+     */
+    var current;
+
+    /**
+     * Constructs a new LinkedStack
+     */
+    LinkedStack(): super() {
+        this.current = null;
+    }
+
+    /**
+     * Returns the current size of the collection
+     */
+    fun size(): Number {
+        return this.size;
+    }
+
+    /**
+     * Checks if the stack is empty
+     * Returns - Boolean: whether the stack is empty
+     */
+    fun isEmpty(): Boolean {
+        return this.current == null;
+    }
+
+    /**
+     * This pushes a new value to the top of the stack
+     * Parameter - Value (value): the value to add to the stack
+     */
+    fun push(value) {
+        nextNode = newNode(value);
+        nextNode.next = this.current;
+        this.current = nextNode;
+        this.size++;
+    }
+
+    /**
+     * This removes the value at the top of the stack
+     * Returns - Value: the value that was at the top
+     * Throws - Error: Stack is empty
+     */
+    fun pop(): Object {
+        if (this.isEmpty()) {
+            throw new Error("Stack is empty");
+        }
+        currentNode = this.current;
+        this.current = this.current.next;
+        this.size--;
+        return currentNode.value;
+    }
+
+    /**
+     * This peeks at the value at the top of the stack
+     * Returns - Value: the value at the top of stack
+     * Throws - Error: Stack is empty
+     */
+    fun peek(): Object {
+        if (this.isEmpty()) {
+            throw new Error("Stack is empty");
+        }
+        return this.current.value;
+    }
+
+    fun iterator(): Iterator {
+        return newNodeIterator(this.current);
+    }
+
+    /**
+     * Converts the stack to a list,
+     * with the top of the stack being first
+     * Returns - List: the stack as a list
+     */
+    fun toList(): List {
+        list = [];
+        current = this.current;
+        while (current != null) {
+            list.append(current);
+            current = current.next;
+        }
+        return list;
+    }
+
+    /**
+     * Creates a string representation
+     * of the stack
+     * Returns - String: the string representation
+     */
+    fun toString(): String {
+        builder = new StringBuilder("Stack{");
+        current = this.current;
+        while (current != null) {
+            builder + current;
+            current = current.next;
+            if (current != null) {
+                builder + ", ";
+            }
+        }
+        return (builder + "}").toString();
+    }
+}
+
+/**
+ * Queue data strucutre using linked nodes
+ * FILO with basic methods
+ */
+class LinkedQueue: Collection, Queue {
+    /**
+     * Size of the queue
+     */
+    var size: Number = 0;
+    /**
+     * The node that is at the
+     * front of the queue
+     */
+    var head;
+    /**
+     * The node that is at the
+     * end of the queue
+     */
+    var tail;
+
+    /**
+     * Constructs a new LinkedQueue
+     */
+    LinkedQueue(): super() {
+        this.head = this.tail = null;
+    }
+
+    /**
+     * Returns the current size of the collection
+     */
+    fun size(): Number {
+        return this.size;
+    }
+
+    /**
+     * Checks whether the queue is empty
+     * Returns - Boolean: whether the queue is empty
+     */
+    fun isEmpty(): Boolean {
+        return this.head == null;
+    }
+
+    /**
+     * Adds a value to the end of the queue
+     * Parameter - Value (value): the value to add to the queue
+     */
+    fun enqueue(value) {
+        nextNode = newNode(value);
+        if (this.isEmpty()) {
+            this.head = this.tail = nextNode;
+        } else {
+            this.tail = this.tail.next = nextNode;
+        }
+        this.size++;
+    }
+
+    /**
+     * Removes the value at the start of the queue
+     * Returns - Value: the value at the start of the queue
+     * Throws - Error: Queue is empty
+     */
+    fun dequeue(): Object {
+        if (this.isEmpty()) {
+            throw new Error("Queue is empty");
+        }
+        head = this.head;
+        this.head = this.head.next;
+        this.size--;
+        return head.value;
+    }
+
+    /**
+     * Gets the value at the front of the queue
+     * Returns - Value: the value at the front of the queue
+     * Throws - Error: Queue is empty
+     */
+    fun front(): Object {
+        if (this.isEmpty()) {
+            throw new Error("Queue is empty");
+        }
+        return this.head.value;
+    }
+
+    /**
+     * Gets the value at the end of the queue
+     * Returns - Value: the value at the end of the queue
+     * Throws - Error: Queue is empty
+     */
+    fun end(): Object {
+        if (this.isEmpty()) {
+            throw new Error("Queue is empty");
+        }
+        return this.tail.value;
+    }
+
+    fun iterator(): Iterator {
+        return newNodeIterator(this.head);
+    }
+
+    /**
+     * Converts the queue to a list,
+     * with the start of the queue being first
+     * Returns - List: the queue as a list
+     */
+    fun toList(): List {
+        list = [];
+        head = this.head;
+        while (head != null) {
+            list.append(head);
+            head = head.next;
+        }
+        return list;
+    }
+
+    /**
+     * Creates a string representation
+     * of the queue
+     * Returns - String: the string representation
+     */
+    fun toString(): String {
+        builder = new StringBuilder("Queue{");
+        head = this.head;
+        while (head != null) {
+            builder + head;
+            head = head.next;
+            if (head != null) {
+                builder + ", ";
+            }
+        }
+        return (builder + "}").toString();
+    }
+}
+
+/**
+ * Deque class that acts as both a Stack and a Queue.
+ * It can be iterated over in both directions.
+ */
+class Deque: Collection, Stack, Queue {
+    var list = [];
+
+    Deque(): super();
+
+    /**
+     * Returns the size of the deque
+     */
+    fun size(): Number {
+        return len(this.list);
+    }
+
+    /**
+     * Returns whether the deque is empty
+     */
+    fun isEmpty(): Boolean {
+        return this.size() == 0;
+    }
+
+    /**
+     * Pushes a value to the end of the deque (top of the stack)
+     */
+    fun push(value: Object) {
+        this.list.append(value);
+    }
+
+    /**
+     * Pops a value off the end of the deque (top of the stack)
+     */
+    fun pop(): Object {
+        this.throwIfEmpty("Cannot pop an empty stack");
+        return this.list.remove(this.size() - 1);
+    }
+
+    /**
+     * Peeks at the end of the deque (top of the stack)
+     */
+    fun peek(): Object {
+        this.throwIfEmpty("Cannot peek an empty stack");
+        return this.list[this.size() - 1];
+    }
+
+    /**
+     * Enqueues a value to the end of the deque (end of the queue)
+     */
+    fun enqueue(value: Object) {
+        this.push(value);
+    }
+
+    /**
+     * Dequeues a value from the front of the deque (front of the queue)
+     */
+    fun dequeue(): Object {
+        this.throwIfEmpty("Cannot dequeue an empty queue");
+        return this.list.remove(0);
+    }
+
+    /**
+     * Peeks at the front of the deque (front of the queue)
+     */
+    fun front(): Object {
+        this.throwIfEmpty("Cannot peek an empty queue");
+        return this.list[0];
+    }
+
+    /**
+     * Peeks at the end of the deque (end of the queue)
+     */
+    fun end(): Object {
+        this.throwIfEmpty("Cannot peek an empty queue");
+        return this.peek();
+    }
+
+    /**
+     * Gets the iterator for the deque, in the order of a queue.
+     * First item will be at the start of the deque.
+     */
+    fun iterator(): Iterator {
+        return this.list.iterator();
+    }
+
+    /**
+     * Gets the iterator for the deque, in the order of a stack.
+     */
+    fun reverseIterator(): Iterator {
+        return this.list.copy().reverse().iterator();
+    }
+
+    fun throwIfEmpty(message: String) {
+        if (this.isEmpty()) {
+            throw new Error(message);
+        }
+    }
+
+    fun toString(): String {
+        builder = new StringBuilder("Deque{");
+        iter = this.iterator();
+        while (iter.hasNext()) {
+            next = iter.next();
+            builder.append(next.toString());
+            if (iter.hasNext()) {
+                builder.append(", ");
+            }
+        }
+        return (builder + "}").toString();
+    }
+
+    operator [] (index: Number) {
+        return this.list[index];
+    }
+}
+
+/**
+ * Immutable List implementation.
+ * List that cannot be modified.
+ */
+class ImmutableList: List {
+    ImmutableList(values: Iterable): super() {
+        foreach (value : values) {
+            super.append(value);
+        }
+    }
+
+    fun set(object: Object, index: Number) unsupported("Cannot set in an immutable list");
+
+    fun remove(index: Number) unsupported("Cannot remove from an immutable list");
+
+    fun append(object: Object) unsupported("Cannot append to an immutable list");
+
+    fun prepend(object: Object) unsupported("Cannot prepend to an immutable list");
+
+    fun insert(object: Object, index: Number) unsupported("Cannot insert to an immutable list");
+
+    fun addAll(collection: Collection) unsupported("Cannot add all to an immutable list");
+
+    fun removeAll(collection: Collection) unsupported("Cannot remove all from an immutable list");
+
+    fun retainAll(collection: Collection) unsupported("Cannot retain all from an immutable list");
+
+    fun clear() unsupported("Cannot clear an immutable list");
+
+    fun sort() unsupported("Cannot sort an immutable list");
+
+    fun sort(comparator: Function) unsupported("Cannot sort an immutable list");
+
+    fun reverse() unsupported("Cannot reverse an immutable list");
+
+    fun shuffle() unsupported("Cannot shuffle an immutable list");
+
+    fun copy() {
+        return this;
+    }
+
+    fun copyMutable() {
+        return [].addAll(this);
+    }
+
+    operator [] (index, value) {
+        return this.set(value, index);
+    }
+
+    static fun of(values...) {
+        return new ImmutableList(values);
+    }
+}
+
+l = new Deque();
+
+l.push("hi");
+
+print(l);
