@@ -40,22 +40,9 @@ class TypeDef(interpreter: Interpreter): CreatableDefinition<ClassDefinition>(TY
 
     override fun defineMethods(): List<MemberFunction> {
         return listOf(
-            MemberFunction.of("instanceOf", 1, this::instanceOf, "Use '<Type>.inheritsFrom(type)'"),
             MemberFunction.of("inheritsFrom", 1, this::inheritsFrom),
             MemberFunction.of("getName", this::getName),
         )
-    }
-
-    @FunctionDoc(
-        deprecated = ["Use '<Type>.inheritsFrom(type)'"],
-        name = "instanceOf",
-        desc = ["This checks whether a type is a subtype of another type"],
-        params = [TYPE, "type", "the other type you want to check against"],
-        returns = [BOOLEAN, "whether the type is of that type"],
-        examples = ["String.type.instanceOf(Number.type);"]
-    )
-    private fun instanceOf(arguments: Arguments): Boolean {
-        return this.inheritsFrom(arguments)
     }
 
     @FunctionDoc(
