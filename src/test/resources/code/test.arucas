@@ -1,12 +1,15 @@
 // ./src/test/resources/code/test.arucas
 
-class E {
-    var A: Map;
+import StringUtil from util.StringUtils;
+import LinkedStack from util.Collections;
 
-    E() {
-        this.A = {};
-    }
-}
+l = new LinkedStack();
+l.push(9);
+l.push(10);
+l.push(8);
 
-new E();
-print(new E().A);
+print(StringUtil.pretty({
+    "hi": [1, 2, [[]]],
+    l: "b",
+    [[]]: []
+}, "  "));

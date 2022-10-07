@@ -24,16 +24,25 @@ class HintedField(
             runtimeError("Cannot reassign '${this.name}'", trace)
         }
 
-        if (this.definitions != null && !this.definitions.contains(instance.definition)) {
+        if (this.definitions != null && !this.checkHinted(this.definitions, instance)) {
             runtimeError("Hinted type for '${this.name}' got '${instance.definition.name}' but expected '${this.definitionsAsString(this.definitions)}'", trace)
         }
         this.instance = instance
     }
 
     fun checkInstanceType(trace: Trace) {
-        if (this.definitions != null && !this.definitions.contains(this.instance.definition)) {
+        if (this.definitions != null && !this.checkHinted(this.definitions, this.instance)) {
             runtimeError("Hinted type for '${this.name}' was constructed with '${this.instance.definition.name}' but expected '${this.definitionsAsString(this.definitions)}'", trace)
         }
+    }
+
+    private fun checkHinted(definitions: Array<ClassDefinition>, instance: ClassInstance): Boolean {
+        for (definition in definitions) {
+            if (instance.isOf(definition)) {
+                return true
+            }
+        }
+        return false
     }
 
     private fun definitionsAsString(definitions: Array<ClassDefinition>) = Parameter.definitionsAsString(definitions)
