@@ -39,6 +39,8 @@ class ClassInstance internal constructor(val definition: ClassDefinition) {
 
     fun getInstanceField(name: String) = this.instanceFields[name]
 
+    fun getInstanceFields(): Iterable<HintedField> = this.instanceFields.values
+
     fun <T: Any> setPrimitive(definition: PrimitiveDefinition<T>, value: T) {
         if (!this.isOf(definition)) {
             throw IllegalStateException("Tried to set '${definition.name}' to '${this.definition}' instance")

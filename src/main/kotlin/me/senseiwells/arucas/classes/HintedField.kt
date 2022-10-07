@@ -25,9 +25,15 @@ class HintedField(
         }
 
         if (this.definitions != null && !this.definitions.contains(instance.definition)) {
-            runtimeError("Hinted type for '${this.name}' got '${instance.definition.name}' but expected '${definitionsAsString(this.definitions)}'", trace)
+            runtimeError("Hinted type for '${this.name}' got '${instance.definition.name}' but expected '${this.definitionsAsString(this.definitions)}'", trace)
         }
         this.instance = instance
+    }
+
+    fun checkInstanceType(trace: Trace) {
+        if (this.definitions != null && !this.definitions.contains(this.instance.definition)) {
+            runtimeError("Hinted type for '${this.name}' was constructed with '${this.instance.definition.name}' but expected '${this.definitionsAsString(this.definitions)}'", trace)
+        }
     }
 
     private fun definitionsAsString(definitions: Array<ClassDefinition>) = Parameter.definitionsAsString(definitions)

@@ -523,6 +523,10 @@ open class ArucasClassDefinition(
         }
 
         super.init(interpreter, instance, args, trace)
+
+        for (field in instance.getInstanceFields()) {
+            field.checkInstanceType(trace)
+        }
     }
 
     override fun canConstructDirectly(): Boolean {
