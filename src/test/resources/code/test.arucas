@@ -1,15 +1,5 @@
 // ./src/test/resources/code/test.arucas
 
-import StringUtil from util.StringUtils;
-import LinkedStack from util.Collections;
+import ClassA from test.CyclicalA;
 
-l = new LinkedStack();
-l.push(9);
-l.push(10);
-l.push(8);
-
-print(StringUtil.pretty({
-    "hi": [1, 2, [[]]],
-    l: "b",
-    [[]]: []
-}, "  "));
+print(ClassA.callB());

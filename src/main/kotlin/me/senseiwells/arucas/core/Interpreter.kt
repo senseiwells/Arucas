@@ -217,7 +217,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         runtimeError("No such function '$name'$error exists", trace)
     }
 
-    private inline fun <T> jumpNextTable(supplier: () -> T) = this.jumpTable(StackTable(this.currentTable), supplier)
+    private inline fun <T> jumpNextTable(supplier: () -> T) = this.jumpTable(StackTable(this.modules, this.currentTable), supplier)
 
     private inline fun <T> jumpTable(table: StackTable, supplier: () -> T): T {
         val previous = this.currentTable
@@ -255,19 +255,16 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         table.defineClass(definition)
     }
 
-    private fun tryImport(importPath: String, local: Boolean): Boolean {
+    private fun tryImport(importPath: String, local: Boolean) {
         if (!this.modules.tried(importPath)) {
-            val content = this.api.getLibraryManager().getImport(importPath.split("."), local, this)
-            content ?: return false
-            val child: Interpreter = Child(content, importPath, true, this)
-            child.interpret()
-            this.localCache.mergeWith(child.localCache)
-            val definitions = child.globalTable.getClasses()
-            if (definitions.isNotEmpty()) {
-                return true
+            this.modules.addLazy(importPath) {
+                val content = this.api.getLibraryManager().getImport(importPath.split("."), local, this)
+                content ?: return@addLazy
+                val child: Interpreter = Child(content, importPath, true, this)
+                child.interpret()
+                this.localCache.mergeWith(child.localCache)
             }
         }
-        return false
     }
 
     private fun visitClassBody(definition: ArucasClassDefinition, body: ClassBodyStatement, needsSuper: Boolean, type: String) {
@@ -567,28 +564,12 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         val importPath = importStatement.path
         val local = importStatement.local
         if (!this.modules.has(importPath)) {
-            if (!this.tryImport(importPath, local)) {
-                val details = "Module '$importPath' couldn't be found" + if (local) " locally" else ""
-                runtimeError(details, importStatement.trace)
-            }
+            this.tryImport(importPath, local)
         }
 
         if (importStatement.names.isNotEmpty()) {
             for (name in importStatement.names) {
-                var definition = this.modules.get(importPath, name)
-
-                if (definition == null) {
-                    this.tryImport(importPath, local)
-                    definition = this.modules.get(importPath, name)
-                        ?: runtimeError("Class '$name' couldn't be found in module '$importPath'", importStatement.trace)
-                }
-                this.currentTable.addModule(definition)
-            }
-        } else {
-            // We need to try to import everything
-            this.tryImport(importPath, local)
-            this.modules.forEach(importPath) {
-                this.currentTable.addModule(it)
+                this.currentTable.addModule(name, importPath)
             }
         }
     }
@@ -824,7 +805,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         override val modules = ModuleMap()
         override val functions = FunctionMap()
         override val primitives = PrimitiveDefinitionMap()
-        override val globalTable = StackTable()
+        override val globalTable = StackTable(this.modules)
         override val localCache = LocalCache()
         override var currentTable = this.globalTable
 
@@ -833,7 +814,6 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
                 val primitive = p(this)
                 this.primitives.add(primitive)
                 this.modules.addBuiltIn(primitive)
-                this.globalTable.addModule(primitive)
             }
             this.primitives.forEach { it.merge() }
             this.api.getBuiltInExtensions()?.forEach { e ->
@@ -863,7 +843,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         override val threadHandler = parent.threadHandler
         override val api = parent.api
         override val properties = parent.properties
-        override val globalTable = StackTable()
+        override val globalTable = StackTable(parent.modules)
         override var currentTable = this.globalTable
         override val modules = parent.modules
         override val functions = parent.functions
@@ -871,10 +851,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         override val localCache = parent.localCache
 
         override fun loadApi() {
-            // Most of API already loaded by parent
-            this.modules.forEachBuiltIn {
-                this.globalTable.addModule(it)
-            }
+            // API is already loaded
         }
 
         override fun defineClass(table: StackTable, definition: ClassDefinition) {

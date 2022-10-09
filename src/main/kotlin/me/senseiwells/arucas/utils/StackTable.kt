@@ -3,34 +3,42 @@ package me.senseiwells.arucas.utils
 import me.senseiwells.arucas.classes.ClassDefinition
 import me.senseiwells.arucas.classes.ClassInstance
 
-class StackTable(val parent: StackTable? = null) {
+class StackTable constructor(private val moduleMap: ModuleMap, val parent: StackTable? = null) {
     private val definitions by lazy { HashMap<String, ClassDefinition>() }
-    private val modules by lazy { HashMap<String, ClassDefinition>() }
     private val variables by lazy { HashMap<String, ClassInstance>() }
     private val functions by lazy { FunctionMap() }
 
-    fun addModule(definition: ClassDefinition) {
-        this.modules[definition.name] = definition
-    }
-
-    fun getModules(): Collection<ClassDefinition> {
-        return this.modules.values
-    }
+    private val promised by lazy { HashMap<String, String>() }
+    private val all by lazy { LinkedHashSet<String>() }
 
     fun defineClass(definition: ClassDefinition): ClassDefinition? {
         return this.definitions.put(definition.name, definition)
     }
 
+    fun getModule(name: String): ClassDefinition? {
+        val definition = this.promised[name]?.let { this.moduleMap.get(it, name) }
+        if (definition == null) {
+            this.moduleMap.getBuiltIn(name)?.let { return it }
+            for (import in this.all) {
+                this.moduleMap.get(import, name)?.let {
+                    this.promised[name] = import
+                    return it
+                }
+            }
+        }
+        return definition
+    }
+
+    fun addModule(name: String, path: String) {
+        this.promised[name] = path
+    }
+
     fun getClass(name: String): ClassDefinition? {
-        return this.definitions[name] ?: this.modules[name] ?: this.parent?.getClass(name)
+        return this.definitions[name] ?: this.getModule(name) ?: this.parent?.getClass(name)
     }
 
     fun getClass(name: String, distance: Int): ClassDefinition? {
-        return this.findAncestor(distance).let { it.definitions[name] ?: it.modules[name] }
-    }
-
-    fun getClasses(): Collection<ClassDefinition> {
-        return this.definitions.values
+        return this.findAncestor(distance).let { it.definitions[name] ?: it.getModule(name) }
     }
 
     fun defineVar(name: String, value: ClassInstance): ClassInstance? {

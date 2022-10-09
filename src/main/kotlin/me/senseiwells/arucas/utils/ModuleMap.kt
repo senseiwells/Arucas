@@ -14,9 +14,16 @@ class ModuleMap {
     private val map = HashMap<String, HashMap<String, ClassDefinition>>()
     private val tried = HashSet<String>()
 
+    private val lazy = HashMap<String, () -> Unit>()
+
     @Synchronized
     fun addBuiltIn(definition: ClassDefinition) {
         this.builtIns[definition.name] = definition
+    }
+
+    @Synchronized
+    fun addLazy(importPath: String, lazy: () -> Unit) {
+        this.lazy[importPath] = lazy
     }
 
     @Synchronized
@@ -28,7 +35,7 @@ class ModuleMap {
 
     @Synchronized
     fun has(importPath: String): Boolean {
-        return this.map.containsKey(importPath)
+        return this.map.containsKey(importPath) || this.lazy.containsKey(importPath)
     }
 
     @Synchronized
@@ -38,20 +45,19 @@ class ModuleMap {
 
     @Synchronized
     fun get(importPath: String, name: String): ClassDefinition? {
+        this.lazy[importPath]?.invoke()?.let { this.lazy.remove(importPath) }
         return this.map[importPath]?.get(name)
     }
 
     @Synchronized
-    fun forEachBuiltIn(function: (ClassDefinition) -> Unit) {
-        this.builtIns.values.forEach(function)
+    fun getBuiltIn(name: String): ClassDefinition? {
+        return this.builtIns[name]
     }
 
-    @Synchronized
-    fun forEach(importPath: String, function: (ClassDefinition) -> Unit) {
-        this.map[importPath]?.values?.forEach(function)
+    fun builtIns(): MutableCollection<ClassDefinition> {
+        return this.builtIns.values
     }
 
-    @Synchronized
     fun forEach(function: (String, Collection<ClassDefinition>) -> Unit) {
         this.map.forEach { (path, defs) -> function(path, defs.values) }
     }

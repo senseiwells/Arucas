@@ -102,7 +102,7 @@ interface ArucasAPI {
         val docParser = CodeDocParser()
         val dummy = Interpreter.dummy(this)
 
-        dummy.globalTable.getModules().sort().let {
+        dummy.modules.builtIns().sort().let {
             val generationPath = rootPath.resolve("BuiltIn.arucas").ensureParentExists()
             Files.writeString(generationPath, docParser.parseClasses(it))
         }

@@ -70,7 +70,7 @@ open class UserDefinedFunction(
     }
 
     final override fun invoke(interpreter: Interpreter, arguments: List<ClassInstance>): ClassInstance {
-        val localTable = StackTable(this.localTable)
+        val localTable = StackTable(interpreter.modules, this.localTable)
         this.checkAndPopulate(interpreter, localTable, arguments)
         var returnValue = interpreter.getNull()
         try {
@@ -172,7 +172,7 @@ open class UserConstructorFunction(
     }
 
     final override fun invoke(interpreter: Interpreter, arguments: List<ClassInstance>): ClassInstance {
-        val localTable = StackTable(this.localTable)
+        val localTable = StackTable(interpreter.modules, this.localTable)
         val instance = arguments[0]
         this.checkAndPopulate(interpreter, localTable, arguments)
         val definition = when (this.constructorInit.type) {
