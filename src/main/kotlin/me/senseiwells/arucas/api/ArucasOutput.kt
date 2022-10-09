@@ -1,5 +1,8 @@
 package me.senseiwells.arucas.api
 
+import me.senseiwells.arucas.core.Interpreter
+import me.senseiwells.arucas.utils.LocatableTrace
+
 /**
  * Interface to handle output for the interpreter.
  */
@@ -21,6 +24,11 @@ interface ArucasOutput {
      * is disabled.
      */
     fun formatErrorBold(string: String): String
+
+    /**
+     * This should format a stack trace.
+     */
+    fun formatStackTrace(interpreter: Interpreter, message: String?, trace: LocatableTrace): String
 
     /**
      * This method should output a value

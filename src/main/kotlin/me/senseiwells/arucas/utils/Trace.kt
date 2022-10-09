@@ -22,51 +22,12 @@ open class LocatableTrace(fileName: String, val fileContent: String, val line: I
         return "${super.toString()}, Line: ${this.line + 1}, Column: ${this.column + 1}"
     }
 
-    fun errorFormat(message: String?, maxLength: Int = 60): String {
-        val lines = this.fileContent.lines()
-        val errorLine = this.line + 1
-        val padSize = Math.max(1, Math.ceil(Math.log10(errorLine.toDouble())).toInt());
-        val padFormat = "%" + padSize + "d"
-        val numPadding = " ".repeat(padSize)
-
-        var errorStart = this.column
-        var errorEnd = this.column + 1
-        var errorString = lines[errorLine - 1]
-        
-        if (errorStart > maxLength / 2) {
-            val diff = errorStart - (maxLength / 2)
-            errorStart -= diff - 4
-            errorEnd -= diff - 4
-            errorString = "... " + errorString.substring(diff)
-        }
-
-        if (errorString.length > maxLength - 4) {
-            if (errorEnd > maxLength - 4) {
-                errorEnd = maxLength - 4
-            }
-
-            errorString = errorString.substring(0, maxLength - 4) + " ..."
-        }
-
-        val sb = StringBuilder()
-
-        sb.append("\n")
-            .append(String.format(padFormat, errorLine)).append(" | ").append(errorString).append("\n")
-            .append(numPadding).append(" | ").append(" ".repeat(errorStart)).append("^".repeat(errorEnd - errorStart))
-
-        if (message != null) {
-            sb.append("\n").append(numPadding).append(" | ").append(" ".repeat(errorStart)).append(message)
-        }
-
-        return sb.toString()
-    }
-
     open fun toString(interpreter: Interpreter, detail: String?, message: String?): String {
-        return "${toString()}${detail ?: ""}${errorFormat(message, interpreter.properties.errorMaxLength)}"
+        return "${toString()}${detail ?: ""}${interpreter.api.getOutput().formatStackTrace(interpreter, message, this)}"
     }
 
     override fun toString(interpreter: Interpreter, message: String?): String {
-        return toString(interpreter, null, message)
+        return this.toString(interpreter, null, message)
     }
 }
 

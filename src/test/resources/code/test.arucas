@@ -1,5 +1,2 @@
-// ./src/test/resources/code/test.arucas
+./src/test/resources/code/test.arucas
 
-import ClassA from test.CyclicalA;
-
-print(ClassA.callB());
