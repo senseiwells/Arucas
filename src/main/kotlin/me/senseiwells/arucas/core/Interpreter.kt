@@ -264,9 +264,6 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
             this.localCache.mergeWith(child.localCache)
             val definitions = child.globalTable.getClasses()
             if (definitions.isNotEmpty()) {
-                for (definition in definitions) {
-                    this.modules.add(importPath, definition)
-                }
                 return true
             }
         }
@@ -882,7 +879,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
 
         override fun defineClass(table: StackTable, definition: ClassDefinition) {
             super.defineClass(table, definition)
-            if (this.isImporting) {
+            if (table == this.globalTable && this.isImporting) {
                 this.modules.add(this.name, definition)
             }
         }
