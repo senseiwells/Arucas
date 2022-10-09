@@ -33,6 +33,10 @@ class StackTable constructor(private val moduleMap: ModuleMap, val parent: Stack
         this.promised[name] = path
     }
 
+    fun addAllModules(path: String) {
+        this.all.add(path)
+    }
+
     fun getClass(name: String): ClassDefinition? {
         return this.definitions[name] ?: this.getModule(name) ?: this.parent?.getClass(name)
     }

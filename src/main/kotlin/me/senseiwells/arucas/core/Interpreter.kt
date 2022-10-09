@@ -571,6 +571,8 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
             for (name in importStatement.names) {
                 this.currentTable.addModule(name, importPath)
             }
+        } else {
+            this.currentTable.addAllModules(importPath)
         }
     }
 

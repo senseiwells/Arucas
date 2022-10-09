@@ -906,7 +906,13 @@ class ArucasStatementTests {
             return Java.type == JavaClass.type;
             """
         )
-        throwsRuntime("import NonExistent from not.real.Import;")
+        assertEquals(0, "import NonExistent from not.real.Import; return 0;")
+        assertEquals(10,
+            """
+            import ClassA from test.CyclicalA;
+            return ClassA.callB();  
+            """
+        )
         throwsRuntime("Java.valueOf('name').isBlank();")
     }
 }

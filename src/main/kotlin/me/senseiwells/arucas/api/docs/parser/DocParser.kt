@@ -38,9 +38,7 @@ abstract class DocParser protected constructor() {
         api.getBuiltInExtensions()?.forEach {
             this.extensions.add(it)
         }
-        interpreter.modules.forEachBuiltIn {
-            this.definitions.add(it)
-        }
+        this.definitions.addAll(interpreter.modules.builtIns())
         interpreter.modules.forEach { _, d ->
             d.forEach(this.definitions::add)
         }
