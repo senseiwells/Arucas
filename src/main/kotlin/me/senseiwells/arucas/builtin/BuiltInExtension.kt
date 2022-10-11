@@ -208,7 +208,7 @@ class BuiltInExtension: ArucasExtension {
     )
     private fun eval(arguments: Arguments): ClassInstance {
         val code = arguments.nextPrimitive(StringDef::class)
-        val child = arguments.interpreter.child("\$eval", code)
+        val child = arguments.interpreter.child(code, "\$eval")
         return Arucas.runSafe(child)
     }
 
