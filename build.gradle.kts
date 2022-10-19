@@ -76,6 +76,7 @@ publishing {
     publications {
         register("mavenJava", MavenPublication::class) {
             artifact(tasks["shadowJar"])
+            artifact(tasks["jar"])
         }
     }
 }
