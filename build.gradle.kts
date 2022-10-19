@@ -33,8 +33,6 @@ tasks.test {
 }
 
 tasks.jar {
-    enabled = false
-
     archiveClassifier.set("default")
 }
 
@@ -47,6 +45,10 @@ tasks.shadowJar {
     relocate("org.jetbrains", "shadow.jetbrains")
     relocate("kotlinx", "shadow.kotlinx")
     relocate("kotlin", "shadow.kotlin")
+
+    // @see https://youtrack.jetbrains.com/issue/KT-25709
+    exclude("**/*.kotlin_metadata")
+    exclude("**/*.kotlin_builtins")
 
     val name: String? = null
     archiveClassifier.set(name)
