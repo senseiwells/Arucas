@@ -1,2 +1,29 @@
-./src/test/resources/code/test.arucas
+// ./src/test/resources/code/test.arucas
 
+f = "hi";
+
+fun ok() {
+    k = 0;
+}
+
+fun something() {
+    k = 9;
+    print(k);
+    print(f);
+}
+
+class E {
+    static fun a(function) {
+        function();
+    }
+
+    static fun b() {
+        E.a(fun() { something(); });
+    }
+}
+{
+    E.a(fun() { something(); });
+}
+
+
+E.b();

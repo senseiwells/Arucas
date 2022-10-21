@@ -52,12 +52,12 @@ class Parser(tokens: List<Token>): TokenReader(tokens) {
         return LocalVarStatement(name.content, expression, name.trace)
     }
 
-    private fun functionDeclaration(isClass: Boolean): FunctionStatement {
+    private fun functionDeclaration(isClass: Boolean, isStatic: Boolean = true): FunctionStatement {
         this.check(FUN)
         val name = this.check(IDENTIFIER, "Expected function name")
         this.check(LEFT_BRACKET, "Expected '(' after function name")
 
-        val (parameters, isArbitrary) = this.getFunctionParameters(isClass)
+        val (parameters, isArbitrary) = this.getFunctionParameters(!isStatic)
 
         val returnTypes = this.getTypeHint()
         val body = this.statement()
@@ -199,7 +199,7 @@ class Parser(tokens: List<Token>): TokenReader(tokens) {
                     constructors.add(ConstructorStatement(parameters, isArbitrary, constructorInit, body, currentTrace))
                 }
                 this.peekType() == FUN -> {
-                    val function = this.functionDeclaration(!static)
+                    val function = this.functionDeclaration(true, static)
                     (if (static) staticMethods else methods).add(function)
                 }
                 this.isMatch(OPERATOR) -> {
