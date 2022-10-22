@@ -176,6 +176,15 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         val distance = this.localCache.getVar(visitable)
         distance?.let {
             this.currentTable.getVar(name, distance)?.let { return it }
+
+            // So theoretically it's possible that a variable defined in a function
+            // was cached in that location but was since defined in the previous scopes
+            // where it currently resides. This means that we need to check scopes above.
+            // But this should be avoided as it can lead to unwanted behaviours.
+            this.currentTable.getVar(name)?.let {
+                this.logDebug("Local variable '$name' was defined previously in a scope but was accessed in scopes above")
+                return it
+            }
             throw IllegalArgumentException("Failed to fetch variable at cached location")
         }
         return this.globalTable.getVar(name)
@@ -677,6 +686,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
             this.currentTable.defineVar(assign.name, instance, it)
             return instance
         }
+
         // Normally you could assume that we always
         // define the variable here, but there's an edge
         // case, that is if the variable is in a function
