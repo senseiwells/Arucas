@@ -37,13 +37,11 @@ tasks.jar {
 tasks.shadowJar {
     configurations = listOf(shade)
 
-    // relocate("com.google", "shadow.google")
-    // relocate("org.jetbrains", "shadow.jetbrains")
-    // relocate("kotlin", "shadow.kotlin")
-
     // @see https://youtrack.jetbrains.com/issue/KT-25709
     exclude("**/*.kotlin_metadata")
     exclude("**/*.kotlin_builtins")
+
+    from("LICENSE")
 
     archiveClassifier.set("fat")
 
