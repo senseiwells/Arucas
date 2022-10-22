@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "me.senseiwells"
-version = "2.0.1"
+version = "2.0.2"
 
 val shade: Configuration by configurations.creating
 
@@ -18,8 +18,6 @@ repositories {
 }
 
 dependencies {
-    // This is super shady... (no pun intended)
-    // implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")?.let { shade(it) }
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.7.10")?.let { shade(it) }
     implementation("com.google.code.gson:gson:2.9.0")?.let { shade(it) }
 
@@ -33,25 +31,21 @@ tasks.test {
 }
 
 tasks.jar {
-    archiveClassifier.set("default")
+    from("LICENSE")
 }
 
 tasks.shadowJar {
     configurations = listOf(shade)
 
-    from("LICENSE")
-
-    relocate("com.google", "shadow.google")
-    relocate("org.jetbrains", "shadow.jetbrains")
-    relocate("kotlinx", "shadow.kotlinx")
-    relocate("kotlin", "shadow.kotlin")
+    // relocate("com.google", "shadow.google")
+    // relocate("org.jetbrains", "shadow.jetbrains")
+    // relocate("kotlin", "shadow.kotlin")
 
     // @see https://youtrack.jetbrains.com/issue/KT-25709
     exclude("**/*.kotlin_metadata")
     exclude("**/*.kotlin_builtins")
 
-    val name: String? = null
-    archiveClassifier.set(name)
+    archiveClassifier.set("fat")
 
     // archiveFileName.set("${rootProject.name}-${archiveVersion.get()}.jar")
 }
