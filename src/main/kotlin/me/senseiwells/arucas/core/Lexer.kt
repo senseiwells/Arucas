@@ -5,104 +5,106 @@ import me.senseiwells.arucas.utils.LocatableTrace
 import me.senseiwells.arucas.utils.StringUtils
 import java.util.regex.Pattern
 
-private val LEXER_CONTEXT = LexerContext()
-    // Whitespaces
-    .addRule(Type.WHITESPACE) { i ->
-        i.addMultiline("/*", "*/").addRegex("//[^\\r\\n]*").addRegex("[ \t\r\n]")
+class Lexer(private val text: String, private val fileName: String) {
+    companion object {
+        val LEXER_CONTEXT = LexerContext()
+            // Whitespaces
+            .addRule(Type.WHITESPACE) { i ->
+                i.addMultiline("/*", "*/").addRegex("//[^\\r\\n]*").addRegex("[ \t\r\n]")
+            }
+
+            // Arithmetics
+            .addRule(Type.PLUS)
+            .addRule(Type.MINUS)
+            .addRule(Type.MULTIPLY)
+            .addRule(Type.DIVIDE)
+            .addRule(Type.POWER)
+
+            // Atoms
+            .addRule(Type.IDENTIFIER) { i -> i.addRegex("[a-zA-Z_][a-zA-Z0-9_]*") }
+            .addRule(Type.STRING) { i -> i.addMultiline("\"", "\\", "\"").addMultiline("'", "\\", "'") }
+            .addRule(Type.NUMBER) { i -> i.addRegexes("[0-9]+\\.[0-9]+", "[0-9]+", "0[xX][0-9a-fA-F]+") }
+            .addRule(Type.TRUE)
+            .addRule(Type.FALSE)
+            .addRule(Type.NULL)
+
+            // Comparisons - This must be defined AFTER identifiers
+            .addRule(Type.EQUALS)
+            .addRule(Type.NOT_EQUALS)
+            .addRule(Type.LESS_THAN_EQUAL)
+            .addRule(Type.MORE_THAN_EQUAL)
+            .addRule(Type.LESS_THAN)
+            .addRule(Type.MORE_THAN)
+            .addRule(Type.NOT)
+            .addRule(Type.AND)
+            .addRule(Type.OR)
+            .addRule(Type.XOR)
+            .addRule(Type.SHIFT_LEFT)
+            .addRule(Type.SHIFT_RIGHT)
+            .addRule(Type.BIT_AND)
+            .addRule(Type.BIT_OR)
+
+            // Memory operations
+            .addRule(Type.ASSIGN_OPERATOR)
+            .addRule(Type.INCREMENT)
+            .addRule(Type.DECREMENT)
+            .addRule(Type.PLUS_ASSIGN)
+            .addRule(Type.MINUS_ASSIGN)
+            .addRule(Type.MULTIPLY_ASSIGN)
+            .addRule(Type.DIVIDE_ASSIGN)
+            .addRule(Type.POWER_ASSIGN)
+            .addRule(Type.AND_ASSIGN)
+            .addRule(Type.OR_ASSIGN)
+            .addRule(Type.XOR_ASSIGN)
+
+            // Brackets
+            .addRule(Type.LEFT_BRACKET)
+            .addRule(Type.RIGHT_BRACKET)
+            .addRule(Type.LEFT_SQUARE_BRACKET)
+            .addRule(Type.RIGHT_SQUARE_BRACKET)
+            .addRule(Type.LEFT_CURLY_BRACKET)
+            .addRule(Type.RIGHT_CURLY_BRACKET)
+
+            // Delimiters
+            .addRule(Type.SEMICOLON)
+            .addRule(Type.COLON)
+            .addRule(Type.COMMA)
+
+            // Keywords
+            .addRule(Type.IF)
+            .addRule(Type.ELSE)
+            .addRule(Type.WHILE)
+            .addRule(Type.CONTINUE)
+            .addRule(Type.BREAK)
+            .addRule(Type.RETURN)
+            .addRule(Type.VAR)
+            .addRule(Type.FUN)
+            .addRule(Type.TRY)
+            .addRule(Type.CATCH)
+            .addRule(Type.FINALLY)
+            .addRule(Type.FOREACH)
+            .addRule(Type.FOR)
+            .addRule(Type.SWITCH)
+            .addRule(Type.CASE)
+            .addRule(Type.DEFAULT)
+            .addRule(Type.CLASS)
+            .addRule(Type.ENUM)
+            .addRule(Type.INTERFACE)
+            .addRule(Type.THIS)
+            .addRule(Type.SUPER)
+            .addRule(Type.AS)
+            .addRule(Type.NEW)
+            .addRule(Type.STATIC)
+            .addRule(Type.OPERATOR)
+            .addRule(Type.THROW)
+            .addRule(Type.IMPORT)
+            .addRule(Type.FROM)
+            .addRule(Type.LOCAL)
+            .addRule(Type.ARBITRARY)
+            .addRule(Type.DOT)
+            .addRule(Type.POINTER)
     }
 
-    // Arithmetics
-    .addRule(Type.PLUS)
-    .addRule(Type.MINUS)
-    .addRule(Type.MULTIPLY)
-    .addRule(Type.DIVIDE)
-    .addRule(Type.POWER)
-
-    // Atoms
-    .addRule(Type.IDENTIFIER) { i -> i.addRegex("[a-zA-Z_][a-zA-Z0-9_]*") }
-    .addRule(Type.STRING) { i -> i.addMultiline("\"", "\\", "\"").addMultiline("'", "\\", "'") }
-    .addRule(Type.NUMBER) { i -> i.addRegexes("[0-9]+\\.[0-9]+", "[0-9]+", "0[xX][0-9a-fA-F]+") }
-    .addRule(Type.TRUE)
-    .addRule(Type.FALSE)
-    .addRule(Type.NULL)
-
-    // Comparisons - This must be defined AFTER identifiers
-    .addRule(Type.EQUALS)
-    .addRule(Type.NOT_EQUALS)
-    .addRule(Type.LESS_THAN_EQUAL)
-    .addRule(Type.MORE_THAN_EQUAL)
-    .addRule(Type.LESS_THAN)
-    .addRule(Type.MORE_THAN)
-    .addRule(Type.NOT)
-    .addRule(Type.AND)
-    .addRule(Type.OR)
-    .addRule(Type.XOR)
-    .addRule(Type.SHIFT_LEFT)
-    .addRule(Type.SHIFT_RIGHT)
-    .addRule(Type.BIT_AND)
-    .addRule(Type.BIT_OR)
-
-    // Memory operations
-    .addRule(Type.ASSIGN_OPERATOR)
-    .addRule(Type.INCREMENT)
-    .addRule(Type.DECREMENT)
-    .addRule(Type.PLUS_ASSIGN)
-    .addRule(Type.MINUS_ASSIGN)
-    .addRule(Type.MULTIPLY_ASSIGN)
-    .addRule(Type.DIVIDE_ASSIGN)
-    .addRule(Type.POWER_ASSIGN)
-    .addRule(Type.AND_ASSIGN)
-    .addRule(Type.OR_ASSIGN)
-    .addRule(Type.XOR_ASSIGN)
-
-    // Brackets
-    .addRule(Type.LEFT_BRACKET)
-    .addRule(Type.RIGHT_BRACKET)
-    .addRule(Type.LEFT_SQUARE_BRACKET)
-    .addRule(Type.RIGHT_SQUARE_BRACKET)
-    .addRule(Type.LEFT_CURLY_BRACKET)
-    .addRule(Type.RIGHT_CURLY_BRACKET)
-
-    // Delimiters
-    .addRule(Type.SEMICOLON)
-    .addRule(Type.COLON)
-    .addRule(Type.COMMA)
-
-    // Keywords
-    .addRule(Type.IF)
-    .addRule(Type.ELSE)
-    .addRule(Type.WHILE)
-    .addRule(Type.CONTINUE)
-    .addRule(Type.BREAK)
-    .addRule(Type.RETURN)
-    .addRule(Type.VAR)
-    .addRule(Type.FUN)
-    .addRule(Type.TRY)
-    .addRule(Type.CATCH)
-    .addRule(Type.FINALLY)
-    .addRule(Type.FOREACH)
-    .addRule(Type.FOR)
-    .addRule(Type.SWITCH)
-    .addRule(Type.CASE)
-    .addRule(Type.DEFAULT)
-    .addRule(Type.CLASS)
-    .addRule(Type.ENUM)
-    .addRule(Type.INTERFACE)
-    .addRule(Type.THIS)
-    .addRule(Type.SUPER)
-    .addRule(Type.AS)
-    .addRule(Type.NEW)
-    .addRule(Type.STATIC)
-    .addRule(Type.OPERATOR)
-    .addRule(Type.THROW)
-    .addRule(Type.IMPORT)
-    .addRule(Type.FROM)
-    .addRule(Type.LOCAL)
-    .addRule(Type.ARBITRARY)
-    .addRule(Type.DOT)
-    .addRule(Type.POINTER)
-
-class Lexer(private val text: String, private val fileName: String) {
     fun createTokens(): List<Token> {
         val tokenList = ArrayList<Token>()
         val length = this.text.length
@@ -142,14 +144,14 @@ class Lexer(private val text: String, private val fileName: String) {
     }
 }
 
-private class LexerToken(val type: Type, val content: String) {
+class LexerToken(val type: Type, val content: String) {
     val length: Int = this.content.length
 }
 
 /**
  * Context that stores all our lexing rules
  */
-private class LexerContext {
+class LexerContext {
     private val rules = ArrayList<LexerRule>()
 
     fun addRule(type: Type): LexerContext {
@@ -183,7 +185,7 @@ private class LexerContext {
 /**
  * Rule that matches patterns to token types
  */
-private class LexerRule(val type: Type) {
+class LexerRule(val type: Type) {
     private val matches = ArrayList<Pattern>()
 
     fun addString(value: String): LexerRule {
