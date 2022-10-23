@@ -2,16 +2,21 @@ package me.senseiwells.arucas.core
 
 import me.senseiwells.arucas.utils.LocatableTrace
 
-class Token(val type: Type, val trace: LocatableTrace, val content: String = "") {
+interface TokenLike {
+    val type: Type
+    val content: String
+}
+
+class Token(override val type: Type, val trace: LocatableTrace, override val content: String = ""): TokenLike {
     override fun toString(): String {
         return "Token{type='${this.type}', content='${this.content}'}"
     }
 }
 
-sealed class TokenReader(private val tokens: List<Token>) {
+open class TokenReader<T: TokenLike>(private val tokens: List<T>) {
     private var index = 0
 
-    fun advance(amount: Int = 1): Token {
+    fun advance(amount: Int = 1): T {
         this.index = this.getOffset(amount)
         return this.tokens[this.index]
     }
@@ -22,7 +27,7 @@ sealed class TokenReader(private val tokens: List<Token>) {
 
     fun peekType(amount: Int = 0) = this.peek(amount).type
 
-    fun match(vararg types: Type): Token? {
+    fun match(vararg types: Type): T? {
         val token = this.peek()
         if (token.type in types) {
             this.advance()
@@ -42,7 +47,7 @@ sealed class TokenReader(private val tokens: List<Token>) {
     }
 }
 
-enum class Type(private val asString: String? = null, val assignment: Boolean = false) {
+enum class Type(private val asString: String? = null) {
     // Delimiters
     WHITESPACE,
     COMMENT,
@@ -60,8 +65,8 @@ enum class Type(private val asString: String? = null, val assignment: Boolean = 
     STRING,
 
     // Arithmetics
-    PLUS("+", true),
-    MINUS("-", true),
+    PLUS("+"),
+    MINUS("-"),
     MULTIPLY("*"),
     DIVIDE("/"),
     POWER("^"),
@@ -143,7 +148,9 @@ enum class Type(private val asString: String? = null, val assignment: Boolean = 
     // Dot
     DOT("."),
     POINTER("->"),
-    ARBITRARY("...");
+    ARBITRARY("..."),
+
+    UNKNOWN;
 
     override fun toString(): String {
         return this.asString ?: this.name

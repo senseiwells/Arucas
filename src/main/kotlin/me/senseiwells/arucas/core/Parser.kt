@@ -13,7 +13,7 @@ import me.senseiwells.arucas.utils.Parameter
 import me.senseiwells.arucas.utils.Trace
 import kotlin.reflect.KMutableProperty0
 
-class Parser(tokens: List<Token>): TokenReader(tokens) {
+class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
     private val cachedTrue = LiteralExpression(BooleanDef::class) { b -> b.TRUE }
     private val cachedFalse = LiteralExpression(BooleanDef::class) { b -> b.FALSE }
     private val cachedNull = LiteralExpression(NullDef::class) { n -> n.NULL }
