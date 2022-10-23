@@ -10,7 +10,10 @@ class Lexer(private val text: String, private val fileName: String) {
         val LEXER_CONTEXT = LexerContext()
             // Whitespaces
             .addRule(Type.WHITESPACE) { i ->
-                i.addMultiline("/*", "*/").addRegex("//[^\\r\\n]*").addRegex("[ \t\r\n]")
+                i.addRegex("[ \t\r\n]")
+            }
+            .addRule(Type.COMMENT) { i ->
+                i.addMultiline("/*", "*/").addRegex("//[^\\r\\n]*")
             }
 
             // Arithmetics
@@ -129,7 +132,7 @@ class Lexer(private val text: String, private val fileName: String) {
                     column++
                 }
             }
-            if (lexerToken.type !== Type.WHITESPACE) {
+            if (lexerToken.type !== Type.WHITESPACE && lexerToken.type !== Type.COMMENT) {
                 tokenList.add(Token(
                     lexerToken.type,
                     LocatableTrace(this.fileName, this.text, oldLine, oldColumn),

@@ -45,6 +45,7 @@ sealed class TokenReader(private val tokens: List<Token>) {
 enum class Type(private val asString: String? = null, val assignment: Boolean = false) {
     // Delimiters
     WHITESPACE,
+    COMMENT,
     IDENTIFIER,
     EOF,
     SEMICOLON(";"),
