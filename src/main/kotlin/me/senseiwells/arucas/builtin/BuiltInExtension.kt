@@ -36,6 +36,7 @@ class BuiltInExtension: ArucasExtension {
         return listOf(
             BuiltInFunction.of("print", 1, this::print),
             BuiltInFunction.arb("print", this::printVarArgs),
+            BuiltInFunction.of("printDebug", this::printDebug),
             BuiltInFunction.of("input", 1, this::input),
             BuiltInFunction.of("sleep", 1, this::sleep),
             BuiltInFunction.of("debug", 1, this::debug),
@@ -94,6 +95,26 @@ class BuiltInExtension: ArucasExtension {
             output.append(arguments.next().toString(arguments.interpreter))
         }
         arguments.interpreter.api.getOutput().println(output.toString())
+    }
+
+    @FunctionDoc(
+        name = "printDebug",
+        desc = [
+            "This logs something to the debug output.",
+            "It only prints if debug mode is enabled: `debug(true)`"
+        ],
+        params = [OBJECT, "printValue", "the value to print"],
+        examples = [
+            """
+            debug(true); // Enable debug for testing
+            if (true) {
+                printDebug("Inside if statement");
+            }
+            """
+        ]
+    )
+    private fun printDebug(arguments: Arguments) {
+        arguments.interpreter.api.getOutput().logln(arguments.next().toString(arguments.interpreter))
     }
 
     @FunctionDoc(

@@ -21,6 +21,26 @@ open class RuntimeError @JvmOverloads constructor(
     var topTrace: Trace? = null,
     private var stackTrace: Stack<Trace>? = null
 ): ArucasError(message, cause) {
+    companion object {
+        @JvmStatic
+        inline fun <T> wrap(block: () -> T): T {
+            return try {
+                block()
+            } catch (e: Exception) {
+                runtimeError(e.message ?: e.toString(), e)
+            }
+        }
+
+        @JvmStatic
+        fun wrap(runnable: Runnable) {
+            try {
+                runnable.run()
+            } catch (e: Exception) {
+                runtimeError(e.message ?: e.toString(), e)
+            }
+        }
+    }
+
     internal fun fillStackTrace(stackTrace: Stack<Trace>) {
         if (this.stackTrace == null) {
             val stack = Stack<Trace>()

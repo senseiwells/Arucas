@@ -7,7 +7,6 @@ import me.senseiwells.arucas.classes.PrimitiveDefinition
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.utils.Arguments
 import me.senseiwells.arucas.utils.BuiltInFunction
-import me.senseiwells.arucas.utils.Util.Collection.to
 import me.senseiwells.arucas.utils.Util.Types.MATH
 import me.senseiwells.arucas.utils.Util.Types.NUMBER
 import kotlin.math.*

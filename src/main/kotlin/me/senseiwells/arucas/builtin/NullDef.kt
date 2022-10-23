@@ -5,7 +5,6 @@ import me.senseiwells.arucas.classes.ClassInstance
 import me.senseiwells.arucas.classes.PrimitiveDefinition
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.utils.LocatableTrace
-import me.senseiwells.arucas.utils.Util
 import me.senseiwells.arucas.utils.Util.Types.NULL
 
 @ClassDoc(
