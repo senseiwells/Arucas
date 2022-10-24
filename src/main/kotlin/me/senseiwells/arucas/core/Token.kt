@@ -40,6 +40,11 @@ open class TokenReader<T: TokenLike>(private val tokens: List<T>) {
 
     fun isAtEnd() = this.peekType() == Type.EOF
 
+    fun isInBounds(offset: Int): Boolean {
+        val offsetIndex = this.index + offset
+        return offsetIndex < this.tokens.size && offsetIndex >= 0
+    }
+
     private fun getOffset(offset: Int): Int {
         val offsetIndex = this.index + offset
         require(offsetIndex < this.tokens.size && offsetIndex >= 0) { "Index $offsetIndex is out of bounds" }
