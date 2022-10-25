@@ -14,9 +14,9 @@ class Token(override val type: Type, val trace: LocatableTrace, override val con
 }
 
 open class TokenReader<T: TokenLike>(private val tokens: List<T>) {
-    private var index = 0
+    protected var index = 0
 
-    fun advance(amount: Int = 1): T {
+    open fun advance(amount: Int = 1): T {
         this.index = this.getOffset(amount)
         return this.tokens[this.index]
     }
