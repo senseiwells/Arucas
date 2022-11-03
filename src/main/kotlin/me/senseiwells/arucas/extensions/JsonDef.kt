@@ -12,10 +12,7 @@ import me.senseiwells.arucas.classes.ClassInstance
 import me.senseiwells.arucas.classes.CreatableDefinition
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.exceptions.runtimeError
-import me.senseiwells.arucas.utils.Arguments
-import me.senseiwells.arucas.utils.BuiltInFunction
-import me.senseiwells.arucas.utils.MemberFunction
-import me.senseiwells.arucas.utils.Util
+import me.senseiwells.arucas.utils.*
 import me.senseiwells.arucas.utils.Util.Types.FILE
 import me.senseiwells.arucas.utils.Util.Types.JSON
 import me.senseiwells.arucas.utils.Util.Types.LIST
@@ -40,6 +37,10 @@ class JsonDef(interpreter: Interpreter): CreatableDefinition<JsonElement>(JSON, 
     }
 
     override fun canExtend() = false
+
+    override fun toString(instance: ClassInstance, interpreter: Interpreter, trace: LocatableTrace): String {
+        return GSON.toJson(instance.asPrimitive(this))
+    }
 
     override fun defineStaticMethods(): List<BuiltInFunction> {
         return listOf(
@@ -90,7 +91,7 @@ class JsonDef(interpreter: Interpreter): CreatableDefinition<JsonElement>(JSON, 
     @FunctionDoc(
         isStatic = true,
         name = "fromFile",
-        desc = ["This will read a file and parse it into a Json"],
+        desc = ["This will read a file and parse it into a Json, this will throw an error if the file cannot be read"],
         params = [FILE, "file", "the file that you want to parse into a Json"],
         returns = [JSON, "the Json parsed from the file"],
         examples = ["Json.fromFile(new File('this/path/is/an/example.json'));"]

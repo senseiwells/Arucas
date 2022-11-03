@@ -7,6 +7,7 @@ import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.utils.Util
 import me.senseiwells.arucas.utils.Util.Exception
 import me.senseiwells.arucas.utils.Util.File.ensureParentExists
+import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
 
@@ -32,7 +33,7 @@ open class ImplArucasLibrary @JvmOverloads constructor(
      */
     override fun getImport(import: List<String>, local: Boolean, interpreter: Interpreter): String? {
         val name = import.joinToString("/")
-        val filePath = this.importPath.resolve("$name.arucas").ensureParentExists()
+        val filePath = this.importPath.resolve("${import.joinToString(File.separator)}.arucas").ensureParentExists()
 
         if (local) {
             interpreter.logDebug("Reading local import: '$name'")

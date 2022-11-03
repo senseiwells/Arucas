@@ -52,7 +52,7 @@ class FileDef(interpreter: Interpreter): CreatableDefinition<File>(FILE, interpr
     @FunctionDoc(
         isStatic = true,
         name = "getDirectory",
-        desc = ["This returns the file of the working directory"],
+        desc = ["This returns the file of user directory"],
         returns = [FILE, "the file of the working directory"],
         examples = ["File.getDirectory();"]
     )

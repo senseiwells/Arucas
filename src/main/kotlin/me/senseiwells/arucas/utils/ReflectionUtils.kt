@@ -151,7 +151,7 @@ object ReflectionUtils {
         }
         val varArgType = if (required.isNotEmpty()) required.last().componentType else null
         if (varArgType != null && required.lastIndex != given.lastIndex) {
-            for (i in required.size..given.lastIndex) {
+            for (i in required.size until given.lastIndex) {
                 val givenClass = given[i]
                 if (givenClass != Void.TYPE && varArgType.isAssignableFrom(givenClass)) {
                     return false
