@@ -7,6 +7,7 @@ import me.senseiwells.arucas.classes.ClassInstance
 import me.senseiwells.arucas.classes.CreatableDefinition
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.core.Type
+import me.senseiwells.arucas.exceptions.RuntimeError
 import me.senseiwells.arucas.exceptions.runtimeError
 import me.senseiwells.arucas.utils.*
 import me.senseiwells.arucas.utils.Util.Types.BOOLEAN
@@ -299,7 +300,9 @@ class StringDef(interpreter: Interpreter): CreatableDefinition<String>(STRING, i
         val string = arguments.nextPrimitive(this)
         val from = arguments.nextPrimitive(NumberDef::class).toInt()
         val to = arguments.nextPrimitive(NumberDef::class).toInt()
-        return string.substring(from, to)
+        return RuntimeError.wrap {
+            string.substring(from, to)
+        }
     }
 
     @FunctionDoc(
@@ -312,7 +315,9 @@ class StringDef(interpreter: Interpreter): CreatableDefinition<String>(STRING, i
     private fun split(arguments: Arguments): List<String> {
         val string = arguments.nextPrimitive(this)
         val regex = arguments.nextPrimitive(this)
-        return string.split(this.safeRegex(regex))
+        return RuntimeError.wrap {
+            string.split(this.safeRegex(regex))
+        }
     }
 
     @FunctionDoc(
