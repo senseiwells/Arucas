@@ -1945,9 +1945,54 @@ if (validNames.contains(name)) {
 
 ## Errors
 
+Errors are used in a program to indicate that something has gone wrong. Error's allow for a more complex control flow as when an error is thrown it propagates directly out of function calls until the error is either caught or it stops the program.
+
 ### Creation
 
+By default there is only one `Error` class which is built-in. This class can be instantiated and can be thrown. To create an error we can simply just call the `Error` class's constructor:
+
+```java
+new Error();
+```
+
+This creates an empty error, to create an error with a message that will display on the stacktrace we can add a parameter:
+
+```java
+new Error("Something went wrong");
+```
+
+And lastly if we want to add a value to the error which we can use when the error is caught we can add a last parameter:
+
+```java
+new Error("Something went very wrong", [1, 2, 3]);
+```
+
+One last thing to mention is that the error class is extendable and when extending it will change the name of the error on the stacktrace:
+
+```
+Error: Something went wrong
+> File: console, Line: 1, Column: 1, In: throwError::0 
+1 | throwError();
+  | ^ 
+```
+
+Compared to:
+
+```
+ChildClassError: Something went very wrong
+> File: console, Line: 1, Column: 1, In: throwError::0 
+1 | throwChildClassError();
+  | ^ 
+```
+
 ### Throwing 
+
+To throw an error we simply just use the `throw` keyword. You can **only** throw objects that are of the `Error` type, this includes any child classes. If you attempt to throw a non-error type then an error will be thrown:
+
+```kotlin
+error = new Error("Something went wrong");
+throw error;
+```
 
 ### Catching
 
