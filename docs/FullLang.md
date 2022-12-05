@@ -1996,6 +1996,79 @@ throw error;
 
 ### Catching
 
+As previously mentioned it's possible to catch propagating errors. This can be done with the `try catch` syntax, the `catch` must be followed by braces with a 'parameter' which will reference the error that has been caught. Any errors that happen inside a `try catch` may be caught:
+
+```kotlin
+try {
+	throw new Error();
+} catch (e) {
+	// Ignore
+}
+```
+
+You are also able to specify the type of error that you would like to catch by type hinting the parameter:
+
+```kotlin
+class CustomError: Error {
+	CustomError(): super();
+}
+
+try {
+	throw new CustomError();
+} catch (e: CustomError) {
+	print("CustomError caught");
+}
+```
+
+By doing this any other errors that are not an instance of `CustomError` would be ignored by the catch.
+
+### Finally
+
+Finally is a useful keyword, it allows for code to be executed if an error is thrown like a catch but unlike catch does not actually catch the error. This is especially useful if you need to reset or close something after running a try statement:
+
+```kotlin
+fun something() {
+	// May throw error here
+}
+
+state = false;
+
+try {
+	state = true;
+	something();
+} finally {
+	// Reset
+	state = false;
+}
+```
+
+Using finally is essentially the equivalent to:
+
+```kotlin
+try {
+	// ...
+} catch (e) {
+	// Finally code here
+	
+	// Re-throw the error
+	throw e;
+}
+```
+
+In the case that an error is not thrown the code in the finally clause will simply just execute after the try block has executed.
+
+Something to also note is that the `catch` and `finally` keywords can be used in conjunction with eachother:
+
+```kotlin
+try {
+	// ...
+} catch (e) {
+	// ...
+} finally {
+	// ...
+}
+```
+
 ## Imports
 
 Importing is a large part of almost every programming language. Importing is used to use code from other libraries so you do not need to write it yourself.
