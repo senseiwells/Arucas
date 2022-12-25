@@ -469,6 +469,11 @@
     "body": ".reduce($reducer)",
     "description": "<List>.reduce(reducer)\nThis reduces the list using the reducer, a function that takes an\naccumulated value and a new value and returns the next accumulated value\n- Parameter - Function (`reducer`): a function that takes a value and returns a new value\n"
   },
+  "Method <List>.reduce(identity, reducer)": {
+    "prefix": ".reduce($identity, $reducer)",
+    "body": ".reduce($identity, $reducer)",
+    "description": "<List>.reduce(identity, reducer)\nThis reduces the list using the reducer starting with an identity\n- Parameter - Object (`identity`): the identity\n- Parameter - Function (`reducer`): a function that takes a value and returns a new value\n"
+  },
   "Method <List>.remove(index)": {
     "prefix": ".remove($index)",
     "body": ".remove($index)",
@@ -888,6 +893,11 @@
     "prefix": ".reduce($function)",
     "body": ".reduce($function)",
     "description": "<Set>.reduce(function)\nThis allows you to reduce the set\n- Parameter - Function (`function`): the function you want to reduce the set by\n"
+  },
+  "Method <Set>.reduce(identity, reducer)": {
+    "prefix": ".reduce($identity, $reducer)",
+    "body": ".reduce($identity, $reducer)",
+    "description": "<Set>.reduce(identity, reducer)\nThis reduces the list using the reducer starting with an identity\n- Parameter - Object (`identity`): the identity\n- Parameter - Function (`reducer`): a function that takes a value and returns a new value\n"
   },
   "Method <Set>.remove(value)": {
     "prefix": ".remove($value)",

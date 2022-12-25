@@ -1065,6 +1065,20 @@ accumulated value and a new value and returns the next accumulated value
 // 6
 ```
 
+### `<List>.reduce(identity, reducer)`
+- Description: This reduces the list using the reducer starting with an identity
+- Parameters:
+  - Object (`identity`): the identity
+  - Function (`reducer`): a function that takes a value and returns a new value
+- Returns - Object: the reduced value
+- Example:
+```kotlin
+(list = [1, 2, 3]).reduce("", fun(a, b) {
+    return a + b;
+});
+// "123"
+```
+
 ### `<List>.remove(index)`
 - Description: This allows you to remove the value at a specific index, alternative to bracket assignment.
 This will throw an error if the index is out of bounds
@@ -1856,6 +1870,17 @@ Set.of(-9, 81, 96, 15).map(fun(value) { return value * 2; });
 - Example:
 ```kotlin
 Set.of(-9, 81, 96, 15).reduce(fun(value, next) { return value + next; });
+```
+
+### `<Set>.reduce(identity, reducer)`
+- Description: This reduces the list using the reducer starting with an identity
+- Parameters:
+  - Object (`identity`): the identity
+  - Function (`reducer`): a function that takes a value and returns a new value
+- Returns - Object: the reduced value
+- Example:
+```kotlin
+Set.of(-9, 81, 96, 15).reduce("", fun(value, next) { return value + next; });
 ```
 
 ### `<Set>.remove(value)`

@@ -164,6 +164,26 @@
         ]
       },
       {
+        "name": "isDebug",
+        "is_arbitrary": false,
+        "desc": [
+          "This is used to determine whether the interpreter is in debug mode"
+        ],
+        "examples": [
+          "isDebug();"
+        ]
+      },
+      {
+        "name": "isExperimental",
+        "is_arbitrary": false,
+        "desc": [
+          "This is used to determine whether the interpreter is in experimental mode"
+        ],
+        "examples": [
+          "isExperimental();"
+        ]
+      },
+      {
         "name": "isMain",
         "is_arbitrary": false,
         "desc": [
@@ -2362,6 +2382,32 @@
           ]
         },
         {
+          "name": "reduce",
+          "is_arbitrary": false,
+          "desc": [
+            "This reduces the list using the reducer starting with an identity"
+          ],
+          "params": [
+            {
+              "name": "identity",
+              "type": "Object",
+              "desc": "the identity"
+            },
+            {
+              "name": "reducer",
+              "type": "Function",
+              "desc": "a function that takes a value and returns a new value"
+            }
+          ],
+          "returns": {
+            "type": "Object",
+            "desc": "the reduced value"
+          },
+          "examples": [
+            "(list = [1, 2, 3]).reduce(\"\", fun(a, b) {\n    return a + b;\n});\n// \"123\""
+          ]
+        },
+        {
           "name": "remove",
           "is_arbitrary": false,
           "desc": [
@@ -3965,6 +4011,32 @@
           },
           "examples": [
             "Set.of(-9, 81, 96, 15).reduce(fun(value, next) { return value + next; });"
+          ]
+        },
+        {
+          "name": "reduce",
+          "is_arbitrary": false,
+          "desc": [
+            "This reduces the list using the reducer starting with an identity"
+          ],
+          "params": [
+            {
+              "name": "identity",
+              "type": "Object",
+              "desc": "the identity"
+            },
+            {
+              "name": "reducer",
+              "type": "Function",
+              "desc": "a function that takes a value and returns a new value"
+            }
+          ],
+          "returns": {
+            "type": "Object",
+            "desc": "the reduced value"
+          },
+          "examples": [
+            "Set.of(-9, 81, 96, 15).reduce(\"\", fun(value, next) { return value + next; });"
           ]
         },
         {
