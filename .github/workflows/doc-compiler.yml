@@ -8,11 +8,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Arucas
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - uses: gradle/wrapper-validation-action@v1
-      - name: Setup Java
-        uses: actions/setup-java@v1
+      - uses: actions/setup-java@v3
         with:
+          distribution: temurin
           java-version: 17
       - name: Generate Documentations
         run: ./gradlew run --args="-cmdLine false -generate generated" --stacktrace --no-daemon
