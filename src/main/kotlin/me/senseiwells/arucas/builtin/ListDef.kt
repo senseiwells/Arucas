@@ -99,6 +99,7 @@ class ListDef(interpreter: Interpreter): CreatableDefinition<ArucasList>(LIST, i
             MemberFunction.of("filter", 1, this::filter),
             MemberFunction.of("map", 1, this::map),
             MemberFunction.of("reduce", 1, this::reduce),
+            MemberFunction.of("reduce", 2, this::reduce2),
             MemberFunction.of("flatten", this::flatten),
             MemberFunction.of("reverse", this::reverse),
             MemberFunction.of("shuffle", this::shuffle),
@@ -404,7 +405,38 @@ class ListDef(interpreter: Interpreter): CreatableDefinition<ArucasList>(LIST, i
     private fun reduce(arguments: Arguments): Any {
         val list = arguments.nextPrimitive(this)
         val reducer = arguments.nextFunction()
+        if (list.isEmpty()) {
+            runtimeError("Empty list cannot be reduced")
+        }
         return list.reduce { a, b ->
+            arguments.interpreter.call(reducer, listOf(a, b))
+        }
+    }
+
+    @FunctionDoc(
+        name = "reduce",
+        desc = [
+            "This reduces the list using the reducer starting with an identity"
+        ],
+        params = [
+            OBJECT, "identity", "the identity",
+            FUNCTION, "reducer", "a function that takes a value and returns a new value"
+        ],
+        returns = [OBJECT, "the reduced value"],
+        examples = [
+            """
+            (list = [1, 2, 3]).reduce("", fun(a, b) {
+                return a + b;
+            });
+            // "123"
+            """
+        ]
+    )
+    private fun reduce2(arguments: Arguments): Any {
+        val list = arguments.nextPrimitive(this)
+        val identity = arguments.next()
+        val reducer = arguments.nextFunction()
+        return list.stream().reduce(identity) { a, b ->
             arguments.interpreter.call(reducer, listOf(a, b))
         }
     }

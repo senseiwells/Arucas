@@ -39,7 +39,9 @@ class BuiltInExtension: ArucasExtension {
             BuiltInFunction.of("printDebug", this::printDebug),
             BuiltInFunction.of("input", 1, this::input),
             BuiltInFunction.of("sleep", 1, this::sleep),
+            BuiltInFunction.of("isDebug", this::isDebug),
             BuiltInFunction.of("debug", 1, this::debug),
+            BuiltInFunction.of("isExperimental", this::isExperimental),
             BuiltInFunction.of("experimental", 1, this::experimental),
             BuiltInFunction.of("suppressDeprecated", 1, this::suppressDeprecated),
             BuiltInFunction.of("isMain", this::isMain),
@@ -153,6 +155,15 @@ class BuiltInExtension: ArucasExtension {
     }
 
     @FunctionDoc(
+        name = "isDebug",
+        desc = ["This is used to determine whether the interpreter is in debug mode"],
+        examples = ["isDebug();"]
+    )
+    private fun isDebug(arguments: Arguments): Boolean {
+        return arguments.interpreter.properties.isDebug
+    }
+
+    @FunctionDoc(
         name = "debug",
         desc = ["This is used to enable or disable debug mode"],
         params = [BOOLEAN, "bool", "true to enable debug mode, false to disable debug mode"],
@@ -160,6 +171,15 @@ class BuiltInExtension: ArucasExtension {
     )
     private fun debug(arguments: Arguments) {
         arguments.interpreter.properties.isDebug = arguments.nextPrimitive(BooleanDef::class)
+    }
+
+    @FunctionDoc(
+        name = "isExperimental",
+        desc = ["This is used to determine whether the interpreter is in experimental mode"],
+        examples = ["isExperimental();"]
+    )
+    private fun isExperimental(arguments: Arguments): Boolean {
+        return arguments.interpreter.properties.isExperimental
     }
 
     @FunctionDoc(

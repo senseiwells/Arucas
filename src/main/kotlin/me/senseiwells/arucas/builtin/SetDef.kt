@@ -267,7 +267,29 @@ class SetDef(interpreter: Interpreter): CreatableDefinition<ArucasSet>(SET, inte
     private fun reduce(arguments: Arguments): ClassInstance {
         val collection = arguments.nextPrimitive(this).asCollection()
         val reducer = arguments.nextFunction()
+        if (collection.isEmpty()) {
+            runtimeError("Empty set cannot be reduced")
+        }
         return collection.reduce { a, b ->
+            arguments.interpreter.call(reducer, listOf(a, b))
+        }
+    }
+
+    @FunctionDoc(
+        name = "reduce",
+        desc = ["This reduces the list using the reducer starting with an identity"],
+        params = [
+            OBJECT, "identity", "the identity",
+            FUNCTION, "reducer", "a function that takes a value and returns a new value"
+        ],
+        returns = [OBJECT, "the reduced value"],
+        examples = ["Set.of(-9, 81, 96, 15).reduce(\"\", fun(value, next) { return value + next; });" ]
+    )
+    private fun reduce2(arguments: Arguments): Any {
+        val collection = arguments.nextPrimitive(this).asCollection()
+        val identity = arguments.next()
+        val reducer = arguments.nextFunction()
+        return collection.stream().reduce(identity) { a, b ->
             arguments.interpreter.call(reducer, listOf(a, b))
         }
     }
