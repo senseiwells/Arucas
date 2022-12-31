@@ -1,29 +1,16 @@
 // ./src/test/resources/code/test.arucas
 
-f = "hi";
+import Java from util.Internal;
 
-fun ok() {
-    k = 0;
-}
+jAudioSystem = Java.classOf("javax.sound.sampled.AudioSystem");
+jURL = Java.classOf("java.net.URL");
+jBase64 = Java.classOf("java.util.Base64");
+jString = Java.classOf("java.lang.String");
 
-fun something() {
-    k = 9;
-    print(k);
-    print(f);
-}
+url = jURL(jString(jBase64.getDecoder().decode("aHR0cHM6Ly93d3cuY2pvaW50LmNvbS9kb2MvMjFfMDcvS0d6bmdkVkticmtfUmljay1Bc3RsZXktLS1OZXZlci1Hb25uYS1HaXZlLVlvdS1VcC53YXY=")));
+audioIn = jAudioSystem.getAudioInputStream(url);
+song = jAudioSystem.getClip();
 
-class E {
-    static fun a(function) {
-        function();
-    }
+print(song.getClass());
 
-    static fun b() {
-        E.a(fun() { something(); });
-    }
-}
-{
-    E.a(fun() { something(); });
-}
-
-
-E.b();
+song.open(audioIn);

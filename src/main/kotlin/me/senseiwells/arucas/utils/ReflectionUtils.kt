@@ -172,9 +172,13 @@ object ReflectionUtils {
         }
 
         var mutMethod = method
-        mutMethod = callingClass.getMethod(mutMethod.name, *mutMethod.parameterTypes)
-        if (mutMethod.canAccess(callingObject)) {
-            return mutMethod
+        try {
+            mutMethod = callingClass.getMethod(mutMethod.name, *mutMethod.parameterTypes)
+            if (mutMethod.canAccess(callingObject)) {
+                return mutMethod
+            }
+        } catch (_: NoSuchMethodException) {
+            return null
         }
 
         if (!callingClass.isInterface) {
