@@ -46,7 +46,7 @@ abstract class DocParser protected constructor() {
         this.definitions.sortWith { a, b -> a.name.compareTo(b.name) }
     }
 
-    protected inner class ParsedExtensionDocs internal constructor(extension: ArucasExtension) {
+    protected inner class ParsedExtensionDocs constructor(extension: ArucasExtension) {
         val functionDocs = ArrayList<FunctionDoc>()
 
         init {
@@ -62,7 +62,7 @@ abstract class DocParser protected constructor() {
         }
     }
 
-    protected inner class ParsedClassDocs internal constructor(val definition: ClassDefinition) {
+    protected inner class ParsedClassDocs constructor(val definition: ClassDefinition) {
         val classDoc: ClassDoc? = this.definition::class.java.getAnnotation(ClassDoc::class.java)
         val constructors = ArrayList<ConstructorDoc>()
         val staticFields = ArrayList<FieldDoc>()
