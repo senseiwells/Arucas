@@ -4563,29 +4563,6 @@
       ],
       "methods": [
         {
-          "name": "loopIf",
-          "is_arbitrary": false,
-          "desc": [
-            "This loops the task, essentially just calling 'task.run', the",
-            "task will run async from the original task, the loop will continue",
-            "if the function provided returns true"
-          ],
-          "params": [
-            {
-              "name": "boolSupplier",
-              "type": "Function",
-              "desc": "the function to check if the loop should run"
-            }
-          ],
-          "returns": {
-            "type": "Task",
-            "desc": "the task, this allows for chaining"
-          },
-          "examples": [
-            "task = new Task()\n    .then(fun() print(\"hello\"))\n    .then(fun() print(\" \"))\n    .then(fun() print(\"world\"))\n    .loopIf(fun() true); // Always loop"
-          ]
-        },
-        {
           "name": "run",
           "is_arbitrary": false,
           "desc": [

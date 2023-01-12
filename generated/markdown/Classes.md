@@ -2158,21 +2158,6 @@ task = new Task();
 
 ## Methods
 
-### `<Task>.loopIf(boolSupplier)`
-- Description: This loops the task, essentially just calling 'task.run', the
-task will run async from the original task, the loop will continue
-if the function provided returns true
-- Parameter - Function (`boolSupplier`): the function to check if the loop should run
-- Returns - Task: the task, this allows for chaining
-- Example:
-```kotlin
-task = new Task()
-    .then(fun() print("hello"))
-    .then(fun() print(" "))
-    .then(fun() print("world"))
-    .loopIf(fun() true); // Always loop
-```
-
 ### `<Task>.run()`
 - Description: This runs the task asynchronously and returns a future which can be awaited.
 The last function in the task will be used as the return value for the future

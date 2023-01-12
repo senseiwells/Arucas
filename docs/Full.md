@@ -49,9 +49,9 @@ run("path/of/arucas/file.arucas");
 
 ## Development Environment
 
-We recommend the use of the [Arucas Plugin](https://github.com/Kariaro/ArucasHighlighter/tree/main) designed for IntelliJ by [HardCoded](https://github.com/Kariaro), this highlights your code informing you of errors in your code, and adding nice colours :).
+We recommend thhe use of VSCode, with the [Arucas Language Extension](https://marketplace.visualstudio.com/items?itemName=Arucas.arucas), this provides syntax highlighting for Arucas along with some simple code snippets.
 
-Alternatively, if you do not wish to use IntelliJ another option is to use VSCode and set the language to `Java`, and disable validation for error highlighting. You can also configure VSCode to automatically recognize `.arucas` files as Java. 
+If you are developing for an older version of Arucas, you can use the [Arucas Plugin](https://github.com/Kariaro/ArucasHighlighter/tree/main) designed for IntelliJ by [HardCoded](https://github.com/Kariaro), this highlights your code informing you of errors in your code, and adding nice colours :).
 
 So now that you are able to run Arucas files, what do we put inside? If you have not already, you should take a look at the [Language Syntax](https://github.com/senseiwells/Arucas/blob/main/docs/Language%20Documentation/3.%20Syntax.md) page briefly, but we will cover everything in detail here.
 
@@ -5112,21 +5112,6 @@ task = new Task();
 ```
 
 ## Methods
-
-### `<Task>.loopIf(boolSupplier)`
-- Description: This loops the task, essentially just calling 'task.run', the
-task will run async from the original task, the loop will continue
-if the function provided returns true
-- Parameter - Function (`boolSupplier`): the function to check if the loop should run
-- Returns - Task: the task, this allows for chaining
-- Example:
-```kotlin
-task = new Task()
-    .then(fun() print("hello"))
-    .then(fun() print(" "))
-    .then(fun() print("world"))
-    .loopIf(fun() true); // Always loop
-```
 
 ### `<Task>.run()`
 - Description: This runs the task asynchronously and returns a future which can be awaited.
