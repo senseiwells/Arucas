@@ -11,8 +11,8 @@ This is the wiki as of Arucas Version `v2.0.0+`
 
 ## Pages
 
-> #### [Language Documenation Index](https://github.com/senseiwells/Arucas/blob/master/docs/Language%20Documentation/0.%20Index.md)
-> #### [Built-in Functions](https://github.com/senseiwells/Arucas/blob/master/docs/Extensions.md)
-> #### [Built-in Classes](https://github.com/senseiwells/Arucas/blob/master/docs/Classes.md)
-> #### [Arucas API](https://github.com/senseiwells/Arucas/blob/master/docs/ArucasAPI.md)
-> #### [Full Documentation](https://github.com/senseiwells/Arucas/blob/master/docs/Full.md)
+> #### [Language Documenation Index](https://github.com/senseiwells/Arucas/blob/main/docs/Language%20Documentation/0.%20Index.md)
+> #### [Built-in Functions](https://github.com/senseiwells/Arucas/blob/main/docs/Extensions.md)
+> #### [Built-in Classes](https://github.com/senseiwells/Arucas/blob/main/docs/Classes.md)
+> #### [Arucas API](https://github.com/senseiwells/Arucas/blob/main/docs/ArucasAPI.md)
+> #### [Full Documentation](https://github.com/senseiwells/Arucas/blob/main/docs/Full.md)

@@ -2,30 +2,30 @@
 
 This page is a step-by-step guide to get you started with Arucas, showing you how to install the language, and how to write code for the language, showing you what is possible in the language as well as its features.
 
-> #### [Installation](https://github.com/senseiwells/Arucas/blob/master/docs/Language%20Documentation/1.%20Installation.md)
-> #### [Development Environment](https://github.com/senseiwells/Arucas/blob/master/docs/Language%20Documentation/2.%20Development%20Environment.md)
+> #### [Installation](https://github.com/senseiwells/Arucas/blob/main/docs/Language%20Documentation/1.%20Installation.md)
+> #### [Development Environment](https://github.com/senseiwells/Arucas/blob/main/docs/Language%20Documentation/2.%20Development%20Environment.md)
 
-> #### [Syntax](https://github.com/senseiwells/Arucas/blob/master/docs/Language%20Documentation/3.%20Syntax.md)
-> #### [Comments](https://github.com/senseiwells/Arucas/blob/master/docs/Language%20Documentation/4.%20Comments.md)
-> #### [Literals](https://github.com/senseiwells/Arucas/blob/master/docs/Language%20Documentation/5.%20Literals.md)
-> #### [Variables](https://github.com/senseiwells/Arucas/blob/master/docs/Language%20Documentation/6.%20Variables.md)
-> #### [Output](https://github.com/senseiwells/Arucas/blob/master/docs/Language%20Documentation/7.%20Output.md)
-> #### [Input](https://github.com/senseiwells/Arucas/blob/master/docs/Language%20Documentation/8.%20Input.md)
-> #### [Operators](https://github.com/senseiwells/Arucas/blob/master/docs/Language%20Documentation/9.%20Operators.md)
-> #### [Scopes](https://github.com/senseiwells/Arucas/blob/master/docs/Language%20Documentation/10.%20Scopes.md)
-> #### [Conditional Statements](https://github.com/senseiwells/Arucas/blob/master/docs/Language%20Documentation/11.%20Conditional%20Statements.md)
-> #### [Switch Statements](https://github.com/senseiwells/Arucas/blob/master/docs/Language%20Documentation/12.%20Switch%20Statements.md)
-> #### [Loops](https://github.com/senseiwells/Arucas/blob/master/docs/Language%20Documentation/13.%20Loops.md)
-> #### [Functions](https://github.com/senseiwells/Arucas/blob/master/docs/Language%20Documentation/14.%20Functions.md)
-> #### [Members](https://github.com/senseiwells/Arucas/blob/master/docs/Language%20Documentation/15.%20Members.md)
-> #### [Lists](https://github.com/senseiwells/Arucas/blob/master/docs/Language%20Documentation/16.%20Lists.md)
-> #### [Maps](https://github.com/senseiwells/Arucas/blob/master/docs/Language%20Documentation/17.%20Maps.md)
-> #### [Errors](https://github.com/senseiwells/Arucas/blob/master/docs/Language%20Documentation/18.%20Errors%20(Incomplete).md)
-> #### [Imports](https://github.com/senseiwells/Arucas/blob/master/docs/Language%20Documentation/19.%20Imports%20(Incomplete).md)
-> #### [Classes](https://github.com/senseiwells/Arucas/blob/master/docs/Language%20Documentation/20.%20Classes%20(Incomplete).md)
-> #### [Enums](https://github.com/senseiwells/Arucas/blob/master/docs/Language%20Documentation/21.%20Enums%20(Incomplete).md)
-> #### [Threads](https://github.com/senseiwells/Arucas/blob/master/docs/Language%20Documentation/22.%20Threads%20(Incomplete).md)
-> #### [Java](https://github.com/senseiwells/Arucas/blob/master/docs/Language%20Documentation/23.%20Java%20Integration.md)
+> #### [Syntax](https://github.com/senseiwells/Arucas/blob/main/docs/Language%20Documentation/3.%20Syntax.md)
+> #### [Comments](https://github.com/senseiwells/Arucas/blob/main/docs/Language%20Documentation/4.%20Comments.md)
+> #### [Literals](https://github.com/senseiwells/Arucas/blob/main/docs/Language%20Documentation/5.%20Literals.md)
+> #### [Variables](https://github.com/senseiwells/Arucas/blob/main/docs/Language%20Documentation/6.%20Variables.md)
+> #### [Output](https://github.com/senseiwells/Arucas/blob/main/docs/Language%20Documentation/7.%20Output.md)
+> #### [Input](https://github.com/senseiwells/Arucas/blob/main/docs/Language%20Documentation/8.%20Input.md)
+> #### [Operators](https://github.com/senseiwells/Arucas/blob/main/docs/Language%20Documentation/9.%20Operators.md)
+> #### [Scopes](https://github.com/senseiwells/Arucas/blob/main/docs/Language%20Documentation/10.%20Scopes.md)
+> #### [Conditional Statements](https://github.com/senseiwells/Arucas/blob/main/docs/Language%20Documentation/11.%20Conditional%20Statements.md)
+> #### [Switch Statements](https://github.com/senseiwells/Arucas/blob/main/docs/Language%20Documentation/12.%20Switch%20Statements.md)
+> #### [Loops](https://github.com/senseiwells/Arucas/blob/main/docs/Language%20Documentation/13.%20Loops.md)
+> #### [Functions](https://github.com/senseiwells/Arucas/blob/main/docs/Language%20Documentation/14.%20Functions.md)
+> #### [Members](https://github.com/senseiwells/Arucas/blob/main/docs/Language%20Documentation/15.%20Members.md)
+> #### [Lists](https://github.com/senseiwells/Arucas/blob/main/docs/Language%20Documentation/16.%20Lists.md)
+> #### [Maps](https://github.com/senseiwells/Arucas/blob/main/docs/Language%20Documentation/17.%20Maps.md)
+> #### [Errors](https://github.com/senseiwells/Arucas/blob/main/docs/Language%20Documentation/18.%20Errors%20(Incomplete).md)
+> #### [Imports](https://github.com/senseiwells/Arucas/blob/main/docs/Language%20Documentation/19.%20Imports%20(Incomplete).md)
+> #### [Classes](https://github.com/senseiwells/Arucas/blob/main/docs/Language%20Documentation/20.%20Classes%20(Incomplete).md)
+> #### [Enums](https://github.com/senseiwells/Arucas/blob/main/docs/Language%20Documentation/21.%20Enums%20(Incomplete).md)
+> #### [Threads](https://github.com/senseiwells/Arucas/blob/main/docs/Language%20Documentation/22.%20Threads%20(Incomplete).md)
+> #### [Java](https://github.com/senseiwells/Arucas/blob/main/docs/Language%20Documentation/23.%20Java%20Integration.md)
 
 
 ## Installation
@@ -53,7 +53,7 @@ We recommend the use of the [Arucas Plugin](https://github.com/Kariaro/ArucasHig
 
 Alternatively, if you do not wish to use IntelliJ another option is to use VSCode and set the language to `Java`, and disable validation for error highlighting. You can also configure VSCode to automatically recognize `.arucas` files as Java. 
 
-So now that you are able to run Arucas files, what do we put inside? If you have not already, you should take a look at the [Language Syntax](https://github.com/senseiwells/Arucas/blob/master/docs/Language%20Documentation/3.%20Syntax.md) page briefly, but we will cover everything in detail here.
+So now that you are able to run Arucas files, what do we put inside? If you have not already, you should take a look at the [Language Syntax](https://github.com/senseiwells/Arucas/blob/main/docs/Language%20Documentation/3.%20Syntax.md) page briefly, but we will cover everything in detail here.
 
 
 # Language Syntax
@@ -2133,7 +2133,7 @@ One important thing to note is that you can only import classes from different f
 
 The ability to import other classes would be quite useless to only import built-in classes so Arucas allows you to import classes from a library repository (which can be found [here](https://github.com/senseiwells/ArucasLibraries)). To import these you just simply import any class from the given module, the libraries will be automatically downloaded given you have an internet connection.
 
-For example if I wanted to import [`ImmutableList`](https://github.com/senseiwells/ArucasLibraries/blob/master/libs/util/Collections.arucas#L464-L518):
+For example if I wanted to import [`ImmutableList`](https://github.com/senseiwells/ArucasLibraries/blob/main/libs/util/Collections.arucas#L464-L518):
 
 ```kotlin
 import ImmutableList from util.Collections;

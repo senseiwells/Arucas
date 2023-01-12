@@ -2,54 +2,52 @@ package me.senseiwells.arucas.utils.impl
 
 import me.senseiwells.arucas.classes.ClassInstance
 import me.senseiwells.arucas.core.Interpreter
-import me.senseiwells.arucas.exceptions.runtimeError
 import me.senseiwells.arucas.utils.ArucasFunction
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.Future
 
 abstract class Task(interpreter: Interpreter) {
+    private val subTasks = ConcurrentLinkedQueue<DelayedFunction>()
+    private val tasks = ConcurrentLinkedQueue<DelayedFunction>()
+    private var delay = 0
+
     protected val interpreter = interpreter.branch()
 
-    abstract fun canModify(): Boolean
-
-    abstract fun addTask(function: ArucasFunction)
-
-    abstract fun run(): Future<ClassInstance?>
-
-    protected fun throwIfRunning() {
-        if (this.canModify()) {
-            runtimeError("Cannot modify a task after it has been run")
-        }
+    fun addDelay(delay: Int) {
+        this.delay += delay
     }
+
+    fun addTask(delay: Int, function: ArucasFunction) {
+        this.tasks.add(DelayedFunction(delay + this.delay, function))
+        this.delay = 0
+    }
+
+    fun run(): Future<ClassInstance?> {
+        return this.run(this.tasks.iterator())
+    }
+
+    protected abstract fun run(tasks: Iterator<DelayedFunction>): Future<ClassInstance?>
 }
 
 class ArucasTask(interpreter: Interpreter): Task(interpreter) {
-    private val tasks = ConcurrentLinkedQueue<ArucasFunction>()
-    private var hasRun = false
-
-    override fun canModify(): Boolean {
-        return this.hasRun
-    }
-
-    override fun addTask(function: ArucasFunction) {
-        this.throwIfRunning()
-        this.tasks.add(function)
-    }
-
-    override fun run(): Future<ClassInstance?> {
-        this.hasRun = true
+    override fun run(tasks: Iterator<DelayedFunction>): Future<ClassInstance?> {
         return this.interpreter.threadHandler.runAsync {
             val branch = this.interpreter.branch()
-            val iterator = this.tasks.iterator()
 
-            while (iterator.hasNext()) {
-                val task = iterator.next()
-                if (!iterator.hasNext()) {
-                    return@runAsync task.invoke(branch, listOf())
+            while (tasks.hasNext()) {
+                val task = tasks.next()
+                val time = task.time.toLong()
+                if (time != 0L) {
+                    Thread.sleep(time)
                 }
-                task.invoke(branch, listOf())
+                val result = task.function.invoke(branch, listOf())
+                if (!tasks.hasNext()) {
+                    return@runAsync result
+                }
             }
             branch.getNull()
         }
     }
 }
+
+data class DelayedFunction(val time: Int, val function: ArucasFunction)

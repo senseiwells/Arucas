@@ -6,9 +6,7 @@ import me.senseiwells.arucas.api.docs.FunctionDoc
 import me.senseiwells.arucas.classes.ClassInstance
 import me.senseiwells.arucas.classes.CreatableDefinition
 import me.senseiwells.arucas.core.Interpreter
-import me.senseiwells.arucas.exceptions.runtimeError
 import me.senseiwells.arucas.utils.Arguments
-import me.senseiwells.arucas.utils.BuiltInFunction
 import me.senseiwells.arucas.utils.ConstructorFunction
 import me.senseiwells.arucas.utils.MemberFunction
 import me.senseiwells.arucas.utils.Util.Types.FUNCTION
@@ -45,7 +43,7 @@ class TaskDef(interpreter: Interpreter): CreatableDefinition<Task>(TASK, interpr
     override fun defineMethods(): List<MemberFunction> {
         return listOf(
             MemberFunction.of("then", 1, this::then),
-            MemberFunction.of("loopIf", 1, this::loopIf),
+            MemberFunction.of("waitThen", 2, this::waitThen),
             MemberFunction.of("run", this::run),
         )
     }
@@ -73,40 +71,14 @@ class TaskDef(interpreter: Interpreter): CreatableDefinition<Task>(TASK, interpr
     )
     private fun then(arguments: Arguments): ClassInstance {
         val instance = arguments.next()
-        instance.asPrimitive(this).addTask(arguments.nextPrimitive(FunctionDef::class))
+        instance.asPrimitive(this).addTask(0, arguments.nextPrimitive(FunctionDef::class))
         return instance
     }
 
-    @FunctionDoc(
-        name = "loopIf",
-        desc = [
-            "This loops the task, essentially just calling 'task.run', the",
-            "task will run async from the original task, the loop will continue",
-            "if the function provided returns true"
-        ],
-        params = [FUNCTION, "boolSupplier", "the function to check if the loop should run"],
-        returns = [TASK, "the task, this allows for chaining"],
-        examples = [
-            """
-            task = new Task()
-                .then(fun() print("hello"))
-                .then(fun() print(" "))
-                .then(fun() print("world"))
-                .loopIf(fun() true); // Always loop
-            """
-        ]
-    )
-    private fun loopIf(arguments: Arguments): ClassInstance {
+    private fun waitThen(arguments: Arguments): ClassInstance {
         val instance = arguments.next()
-        val task = instance.asPrimitive(this)
-        val supplier = arguments.nextPrimitive(FunctionDef::class)
-        task.addTask(BuiltInFunction.of("\$lambda", {
-            val shouldRun = supplier.invoke(it.interpreter, listOf()).getPrimitive(BooleanDef::class)
-            shouldRun ?: runtimeError("'loopIf' check should return type 'Boolean'")
-            if (shouldRun) {
-                task.run()
-            }
-        }))
+        val delay = arguments.nextPrimitive(NumberDef::class).toInt()
+        instance.asPrimitive(this).addTask(delay, arguments.nextPrimitive(FunctionDef::class))
         return instance
     }
 
