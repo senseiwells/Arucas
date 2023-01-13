@@ -147,6 +147,51 @@ class MyCustomExtension: ArucasExtension {
 }
 ```
 
+Java:
+```java
+```kotlin
+import me.senseiwells.arucas.api.ArucasExtension
+import me.senseiwells.arucas.utils.BuiltInFunction
+
+import java.util.List;
+
+public class MyCustomExtension implements ArucasExtension {
+	@Override
+	public String getName() {
+		return "MyCustomExtension";
+	}
+
+	@Override
+	public List<BuiltInFunction> getBuiltInFunctions() {
+		return List.of();
+	}
+}
+```
+
+You are able to define the functions you want in your extension and return them in the `getBuiltInFunctions` method.
+
+To create a `BuiltInFunction` you can use the helper methods in the class. You are able to specify the name and parameters of your function, you are also able to define a function with a variable number of parameters. You are able to name multiple functions the same, given that they have a different number of parameters.
+
+Kotlin:
+```kotlin
+import me.senseiwells.arucas.utils.BuiltInFunction
+
+// ...
+// 0 parameters
+BuiltInFunction.of("something") { arguments ->
+	
+} 
+// 3 parameters
+BuiltInFunction("something", 1) { arguments ->
+	
+}
+// ...
+```
+
+Java:
+```java
+```
+
 ### Custom Classes
 
 ### Custom Input and Output
