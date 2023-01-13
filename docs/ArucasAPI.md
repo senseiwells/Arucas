@@ -14,8 +14,8 @@ repositories {
 dependencies {
     implementation("com.github.senseiwells:Arucas:2.0.2")
 
-	// Arucas relies on these dependancies, if you do not
-	// already implement these you need to add them.
+    // Arucas relies on these dependancies, if you do not
+    // already implement these you need to add them.
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.7.10")
     implementation("com.google.code.gson:gson:2.9.0")
 }
@@ -37,8 +37,8 @@ import me.senseiwells.arucas.api.ArucasAPI
 
 // ...
 val api = ArucasAPI.Builder()
-	.addDefault()
-	.build()
+    .addDefault()
+    .build()
 //...
 ```
 
@@ -48,8 +48,8 @@ import me.senseiwells.arucas.api.ArucasAPI;
 
 // ...
 ArucasAPI api = new ArucasAPI.Builder()
-	.addDefault()
-	.build();
+    .addDefault()
+    .build();
 //...
 ```
 
@@ -63,11 +63,11 @@ import me.senseiwells.arucas.api.ArucasAPI
 
 // ...
 val api = ArucasAPI.Builder()
-	.addDefaultConversions()
-	.addDefaultExtensions()
-	.addDefaultBuiltInDefinitions()
-	.addDefaultClassDefinitions()
-	.build()
+    .addDefaultConversions()
+    .addDefaultExtensions()
+    .addDefaultBuiltInDefinitions()
+    .addDefaultClassDefinitions()
+    .build()
 //...
 ```
 
@@ -77,11 +77,11 @@ import me.senseiwells.arucas.api.ArucasAPI;
 
 // ...
 ArucasAPI api = new ArucasAPI.Builder()
-	.addDefaultConversions()
-	.addDefaultExtensions()
-	.addDefaultBuiltInDefinitions()
-	.addDefaultClassDefinitions()
-	.build();
+    .addDefaultConversions()
+    .addDefaultExtensions()
+    .addDefaultBuiltInDefinitions()
+    .addDefaultClassDefinitions()
+    .build();
 //...
 ```
 
@@ -95,8 +95,8 @@ import me.senseiwells.arucas.core.Interpreter
 
 // ...
 val api = ArucasAPI.Builder()
-	.addDefault()
-	.build()
+    .addDefault()
+    .build()
 val code = "print('Hello World!');"
 val interpreter = Interpreter.of(code, "My Code", api, ::ThreadHandler)
 
@@ -115,8 +115,8 @@ import me.senseiwells.arucas.core.Interpreter;
 
 // ...
 ArucasAPI api = new ArucasAPI.Builder()
-	.addDefault()
-	.build();
+    .addDefault()
+    .build();
 String code = "print('Hello World!');";
 Interpreter interpreter = Interpreter.of(code, "My Code", api, ThreadHandler::new);
 
@@ -139,11 +139,11 @@ import me.senseiwells.arucas.api.ArucasExtension
 import me.senseiwells.arucas.utils.BuiltInFunction
 
 class MyCustomExtension: ArucasExtension {
-	override fun getName() = "MyCustomExtension"
+    override fun getName() = "MyCustomExtension"
 
-	override fun getBuiltInFunctions(): List<BuiltInFunction> {
-		return listOf();
-	}
+    override fun getBuiltInFunctions(): List<BuiltInFunction> {
+        return listOf();
+    }
 }
 ```
 
@@ -156,15 +156,15 @@ import me.senseiwells.arucas.utils.BuiltInFunction
 import java.util.List;
 
 public class MyCustomExtension implements ArucasExtension {
-	@Override
-	public String getName() {
-		return "MyCustomExtension";
-	}
+    @Override
+    public String getName() {
+        return "MyCustomExtension";
+    }
 
-	@Override
-	public List<BuiltInFunction> getBuiltInFunctions() {
-		return List.of();
-	}
+    @Override
+    public List<BuiltInFunction> getBuiltInFunctions() {
+        return List.of();
+    }
 }
 ```
 
@@ -181,11 +181,11 @@ import me.senseiwells.arucas.utils.BuiltInFunction
 // ...
 // 0 parameters
 BuiltInFunction.of("something", { arguments ->
-	
+    
 }) 
 // 1 parameters
 BuiltInFunction.of("something", 1, { arguments ->
-	
+    
 })
 // Arbitrary number of parameters
 BuiltInFunction.arb("something", { arguments ->
@@ -201,11 +201,11 @@ import me.senseiwells.arucas.utils.BuiltInFunction;
 // ...
 // 0 parameters
 BuiltInFunction.of("foo", arguments -> {
-	return null;
+    return null;
 });
 // 1 parameters
 BuiltInFunction.of("foo", 1, arguments -> {
-	return null;
+    return null;
 });
 // Arbitrary number of parameters
 BuiltInFunction.arb("something", arguments -> {
@@ -227,26 +227,26 @@ import me.senseiwells.arucas.utils.BuiltInFunction
 
 // ...
 BuiltInFunction.of("bar", 3, { arguments ->
-	arguments.arguments // Gets all the arguments in a list
-	arguments.interpreter // Gets the interpreter
-	arguments.function // Gets the function that was called
+    arguments.arguments // Gets all the arguments in a list
+    arguments.interpreter // Gets the interpreter
+    arguments.function // Gets the function that was called
 
-	arguments.size() // Gets the total number of arguments
+    arguments.size() // Gets the total number of arguments
 
-	arguments.get(0) // Gets an argument at an index 0
-	arguments.get(0, StringDef::class) // Gets argument at index 0, ensuring it is an instance of StringDef
-	arguments.getPrimitive(0, StringDef::class) // Gets argument at index 0 and casts it to a Kotlin String
+    arguments.get(0) // Gets an argument at an index 0
+    arguments.get(0, StringDef::class) // Gets argument at index 0, ensuring it is an instance of StringDef
+    arguments.getPrimitive(0, StringDef::class) // Gets argument at index 0 and casts it to a Kotlin String
 
-	arguments.next() // Gets the next argument (this starts at 0)
-	arguments.next(StringDef::class) // Gets the next argument, ensuring it is an instance of StringDef
-	arguments.nextPrimitive(StringDef::class) // Gets the next argument and casts it to a Kotlin String, this is probably the most used
+    arguments.next() // Gets the next argument (this starts at 0)
+    arguments.next(StringDef::class) // Gets the next argument, ensuring it is an instance of StringDef
+    arguments.nextPrimitive(StringDef::class) // Gets the next argument and casts it to a Kotlin String, this is probably the most used
 
-	arguments.skip() // Skips an argument
-	arguments.hasNext() // Checks whether there are any arguments left
-	arguments.isNext(StringDef::class) // Checks whether the next argument is an instance of StringDef
-	arguments.setIndex(0) // Sets the argument index
-	arguments.resetIndex() // Sets the argument index to 0
-	arguments.getRemaining() // Gets any remaining arguments as a list
+    arguments.skip() // Skips an argument
+    arguments.hasNext() // Checks whether there are any arguments left
+    arguments.isNext(StringDef::class) // Checks whether the next argument is an instance of StringDef
+    arguments.setIndex(0) // Sets the argument index
+    arguments.resetIndex() // Sets the argument index to 0
+    arguments.getRemaining() // Gets any remaining arguments as a list
 })
 // ...
 ```
@@ -258,28 +258,28 @@ import me.senseiwells.arucas.utils.BuiltInFunction;
 
 // ...
 BuiltInFunction.of("bar", 3, arguments -> {
-	arguments.getArguments(); // Gets all the arguments in a list
-	arguments.getInterpreter(); // Gets the interpreter
-	arguments.getFunction(); // Gets the function that was called
+    arguments.getArguments(); // Gets all the arguments in a list
+    arguments.getInterpreter(); // Gets the interpreter
+    arguments.getFunction(); // Gets the function that was called
 
-	arguments.size(); // Gets the total number of arguments
+    arguments.size(); // Gets the total number of arguments
 
-	arguments.get(0); // Gets an argument at an index 0
-	arguments.get(0, StringDef.class); // Gets argument at index 0, ensuring it is an instance of StringDef
-	arguments.getPrimitive(0, StringDef.class); // Gets argument at index 0 and casts it to a Java String
+    arguments.get(0); // Gets an argument at an index 0
+    arguments.get(0, StringDef.class); // Gets argument at index 0, ensuring it is an instance of StringDef
+    arguments.getPrimitive(0, StringDef.class); // Gets argument at index 0 and casts it to a Java String
 
-	arguments.next(); // Gets the next argument (this starts at 0)
-	arguments.next(StringDef.class); // Gets the next argument, ensuring it is an instance of StringDef
-	arguments.nextPrimitive(StringDef.class); // Gets the next argument and casts it to a Java String, this is probably the most used
+    arguments.next(); // Gets the next argument (this starts at 0)
+    arguments.next(StringDef.class); // Gets the next argument, ensuring it is an instance of StringDef
+    arguments.nextPrimitive(StringDef.class); // Gets the next argument and casts it to a Java String, this is probably the most used
 
-	arguments.skip(); // Skips an argument
-	arguments.hasNext(); // Checks whether there are any arguments left
-	arguments.isNext(StringDef.class); // Checks whether the next argument is an instance of StringDef
-	arguments.setIndex(0); // Sets the argument index
-	arguments.resetIndex(); // Sets the argument index to 0
-	arguments.getRemaining(); // Gets any remaining arguments as a list
-	
-	return null;
+    arguments.skip(); // Skips an argument
+    arguments.hasNext(); // Checks whether there are any arguments left
+    arguments.isNext(StringDef.class); // Checks whether the next argument is an instance of StringDef
+    arguments.setIndex(0); // Sets the argument index
+    arguments.resetIndex(); // Sets the argument index to 0
+    arguments.getRemaining(); // Gets any remaining arguments as a list
+    
+    return null;
 });
 // ...
 ```
@@ -299,26 +299,26 @@ import me.senseiwells.arucas.utils.Arguments
 import me.senseiwells.arucas.utils.BuiltInFunction
 
 class BuiltInExtension: ArucasExtension {
-	override fun getName() = "BuiltInExtension"
+    override fun getName() = "BuiltInExtension"
 
-	override fun getBuiltInFunctions(): List<BuiltInFunction> {  
-	    return listOf(  
-	        BuiltInFunction.of("print", 1, this::print),  
-	        BuiltInFunction.arb("sum", this::add)
-		)
-	}
+    override fun getBuiltInFunctions(): List<BuiltInFunction> {  
+        return listOf(  
+            BuiltInFunction.of("print", 1, this::print),  
+            BuiltInFunction.arb("sum", this::add)
+        )
+    }
 
-	private fun print(arguments: Arguments) {
-		println(arguments.nextPrimitive(StringDef::class))
-	}
+    private fun print(arguments: Arguments) {
+        println(arguments.nextPrimitive(StringDef::class))
+    }
 
-	private fun add(arguments: Arguments): Double {
-		var sum = 0.0
-		while (arguments.hasNext()) {
-			sum += arguments.nextPrimitive(NumberDef::class)
-		}
-		return sum
-	}
+    private fun add(arguments: Arguments): Double {
+        var sum = 0.0
+        while (arguments.hasNext()) {
+            sum += arguments.nextPrimitive(NumberDef::class)
+        }
+        return sum
+    }
 }
 ```
 
@@ -333,31 +333,31 @@ import me.senseiwells.arucas.utils.BuiltInFunction;
 import java.util.List;
 
 public class BuiltInExtension implements ArucasExtension {
-	@Override
-	public String getName() {
-		return "BuiltInExtension";
-	}
+    @Override
+    public String getName() {
+        return "BuiltInExtension";
+    }
 
-	@Override
-	public List<BuiltInFunction> getBuiltInFunctions() {
-		return List.of(
-			BuiltInFunction.of("print", 1, this::print),  
-	        BuiltInFunction.arb("sum", this::add)
-		);
-	}
+    @Override
+    public List<BuiltInFunction> getBuiltInFunctions() {
+        return List.of(
+            BuiltInFunction.of("print", 1, this::print),  
+            BuiltInFunction.arb("sum", this::add)
+        );
+    }
 
-	private Void print(Arguments arguments) {
-		System.out.println(arguments.nextPrimitive(StringDef.class));
-		return null;
-	}
+    private Void print(Arguments arguments) {
+        System.out.println(arguments.nextPrimitive(StringDef.class));
+        return null;
+    }
 
-	private double add(Arguments arguments) {
-		double sum = 0.0;
-		while (arguments.hasNext()) {
-			sum += arguments.nextPrimitive(NumberDef.class);
-		}
-		return sum;
-	}
+    private double add(Arguments arguments) {
+        double sum = 0.0;
+        while (arguments.hasNext()) {
+            sum += arguments.nextPrimitive(NumberDef.class);
+        }
+        return sum;
+    }
 }
 ```
 
@@ -371,9 +371,9 @@ import me.senseiwells.arucas.api.ArucasAPI
 
 // ...
 val api = ArucasAPI.Builder()
-	.addDefault()
-	.addBuiltInExtension(BuiltInExtension())
-	.build()
+    .addDefault()
+    .addBuiltInExtension(BuiltInExtension())
+    .build()
 //...
 ```
 
@@ -383,9 +383,9 @@ import me.senseiwells.arucas.api.ArucasAPI;
 
 // ...
 ArucasAPI api = new ArucasAPI.Builder()
-	.addDefault()
-	.addBuiltInExtension(new BuiltInExtension())
-	.build();
+    .addDefault()
+    .addBuiltInExtension(new BuiltInExtension())
+    .build();
 //...
 ```
 
@@ -411,9 +411,9 @@ import me.senseiwells.arucas.classes.PrimitiveDefinition;
 import me.senseiwells.arucas.core.Interpreter;
 
 public class MyCustomClassDef extends PrimitiveDefinition<Object> {
-	public MyCustomClassDef(Interpreter interpreter) {
-		super("MyCustomClass", interpreter);
-	}
+    public MyCustomClassDef(Interpreter interpreter) {
+        super("MyCustomClass", interpreter);
+    }
 }
 ```
 
@@ -438,17 +438,17 @@ import me.senseiwells.arucas.utils.ConstructorFunction
 import java.io.File
 
 class FileDef(interpreter: Interpreter): CreatableDefinition<File>("File", interpreter) {
-	override fun defineConstructors(): List<ConstructorFunction> {
-		return listOf(
-			ConstructorFunction.of(1, this::construct)
-		)
-	}
+    override fun defineConstructors(): List<ConstructorFunction> {
+        return listOf(
+            ConstructorFunction.of(1, this::construct)
+        )
+    }
 
-	private fun construct(arguments: Arguments) {
-		val instance = arguments.next()
-		val path = arguments.nextPrimitive(StringDef::class)
-		instance.setPrimitive(this, File(path))
-	}
+    private fun construct(arguments: Arguments) {
+        val instance = arguments.next()
+        val path = arguments.nextPrimitive(StringDef::class)
+        instance.setPrimitive(this, File(path))
+    }
 }
 ```
 
@@ -466,23 +466,23 @@ import java.io.File;
 import java.util.List;
 
 public class FileDef extends CreatableDefinition<File> {
-	public FileDef(Interpreter interpreter) {
-		super("File", interpreter);
-	}
+    public FileDef(Interpreter interpreter) {
+        super("File", interpreter);
+    }
 
-	@Override
-	public List<ConstructorFunction> defineConstructors() {
-		return List.of(
-			ConstructorFunction.of(1, this::construct)
-		);
-	}
+    @Override
+    public List<ConstructorFunction> defineConstructors() {
+        return List.of(
+            ConstructorFunction.of(1, this::construct)
+        );
+    }
 
-	private Unit construct(Arguments arguments) {
-		ClassInstance instance = arguments.next();
-		String path = arguments.nextPrimitive(StringDef.class);
-		instance.setPrimitive(this, new File(path));
-		return null;
-	}
+    private Unit construct(Arguments arguments) {
+        ClassInstance instance = arguments.next();
+        String path = arguments.nextPrimitive(StringDef.class);
+        instance.setPrimitive(this, new File(path));
+        return null;
+    }
 }
 ```
 
@@ -505,27 +505,27 @@ import java.io.File
 import java.io.IOException
 
 class FileDef(interpreter: Interpreter): CreatableDefinition<File>("File", interpreter) {
-	override fun defineMethods(): List<MemberFunction> {
-		return listOf(
-			MemberFunction.of("getName", this::getName),
-			MemberFunction.of("write", this::write)
-		)
-	}
-	
-	private fun getName(arguments: Arguments): String {  
-	    val file = arguments.nextPrimitive(this)  
-	    return file.name  
-	}
+    override fun defineMethods(): List<MemberFunction> {
+        return listOf(
+            MemberFunction.of("getName", this::getName),
+            MemberFunction.of("write", this::write)
+        )
+    }
+    
+    private fun getName(arguments: Arguments): String {  
+        val file = arguments.nextPrimitive(this)  
+        return file.name  
+    }
 
-	private fun write(arguments: Arguments) {
-	    val file = arguments.nextPrimitive(this)  
-	    val string = arguments.nextPrimitive(StringDef::class)  
-	    try {  
-	        file.writeText(string)  
-	    } catch (e: IOException) {  
-	        runtimeError("There was an error writing the file '$file'", e)  
-	    }  
-	}
+    private fun write(arguments: Arguments) {
+        val file = arguments.nextPrimitive(this)  
+        val string = arguments.nextPrimitive(StringDef::class)  
+        try {  
+            file.writeText(string)  
+        } catch (e: IOException) {  
+            runtimeError("There was an error writing the file '$file'", e)  
+        }  
+    }
 }
 ```
 
@@ -544,33 +544,33 @@ import java.nio.file.Files;
 import java.util.List;
 
 class FileDef extends CreatableDefinition<File> {
-	public FileDef(Interpreter interpreter) {
-		super("File", interpreter);
-	}
+    public FileDef(Interpreter interpreter) {
+        super("File", interpreter);
+    }
 
-	@Override 
-	public List<MemberFunction> defineMethods() {
-		return List.of(
-			MemberFunction.of("getName", this::getName),
-			MemberFunction.of("write", this::write)
-		);
-	}
-	
-	private String getName(Arguments arguments) {  
-	    File file = arguments.nextPrimitive(this);
-	    return file.getName();
-	}
+    @Override 
+    public List<MemberFunction> defineMethods() {
+        return List.of(
+            MemberFunction.of("getName", this::getName),
+            MemberFunction.of("write", this::write)
+        );
+    }
+    
+    private String getName(Arguments arguments) {  
+        File file = arguments.nextPrimitive(this);
+        return file.getName();
+    }
 
-	private Void write(Arguments arguments) {
-	    File file = arguments.nextPrimitive(this);
-	    String string = arguments.nextPrimitive(StringDef.class);
-	    try {
-		    Files.writeString(file.toPath(), string);
-	    } catch (IOException e) {  
-	        throw new RuntimeError("There was an error writing the file '" + file + "'", e);
-	    }  
-	    return null;
-	}
+    private Void write(Arguments arguments) {
+        File file = arguments.nextPrimitive(this);
+        String string = arguments.nextPrimitive(StringDef.class);
+        try {
+            Files.writeString(file.toPath(), string);
+        } catch (IOException e) {  
+            throw new RuntimeError("There was an error writing the file '" + file + "'", e);
+        }  
+        return null;
+    }
 }
 ```
 
@@ -594,11 +594,11 @@ import me.senseiwells.arucas.api.ArucasAPI
 
 // ...
 val api = ArucasAPI.Builder()
-	.addDefault()
-	.addBuiltInDefinitions(::MyCustomClassDef)
-	// Or
-	.addClassDefinitions("import.path", ::MyCustomClassDef)
-	.build()
+    .addDefault()
+    .addBuiltInDefinitions(::MyCustomClassDef)
+    // Or
+    .addClassDefinitions("import.path", ::MyCustomClassDef)
+    .build()
 //...
 ```
 
@@ -608,11 +608,11 @@ import me.senseiwells.arucas.api.ArucasAPI;
 
 // ...
 ArucasAPI api = new ArucasAPI.Builder()
-	.addDefault()
-	.addBuiltInDefinitions(MyCustomClassDef::new)
-	// Or
-	.addClassDefinitions("import.path", MyCustomClassDef::new)
-	.build();
+    .addDefault()
+    .addBuiltInDefinitions(MyCustomClassDef::new)
+    // Or
+    .addClassDefinitions("import.path", MyCustomClassDef::new)
+    .build();
 //...
 ```
 
