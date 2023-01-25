@@ -15,6 +15,7 @@ import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledThreadPoolExecutor
 
 @Suppress("DeprecatedCallableAddReplaceWith")
+@Deprecated("ThreadHandler should be internal only")
 open class ThreadHandler(
     val interpreter: Interpreter
 ) {

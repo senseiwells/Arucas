@@ -64,7 +64,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
 
     open fun isMain() = false
 
-    open fun compile(): List<Statement> {
+    fun compile(): List<Statement> {
         this.loadApi()
         val compileStart = System.nanoTime()
         return Arucas.compile(this.content, this.name).also {
@@ -92,11 +92,32 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
 
     fun stop() = this.threadHandler.stop()
 
-    inline fun <T> safe(default: T, block: () -> T): T {
+    fun runAsync(function: () -> ClassInstance): Future<ClassInstance?> {
+        return this.threadHandler.runAsync(function)
+    }
+
+    inline fun handleError(block: () -> Unit) {
+        try {
+            block()
+        } catch (e: Exception) {
+            this.threadHandler.handleError(e, this)
+        }
+    }
+
+    inline fun <T> handleError(block: () -> T): T? {
         return try {
             block()
         } catch (e: Exception) {
-            this.threadHandler.handleError(e)
+            this.threadHandler.handleError(e, this)
+            null
+        }
+    }
+
+    inline fun <T> handleError(default: T, block: () -> T): T {
+        return try {
+            block()
+        } catch (e: Exception) {
+            this.threadHandler.handleError(e, this)
             default
         }
     }
@@ -109,7 +130,9 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         }
     }
 
-    fun convertValue(any: Any?) = this.api.getConverter().convertFrom(any, this)
+    fun convertValue(any: Any?): ClassInstance {
+        return this.api.getConverter().convertFrom(any, this)
+    }
 
     fun <T: PrimitiveDefinition<*>> getPrimitive(clazz: Class<out T>): T {
         return this.primitives.get(clazz) ?: throw IllegalArgumentException("No such definition for '${clazz.simpleName}'")
@@ -157,9 +180,8 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         } catch (propagator: Propagator) {
             throw propagator
         } catch (stackOverflow: StackOverflowError) {
-            RuntimeError("Ran out of space on the stack", stackOverflow, trace).also {
+            throw RuntimeError("Ran out of space on the stack", stackOverflow, trace).also {
                 it.fillStackTrace(this.stackTrace)
-                throw it
             }
         } catch (throwable: Throwable) {
             throw FatalError("An unexpected error was thrown", throwable, this.stackTrace)
