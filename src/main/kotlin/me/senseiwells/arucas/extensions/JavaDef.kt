@@ -66,6 +66,76 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
         return assignee
     }
 
+    override fun not(instance: ClassInstance, interpreter: Interpreter, trace: LocatableTrace): Any? {
+        val result = JavaUtils.not(this.asJavaNotNull(instance, trace), Null)
+        return if (result == Null) super.not(instance, interpreter, trace) else this.create(result)
+    }
+
+    override fun plus(instance: ClassInstance, interpreter: Interpreter, trace: LocatableTrace): Any? {
+        val result = JavaUtils.plus(this.asJavaNotNull(instance, trace), Null)
+        return if (result == Null) super.plus(instance, interpreter, trace) else this.create(result)
+    }
+
+    override fun minus(instance: ClassInstance, interpreter: Interpreter, trace: LocatableTrace): Any? {
+        val result = JavaUtils.minus(this.asJavaNotNull(instance, trace), Null)
+        return if (result == Null) super.minus(instance, interpreter, trace) else this.create(result)
+    }
+
+    override fun plus(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace): Any? {
+        val result = JavaUtils.add(this.asJavaNotNull(instance, trace), other.asJava(), Null)
+        return if (result == Null) super.plus(instance, interpreter, other, trace) else this.create(result)
+    }
+
+    override fun minus(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace): Any? {
+        val result = JavaUtils.minus(this.asJavaNotNull(instance, trace), other.asJava(), Null)
+        return if (result == Null) super.minus(instance, interpreter, other, trace) else this.create(result)
+    }
+
+    override fun multiply(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace): Any? {
+        val result = JavaUtils.multiply(this.asJavaNotNull(instance, trace), other.asJava(), Null)
+        return if (result == Null) super.multiply(instance, interpreter, other, trace) else this.create(result)
+    }
+
+    override fun divide(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace): Any? {
+        val result = JavaUtils.divide(this.asJavaNotNull(instance, trace), other.asJava(), Null)
+        return if (result == Null) super.divide(instance, interpreter, other, trace) else this.create(result)
+    }
+
+    override fun and(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace): Any? {
+        val result = JavaUtils.and(this.asJavaNotNull(instance, trace), other.asJava(), Null)
+        return if (result == Null) super.and(instance, interpreter, other, trace) else this.create(result)
+    }
+
+    override fun or(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace): Any? {
+        val result = JavaUtils.or(this.asJavaNotNull(instance, trace), other.asJava(), Null)
+        return if (result == Null) super.or(instance, interpreter, other, trace) else this.create(result)
+    }
+
+    override fun bitAnd(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace): Any? {
+        val result = JavaUtils.bitAnd(this.asJavaNotNull(instance, trace), other.asJava(), Null)
+        return if (result == Null) super.bitAnd(instance, interpreter, other, trace) else this.create(result)
+    }
+
+    override fun bitOr(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace): Any? {
+        val result = JavaUtils.bitOr(this.asJavaNotNull(instance, trace), other.asJava(), Null)
+        return if (result == Null) super.bitOr(instance, interpreter, other, trace) else this.create(result)
+    }
+
+    override fun xor(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace): Any? {
+        val result = JavaUtils.xor(this.asJavaNotNull(instance, trace), other.asJava(), Null)
+        return if (result == Null) super.xor(instance, interpreter, other, trace) else this.create(result)
+    }
+
+    override fun bracketAccess(instance: ClassInstance, interpreter: Interpreter, index: ClassInstance, trace: LocatableTrace): ClassInstance {
+        val result = JavaUtils.bracketAccess(this.asJavaNotNull(instance, trace), index.asJava(), Null)
+        return if (result == Null) super.bracketAccess(instance, interpreter, index, trace) else this.createNullable(result)
+    }
+
+    override fun bracketAssign(instance: ClassInstance, interpreter: Interpreter, index: ClassInstance, assignee: ClassInstance, trace: LocatableTrace): ClassInstance {
+        val result = JavaUtils.bracketAssign(this.asJavaNotNull(instance, trace), index.asJava(), assignee.asJava(), Null)
+        return if (result == Null) super.bracketAssign(instance, interpreter, index, assignee, trace) else this.createNullable(result)
+    }
+
     override fun equals(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace): Boolean {
         return instance.asJava() == other.asJava()
     }

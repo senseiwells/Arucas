@@ -4,7 +4,7 @@ import me.senseiwells.arucas.util.TestHelper.assertEquals
 import me.senseiwells.arucas.util.TestHelper.throwsRuntime
 import org.junit.jupiter.api.Test
 
-class ArucasStatementTests {
+class StatementTests {
     @Test
     fun testScopeStatement() {
         assertEquals(1, "x = 0; { x = 1; } return x;")

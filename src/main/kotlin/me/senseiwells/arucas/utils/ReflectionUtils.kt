@@ -57,7 +57,7 @@ object ReflectionUtils {
 
     fun setField(callingClass: Class<*>, callingObject: Any?, setObject: ClassInstance, name: String, obfuscator: ArucasObfuscator) {
         val handle = this.getVarHandle(callingClass, name, obfuscator)
-        this.setVarHandle(handle, callingObject, setObject)
+        this.setVarHandle(handle, callingObject, setObject.asJava())
     }
 
     fun getClass(name: String, obfuscator: ArucasObfuscator): Class<*> {
@@ -149,11 +149,12 @@ object ReflectionUtils {
                 return false
             }
         }
+
         val varArgType = if (required.isNotEmpty()) required.last().componentType else null
         if (varArgType != null && required.lastIndex != given.lastIndex) {
             for (i in required.size until given.lastIndex) {
                 val givenClass = given[i]
-                if (givenClass != Void.TYPE && varArgType.isAssignableFrom(givenClass)) {
+                if (givenClass != Void.TYPE && !varArgType.isAssignableFrom(givenClass)) {
                     return false
                 }
             }

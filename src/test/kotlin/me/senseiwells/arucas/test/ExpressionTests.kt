@@ -5,7 +5,7 @@ import me.senseiwells.arucas.util.TestHelper.throwsCompile
 import me.senseiwells.arucas.util.TestHelper.throwsRuntime
 import org.junit.jupiter.api.Test
 
-class ArucasExpressionTests {
+class ExpressionTests {
     @Test
     fun testLiteralExpression() {
         assertEquals(true, "return true;")
