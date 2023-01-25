@@ -26,13 +26,36 @@ import java.util.stream.Stream
 import kotlin.reflect.KClass
 
 /**
- * Api for Arucas, used to set up the interpreter.
+ * API for Arucas, used to set up the interpreter.
+ *
+ * This class intends to provide the interpreter with the wanted extensions,
+ * built-in classes, importable classes, Java reflection support, and library manager.
+ *
+ * You may implement this, however it is advised that you instead use the [Builder] instead.
+ *
+ * To see how to use the API, see the full documentation [here](https://github.com/senseiwells/Arucas/blob/main/docs/ArucasAPI.md).
+ *
+ * An example API can be setup with this:
+ * ```kotlin
+ * val builder = ArucasAPI.Builder()
+ *     .addDefault() // Adds the default built-in extensions and classes, etc.
+ * val api = builder.build();
+ * ```
+ *
+ * To then create an interpreter we can do this:
+ * ```kotlin
+ * val name: String = /* Interpreter Name */
+ * val code: String = /* Arucas Code */
+ * val interpreter = Interpreter.of(code, name, api)
+ * ```
  */
 interface ArucasAPI {
     /**
      * This method should return any built-in functions.
      *
      * These functions will be available in the global scope.
+     *
+     * @return the list of extensions.
      */
     fun getBuiltInExtensions(): List<ArucasExtension>? = null
 
@@ -40,6 +63,8 @@ interface ArucasAPI {
      * This method should return any built-in definitions.
      *
      * These definitions will not require importing to be used.
+     *
+     * @return the list of primitive generators.
      */
     fun getBuiltInDefinitions(): List<(Interpreter) -> PrimitiveDefinition<*>>? = null
 
@@ -47,27 +72,41 @@ interface ArucasAPI {
      * This method should return any class definitions.
      *
      * These definitions will require importing to be used.
+     *
+     * @return a map of list of primitive generators. The key of the map will be the
+     * import path and the values are the generators for that given path.
      */
     fun getClassDefinitions(): Map<String, List<(Interpreter) -> PrimitiveDefinition<*>>>? = null
 
     /**
-     * This method should return the interpreters input handler.
+     * This method should return the interpreter's input handler.
      *
+     * @return the input handler.
      * @see ArucasInput
      */
     fun getInput(): ArucasInput
 
     /**
-     * This method should return the interpreters output handler.
+     * This method should return the interpreter's output handler.
      *
+     * @return the output handler.
      * @see ArucasOutput
      */
     fun getOutput(): ArucasOutput
 
     /**
+     * This method should return the interpreter's error handler.
+     *
+     * @return the error handler.
+     * @see ArucasErrorHandler
+     */
+    fun getErrorHandler(): ArucasErrorHandler
+
+    /**
      * This method should return an API that handles
      * obfuscation.
      *
+     * @return the obfuscation handler.
      * @see ArucasObfuscator
      */
     fun getObfuscator(): ArucasObfuscator
@@ -76,6 +115,7 @@ interface ArucasAPI {
      * This method should return a converter that
      * converts Java values into Arucas ones.
      *
+     * @return the value converter.
      * @see ValueConverter
      */
     fun getConverter(): ValueConverter
@@ -84,6 +124,7 @@ interface ArucasAPI {
      * This method should return the Arucas library
      * handler which can download libraries.
      *
+     * @return the library manager.
      * @see ArucasLibrary
      */
     fun getLibraryManager(): ArucasLibrary
@@ -91,12 +132,16 @@ interface ArucasAPI {
     /**
      * This method should return the properties
      * you want for the interpreter.
+     *
+     * @return the property generator.
      */
     fun getProperties(): () -> Properties
 
     /**
      * This method generates the BuiltIn libraries as
      * Arucas code and puts them in the users imports.
+     *
+     * @param rootPath the path to generate the native files to.
      */
     fun generateNativeFiles(rootPath: Path = this.getLibraryManager().importPath) {
         val docParser = CodeDocParser()
@@ -122,6 +167,10 @@ interface ArucasAPI {
 
     /**
      * API builder for Arucas.
+     *
+     * This can be used to build custom [ArucasAPI] with ease.
+     *
+     * @see ArucasAPI
      */
     @Suppress("UNUSED")
     class Builder {
@@ -130,14 +179,49 @@ interface ArucasAPI {
         private val classDefinitions = HashMap<String, ArrayList<(Interpreter) -> PrimitiveDefinition<*>>>()
         private val converter = ValueConverter()
 
+        /**
+         * The input handler.
+         *
+         * @see ArucasInput
+         */
         var input: ArucasInput
             private set
+
+        /**
+         * The output handler.
+         *
+         * @see ArucasOutput
+         */
         var output: ArucasOutput
             private set
+
+        /**
+         * The error handler.
+         *
+         * @see ArucasErrorHandler
+         */
+        var errorHandler = ArucasErrorHandler.default
+            private set
+
+        /**
+         * The obfuscation handler.
+         *
+         * @see ArucasObfuscator
+         */
         var obfuscator = ArucasObfuscator.default
             private set
+
+        /**
+         * The library manager.
+         *
+         * @see ArucasLibrary
+         */
         var library: ArucasLibrary = ImplArucasLibrary()
             private set
+
+        /**
+         * The property Generator.
+         */
         var properties = { Properties() }
             private set
 
@@ -148,28 +232,64 @@ interface ArucasAPI {
             }
         }
 
+        /**
+         * This adds an extension to the Arucas API.
+         *
+         * @param extension the extension to add.
+         * @return the builder.
+         */
         fun addBuiltInExtension(extension: ArucasExtension): Builder {
             this.builtInExtensions.add(extension)
             return this
         }
 
+        /**
+         * This adds built in definition generators.
+         *
+         * @param definitions the vararg definition generators.
+         * @return the builder.
+         */
         fun addBuiltInDefinitions(vararg definitions: (Interpreter) -> PrimitiveDefinition<*>): Builder {
             this.builtInDefinitions.addAll(definitions)
             return this
         }
 
+        /**
+         * This adds class definition to be imported.
+         *
+         * @param name the import path that will be used to import classes.
+         * @param definitions the vararg definition generators.
+         * @return the builder.
+         */
         fun addClassDefinitions(name: String, vararg definitions: (Interpreter) -> PrimitiveDefinition<*>): Builder {
             this.classDefinitions.getOrPut(name) { ArrayList() }.addAll(definitions)
             return this
         }
 
+        /**
+         * This sets the input handler of the API.
+         *
+         * @param input the new input handler.
+         * @return the builder.
+         */
         fun setInput(input: ArucasInput): Builder {
             this.input = input
             return this
         }
 
+        /**
+         * This sets the output handler of the API.
+         *
+         * @param output the new output handler.
+         * @return the builder.
+         */
         fun setOutput(output: ArucasOutput): Builder {
             this.output = output
+            return this
+        }
+
+        fun setErrorHandler(errorHandler: ArucasErrorHandler): Builder {
+            this.errorHandler = errorHandler
             return this
         }
 
@@ -304,6 +424,8 @@ interface ArucasAPI {
                 override fun getInput() = this@Builder.input
 
                 override fun getOutput() = this@Builder.output
+
+                override fun getErrorHandler() = this@Builder.errorHandler
 
                 override fun getObfuscator() = this@Builder.obfuscator
 

@@ -15,6 +15,7 @@ import me.senseiwells.arucas.utils.impl.ArucasList
 import me.senseiwells.arucas.utils.impl.ArucasOrderedMap
 import me.senseiwells.arucas.utils.impl.ArucasThread
 import java.util.*
+import java.util.concurrent.Future
 import kotlin.reflect.KClass
 
 sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstance> {
@@ -37,7 +38,8 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
 
     abstract val content: String
     abstract val name: String
-    abstract val threadHandler: ThreadHandler
+    @Deprecated("Thread handler should not be used directly")
+    /* protected */ abstract val threadHandler: ThreadHandler
     abstract val api: ArucasAPI
     abstract val properties: Properties
     abstract val globalTable: StackTable
@@ -51,6 +53,12 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
     protected val stackTrace = Stack<Trace>()
 
     private val returnThrowable by lazy { Propagator.Return(this.getNull()) }
+
+    abstract fun executeAsync(): Future<ClassInstance?>
+
+    open fun executeBlocking(): ClassInstance? {
+        return executeAsync().get()
+    }
 
     abstract fun loadApi()
 
@@ -78,9 +86,11 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         }
     }
 
-    inline fun safe(block: () -> Unit) {
-        this.safe(Unit, block)
-    }
+    fun isRunning() = this.threadHandler.running
+
+    fun addStopEvent(runnable: Runnable) = this.threadHandler.addShutdownEvent(runnable)
+
+    fun stop() = this.threadHandler.stop()
 
     inline fun <T> safe(default: T, block: () -> T): T {
         return try {
@@ -821,6 +831,10 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         override val localCache = LocalCache()
         override var currentTable = this.globalTable
 
+        override fun executeAsync(): Future<ClassInstance?> {
+            return this.threadHandler.executeAsync()
+        }
+
         override fun loadApi() {
             this.api.getBuiltInDefinitions()?.forEach { p ->
                 val primitive = p(this)
@@ -862,6 +876,10 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         override val primitives = parent.primitives
         override val localCache = parent.localCache
 
+        override fun executeAsync(): Future<ClassInstance?> {
+            return this.threadHandler.runAsync { Arucas.run(this) }
+        }
+
         override fun loadApi() {
             // API is already loaded
         }
@@ -891,6 +909,14 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
             for (trace in interpreter.stackTrace) {
                 this.stackTrace.push(trace)
             }
+        }
+
+        override fun executeAsync(): Future<ClassInstance?> {
+            throw IllegalStateException("Branch cannot execute async")
+        }
+
+        override fun executeBlocking(): ClassInstance {
+            throw IllegalStateException("Branch cannot execute blocking")
         }
 
         override fun loadApi() {

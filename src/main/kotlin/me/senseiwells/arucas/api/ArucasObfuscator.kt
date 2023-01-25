@@ -9,6 +9,7 @@ package me.senseiwells.arucas.api
  */
 interface ArucasObfuscator {
     companion object {
+        @JvmStatic
         val default = object: ArucasObfuscator { }
     }
 
