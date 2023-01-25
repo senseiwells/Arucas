@@ -149,6 +149,7 @@ enum class Type(private val asString: String? = null) {
     IMPORT("import"),
     FROM("from"),
     LOCAL("local"),
+    LAUNCH("launch"),
 
     // Dot
     DOT("."),
