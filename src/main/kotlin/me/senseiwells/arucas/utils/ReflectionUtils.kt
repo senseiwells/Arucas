@@ -11,27 +11,27 @@ import java.lang.invoke.WrongMethodTypeException
 import java.lang.reflect.*
 
 object ReflectionUtils {
-    private val methodCache = HashMap<MethodId, MethodHandle>()
-    private val constructorCache = HashMap<ConstructorId, MethodHandle>()
-    private val fieldCache = HashMap<FieldId, VarHandle>()
+    private val methodCache = HashMap<MethodId, MethodWithHandle>()
+    private val constructorCache = HashMap<ConstructorId, MethodWithHandle>()
+    private val fieldCache = HashMap<FieldId, FieldWithHandle>()
 
     fun callMethod(callingClass: Class<*>, callingObject: Any?, name: String, arguments: List<ClassInstance>, obfuscator: ArucasObfuscator): Any? {
         val (args, types) = this.argumentsToJava(arguments)
         val id = MethodId(callingClass, name, types)
-        var methodHandle = this.methodCache[id]
-        if (methodHandle == null) {
+        var methodWithHandle = this.methodCache[id]
+        if (methodWithHandle == null) {
             val method = this.getMethod(callingClass, callingObject, obfuscator.obfuscateMethodName(callingClass, name), types)
             if (method == null) {
                 val typeNames = types.joinToString(prefix = "(", postfix = ")") { obfuscator.deobfuscateClass(it) }
                 runtimeError("No such method '$name' with type parameters $typeNames exists for Java type '${obfuscator.deobfuscateClass(callingClass)}'")
             }
-            methodHandle = this.getMethodHandle(method)
-            this.methodCache[id] = methodHandle
+            methodWithHandle = this.methodWithHandle(method)
+            this.methodCache[id] = methodWithHandle
         }
         if (callingObject != null) {
             args.add(0, callingObject)
         }
-        return this.invokeHandle(methodHandle, args)
+        return this.invokeHandle(methodWithHandle, args)
     }
 
     fun callConstructor(clazz: Class<*>, arguments: List<ClassInstance>, obfuscator: ArucasObfuscator): Any? {
@@ -44,7 +44,7 @@ object ReflectionUtils {
                 val typeNames = types.joinToString(prefix = "(", postfix = ")") { obfuscator.deobfuscateClass(it) }
                 runtimeError("No such constructor with parameters $typeNames exists for ${obfuscator.deobfuscateClass(clazz)}")
             }
-            methodHandle = this.getMethodHandle(constructor)
+            methodHandle = this.methodWithHandle(constructor)
             this.constructorCache[id] = methodHandle
         }
         return this.invokeHandle(methodHandle, args)
@@ -69,9 +69,9 @@ object ReflectionUtils {
         }
     }
 
-    private fun getVarHandle(clazz: Class<*>, name: String, obfuscator: ArucasObfuscator): VarHandle {
+    private fun getVarHandle(clazz: Class<*>, name: String, obfuscator: ArucasObfuscator): FieldWithHandle {
         val id = FieldId(clazz, name)
-        var varHandle: VarHandle? = this.fieldCache[id]
+        var varHandle = this.fieldCache[id]
         if (varHandle == null) {
             val field = this.getField(clazz, obfuscator.obfuscateFieldName(clazz, name))
                 ?: runtimeError("No such field with name '${name}' exists for ${obfuscator.deobfuscateClass(clazz)}")
@@ -138,28 +138,39 @@ object ReflectionUtils {
         }
 
         for (i in required.indices) {
-            if (i > given.lastIndex) {
+            if (executable.isVarArgs && i == required.lastIndex) {
+                val component = required[i].componentType
+                for (gi in i..given.lastIndex) {
+                    if (!areTypesEqual(given[gi], component)) {
+                        return false
+                    }
+                }
                 return true
             }
-            val givenClass = given[i]
-            if (required[i].isPrimitive && givenClass == Void.TYPE) {
+            if (i > given.lastIndex) {
                 return false
             }
-            if (givenClass != Void.TYPE && !this.wrapClass(required[i]).isAssignableFrom(givenClass)) {
+
+            if (!areTypesEqual(given[i], required[i])) {
                 return false
             }
         }
 
-        val varArgType = if (required.isNotEmpty()) required.last().componentType else null
-        if (varArgType != null && required.lastIndex != given.lastIndex) {
-            for (i in required.size until given.lastIndex) {
-                val givenClass = given[i]
-                if (givenClass != Void.TYPE && !varArgType.isAssignableFrom(givenClass)) {
-                    return false
-                }
-            }
-        }
+        return true
+    }
 
+    private fun areTypesEqual(given: Class<*>, required: Class<*>): Boolean {
+        if (required.isPrimitive && given == Void.TYPE) {
+            return false
+        }
+        val requiredWrapped = this.wrapClass(required)
+        // Something that we allow is casting from any number type to any number
+        if (Number::class.java.isAssignableFrom(requiredWrapped) && Number::class.java.isAssignableFrom(given)) {
+            return true
+        }
+        if (given != Void.TYPE && !requiredWrapped.isAssignableFrom(given)) {
+            return false
+        }
         return true
     }
 
@@ -202,23 +213,21 @@ object ReflectionUtils {
         return null
     }
 
-    private fun getMethodHandle(method: Method): MethodHandle {
-        return MethodHandles.publicLookup().unreflect(method)
+    private fun methodWithHandle(method: Method): MethodWithHandle {
+        return MethodWithHandle(method, MethodHandles.publicLookup().unreflect(method))
     }
 
-    private fun getMethodHandle(constructor: Constructor<*>): MethodHandle {
-        val lookup = MethodHandles.publicLookup()
-        return lookup.unreflectConstructor(constructor)
+    private fun methodWithHandle(constructor: Constructor<*>): MethodWithHandle {
+        return MethodWithHandle(constructor, MethodHandles.publicLookup().unreflectConstructor(constructor))
     }
 
-    private fun getVarHandle(field: Field): VarHandle {
-        val lookup = MethodHandles.publicLookup()
-        return lookup.unreflectVarHandle(field)
+    private fun getVarHandle(field: Field): FieldWithHandle {
+        return FieldWithHandle(field, MethodHandles.publicLookup().unreflectVarHandle(field))
     }
 
-    private fun invokeHandle(methodHandle: MethodHandle, args: List<Any?>): Any? {
+    private fun invokeHandle(methodHandle: MethodWithHandle, args: List<Any?>): Any? {
         try {
-            return methodHandle.invokeWithArguments(args)
+            return methodHandle.invoke(args)
         } catch (e: RuntimeError) {
             throw e
         } catch (e: ClassCastException) {
@@ -230,9 +239,9 @@ object ReflectionUtils {
         }
     }
 
-    private fun setVarHandle(varHandle: VarHandle, calling: Any?, value: Any?) {
+    private fun setVarHandle(varHandle: FieldWithHandle, calling: Any?, value: Any?) {
         try {
-            if (calling == null) varHandle.set(value) else varHandle.set(calling, value)
+            varHandle.set(calling, value)
         } catch (e: RuntimeError) {
             throw e
         } catch (e: ClassCastException) {
@@ -247,9 +256,9 @@ object ReflectionUtils {
         }
     }
 
-    private fun getVarHandle(varHandle: VarHandle, calling: Any?): Any? {
+    private fun getVarHandle(varHandle: FieldWithHandle, calling: Any?): Any? {
         try {
-            return if (calling == null) varHandle.get() else varHandle.get(calling)
+            return varHandle.get(calling)
         } catch (e: RuntimeError) {
             throw e
         } catch (e: ClassCastException) {
@@ -276,6 +285,21 @@ object ReflectionUtils {
             Void.TYPE -> Void::class.java
             else -> type
         } as Class<T>
+    }
+
+    private fun castToNumber(any: Any?, clazz: Class<*>): Any? {
+        if (any !is Number) {
+            return any
+        }
+        return when (clazz) {
+            java.lang.Byte::class.java -> any.toByte()
+            java.lang.Short::class.java -> any.toShort()
+            java.lang.Integer::class.java -> any.toInt()
+            java.lang.Long::class.java -> any.toLong()
+            java.lang.Float::class.java -> any.toFloat()
+            java.lang.Double::class.java -> any.toDouble()
+            else -> any // ???
+        }
     }
 
     private data class MethodId(val clazz: Class<*>, val name: String, val types: Array<Class<*>>) {
@@ -320,6 +344,47 @@ object ReflectionUtils {
 
         override fun hashCode(): Int {
             return this.hash
+        }
+    }
+
+    private data class MethodWithHandle(val method: Executable, val handle: MethodHandle) {
+        private val casts by lazy {
+            val casts = HashMap<Int, (Any?) -> Any?>()
+            method.parameterTypes.forEachIndexed { index, clazz ->
+                if (method.isVarArgs && index == method.parameterCount - 1) {
+                    val wrapped = wrapClass(clazz.componentType)
+                    if (Number::class.java.isAssignableFrom(wrapped)) {
+                        casts[index] = { castToNumber(it, wrapped) }
+                    }
+                    return@forEachIndexed
+                }
+                val wrapped = wrapClass(clazz)
+                if (Number::class.java.isAssignableFrom(wrapped)) {
+                    casts[index] = { castToNumber(it, wrapped) }
+                }
+            }
+            casts
+        }
+
+        fun invoke(arguments: List<Any?>): Any? {
+            val mapped = arguments.mapIndexed { index, any ->
+                casts[index.coerceAtMost(method.parameterCount - 1)]?.invoke(any) ?: any
+            }
+            return handle.invokeWithArguments(mapped)
+        }
+    }
+
+    private data class FieldWithHandle(val field: Field, val handle: VarHandle) {
+        private val fieldType = wrapClass(field.type)
+        private val shouldTryToCast = Number::class.java.isAssignableFrom(fieldType)
+
+        fun set(calling: Any?, value: Any?) {
+            val castedValue = if (shouldTryToCast) castToNumber(value, fieldType) else value
+            if (calling == null) handle.set(castedValue) else handle.set(calling, castedValue)
+        }
+
+        fun get(calling: Any?): Any? {
+            return if (calling == null) handle.get() else handle.get(calling)
         }
     }
 }

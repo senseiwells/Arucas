@@ -25,8 +25,8 @@ public class ReflectionTestHelper {
 		return parameter;
 	}
 
-	public static List<Object> returnVarargsAsList(Object... parameters) {
-		return Arrays.stream(parameters).toList();
+	public static List<Integer> returnVarargsAsList(int... parameters) {
+		return Arrays.stream(parameters).boxed().toList();
 	}
 
 	public Object returnObjectMethod() {
