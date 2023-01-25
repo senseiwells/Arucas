@@ -1,23 +1,29 @@
 package me.senseiwells.arucas.util
 
 import me.senseiwells.arucas.api.ArucasAPI
-import me.senseiwells.arucas.api.ThreadHandler
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.exceptions.CompileError
 import me.senseiwells.arucas.exceptions.RuntimeError
 import me.senseiwells.arucas.extensions.JavaDef
 import org.junit.jupiter.api.assertThrows
+import java.util.concurrent.ExecutionException
 
 object TestHelper {
     val API_DEFAULT = ArucasAPI.Builder().addDefault().build()
     val API_JAVA = ArucasAPI.Builder().addDefault().addBuiltInDefinitions(::JavaDef).build()
 
     fun compile(code: String, api: ArucasAPI = API_DEFAULT) {
-        Interpreter.of(code, "test-compile", api, ::ThreadHandler).compile()
+        Interpreter.of(code, "test-compile", api).compile()
     }
 
     fun execute(code: String, api: ArucasAPI = API_DEFAULT): Any? {
-        return Interpreter.of(code, "test-execute", api, ::ThreadHandler).threadHandler.testBlocking().asJava()
+        try {
+            return Interpreter.of(code, "test-execute", api).executeBlocking().asJava()
+        } catch (e: ExecutionException) {
+            val cause = e.cause
+            cause ?: throw e
+            throw cause
+        }
     }
 
     fun assertEquals(expected: Any?, code: String, api: ArucasAPI = API_DEFAULT) {

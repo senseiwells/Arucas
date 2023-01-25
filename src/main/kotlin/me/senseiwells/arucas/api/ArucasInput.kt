@@ -9,6 +9,8 @@ interface ArucasInput {
     /**
      * This method should provide a future
      * giving access to the users input.
+     *
+     * @return the completable future for when input is complete.
      */
     fun takeInput(): CompletableFuture<String>
 }

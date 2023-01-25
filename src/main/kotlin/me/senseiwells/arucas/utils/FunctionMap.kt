@@ -3,19 +3,23 @@ package me.senseiwells.arucas.utils
 import me.senseiwells.arucas.builtin.FunctionDef
 import me.senseiwells.arucas.classes.ClassInstance
 
+/**
+ * This class holds [ClassInstance] that have the definition of [FunctionDef], allows
+ * for extremely fast lookup for functions as it searches by name and parameter count.
+ */
 class FunctionMap: Iterable<ClassInstance> {
-    companion object {
-        fun of(vararg functions: ClassInstance): FunctionMap {
-            val map = FunctionMap()
-            for (function in functions) {
-                map.add(function)
-            }
-            return map
-        }
-    }
-
+    /**
+     * Map of function names containing a map of function parameters to a function [ClassInstance].
+     */
     private val map = lazy { HashMap<String, HashMap<Int, ClassInstance>>() }
 
+    /**
+     * Adds a [ClassInstance] to the map. The instance should have a definition
+     * of [FunctionDef], if not then an [IllegalArgumentException] will be thrown.
+     *
+     * @param instance the instance to add.
+     * @return true if no function was overwritten false otherwise.
+     */
     fun add(instance: ClassInstance): Boolean {
         val function = instance.getPrimitive(FunctionDef::class)
         function ?: throw IllegalArgumentException("Tried to add non function value ${instance.definition.name} to function map")
@@ -30,14 +34,51 @@ class FunctionMap: Iterable<ClassInstance> {
         return true
     }
 
-    fun addAll(functions: Iterable<ClassInstance>) = functions.forEach { this.add(it) }
+    /**
+     * Adds an iterable of [ClassInstance], using [add].
+     *
+     * @see add
+     */
+    fun addAll(functions: Iterable<ClassInstance>) {
+        functions.forEach { this.add(it) }
+    }
 
-    fun isEmpty() = !this.map.isInitialized() || this.map.value.isEmpty()
+    /**
+     * Checks whether the function map is empty.
+     *
+     * @return whether the map is empty.
+     */
+    fun isEmpty(): Boolean {
+        return !this.map.isInitialized() || this.map.value.isEmpty()
+    }
 
-    fun has(name: String) = this.map.isInitialized() && this.map.value.containsKey(name)
+    /**
+     * Checks whether the map has a function with a given name (any number of parameters).
+     *
+     * @param name the name of the function.
+     * @return whether the map contains a function with that name.
+     */
+    fun has(name: String): Boolean {
+        return this.map.isInitialized() && this.map.value.containsKey(name)
+    }
 
-    fun has(name: String, parameters: Int) = this.map.isInitialized() && this.map.value[name]?.get(parameters) !== null
+    /**
+     * Checks whether the map has a function with a given name and number of parameters.
+     *
+     * @param name the name of the function.
+     * @param parameters the number of parameters.
+     * @return whether the map has a function with this signature.
+     */
+    fun has(name: String, parameters: Int): Boolean {
+        return this.map.isInitialized() && this.map.value[name]?.get(parameters) !== null
+    }
 
+    /**
+     * Gets a function from the map using the function name **only** if the function is not overloaded.
+     *
+     * @param name the name of the function.
+     * @return the function [ClassInstance], null if the function is overloaded or not found.
+     */
     fun get(name: String): ClassInstance? {
         if (!this.map.isInitialized()) {
             return null
@@ -45,6 +86,15 @@ class FunctionMap: Iterable<ClassInstance> {
         return this.map.value[name]?.let { if (it.size == 1) it.entries.first().value else null }
     }
 
+    /**
+     * Gets a function from the map with a given name and number of parameters.
+     * Vararg functions have a parameter count of `-1`, if you pass any number
+     * `< -1` then simply [get] is called instead.
+     *
+     * @param name the name of the function.
+     * @param parameters the number of parameters the function has.
+     * @return the function [ClassInstance].
+     */
     fun get(name: String, parameters: Int): ClassInstance? {
         if (!this.map.isInitialized()) {
             return null
@@ -55,6 +105,11 @@ class FunctionMap: Iterable<ClassInstance> {
         return if (parameters <= -2) this.get(name) else this.map.value[name]?.let { it[parameters] ?: it[-1] }
     }
 
+    /**
+     * Returns an iterator of all the function [ClassInstance]s.
+     *
+     * @return an iterator of [ClassInstance].
+     */
     override fun iterator(): Iterator<ClassInstance> {
         if (!this.map.isInitialized()) {
             return Util.Collection.emptyIterator()

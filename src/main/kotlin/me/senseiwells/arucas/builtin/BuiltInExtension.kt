@@ -132,7 +132,7 @@ class BuiltInExtension: ArucasExtension {
         synchronized(INPUT_LOCK) {
             val prompt = arguments.nextPrimitive(StringDef::class)
             arguments.interpreter.api.getOutput().println(prompt)
-            arguments.interpreter.interuptable {
+            arguments.interpreter.canInterrupt {
                 return arguments.interpreter.api.getInput().takeInput().get()
             }
         }
@@ -149,7 +149,7 @@ class BuiltInExtension: ArucasExtension {
             runtimeError("'sleep' function can only be called on an Arucas thread")
         }
         val time = arguments.nextPrimitive(NumberDef::class)
-        arguments.interpreter.interuptable {
+        arguments.interpreter.canInterrupt {
             Thread.sleep(time.toLong())
         }
     }
@@ -209,7 +209,7 @@ class BuiltInExtension: ArucasExtension {
         examples = ["isMain();"]
     )
     private fun isMain(arguments: Arguments): Boolean {
-        return arguments.interpreter.isMain()
+        return arguments.interpreter.isMain
     }
 
     @FunctionDoc(
@@ -250,7 +250,7 @@ class BuiltInExtension: ArucasExtension {
     private fun eval(arguments: Arguments): ClassInstance {
         val code = arguments.nextPrimitive(StringDef::class)
         val child = arguments.interpreter.child(code, "\$eval")
-        return Arucas.runSafe(child)
+        return child.executeBlocking()
     }
 
     @FunctionDoc(
@@ -267,7 +267,7 @@ class BuiltInExtension: ArucasExtension {
             val fileName = path.fileName.toString()
             val content = Files.readString(path)
             val child = arguments.interpreter.child(content, fileName)
-            return Arucas.runSafe(child)
+            return child.executeBlocking()
         } catch (e: IOException) {
             runtimeError("Failed to read file '$pathString'")
         } catch (e: InvalidPathException) {

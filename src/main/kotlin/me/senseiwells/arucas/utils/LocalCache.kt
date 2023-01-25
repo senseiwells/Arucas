@@ -3,6 +3,12 @@ package me.senseiwells.arucas.utils
 import me.senseiwells.arucas.nodes.SuperExpression
 import me.senseiwells.arucas.nodes.Visitable
 
+/**
+ * Cache storing distances for [StackTable] for different [Visitable]s.
+ *
+ * This allows us to jump to specific positions in the [StackTable] to look
+ * for variables/functions/classes, so we do not need to search the stack hierarchy.
+ */
 class LocalCache {
     private val varCache = HashMap<Visitable, Int>()
     private val functionCache = HashMap<Visitable, Int>()

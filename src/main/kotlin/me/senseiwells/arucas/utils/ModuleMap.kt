@@ -7,7 +7,7 @@ import me.senseiwells.arucas.classes.ClassDefinition
  * threads thus all the methods are synchronized.
  *
  * We do not provide any ways of accessing
- * the map directly as that could lead to a CME.
+ * the map directly as that could lead to a [ConcurrentModificationException].
  */
 class ModuleMap {
     private val builtIns = HashMap<String, ClassDefinition>()

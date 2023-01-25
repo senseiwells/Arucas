@@ -1,6 +1,7 @@
 package me.senseiwells.arucas.api
 
 import com.google.gson.JsonElement
+import me.senseiwells.arucas.api.ArucasAPI.Builder
 import me.senseiwells.arucas.api.docs.parser.CodeDocParser
 import me.senseiwells.arucas.builtin.*
 import me.senseiwells.arucas.classes.ClassDefinition
@@ -48,6 +49,8 @@ import kotlin.reflect.KClass
  * val code: String = /* Arucas Code */
  * val interpreter = Interpreter.of(code, name, api)
  * ```
+ *
+ * @see Interpreter
  */
 interface ArucasAPI {
     /**
@@ -216,7 +219,7 @@ interface ArucasAPI {
          *
          * @see ArucasLibrary
          */
-        var library: ArucasLibrary = ImplArucasLibrary()
+        var library: ArucasLibrary = GitHubArucasLibrary()
             private set
 
         /**
@@ -226,7 +229,7 @@ interface ArucasAPI {
             private set
 
         init {
-            ImplArucasIO().let {
+            DefaultArucasIO().let {
                 this.input = it
                 this.output = it
             }
@@ -318,7 +321,7 @@ interface ArucasAPI {
         }
 
         fun addDefault(): Builder {
-            ImplArucasIO().let { this.setInput(it).setOutput(it) }
+            DefaultArucasIO().let { this.setInput(it).setOutput(it) }
             this.addDefaultConversions()
             this.addDefaultExtensions()
             this.addDefaultBuiltInDefinitions()

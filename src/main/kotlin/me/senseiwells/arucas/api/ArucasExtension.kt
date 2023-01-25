@@ -8,11 +8,15 @@ import me.senseiwells.arucas.utils.BuiltInFunction
 interface ArucasExtension {
     /**
      * Gets the name of the extension.
+     *
+     * @return the name of the extension.
      */
     fun getName(): String
 
     /**
      * Gets the functions in the extension.
+     *
+     * @return the list of built-in functions.
      */
     fun getBuiltInFunctions(): List<BuiltInFunction>
 }

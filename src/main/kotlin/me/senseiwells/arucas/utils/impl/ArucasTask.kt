@@ -7,7 +7,6 @@ import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.Future
 
 abstract class Task(interpreter: Interpreter) {
-    private val subTasks = ConcurrentLinkedQueue<DelayedFunction>()
     private val tasks = ConcurrentLinkedQueue<DelayedFunction>()
     private var delay = 0
 
@@ -31,7 +30,7 @@ abstract class Task(interpreter: Interpreter) {
 
 class ArucasTask(interpreter: Interpreter): Task(interpreter) {
     override fun run(tasks: Iterator<DelayedFunction>): Future<ClassInstance?> {
-        return this.interpreter.threadHandler.runAsync {
+        return this.interpreter.runAsync {
             val branch = this.interpreter.branch()
 
             while (tasks.hasNext()) {

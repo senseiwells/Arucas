@@ -1,13 +1,10 @@
 package me.senseiwells.arucas.core
 
 import me.senseiwells.arucas.api.ArucasAPI
-import me.senseiwells.arucas.api.ThreadHandler
 import me.senseiwells.arucas.builtin.*
 import me.senseiwells.arucas.classes.*
-import me.senseiwells.arucas.exceptions.FatalError
-import me.senseiwells.arucas.exceptions.Propagator
-import me.senseiwells.arucas.exceptions.RuntimeError
-import me.senseiwells.arucas.exceptions.runtimeError
+import me.senseiwells.arucas.core.Interpreter.Companion.of
+import me.senseiwells.arucas.exceptions.*
 import me.senseiwells.arucas.nodes.*
 import me.senseiwells.arucas.utils.*
 import me.senseiwells.arucas.utils.Properties
@@ -18,16 +15,40 @@ import java.util.*
 import java.util.concurrent.Future
 import kotlin.reflect.KClass
 
+/**
+ * The interpreter class. This is responsible for running
+ * the Arucas code.
+ *
+ * This class visits all statement and expressions that have been parsed
+ * interpreting it. It holds much of the state while executing and is
+ * **NOT** thread safe. You must [branch] the interpreter for use
+ * either at a later time or on a different thread.
+ *
+ * The interpreter can be created with [of], this will be the root
+ * interpreter. You are able to configure the [ArucasAPI] that the
+ * interpreter uses.
+ *
+ * Here is an example:
+ * ```kotlin
+ * val code = "print('Hello from Arucas!');"
+ * val name = "MyInterpreter"
+ * val builder = ArucasAPI.Builder()
+ *     .addDefault()
+ * val api = builder.build()
+ * val interpreter = Interpreter.of(code, name, api)
+ * // Blocks the current thread
+ * interpreter.executeBlocking()
+ * // Alternatively you can do
+ * interpreter.executeAsync()
+ * ```
+ *
+ * @see ArucasAPI
+ */
 sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstance> {
     companion object {
         @JvmStatic
-        fun of(
-            content: String,
-            name: String,
-            api: ArucasAPI = ArucasAPI.Builder().addDefault().build(),
-            factory: (Interpreter) -> ThreadHandler = ::ThreadHandler
-        ): Interpreter {
-            return Mother(content, name, api, factory)
+        fun of(content: String, name: String, api: ArucasAPI = ArucasAPI.Builder().addDefault().build()): Interpreter {
+            return Mother(content, name, api)
         }
 
         @JvmStatic
@@ -36,38 +57,111 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         }
     }
 
+    /**
+     * Whether the current interpreter is the root.
+     */
+    open val isMain = false
+
+    /**
+     * The content that the interpreter is executing.
+     */
     abstract val content: String
+
+    /**
+     * The name of the interpreter.
+     */
     abstract val name: String
-    @Deprecated("Thread handler should not be used directly")
-    /* protected */ abstract val threadHandler: ThreadHandler
+
+    /**
+     * The API that is being used by the interpreter.
+     *
+     * @see ArucasAPI
+     */
     abstract val api: ArucasAPI
+
+    /**
+     * The interpreter's properties.
+     *
+     * @see Properties
+     */
     abstract val properties: Properties
+
+    /**
+     * The table containing the variables, functions, and classes in the global scope.
+     *
+     * @see StackTable
+     */
     abstract val globalTable: StackTable
+
+    /**
+     * A collection of all the primitive definitions.
+     *
+     * @see PrimitiveDefinitionMap
+     */
     abstract val primitives: PrimitiveDefinitionMap
+
+    /**
+     * A collection of all the available modules.
+     *
+     * @see ModuleMap
+     */
     abstract val modules: ModuleMap
 
+    /**
+     * The interpreter's thread handler.
+     *
+     * @see ThreadHandler
+     */
+    protected abstract val threadHandler: ThreadHandler
+
+    /**
+     * All the built-in functions.
+     *
+     * @see FunctionMap
+     */
     protected abstract val functions: FunctionMap
+
+    /**
+     * The local cache containing locations for different [Visitable]s.
+     *
+     * @see LocalCache
+     */
     protected abstract val localCache: LocalCache
+
+    /**
+     * The current stack table (the current scope).
+     *
+     * @see StackTable
+     */
     protected abstract var currentTable: StackTable
 
+    /**
+     * The stacktrace of the interpreter.
+     *
+     * @see call
+     */
     protected val stackTrace = Stack<Trace>()
 
+    /**
+     * The [Propagator.Return] instance, we only have one instance since
+     * we are single-threaded we can deal with mutations and saves on objects.
+     *
+     * @see Propagator.Return
+     */
     private val returnThrowable by lazy { Propagator.Return(this.getNull()) }
 
-    abstract fun executeAsync(): Future<ClassInstance?>
+    protected abstract fun loadApi()
 
-    open fun executeBlocking(): ClassInstance? {
-        return executeAsync().get()
+    open fun executeAsync(): Future<ClassInstance?> {
+        return this.runAsync(this::executeBlocking)
     }
 
-    abstract fun loadApi()
-
-    open fun isMain() = false
+    abstract fun executeBlocking(): ClassInstance
 
     fun compile(): List<Statement> {
         this.loadApi()
         val compileStart = System.nanoTime()
-        return Arucas.compile(this.content, this.name).also {
+        return Parser(Lexer(this.content, this.name).createTokens()).parse().also {
             val resolver = Resolver(it, this.primitives, this.functions.map { f -> f.getPrimitive(FunctionDef::class)!! })
             this.localCache.mergeWith(resolver.run())
             val compileTime = Util.nanosToString(System.nanoTime() - compileStart)
@@ -86,43 +180,57 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         }
     }
 
-    fun isRunning() = this.threadHandler.running
-
-    fun addStopEvent(runnable: Runnable) = this.threadHandler.addShutdownEvent(runnable)
-
-    fun stop() = this.threadHandler.stop()
-
-    fun runAsync(function: () -> ClassInstance): Future<ClassInstance?> {
-        return this.threadHandler.runAsync(function)
+    fun isRunning(): Boolean {
+        return this.threadHandler.running
     }
 
-    inline fun handleError(block: () -> Unit) {
+    fun addStopEvent(runnable: Runnable) {
+        this.threadHandler.addShutdownEvent(runnable)
+    }
+
+    fun stop() {
+        this.threadHandler.stop()
+    }
+
+    fun runAsync(function: () -> ClassInstance): Future<ClassInstance?> {
+        return this.threadHandler.async(this, function)
+    }
+
+    fun runFunctionOnThread(callable: ClassInstance, name: String = "Arucas Async Thread"): ArucasThread {
+        return this.threadHandler.runFunctionOnThread(callable, this, name)
+    }
+
+    fun handleError(throwable: Throwable) {
+        this.threadHandler.handleError(throwable, this)
+    }
+
+    inline fun runSafe(block: () -> Unit) {
         try {
             block()
         } catch (e: Exception) {
-            this.threadHandler.handleError(e, this)
+            this.handleError(e)
         }
     }
 
-    inline fun <T> handleError(block: () -> T): T? {
+    inline fun <T> runSafe(block: () -> T): T? {
         return try {
             block()
         } catch (e: Exception) {
-            this.threadHandler.handleError(e, this)
+            this.handleError(e)
             null
         }
     }
 
-    inline fun <T> handleError(default: T, block: () -> T): T {
+    inline fun <T> runSafe(default: T, block: () -> T): T {
         return try {
             block()
         } catch (e: Exception) {
-            this.threadHandler.handleError(e, this)
+            this.handleError(e)
             default
         }
     }
 
-    inline fun <T> interuptable(block: () -> T): T {
+    inline fun <T> canInterrupt(block: () -> T): T {
         return try {
             block()
         } catch (e: InterruptedException) {
@@ -842,10 +950,10 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         override val content: String,
         override val name: String,
         override val api: ArucasAPI,
-        threadHandlerFactory: (Interpreter) -> ThreadHandler
     ): Interpreter() {
-        override val threadHandler = threadHandlerFactory(this)
-        override val properties = this.api.getProperties()()
+        override val isMain = true
+        override val threadHandler = ThreadHandler(this)
+        override val properties = this.api.getProperties().invoke()
         override val modules = ModuleMap()
         override val functions = FunctionMap()
         override val primitives = PrimitiveDefinitionMap()
@@ -853,8 +961,8 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         override val localCache = LocalCache()
         override var currentTable = this.globalTable
 
-        override fun executeAsync(): Future<ClassInstance?> {
-            return this.threadHandler.executeAsync()
+        override fun executeBlocking(): ClassInstance {
+            return this.threadHandler.execute()
         }
 
         override fun loadApi() {
@@ -878,8 +986,6 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
                 }
             }
         }
-
-        override fun isMain() = true
     }
 
     private class Child(
@@ -888,18 +994,33 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         val isImporting: Boolean,
         parent: Interpreter
     ): Interpreter() {
-        override val threadHandler = parent.threadHandler
         override val api = parent.api
         override val properties = parent.properties
         override val globalTable = StackTable(parent.modules)
         override var currentTable = this.globalTable
+        override val threadHandler = parent.threadHandler
         override val modules = parent.modules
         override val functions = parent.functions
         override val primitives = parent.primitives
         override val localCache = parent.localCache
 
         override fun executeAsync(): Future<ClassInstance?> {
-            return this.threadHandler.runAsync { Arucas.run(this) }
+            return this.runAsync {
+                this.executeBlocking()
+            }
+        }
+
+        override fun executeBlocking(): ClassInstance {
+            return try {
+                this.interpret()
+                this.getNull()
+            } catch (returnPropagator: Propagator.Return) {
+                returnPropagator.returnValue
+            } catch (compileError: CompileError) {
+                // Compile errors are propagated as runtime errors
+                // so parent script can handle accordingly
+                runtimeError("Compiling failed", compileError)
+            }
         }
 
         override fun loadApi() {
@@ -917,10 +1038,10 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
     private class Branch(interpreter: Interpreter): Interpreter() {
         override val content = interpreter.content
         override val name = interpreter.name
-        override val threadHandler = interpreter.threadHandler
         override val api = interpreter.api
         override val properties = interpreter.properties
         override val modules = interpreter.modules
+        override val threadHandler = interpreter.threadHandler
         override val functions = interpreter.functions
         override val primitives = interpreter.primitives
         override val globalTable = interpreter.globalTable

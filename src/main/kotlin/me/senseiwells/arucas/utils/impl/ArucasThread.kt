@@ -5,12 +5,12 @@ import me.senseiwells.arucas.exceptions.Propagator
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
-class ArucasThread constructor(
+class ArucasThread internal constructor(
     private val interpreter: Interpreter,
     group: ThreadGroup,
     runnable: Runnable,
     name: String
-): Thread(group, interpreter.threadHandler.safe(runnable), name) {
+): Thread(group, runnable, name) {
     private val freezeLock = ReentrantLock()
     private val condition = this.freezeLock.newCondition()
 

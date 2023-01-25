@@ -76,7 +76,7 @@ class ThreadDef(interpreter: Interpreter): CreatableDefinition<ArucasThread>(THR
     )
     private fun runThreaded1(arguments: Arguments): ClassInstance {
         val function = arguments.nextFunction()
-        return this.create(arguments.interpreter.threadHandler.functionThreaded(function, arguments.interpreter))
+        return this.create(arguments.interpreter.runFunctionOnThread(function))
     }
 
     @FunctionDoc(
@@ -99,7 +99,7 @@ class ThreadDef(interpreter: Interpreter): CreatableDefinition<ArucasThread>(THR
     private fun runThreaded2(arguments: Arguments): ClassInstance {
         val name = arguments.nextPrimitive(StringDef::class)
         val function = arguments.nextFunction()
-        return this.create(arguments.interpreter.threadHandler.functionThreaded(function, arguments.interpreter, name))
+        return this.create(arguments.interpreter.runFunctionOnThread(function, name))
     }
 
     @FunctionDoc(

@@ -7,13 +7,14 @@ import kotlin.math.log10
 /**
  * Interface to handle output for the interpreter.
  */
+@Suppress("UNUSED")
 interface ArucasOutput {
     /**
      * This should take a string and format it
      * as an error, typically a red colour.
      *
-     * This method should do nothing if formatting
-     * is disabled.
+     * @param string the string to format.
+     * @return the formatted string.
      */
     fun formatError(string: String): String
 
@@ -21,14 +22,16 @@ interface ArucasOutput {
      * This should take a string and format it
      * as an error and bold.
      *
-     * This method should do nothing if formatting
-     * is disabled.
+     * @param string the string to format.
+     * @return the formatted string.
      */
     fun formatErrorBold(string: String): String
 
     /**
      * This method should output a value
      * to the regular output for the program.
+     *
+     * @param value the value to print.
      */
     fun print(value: Any?)
 
@@ -39,17 +42,23 @@ interface ArucasOutput {
 
     /**
      * Outputs a value then a new line.
+     *
+     * @param value the value to print.
      */
     fun println(value: Any?) = this.print(value.toString() + "\n")
 
     /**
      * Outputs an error.
+     *
+     * @param value the value to print as an error.
      */
     fun printError(value: Any?) = this.println(this.formatErrorBold(value.toString()))
 
     /**
      * This method should output a value
-     * to the logging output for the program.
+     * to the debug output for the program.
+     *
+     * @param value the value to log.
      */
     fun log(value: Any?)
 
@@ -60,54 +69,70 @@ interface ArucasOutput {
 
     /**
      * Logs a value then a new line.
+     *
+     * @param value the value to log.
      */
     fun logln(value: Any?) = this.log(value.toString() + "\n")
 
     /**
      * Logs an error.
+     *
+     * @param value the value to log as an error.
      */
     fun logError(value: Any?) = this.logln(this.formatErrorBold(value.toString()))
 
     /**
      * This should format a stack trace.
+     *
+     * @param interpreter the interpreter that formatted this stack trace.
+     * @param message a given message to format the trace with.
+     * @param trace the trace tor format.
+     * @return the formatted stack trace.
      */
     fun formatStackTrace(interpreter: Interpreter, message: String?, trace: LocatableTrace): String {
-        val maxLength = interpreter.properties.errorMaxLength
-        val lines = trace.fileContent.lines()
-        val errorLine = trace.line + 1
-        val padSize = 1.coerceAtLeast((log10(errorLine.toDouble()) + 1.0).toInt());
-        val padFormat = "%" + padSize + "d"
-        val numPadding = " ".repeat(padSize)
+        return defaultFormatStackTrace(interpreter, message, trace)
+    }
 
-        var errorStart = trace.column
-        var errorEnd = trace.column + 1
-        var errorString = lines[errorLine - 1]
+    companion object {
+        @JvmStatic
+        fun defaultFormatStackTrace(interpreter: Interpreter, message: String?, trace: LocatableTrace): String {
+            val maxLength = interpreter.properties.errorMaxLength
+            val lines = trace.fileContent.lines()
+            val errorLine = trace.line + 1
+            val padSize = 1.coerceAtLeast((log10(errorLine.toDouble()) + 1.0).toInt());
+            val padFormat = "%" + padSize + "d"
+            val numPadding = " ".repeat(padSize)
 
-        if (errorStart > maxLength / 2) {
-            val diff = errorStart - (maxLength / 2)
-            errorStart -= diff - 4
-            errorEnd -= diff - 4
-            errorString = "... " + errorString.substring(diff)
-        }
+            var errorStart = trace.column
+            var errorEnd = trace.column + 1
+            var errorString = lines[errorLine - 1]
 
-        if (errorString.length > maxLength - 4) {
-            if (errorEnd > maxLength - 4) {
-                errorEnd = maxLength - 4
+            if (errorStart > maxLength / 2) {
+                val diff = errorStart - (maxLength / 2)
+                errorStart -= diff - 4
+                errorEnd -= diff - 4
+                errorString = "... " + errorString.substring(diff)
             }
 
-            errorString = errorString.substring(0, maxLength - 4) + " ..."
+            if (errorString.length > maxLength - 4) {
+                if (errorEnd > maxLength - 4) {
+                    errorEnd = maxLength - 4
+                }
+
+                errorString = errorString.substring(0, maxLength - 4) + " ..."
+            }
+
+            val sb = StringBuilder()
+
+            sb.append("\n")
+                .append(String.format(padFormat, errorLine)).append(" | ").append(errorString).append("\n")
+                .append(numPadding).append(" | ").append(" ".repeat(errorStart)).append("^".repeat(errorEnd - errorStart))
+
+            if (message != null) {
+                sb.append("\n").append(numPadding).append(" | ").append(" ".repeat(errorStart)).append(message)
+            }
+
+            return sb.toString()
         }
-
-        val sb = StringBuilder()
-
-        sb.append("\n")
-            .append(String.format(padFormat, errorLine)).append(" | ").append(errorString).append("\n")
-            .append(numPadding).append(" | ").append(" ".repeat(errorStart)).append("^".repeat(errorEnd - errorStart))
-
-        if (message != null) {
-            sb.append("\n").append(numPadding).append(" | ").append(" ".repeat(errorStart)).append(message)
-        }
-
-        return sb.toString()
     }
 }
