@@ -176,6 +176,32 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
     private val returnThrowable by lazy { Propagator.Return(this.getNull()) }
 
     /**
+     * This executes the interpreter asynchronously. This
+     * provides a [Future] for any [ClassInstance] that it returns.
+     *
+     * Any exceptions thrown by will be handled by this method.
+     *
+     * @return the class instance that the script returns wrapped in a future.
+     * @see Interpreter
+     */
+    fun executeAsync(): Future<ClassInstance?> {
+        return this.runAsync(this::execute)
+    }
+
+    /**
+     * This executes the interpreter on the current thread
+     * blocking its execution till the interpreter has finished.
+     *
+     * Any exceptions will also not be handled by this method.
+     *
+     * @return the class instance that the script returns.
+     * @see Interpreter
+     */
+    fun executeBlocking(): ClassInstance {
+        return this.threadHandler.blocking(this, this::execute)
+    }
+
+    /**
      * This compiles the [content] into an abstract syntax tree of [Statement] and [Expression].
      * These can then be visited by [StatementVisitor] and [ExpressionVisitor], usually an [Interpreter].
      *
@@ -467,28 +493,11 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
     }
 
     /**
-     * This executes the interpreter asynchronously. This
-     * provides a [Future] for any [ClassInstance] that it returns.
-     *
-     * Any exceptions thrown by [executeBlocking] will be handled by this method.
-     *
-     * @return the class instance that the script returns wrapped in a future.
-     * @see Interpreter
-     */
-    open fun executeAsync(): Future<ClassInstance?> {
-        return this.runAsync(this::executeBlocking)
-    }
-
-    /**
-     * This executes the interpreter on the current thread
-     * blocking its execution till the interpreter has finished.
-     *
-     * Any exceptions will also not be handled by this method.
+     * This executes the interpreter. This is used by [executeBlocking] and [executeAsync]
      *
      * @return the class instance that the script returns.
-     * @see Interpreter
      */
-    abstract fun executeBlocking(): ClassInstance
+    protected abstract fun execute(): ClassInstance
 
     /**
      * This loads any API elements, such as the built-in classes and extensions.
@@ -523,7 +532,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
      * @param expression the expression to evaluate.
      * @return the result of the [expression].
      */
-    internal fun evaluate(table: StackTable, expression: Expression): ClassInstance {
+    /* internal */ fun evaluate(table: StackTable, expression: Expression): ClassInstance {
         return this.jumpTable(table) { this.evaluate(expression) }
     }
 
@@ -535,7 +544,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
      * @param trace the [Trace] to push to the [stackTrace].
      * @return the [ClassInstance] returned by the instance call.
      */
-    internal fun call(instance: ClassInstance, args: List<ClassInstance>, trace: CallTrace = Trace.INTERNAL): ClassInstance {
+    /* internal */ fun call(instance: ClassInstance, args: List<ClassInstance>, trace: CallTrace = Trace.INTERNAL): ClassInstance {
         this.canRun()
         try {
             this.stackTrace.push(trace)
@@ -1252,7 +1261,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         override val localCache = LocalCache()
         override var currentTable = this.globalTable
 
-        override fun executeBlocking(): ClassInstance {
+        override fun execute(): ClassInstance {
             return this.threadHandler.execute()
         }
 
@@ -1295,13 +1304,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         override val primitives = parent.primitives
         override val localCache = parent.localCache
 
-        override fun executeAsync(): Future<ClassInstance?> {
-            return this.runAsync {
-                this.executeBlocking()
-            }
-        }
-
-        override fun executeBlocking(): ClassInstance {
+        override fun execute(): ClassInstance {
             return try {
                 this.interpret()
                 this.getNull()
@@ -1345,12 +1348,8 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
             }
         }
 
-        override fun executeAsync(): Future<ClassInstance?> {
-            throw IllegalStateException("Branch cannot execute async")
-        }
-
-        override fun executeBlocking(): ClassInstance {
-            throw IllegalStateException("Branch cannot execute blocking")
+        override fun execute(): ClassInstance {
+            throw IllegalStateException("Branch cannot be executed")
         }
 
         override fun loadApi() {

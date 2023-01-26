@@ -6,10 +6,7 @@ import me.senseiwells.arucas.exceptions.FatalError
 import me.senseiwells.arucas.exceptions.Propagator
 import me.senseiwells.arucas.utils.InternalTrace
 import me.senseiwells.arucas.utils.impl.ArucasThread
-import java.util.concurrent.Callable
-import java.util.concurrent.Future
-import java.util.concurrent.ScheduledExecutorService
-import java.util.concurrent.ScheduledThreadPoolExecutor
+import java.util.concurrent.*
 
 class ThreadHandler(val interpreter: Interpreter) {
     private val shutdown = ArrayList<Runnable>()
@@ -45,6 +42,26 @@ class ThreadHandler(val interpreter: Interpreter) {
                 null
             }
         })
+    }
+
+    internal fun <T> blocking(interpreter: Interpreter, function: () -> T): T {
+        val throwableFuture = CompletableFuture<Throwable?>()
+        val future = this.executor.submit(Callable {
+            try {
+                function().also {
+                    throwableFuture.complete(null)
+                }
+            } catch (throwable: Throwable) {
+                this@ThreadHandler.handleError(throwable, interpreter)
+                throwableFuture.complete(throwable)
+                null
+            }
+        })
+        val throwable = throwableFuture.get()
+        if (throwable != null) {
+            throw throwable
+        }
+        return future.get()!!
     }
 
     internal fun runFunctionOnThread(callable: ClassInstance, interpreter: Interpreter, name: String): ArucasThread {
