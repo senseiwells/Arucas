@@ -1,7 +1,6 @@
 package me.senseiwells.arucas.test.benchmark;
 
 import me.senseiwells.arucas.api.ArucasAPI;
-import me.senseiwells.arucas.api.ThreadHandler;
 import me.senseiwells.arucas.builtin.NumberDef;
 import me.senseiwells.arucas.builtin.StringDef;
 import me.senseiwells.arucas.classes.ClassInstance;
@@ -14,11 +13,12 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * From my testing as of 10.08.22 (dd.mm.yy):
- * Arucas map is ~2x slower than LinkedHashMap.
- * After profiling it seems map.putVal() takes
+ * From my testing as of <code>10.08.22 (dd.mm.yy)</code>:
+ * {@link ArucasOrderedMap} is <code>~2x</code> slower than {@link LinkedHashMap}.
+ * After profiling it seems {@link LinkedHashMap#putVal(int, Object, Object, boolean, boolean)} takes
  * a lot more time than the others.
  */
+@SuppressWarnings("JavadocReference")
 @State(Scope.Thread)
 public class BenchmarkArucasMaps {
 	static final int STEPS = 1_000_000;
@@ -31,8 +31,7 @@ public class BenchmarkArucasMaps {
 	@Measurement(iterations = 5)
 	public void benchmarkArucasMap() {
 		var api = new ArucasAPI.Builder().addDefault().build();
-		var interpreter = Interpreter.of("", "", api, ThreadHandler::new);
-		interpreter.loadApi();
+		var interpreter = Interpreter.dummy(api);
 
 		var random = new Random(0);
 		var cache = new ArucasCache(MAX_VALUE, interpreter);

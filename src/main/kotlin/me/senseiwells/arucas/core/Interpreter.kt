@@ -44,12 +44,12 @@ import kotlin.reflect.KClass
  * // Alternatively you can do
  * interpreter.executeAsync()
  * ```
- * @see ArucasAPI
  *
  * You are also able to create [dummy] interpreters. These are intended
  * for data generation, e.g. generating documentation based on the
  * documentation annotations.
  *
+ * @see ArucasAPI
  * @see DocParser
  */
 @Suppress("UNUSED")
