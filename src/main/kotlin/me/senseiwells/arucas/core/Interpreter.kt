@@ -1,6 +1,7 @@
 package me.senseiwells.arucas.core
 
 import me.senseiwells.arucas.api.ArucasAPI
+import me.senseiwells.arucas.api.docs.parser.DocParser
 import me.senseiwells.arucas.builtin.*
 import me.senseiwells.arucas.classes.*
 import me.senseiwells.arucas.core.Interpreter.Companion.of
@@ -41,16 +42,37 @@ import kotlin.reflect.KClass
  * // Alternatively you can do
  * interpreter.executeAsync()
  * ```
- *
  * @see ArucasAPI
+ *
+ * You are also able to create [dummy] interpreters. These are intended
+ * for data generation, e.g. generating documentation based on the
+ * documentation annotations.
+ *
+ * @see DocParser
  */
-sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstance> {
+sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstance>, ErrorSafe {
     companion object {
+        /**
+         * Creates a new root interpreter.
+         *
+         * @param content the content to interpret.
+         * @param name the name of the interpreter.
+         * @param api the api used by the interpreter.
+         * @return the new interpreter.
+         */
         @JvmStatic
         fun of(content: String, name: String, api: ArucasAPI = ArucasAPI.Builder().addDefault().build()): Interpreter {
             return Mother(content, name, api)
         }
 
+        /**
+         * Creates a dummy interpreter for data generation.
+         *
+         * @param api the api used by the interpreter.
+         * @return the dummy interpreter.
+         *
+         * @see DocParser
+         */
         @JvmStatic
         fun dummy(api: ArucasAPI = ArucasAPI.Builder().addDefault().build()): Interpreter {
             return of("", "dummy", api).also { it.loadApi() }
@@ -144,7 +166,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
 
     /**
      * The [Propagator.Return] instance, we only have one instance since
-     * we are single-threaded we can deal with mutations and saves on objects.
+     * we are single-threaded we can deal with mutations and save on objects.
      *
      * @see Propagator.Return
      */
@@ -200,16 +222,8 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         return this.threadHandler.runFunctionOnThread(callable, this, name)
     }
 
-    fun handleError(throwable: Throwable) {
+    override fun handleError(throwable: Throwable) {
         this.threadHandler.handleError(throwable, this)
-    }
-
-    inline fun runSafe(block: () -> Unit) {
-        try {
-            block()
-        } catch (e: Exception) {
-            this.handleError(e)
-        }
     }
 
     inline fun <T> runSafe(block: () -> T): T? {
@@ -266,15 +280,45 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         }
     }
 
-    fun execute(table: StackTable, vararg statements: Statement) {
-        this.jumpTable(table) { statements.forEach { this.execute(it) } }
+    /**
+     * Called when a class is defined.
+     *
+     * @param table the stack that the class is being defined on/
+     */
+    protected open fun defineClass(table: StackTable, definition: ClassDefinition) {
+        table.defineClass(definition)
     }
 
-    fun evaluate(table: StackTable, expression: Expression): ClassInstance {
+    /**
+     * Executes a statement on a given [StackTable].
+     *
+     * @param table the table to jump to.
+     * @param statement the statement to execute.
+     */
+    internal fun execute(table: StackTable, statement: Statement) {
+        this.jumpTable(table) { this.execute(statement) }
+    }
+
+    /**
+     * Evaluates an expression on a given [StackTable].
+     *
+     * @param table the table to jump to.
+     * @param expression the expression to evaluate.
+     * @return the result of the [expression].
+     */
+    internal fun evaluate(table: StackTable, expression: Expression): ClassInstance {
         return this.jumpTable(table) { this.evaluate(expression) }
     }
 
-    fun call(instance: ClassInstance, args: List<ClassInstance>, trace: CallTrace = Trace.INTERNAL): ClassInstance {
+    /**
+     * This method calls a [ClassInstance] and pushes it to the [stackTrace] for errors.
+     *
+     * @param instance the [ClassInstance] to call.
+     * @param args the arguments to provide for the call.
+     * @param trace the [Trace] to push to the [stackTrace].
+     * @return the [ClassInstance] returned by the instance call.
+     */
+    internal fun call(instance: ClassInstance, args: List<ClassInstance>, trace: CallTrace = Trace.INTERNAL): ClassInstance {
         this.canRun()
         try {
             this.stackTrace.push(trace)
@@ -298,13 +342,91 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         }
     }
 
-    private fun execute(statement: Statement) = statement.visit(this)
+    /**
+     * Jumps to the next stack, the child of the current stack table.
+     * It then executes [block], then pops the stack back to the original.
+     *
+     * @param T the return type of [block].
+     * @param block the block to execute within the next stack.
+     * @return the return value of [block].
+     * @see StackTable
+     * @see jumpTable
+     */
+    private inline fun <T> jumpNextTable(block: () -> T): T {
+        return this.jumpTable(StackTable(this.modules, this.currentTable), block)
+    }
+
+    /**
+     * Jumps to an arbitrary given stack then executes the [block],
+     * then pops the stack back to the original.
+     *
+     * @param T the return type of [block].
+     * @param table the [StackTable] to jump to.
+     * @param block the block to execute within the stack.
+     * @return the return value of [block].
+     * @see StackTable
+     * @see jumpNextTable
+     */
+    private inline fun <T> jumpTable(table: StackTable, block: () -> T): T {
+        val previous = this.currentTable
+        try {
+            this.currentTable = table
+            return block()
+        } finally {
+            this.currentTable = previous
+        }
+    }
+
+    /**
+     * Checks whether the interpreter is still able to run.
+     *
+     * @return whether the interpreter can still run.
+     */
+    private fun canRun(): Boolean {
+        val thread = Thread.currentThread()
+        if (thread.isInterrupted) {
+            throw Propagator.Stop.INSTANCE
+        } else if (thread is ArucasThread && thread.isFrozen) {
+            thread.freeze()
+        }
+        return true
+    }
+
+    private fun execute(statement: Statement) {
+        statement.visit(this)
+    }
 
     private fun executeNext(vararg statements: Statement) {
         this.jumpNextTable { statements.forEach { this.execute(it) } }
     }
 
-    private fun evaluate(expression: Expression) = expression.visit(this)
+    private fun evaluate(expression: Expression): ClassInstance {
+        return expression.visit(this)
+    }
+
+    private fun isInstanceType(instance: ClassInstance, typeNames: Array<String>?, trace: Trace): Boolean {
+        typeNames ?: return true
+        for (name in typeNames) {
+            val definition = this.currentTable.getClass(name)
+            definition ?: runtimeError("No such class with name '$name'", trace)
+            if (instance.isOf(definition)) {
+                return true
+            }
+        }
+        return false
+    }
+
+    private fun tryImport(importPath: String, local: Boolean) {
+        if (!this.modules.tried(importPath)) {
+            this.modules.addLazy(importPath) {
+                val content = this.api.getLibraryManager().getImport(importPath.split("."), local, this)
+                content ?: return@addLazy
+                val child: Interpreter = Child(content, importPath, true, this)
+                child.interpret()
+                this.localCache.mergeWith(child.localCache)
+            }
+        }
+    }
 
     @Suppress("SameParameterValue")
     private fun getVariable(name: String, trace: Trace, visitable: Visitable? = null): ClassInstance {
@@ -364,56 +486,6 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
     private fun noFunctionError(name: String, parameters: Int, trace: Trace): Nothing {
         val error = if (parameters == 0) "" else " with $parameters parameter${if (parameters == 1) "" else "s"}"
         runtimeError("No such function '$name'$error exists", trace)
-    }
-
-    private inline fun <T> jumpNextTable(supplier: () -> T) = this.jumpTable(StackTable(this.modules, this.currentTable), supplier)
-
-    private inline fun <T> jumpTable(table: StackTable, supplier: () -> T): T {
-        val previous = this.currentTable
-        try {
-            this.currentTable = table
-            return supplier()
-        } finally {
-            this.currentTable = previous
-        }
-    }
-
-    private fun canRun(): Boolean {
-        val thread = Thread.currentThread()
-        if (thread.isInterrupted) {
-            throw Propagator.Stop.INSTANCE
-        } else if (thread is ArucasThread && thread.isFrozen) {
-            thread.freeze()
-        }
-        return true
-    }
-
-    private fun isInstanceType(instance: ClassInstance, typeNames: Array<String>?, trace: Trace): Boolean {
-        typeNames ?: return true
-        for (name in typeNames) {
-            val definition = this.currentTable.getClass(name)
-            definition ?: runtimeError("No such class with name '$name'", trace)
-            if (instance.isOf(definition)) {
-                return true
-            }
-        }
-        return false
-    }
-
-    protected open fun defineClass(table: StackTable, definition: ClassDefinition) {
-        table.defineClass(definition)
-    }
-
-    private fun tryImport(importPath: String, local: Boolean) {
-        if (!this.modules.tried(importPath)) {
-            this.modules.addLazy(importPath) {
-                val content = this.api.getLibraryManager().getImport(importPath.split("."), local, this)
-                content ?: return@addLazy
-                val child: Interpreter = Child(content, importPath, true, this)
-                child.interpret()
-                this.localCache.mergeWith(child.localCache)
-            }
-        }
     }
 
     private fun visitClassBody(definition: ArucasClassDefinition, body: ClassBodyStatement, needsSuper: Boolean, type: String) {
@@ -479,7 +551,9 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         return instance to instance.definition.superclassOf(name)
     }
 
-    override fun visitVoid(void: VoidStatement) = Unit
+    // Visiting Implementations:
+
+    override fun visitVoid(void: VoidStatement) { }
 
     override fun visitStatements(statements: Statements) {
         statements.statements.forEach { this.execute(it) }
