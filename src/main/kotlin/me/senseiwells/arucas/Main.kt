@@ -1,7 +1,7 @@
 package me.senseiwells.arucas
 
 import me.senseiwells.arucas.api.ArucasAPI
-import me.senseiwells.arucas.api.DefaultArucasIO
+import me.senseiwells.arucas.api.impl.DefaultArucasIO
 import me.senseiwells.arucas.api.docs.parser.DocParser
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.utils.ArgumentParser

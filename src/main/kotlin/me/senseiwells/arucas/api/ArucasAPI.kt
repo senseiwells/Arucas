@@ -3,8 +3,12 @@ package me.senseiwells.arucas.api
 import com.google.gson.JsonElement
 import me.senseiwells.arucas.api.ArucasAPI.Builder
 import me.senseiwells.arucas.api.docs.parser.CodeDocParser
+import me.senseiwells.arucas.api.impl.DefaultArucasIO
+import me.senseiwells.arucas.api.impl.GitHubArucasLibrary
+import me.senseiwells.arucas.api.impl.MultiArucasLibrary
 import me.senseiwells.arucas.builtin.*
 import me.senseiwells.arucas.classes.ClassDefinition
+import me.senseiwells.arucas.classes.ClassInstance
 import me.senseiwells.arucas.classes.PrimitiveDefinition
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.exceptions.RuntimeError
@@ -12,12 +16,9 @@ import me.senseiwells.arucas.extensions.JavaClassDef
 import me.senseiwells.arucas.extensions.JavaDef
 import me.senseiwells.arucas.extensions.JsonDef
 import me.senseiwells.arucas.extensions.NetworkDef
-import me.senseiwells.arucas.utils.ArucasFunction
-import me.senseiwells.arucas.utils.Converter
-import me.senseiwells.arucas.utils.Properties
+import me.senseiwells.arucas.utils.*
 import me.senseiwells.arucas.utils.Util.Collection.sort
 import me.senseiwells.arucas.utils.Util.File.ensureParentExists
-import me.senseiwells.arucas.utils.ValueConverter
 import me.senseiwells.arucas.utils.impl.*
 import java.io.File
 import java.nio.file.Files
@@ -218,8 +219,9 @@ interface ArucasAPI {
          * The library manager.
          *
          * @see ArucasLibrary
+         * @see MultiArucasLibrary
          */
-        var library: ArucasLibrary = GitHubArucasLibrary()
+        var library: ArucasLibrary = MultiArucasLibrary()
             private set
 
         /**
@@ -270,6 +272,24 @@ interface ArucasAPI {
         }
 
         /**
+         * This adds an [ArucasLibrary] given that the current [library] is
+         * a [MultiArucasLibrary] allowing for multiply libraries to be added.
+         *
+         * If not then nothing will be mutated.
+         *
+         * @param libraryName the name of the library, this can be used to remove it later.
+         * @param generator the library generator with the given library path.
+         * @return the builder.
+         */
+        fun addArucasLibrary(libraryName: String, generator: (Path) -> ArucasLibrary): Builder {
+            val library = this.library
+            if (library is MultiArucasLibrary) {
+                library.addLibrary(libraryName, generator)
+            }
+            return this
+        }
+
+        /**
          * This sets the input handler of the API.
          *
          * @param input the new input handler.
@@ -291,45 +311,116 @@ interface ArucasAPI {
             return this
         }
 
+        /**
+         * This sets the error handler of the API.
+         *
+         * @param errorHandler the new error handler.
+         * @return the builder.
+         */
         fun setErrorHandler(errorHandler: ArucasErrorHandler): Builder {
             this.errorHandler = errorHandler
             return this
         }
 
+        /**
+         * This sets the obfuscator for the API.
+         *
+         * @param obfuscator the new obfuscator.
+         * @return the builder.
+         */
         fun setObfuscator(obfuscator: ArucasObfuscator): Builder {
             this.obfuscator = obfuscator
             return this
         }
 
+        /**
+         * This sets the library manager for the API.
+         *
+         * It is suggested that you use [addArucasLibrary] instead to allow
+         * for multiple libraries to be added, however you may use your own custom setup.
+         *
+         * @param library the new library manager.
+         * @return the builder.
+         */
         fun setLibraryManager(library: ArucasLibrary): Builder {
             this.library = library
             return this
         }
 
+        /**
+         * This sets the property generator for the API.
+         *
+         * @param properties the property generator.
+         * @return the builder.
+         */
         fun setInterpreterProperties(properties: () -> Properties): Builder {
             this.properties = properties
             return this
         }
 
+        /**
+         * This adds a conversion from an instance of a [KClass] to a [ClassInstance].
+         *
+         * @param T the type to convert.
+         * @param klass the class type to convert from
+         * @param converter the converter.
+         * @return the builder.
+         * @see ValueConverter
+         */
         fun <T: Any> addConversion(klass: KClass<T>, converter: Converter<T>): Builder {
             return this.addConversion(klass.java, converter)
         }
 
+        /**
+         * This adds a conversion from an instance of a [Class] to a [ClassInstance].
+         *
+         * @param T the type to convert.
+         * @param clazz the class type to convert from
+         * @param converter the converter.
+         * @return the builder.
+         * @see ValueConverter
+         */
         fun <T: Any> addConversion(clazz: Class<T>, converter: Converter<T>): Builder {
             this.converter.addClass(clazz, converter)
             return this
         }
 
+        /**
+         * Adds all the default libraries, conversions, extensions,
+         * built-in extensions, built-in classes, and importable
+         * classes.
+         *
+         * It is advised that you always call this on your builder
+         * as it adds the basic classes for [StringDef], [BooleanDef], etc.
+         * Without these the interpreter may fail.
+         *
+         * @return the builder.
+         */
         fun addDefault(): Builder {
-            DefaultArucasIO().let { this.setInput(it).setOutput(it) }
+            this.addDefaultLibrary()
             this.addDefaultConversions()
             this.addDefaultExtensions()
             this.addDefaultBuiltInDefinitions()
             this.addDefaultClassDefinitions()
-            this.addDefaultConversions()
             return this
         }
 
+        /**
+         * Adds the `ArucasLibraries` GitHub library. You
+         * can find the repository [here](https://github.com/senseiwells/ArucasLibraries).
+         *
+         * @return the builder.
+         */
+        fun addDefaultLibrary(): Builder {
+            return this.addArucasLibrary("ArucasLibraries", ::GitHubArucasLibrary)
+        }
+
+        /**
+         * Adds [BuiltInExtension] which is the default built-in
+         * extension providing the very basic functions such as `print`, and `sleep`.
+         *
+         * @return the builder.
+         */
         fun addDefaultExtensions(): Builder {
             this.addBuiltInExtension(
                 BuiltInExtension()
@@ -337,6 +428,13 @@ interface ArucasAPI {
             return this
         }
 
+        /**
+         * Adds all the built-in definitions. This includes
+         * all the bare-bones requirements as well as some
+         * standard classes, such as [MathDef], and [FileDef].
+         *
+         * @return the builder.
+         */
         fun addDefaultBuiltInDefinitions(): Builder {
             this.addBuiltInDefinitions(
                 ::ObjectDef,
@@ -364,12 +462,27 @@ interface ArucasAPI {
             return this
         }
 
+        /**
+         * Adds the default importable classes. These include
+         * [JavaDef], [JavaClassDef] from `util.Internal` and
+         * [JsonDef] from `util.Json`.
+         *
+         * @return the builder.
+         */
         fun addDefaultClassDefinitions(): Builder {
             this.addClassDefinitions("util.Internal", ::JavaDef, ::JavaClassDef)
             this.addClassDefinitions("util.Json", ::JsonDef)
             return this
         }
 
+        /**
+         * Adds all the default conversions from Java to [ClassInstance].
+         *
+         * These include the primitive types and their arrays, collections
+         * and any other utility objects.
+         *
+         * @return the builder.
+         */
         fun addDefaultConversions(): Builder {
             // We need to specify Java primitives because... Java
             this.addConversion(java.lang.Boolean::class) { b, i -> i.createBool(b.booleanValue()) }
@@ -416,6 +529,14 @@ interface ArucasAPI {
             return this
         }
 
+        /**
+         * This builds the [ArucasAPI.Builder] into an actual [ArucasAPI].
+         *
+         * These are simply just references to the builder itself so if
+         * the builder is mutated so will the [ArucasAPI].
+         *
+         * @return the built [ArucasAPI].
+         */
         fun build(): ArucasAPI {
             return object: ArucasAPI {
                 override fun getBuiltInExtensions() = this@Builder.builtInExtensions

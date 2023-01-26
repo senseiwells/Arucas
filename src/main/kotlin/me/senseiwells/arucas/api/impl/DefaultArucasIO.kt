@@ -1,5 +1,7 @@
-package me.senseiwells.arucas.api
+package me.senseiwells.arucas.api.impl
 
+import me.senseiwells.arucas.api.ArucasInput
+import me.senseiwells.arucas.api.ArucasOutput
 import java.util.*
 import java.util.concurrent.CompletableFuture
 
@@ -8,7 +10,20 @@ private const val DEBUG = "\u001b[1;36m"
 private const val ERROR = "\u001b[0;31m"
 private const val RESET = "\u001b[0m"
 
+/**
+ * The default implementation for Arucas input and output.
+ *
+ * This simply just takes input from the terminal as well
+ * as prints to the terminal with formatting, if enabled.
+ *
+ * @param format whether to format errors and logs.
+ * @see ArucasInput
+ * @see ArucasOutput
+ */
 open class DefaultArucasIO(
+    /**
+     * Whether to format errors and logs.
+     */
     private val format: Boolean = true
 ): ArucasInput, ArucasOutput {
     private val scanner = Scanner(System.`in`)

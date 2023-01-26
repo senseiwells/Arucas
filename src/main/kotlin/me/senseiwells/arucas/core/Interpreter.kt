@@ -1,9 +1,11 @@
 package me.senseiwells.arucas.core
 
 import me.senseiwells.arucas.api.ArucasAPI
+import me.senseiwells.arucas.api.ArucasErrorHandler
 import me.senseiwells.arucas.api.docs.parser.DocParser
 import me.senseiwells.arucas.builtin.*
 import me.senseiwells.arucas.classes.*
+import me.senseiwells.arucas.core.Interpreter.Companion.dummy
 import me.senseiwells.arucas.core.Interpreter.Companion.of
 import me.senseiwells.arucas.exceptions.*
 import me.senseiwells.arucas.nodes.*
@@ -50,6 +52,7 @@ import kotlin.reflect.KClass
  *
  * @see DocParser
  */
+@Suppress("UNUSED")
 sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstance>, ErrorSafe {
     companion object {
         /**
@@ -172,15 +175,13 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
      */
     private val returnThrowable by lazy { Propagator.Return(this.getNull()) }
 
-    protected abstract fun loadApi()
-
-    open fun executeAsync(): Future<ClassInstance?> {
-        return this.runAsync(this::executeBlocking)
-    }
-
-    abstract fun executeBlocking(): ClassInstance
-
-    fun compile(): List<Statement> {
+    /**
+     * This compiles the [content] into an abstract syntax tree of [Statement] and [Expression].
+     * These can then be visited by [StatementVisitor] and [ExpressionVisitor], usually an [Interpreter].
+     *
+     * @return the list of [Statement]s that form the AST.
+     */
+    internal fun compile(): List<Statement> {
         this.loadApi()
         val compileStart = System.nanoTime()
         return Parser(Lexer(this.content, this.name).createTokens()).parse().also {
@@ -191,7 +192,12 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         }
     }
 
-    fun interpret() {
+    /**
+     * This compiles the [content] then visits it with this [Interpreter].
+     *
+     * @see compile
+     */
+    internal fun interpret() {
         val statements = this.compile()
         val executionStart = System.nanoTime()
         try {
@@ -202,56 +208,211 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         }
     }
 
+    /**
+     * This checks whether the interpreter should be running.
+     *
+     * @return whether the interpreter should be running.
+     */
     fun isRunning(): Boolean {
         return this.threadHandler.running
     }
 
+    /**
+     * This adds a callback for when the root interpreter stops executing.
+     *
+     * This can happen as a result of a propagated error or closing naturally
+     * or [forcibly stopped](stop).
+     *
+     * @param runnable the callback.
+     */
     fun addStopEvent(runnable: Runnable) {
         this.threadHandler.addShutdownEvent(runnable)
     }
 
+    /**
+     * This stops the interpreter from executing further.
+     */
     fun stop() {
         this.threadHandler.stop()
     }
 
+    /**
+     * This runs a function asynchronously to the main interpreter thread.
+     *
+     * @param function the code to run async.
+     * @return a [Future] of a possible [ClassInstance], null if an error is thrown within the [function].
+     */
     fun runAsync(function: () -> ClassInstance): Future<ClassInstance?> {
         return this.threadHandler.async(this, function)
     }
 
+    /**
+     * This runs a callable [ClassInstance] on a new [ArucasThread].
+     *
+     * @param callable the callable [ClassInstance].
+     * @param name the name of the thread.
+     * @return the [ArucasThread] that the [callable] is running on.
+     */
     fun runFunctionOnThread(callable: ClassInstance, name: String = "Arucas Async Thread"): ArucasThread {
         return this.threadHandler.runFunctionOnThread(callable, this, name)
     }
 
-
-
+    /**
+     * Converts [Any] into a [ClassInstance].
+     *
+     * @param any the value to convert.
+     * @return the [ClassInstance].
+     * @see ValueConverter
+     */
     fun convertValue(any: Any?): ClassInstance {
         return this.api.getConverter().convertFrom(any, this)
     }
 
+    /**
+     * Gets the primitive definition from its [Class].
+     *
+     * This will throw an exception if the definition is not found.
+     *
+     * @param T the exact type of [PrimitiveDefinition].
+     * @param clazz the class of the [PrimitiveDefinition].
+     * @return the [PrimitiveDefinition].
+     */
     fun <T: PrimitiveDefinition<*>> getPrimitive(clazz: Class<out T>): T {
         return this.primitives.get(clazz) ?: throw IllegalArgumentException("No such definition for '${clazz.simpleName}'")
     }
 
-    fun <T: PrimitiveDefinition<*>> getPrimitive(klass: KClass<out T>) = this.getPrimitive(klass.java)
+    /**
+     * Gets the primitive definition from its [KClass].
+     *
+     * This will throw an exception if the definition is not found.
+     *
+     * @param T the exact type of [PrimitiveDefinition].
+     * @param klass the class of the [PrimitiveDefinition].
+     * @return the [PrimitiveDefinition].
+     * @see getPrimitive
+     */
+    fun <T: PrimitiveDefinition<*>> getPrimitive(klass: KClass<out T>): T {
+        return this.getPrimitive(klass.java)
+    }
 
-    fun <T: CreatableDefinition<V>, V> create(clazz: Class<out T>, value: V) = this.getPrimitive(clazz).create(value)
+    /**
+     * This creates a [ClassInstance] of a [CreatableDefinition] with a given primitive [value].
+     *
+     * @param T the type of [CreatableDefinition].
+     * @param V the primitive type of [T].
+     * @param clazz the class of the [CreatableDefinition].
+     * @param value the primitive value.
+     * @return the created [ClassInstance]
+     */
+    fun <T: CreatableDefinition<V>, V> create(clazz: Class<out T>, value: V): ClassInstance {
+        return this.getPrimitive(clazz).create(value)
+    }
 
-    fun <T: CreatableDefinition<V>, V> create(klass: KClass<out T>, value: V) = this.create(klass.java, value)
+    /**
+     * This creates a [ClassInstance] of a [CreatableDefinition] with a given primitive [value].
+     *
+     * @param T the type of [CreatableDefinition].
+     * @param V the primitive type of [T].
+     * @param klass the class of the [CreatableDefinition].
+     * @param value the primitive value.
+     * @return the created [ClassInstance]
+     * @see create
+     */
+    fun <T: CreatableDefinition<V>, V> create(klass: KClass<out T>, value: V): ClassInstance {
+        return this.create(klass.java, value)
+    }
 
-    fun createBool(boolean: Boolean): ClassInstance = this.getPrimitive(BooleanDef::class).from(boolean)
+    /**
+     * This 'creates' a boolean [ClassInstance].
+     *
+     * In reality this just gets one of the existing constant
+     * [ClassInstance] so they will have the same identity.
+     *
+     * @param boolean the boolean value.
+     * @return the boolean [ClassInstance].
+     */
+    fun createBool(boolean: Boolean): ClassInstance {
+        return this.getPrimitive(BooleanDef::class).from(boolean)
+    }
 
-    fun getNull(): ClassInstance = this.getPrimitive(NullDef::class).NULL
+    /**
+     * Gets the null [ClassInstance].
+     *
+     * @return the null [ClassInstance].
+     */
+    fun getNull(): ClassInstance {
+        return this.getPrimitive(NullDef::class).NULL
+    }
 
-    fun branch(): Interpreter = Branch(this)
+    /**
+     * Creates a [Branch]. This is needed for when going off thread
+     * or when saving the interpreter's state for later use.
+     *
+     * Creating a branch saves the current stack table, other than
+     * that branches inherit all other properties from their parent.
+     *
+     * Here is an example of how to use [branch]:
+     * ```kotlin
+     * val interpreter = /* Get interpreter */
+     * // We must branch here to save the current stack state.
+     * val branch = interpreter.branch()
+     * Thread {
+     *     for (i in 0..100) {
+     *        // This runAsync call can be on any interpreter
+     *        interpreter.runAsync {
+     *            // We must create a branch of the branch to ensure thread safety
+     *            val inner = branch.branch()
+     *            // Do stuff with new inner branch
+     *        }
+     *    }
+     * }.start()
+     * ```
+     */
+    fun branch(): Interpreter {
+        return Branch(this)
+    }
 
-    fun child(content: String, name: String): Interpreter = Child(content, name, false, this)
+    /**
+     * Creates a [Child]. This is needed for running sub-scripts within
+     * a script. This is needed because creating another root interpreter will
+     * result in different instances of class definitions.
+     *
+     * A child inherits all the parent's definitions, functions, etc. however
+     * gains its own global table to run its own script. To execute a child
+     * interpreter it is the same a root interpreter: [executeBlocking] or [executeAsync].
+     *
+     * Children are used for importing, they are able to define classes and
+     * add them to the [modules] field.
+     *
+     * @param content the content of the child script.
+     * @param name the name of the child.
+     * @return the child interpreter.
+     */
+    fun child(content: String, name: String): Interpreter {
+        return Child(content, name, false, this)
+    }
 
+    /**
+     * Tries to log a message to the debug output. It will
+     * only log the message if the [Properties.isDebug] field
+     * is set to true.
+     *
+     * @param message the message to log.
+     */
     fun logDebug(message: String) {
         if (this.properties.isDebug) {
             this.api.getOutput().logln(message)
         }
     }
 
+    /**
+     * Runs a function, and catches any [Exception]s.
+     *
+     * This mirrors the functionality of [ErrorSafe] however
+     * provides `inline` functionality for performance.
+     *
+     * @see ErrorSafe.runSafe
+     */
     inline fun <T> runSafe(block: () -> T): T? {
         return try {
             block()
@@ -261,6 +422,14 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         }
     }
 
+    /**
+     * Runs a function, and catches any [Exception]s.
+     *
+     * This mirrors the functionality of [ErrorSafe] however
+     * provides `inline` functionality for performance.
+     *
+     * @see ErrorSafe.runSafe
+     */
     inline fun <T> runSafe(default: T, block: () -> T): T {
         return try {
             block()
@@ -270,6 +439,14 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         }
     }
 
+    /**
+     * Runs a function, and catches any [InterruptedException]s.
+     *
+     * This mirrors the functionality of [ErrorSafe] however
+     * provides `inline` functionality for performance.
+     *
+     * @see ErrorSafe.canInterrupt
+     */
     inline fun <T> canInterrupt(block: () -> T): T {
         return try {
             block()
@@ -278,9 +455,47 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         }
     }
 
+    /**
+     * This handles any uncaught exceptions by passing them to the
+     * [ThreadHandler]. This will deal with the error appropriately
+     * calling the [ArucasErrorHandler] methods and stopping the script.
+     *
+     * @param throwable the uncaught [Throwable].
+     */
     override fun handleError(throwable: Throwable) {
         this.threadHandler.handleError(throwable, this)
     }
+
+    /**
+     * This executes the interpreter asynchronously. This
+     * provides a [Future] for any [ClassInstance] that it returns.
+     *
+     * Any exceptions thrown by [executeBlocking] will be handled by this method.
+     *
+     * @return the class instance that the script returns wrapped in a future.
+     * @see Interpreter
+     */
+    open fun executeAsync(): Future<ClassInstance?> {
+        return this.runAsync(this::executeBlocking)
+    }
+
+    /**
+     * This executes the interpreter on the current thread
+     * blocking its execution till the interpreter has finished.
+     *
+     * Any exceptions will also not be handled by this method.
+     *
+     * @return the class instance that the script returns.
+     * @see Interpreter
+     */
+    abstract fun executeBlocking(): ClassInstance
+
+    /**
+     * This loads any API elements, such as the built-in classes and extensions.
+     *
+     * @see [ArucasAPI]
+     */
+    protected abstract fun loadApi()
 
     /**
      * Called when a class is defined.

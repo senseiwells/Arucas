@@ -10,6 +10,11 @@ import java.util.function.Supplier
  * @see Interpreter
  */
 interface ErrorSafe {
+    /**
+     * Handles a [Throwable] safely in order not to crash the application.
+     *
+     * @param throwable the throwable that was thrown.
+     */
     fun handleError(throwable: Throwable)
 
     fun runSafe(block: Runnable) {

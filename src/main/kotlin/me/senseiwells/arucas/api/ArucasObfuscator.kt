@@ -7,6 +7,7 @@ package me.senseiwells.arucas.api
  * For example Minecraft obfuscates its code so to access
  * methods we need to obfuscate and deobfuscate names.
  */
+@Suppress("UNUSED")
 interface ArucasObfuscator {
     companion object {
         /**

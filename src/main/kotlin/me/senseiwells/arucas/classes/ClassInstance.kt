@@ -12,7 +12,7 @@ class ClassInstance internal constructor(val definition: ClassDefinition) {
     private val instanceFields by lazy { LinkedHashMap<String, HintedField>() }
     private var primitive: Any? = null
 
-    @Deprecated("This method should not be called directly", ReplaceWith("interpreter.visitCall(instance, args)"))
+    @Deprecated("This method should not be called directly", ReplaceWith("interpreter.call(instance, args)"))
     internal fun call(interpreter: Interpreter, args: List<ClassInstance>) = this.definition.call(this, interpreter, args)
 
     @JvmOverloads

@@ -1,11 +1,11 @@
-package me.senseiwells.arucas.api
+package me.senseiwells.arucas.api.impl
 
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
+import me.senseiwells.arucas.api.ArucasLibrary
 import me.senseiwells.arucas.core.Arucas
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.utils.Util
-import me.senseiwells.arucas.utils.Util.Exception
 import me.senseiwells.arucas.utils.Util.File.ensureParentExists
 import java.io.File
 import java.nio.file.Files
@@ -16,12 +16,22 @@ private val GSON = GsonBuilder().setPrettyPrinting().disableHtmlEscaping().creat
 
 /**
  * Default Implementation of the Arucas Library Manager.
+ *
+ * This implementation pulls libraries from a GitHub repository.
+ *
+ * @param importPath the path where libraries should be downloaded to.
+ * @param libraryURL the GitHub library URL.
  */
 open class GitHubArucasLibrary @JvmOverloads constructor(
+    /**
+     * The path where libraries should be downloaded to.
+     */
     override val importPath: Path = Arucas.PATH.resolve("libs"),
+    /**
+     * The GitHub library URL.
+     */
     private val libraryURL: String = LIBRARY_URL
 ): ArucasLibrary {
-
     /**
      * This method retrieves a library file. We do this
      * by fetching the files from a GitHub repository.
@@ -29,6 +39,12 @@ open class GitHubArucasLibrary @JvmOverloads constructor(
      * We keep a cache of the hash of each file to check if
      * they need updating, and we keep recently loaded
      * libraries in a cache at runtime.
+     *
+     * @param import the import path, e.g. `["util", "StringUtils"]`.
+     * @param local whether to read the import locally only.
+     * @param interpreter the interpreter that is importing the library.
+     * @return the library contents, null if not found.
+     * @see ArucasLibrary.getImport
      */
     override fun getImport(import: List<String>, local: Boolean, interpreter: Interpreter): String? {
         val name = import.joinToString("/")
@@ -41,7 +57,14 @@ open class GitHubArucasLibrary @JvmOverloads constructor(
 
         val cachePath = this.getCachePath()
         val cacheContent = if (Files.exists(cachePath)) Files.readString(cachePath) else null
-        val cache = cacheContent?.let { Exception.catchAsNull { GSON.fromJson(cacheContent, JsonObject::class.java) } } ?: JsonObject()
+        val cache = cacheContent?.let {
+            Util.Exception.catchAsNull {
+                GSON.fromJson(
+                    cacheContent,
+                    JsonObject::class.java
+                )
+            }
+        } ?: JsonObject()
         val thisCache = cache.get(name)?.asJsonObject ?: JsonObject()
 
         val lastUpdateTime = thisCache.get("last")?.asLong
@@ -54,7 +77,7 @@ open class GitHubArucasLibrary @JvmOverloads constructor(
         val sha = thisCache.get("sha")?.asString
         val raw = Util.Network.getStringFromUrl("${this.libraryURL}/$name.arucas")
             ?: return this.updateLastAndRead(cache, thisCache, name, filePath, interpreter)
-        val response = Exception.catchAsNull { GSON.fromJson(raw, JsonObject::class.java) }
+        val response = Util.Exception.catchAsNull { GSON.fromJson(raw, JsonObject::class.java) }
             ?: return this.updateLastAndRead(cache, thisCache, name, filePath, interpreter)
 
         val newSha = response.get("sha")
@@ -75,13 +98,7 @@ open class GitHubArucasLibrary @JvmOverloads constructor(
     }
 
     protected open fun getCachePath(): Path {
-        return this.importPath.resolve(".ArucasCache.json").ensureParentExists().also {
-            // Will be removed in the future
-            val oldCache = this.importPath.resolve("ArucasCache.json")
-            if (Files.exists(oldCache)) {
-                Files.delete(oldCache)
-            }
-        }
+        return this.importPath.resolve(".ArucasCache.json").ensureParentExists()
     }
 
     private fun updateCacheAndWrite(cache: JsonObject, thisCache: JsonObject, name: String) {
@@ -99,6 +116,6 @@ open class GitHubArucasLibrary @JvmOverloads constructor(
     }
 
     private fun read(filePath: Path): String? {
-        return Exception.catchAsNull { Files.readString(filePath) }
+        return Util.Exception.catchAsNull { Files.readString(filePath) }
     }
 }

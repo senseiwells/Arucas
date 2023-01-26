@@ -94,6 +94,17 @@ interface ArucasOutput {
     }
 
     companion object {
+        /**
+         * The default implementation of [ArucasOutput.formatStackTrace]. This has been made
+         * static to allow for Java applications to call this method as Kotlin doesn't support
+         * `default`s in interfaces, well at least not nicely...
+         *
+         * @param interpreter the interpreter that formatted this stack trace.
+         * @param message a given message to format the trace with.
+         * @param trace the trace tor format.
+         * @return the formatted stack trace.
+         * @see ArucasOutput.formatStackTrace
+         */
         @JvmStatic
         fun defaultFormatStackTrace(interpreter: Interpreter, message: String?, trace: LocatableTrace): String {
             val maxLength = interpreter.properties.errorMaxLength
