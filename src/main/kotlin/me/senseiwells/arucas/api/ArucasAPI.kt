@@ -273,7 +273,7 @@ interface ArucasAPI {
 
         /**
          * This adds an [ArucasLibrary] given that the current [library] is
-         * a [MultiArucasLibrary] allowing for multiply libraries to be added.
+         * a [MultiArucasLibrary] allowing for multiple libraries to be added.
          *
          * If not then nothing will be mutated.
          *
