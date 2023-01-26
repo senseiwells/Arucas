@@ -1,8 +1,14 @@
 package me.senseiwells.arucas.utils
 
+import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.exceptions.Propagator
 import java.util.function.Supplier
 
+/**
+ * Interface that implements methods to safely executes lambdas.
+ *
+ * @see Interpreter
+ */
 interface ErrorSafe {
     fun handleError(throwable: Throwable)
 

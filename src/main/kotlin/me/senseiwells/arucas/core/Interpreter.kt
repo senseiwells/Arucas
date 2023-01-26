@@ -222,8 +222,34 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         return this.threadHandler.runFunctionOnThread(callable, this, name)
     }
 
-    override fun handleError(throwable: Throwable) {
-        this.threadHandler.handleError(throwable, this)
+
+
+    fun convertValue(any: Any?): ClassInstance {
+        return this.api.getConverter().convertFrom(any, this)
+    }
+
+    fun <T: PrimitiveDefinition<*>> getPrimitive(clazz: Class<out T>): T {
+        return this.primitives.get(clazz) ?: throw IllegalArgumentException("No such definition for '${clazz.simpleName}'")
+    }
+
+    fun <T: PrimitiveDefinition<*>> getPrimitive(klass: KClass<out T>) = this.getPrimitive(klass.java)
+
+    fun <T: CreatableDefinition<V>, V> create(clazz: Class<out T>, value: V) = this.getPrimitive(clazz).create(value)
+
+    fun <T: CreatableDefinition<V>, V> create(klass: KClass<out T>, value: V) = this.create(klass.java, value)
+
+    fun createBool(boolean: Boolean): ClassInstance = this.getPrimitive(BooleanDef::class).from(boolean)
+
+    fun getNull(): ClassInstance = this.getPrimitive(NullDef::class).NULL
+
+    fun branch(): Interpreter = Branch(this)
+
+    fun child(content: String, name: String): Interpreter = Child(content, name, false, this)
+
+    fun logDebug(message: String) {
+        if (this.properties.isDebug) {
+            this.api.getOutput().logln(message)
+        }
     }
 
     inline fun <T> runSafe(block: () -> T): T? {
@@ -252,32 +278,8 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         }
     }
 
-    fun convertValue(any: Any?): ClassInstance {
-        return this.api.getConverter().convertFrom(any, this)
-    }
-
-    fun <T: PrimitiveDefinition<*>> getPrimitive(clazz: Class<out T>): T {
-        return this.primitives.get(clazz) ?: throw IllegalArgumentException("No such definition for '${clazz.simpleName}'")
-    }
-
-    fun <T: PrimitiveDefinition<*>> getPrimitive(klass: KClass<out T>) = this.getPrimitive(klass.java)
-
-    fun <T: CreatableDefinition<V>, V> create(clazz: Class<out T>, value: V) = this.getPrimitive(clazz).create(value)
-
-    fun <T: CreatableDefinition<V>, V> create(klass: KClass<out T>, value: V) = this.create(klass.java, value)
-
-    fun createBool(boolean: Boolean): ClassInstance = this.getPrimitive(BooleanDef::class).from(boolean)
-
-    fun getNull(): ClassInstance = this.getPrimitive(NullDef::class).NULL
-
-    fun branch(): Interpreter = Branch(this)
-
-    fun child(content: String, name: String): Interpreter = Child(content, name, false, this)
-
-    fun logDebug(message: String) {
-        if (this.properties.isDebug) {
-            this.api.getOutput().logln(message)
-        }
+    override fun handleError(throwable: Throwable) {
+        this.threadHandler.handleError(throwable, this)
     }
 
     /**
