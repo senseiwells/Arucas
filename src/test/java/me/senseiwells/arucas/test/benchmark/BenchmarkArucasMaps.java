@@ -3,7 +3,7 @@ package me.senseiwells.arucas.test.benchmark;
 import me.senseiwells.arucas.api.ArucasAPI;
 import me.senseiwells.arucas.builtin.NumberDef;
 import me.senseiwells.arucas.builtin.StringDef;
-import me.senseiwells.arucas.classes.ClassInstance;
+import me.senseiwells.arucas.classes.instance.ClassInstance;
 import me.senseiwells.arucas.core.Interpreter;
 import me.senseiwells.arucas.utils.impl.ArucasOrderedMap;
 import org.openjdk.jmh.annotations.*;

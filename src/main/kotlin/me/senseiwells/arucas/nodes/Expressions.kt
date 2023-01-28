@@ -1,6 +1,6 @@
 package me.senseiwells.arucas.nodes
 
-import me.senseiwells.arucas.classes.ClassInstance
+import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.classes.PrimitiveDefinition
 import me.senseiwells.arucas.core.Type
 import me.senseiwells.arucas.utils.CallTrace

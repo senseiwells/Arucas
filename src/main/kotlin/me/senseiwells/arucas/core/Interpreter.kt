@@ -5,6 +5,8 @@ import me.senseiwells.arucas.api.ArucasErrorHandler
 import me.senseiwells.arucas.api.docs.parser.DocParser
 import me.senseiwells.arucas.builtin.*
 import me.senseiwells.arucas.classes.*
+import me.senseiwells.arucas.classes.instance.ClassInstance
+import me.senseiwells.arucas.classes.instance.HintedField
 import me.senseiwells.arucas.core.Interpreter.Companion.dummy
 import me.senseiwells.arucas.core.Interpreter.Companion.of
 import me.senseiwells.arucas.exceptions.*

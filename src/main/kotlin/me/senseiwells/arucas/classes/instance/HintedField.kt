@@ -1,5 +1,6 @@
-package me.senseiwells.arucas.classes
+package me.senseiwells.arucas.classes.instance
 
+import me.senseiwells.arucas.classes.ClassDefinition
 import me.senseiwells.arucas.exceptions.runtimeError
 import me.senseiwells.arucas.utils.Parameter
 import me.senseiwells.arucas.utils.Trace

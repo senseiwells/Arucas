@@ -63,6 +63,7 @@ import me.senseiwells.arucas.api.ArucasAPI
 
 // ...
 val api = ArucasAPI.Builder()
+    .addDefaultLibrary()
     .addDefaultConversions()
     .addDefaultExtensions()
     .addDefaultBuiltInDefinitions()
@@ -77,6 +78,7 @@ import me.senseiwells.arucas.api.ArucasAPI;
 
 // ...
 ArucasAPI api = new ArucasAPI.Builder()
+    .addDefaultLibrary()
     .addDefaultConversions()
     .addDefaultExtensions()
     .addDefaultBuiltInDefinitions()
@@ -98,12 +100,12 @@ val api = ArucasAPI.Builder()
     .addDefault()
     .build()
 val code = "print('Hello World!');"
-val interpreter = Interpreter.of(code, "My Code", api, ::ThreadHandler)
+val interpreter = Interpreter.of(code, "My Code", api)
 
 // We can run the interpreter async:
-interpreter.threadHandler.executeAsync()
+interpreter.executeAsync()
 // Alternatively we can run it so it blocks the current thread:
-// interpreter.threadHandler.executeBlocking()
+// interpreter.executeBlocking()
 //...
 ```
 
@@ -118,12 +120,12 @@ ArucasAPI api = new ArucasAPI.Builder()
     .addDefault()
     .build();
 String code = "print('Hello World!');";
-Interpreter interpreter = Interpreter.of(code, "My Code", api, ThreadHandler::new);
+Interpreter interpreter = Interpreter.of(code, "My Code", api);
 
 // We can run the interpreter async:
-interpreter.getThreadHandler().executeAsync();
+interpreter.executeAsync();
 // Alternatively we can run it so it blocks the current thread:
-// interpreter.getThreadHandler().executeBlocking();
+// interpreter.executeBlocking();
 //...
 ```
 
@@ -618,11 +620,11 @@ ArucasAPI api = new ArucasAPI.Builder()
 
 ### Custom Input and Output
 
+### Custom Error Handling
+
 ### Custom Java Support
 
 ### Custom Documentation
-
-### Custom Thread Handler
 
 ### Custom Library Manager
 

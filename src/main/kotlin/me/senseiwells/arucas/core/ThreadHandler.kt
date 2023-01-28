@@ -1,6 +1,6 @@
 package me.senseiwells.arucas.core
 
-import me.senseiwells.arucas.classes.ClassInstance
+import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.exceptions.ArucasError
 import me.senseiwells.arucas.exceptions.FatalError
 import me.senseiwells.arucas.exceptions.Propagator

@@ -3,7 +3,7 @@ package me.senseiwells.arucas.utils
 import me.senseiwells.arucas.builtin.ListDef
 import me.senseiwells.arucas.classes.ArucasClassDefinition
 import me.senseiwells.arucas.classes.ClassDefinition
-import me.senseiwells.arucas.classes.ClassInstance
+import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.exceptions.Propagator
 import me.senseiwells.arucas.exceptions.runtimeError
@@ -33,7 +33,7 @@ abstract class UserFunction(
             val argument = arguments[i]
 
             parameter.types?.let {
-                if (!argument.definition.inheritsFrom(*it)) {
+                if (!argument.definition.inheritsFrom(it.toList())) {
                     runtimeError(this.incorrectType(i, argument, parameter), this.trace)
                 }
             }
@@ -79,7 +79,7 @@ open class UserDefinedFunction(
             returnValue = returnPropagator.returnValue
         }
         this.returnTypes?.let {
-            if (!returnValue.definition.inheritsFrom(*it)) {
+            if (!returnValue.definition.inheritsFrom(it.toList())) {
                 runtimeError("Function ${this.name} got ${returnValue.definition.name} for return but expected ${Parameter.definitionsAsString(it)}", this.trace)
             }
         }

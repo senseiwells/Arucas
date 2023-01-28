@@ -1,7 +1,7 @@
 package me.senseiwells.arucas.utils
 
 import me.senseiwells.arucas.api.ArucasObfuscator
-import me.senseiwells.arucas.classes.ClassInstance
+import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.exceptions.RuntimeError
 import me.senseiwells.arucas.exceptions.runtimeError
 import java.lang.invoke.MethodHandle

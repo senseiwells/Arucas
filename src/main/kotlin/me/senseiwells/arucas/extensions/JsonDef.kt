@@ -8,7 +8,7 @@ import me.senseiwells.arucas.api.docs.ClassDoc
 import me.senseiwells.arucas.api.docs.FunctionDoc
 import me.senseiwells.arucas.builtin.FileDef
 import me.senseiwells.arucas.builtin.StringDef
-import me.senseiwells.arucas.classes.ClassInstance
+import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.classes.CreatableDefinition
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.exceptions.runtimeError

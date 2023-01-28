@@ -1,29 +1,87 @@
 package me.senseiwells.arucas.classes
 
-import me.senseiwells.arucas.builtin.*
+import me.senseiwells.arucas.builtin.FunctionDef
+import me.senseiwells.arucas.builtin.ObjectDef
+import me.senseiwells.arucas.builtin.TypeDef
+import me.senseiwells.arucas.classes.instance.ClassInstance
+import me.senseiwells.arucas.classes.instance.HintedField
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.core.Type
 import me.senseiwells.arucas.core.Type.*
 import me.senseiwells.arucas.exceptions.runtimeError
-import me.senseiwells.arucas.nodes.Expression
 import me.senseiwells.arucas.utils.*
-import me.senseiwells.arucas.utils.impl.ArucasEnum
-import me.senseiwells.arucas.utils.impl.ArucasList
 import kotlin.reflect.KClass
 
+/**
+ * The [ClassDefinition] which defines the behaviour of a [ClassInstance]
+ * as well as the behaviour of the class itself.
+ *
+ * This class stores the static fields and methods as well as constructors
+ * for creating [ClassInstance]. All methods of the [ClassInstance] are
+ * also defined here as well as all the operators that the [ClassInstance]s
+ * can be used with. Each [ClassDefinition] is stored in the [Interpreter] per
+ * instance, definitions should **NOT** be shared over different
+ * root interpreters as they will not be similar.
+ *
+ * There are different types of definition, the main two being
+ * [PrimitiveDefinition] and [ArucasClassDefinition] being
+ * the definition that represents a definition defined in Java/Kotlin
+ * or Arucas respectively.
+ *
+ * @param name the name of the class.
+ * @param interpreter the interpreter that the definition was defined on.
+ * @see ClassInstance
+ * @see PrimitiveDefinition
+ * @see ArucasClassDefinition
+ */
 abstract class ClassDefinition(
+    /**
+     * The name of the class.
+     */
     val name: String,
+    /**
+     * The interpreter that the definition was defined on.
+     */
     val interpreter: Interpreter,
 ) {
-    val constructors = lazy { FunctionMap() }
-    val methods = lazy { FunctionMap() }
-
-    val staticFields = lazy { HashMap<String, HintedField>() }
-    val staticMethods = lazy { FunctionMap() }
-
+    /**
+     * A set of all superclasses for quick lookups.
+     */
     private val superclasses = lazy { HashSet<ClassDefinition>() }
-    private val typeInstance = lazy { this.interpreter.create(TypeDef::class, this) }
 
+    /**
+     * The [TypeDef] type instance of the definition.
+     */
+    private val typeInstance by lazy { this.interpreter.create(TypeDef::class, this) }
+
+    /**
+     * The constructors for the class.
+     */
+    internal val constructors = lazy { FunctionMap() }
+
+    /**
+     * The methods that the [ClassInstance] are able to call.
+     */
+    internal val methods = lazy { FunctionMap() }
+
+    /**
+     * The static fields that belong to the definition.
+     */
+    internal val staticFields = lazy { HashMap<String, HintedField>() }
+
+    /**
+     * The static methods that belong to the definition.
+     */
+    internal val staticMethods = lazy { FunctionMap() }
+
+    /**
+     * This method initialises a [ClassInstance] of this definition by calling the respective constructor.
+     *
+     * @param interpreter the interpreter that instantiated the [ClassInstance].
+     * @param instance the instance that is to be instantiated.
+     * @param args the arguments parsed into the instantiation for the constructor.
+     * @param trace the trace that this was called from.
+     */
     open fun init(interpreter: Interpreter, instance: ClassInstance, args: MutableList<ClassInstance>, trace: CallTrace) {
         if (this.constructors.isInitialized() && !this.constructors.value.isEmpty()) {
             val constructorInstance = this.constructors.value.get("", args.size + 1)
@@ -34,41 +92,57 @@ abstract class ClassDefinition(
         }
     }
 
-    fun getTypeInstance() = this.typeInstance.value
-
-    fun inheritsFrom(vararg classDefinitions: ClassDefinition) = this.inheritsFrom(classDefinitions.asList())
-
-    open fun inheritsFrom(classDefinitions: List<ClassDefinition>): Boolean {
-        // The reason we cache them here is that if we do it when the class is
-        // constructed we cannot guarantee that the superclass has been defined yet
-        if (!this.superclasses.isInitialized()) {
-            this.cacheSuperclasses()
-        }
-
-        for (definition in classDefinitions) {
-            if (this == definition || this.superclasses.value.contains(definition)) {
-                return true
-            }
-        }
-        return false
+    /**
+     * Whether this definition can be extended by another definition.
+     *
+     * This does not apply for [PrimitiveDefinition] only [ArucasClassDefinition].
+     * And this should return `false` if you want your class to be final.
+     *
+     * @return whether the class should be able to be extended in Arucas.
+     */
+    open fun canExtend(): Boolean {
+        return true
     }
 
-    fun <T: PrimitiveDefinition<*>> inheritsFrom(definition: KClass<out T>) = this.inheritsFrom(definition.java)
+    /**
+     * Whether this definition can be constructed with the `new` keywords.
+     *
+     * If this returns false then the definition can be considered `abstract`
+     * as it will still be able to be called from `super()`.
+     *
+     * @return whether the class can be constructed directly.
+     */
+    open fun canConstructDirectly(): Boolean {
+        return this.constructors.isInitialized() && !this.constructors.value.isEmpty()
+    }
 
-    fun <T: PrimitiveDefinition<*>> inheritsFrom(definitionClass: Class<out T>) = this.inheritsFrom(this.getPrimitiveDef(definitionClass))
+    /**
+     * This returns the set of interfaces that the class is implementing.
+     *
+     * @return the set of interfaces.
+     */
+    open fun interfaces(): Set<InterfaceDefinition> {
+        return setOf()
+    }
 
-    fun <T: PrimitiveDefinition<*>> getPrimitiveDef(clazz: Class<out T>) = this.interpreter.getPrimitive(clazz)
+    /**
+     * This returns the superclass of the current definition,
+     * by default this is [ObjectDef].
+     *
+     * @return the superclass definition.
+     */
+    open fun superclass(): ClassDefinition {
+        return this.getPrimitiveDef(ObjectDef::class)
+    }
 
-    fun <T: PrimitiveDefinition<*>> getPrimitiveDef(klass: KClass<out T>) = this.interpreter.getPrimitive(klass)
-
-    open fun canExtend(): Boolean = true
-
-    open fun canConstructDirectly(): Boolean = this.constructors.isInitialized() && !this.constructors.value.isEmpty()
-
-    open fun interfaces(): Set<InterfaceDefinition> = setOf()
-
-    open fun superclass(): ClassDefinition = this.getPrimitiveDef(ObjectDef::class)
-
+    /**
+     * This returns one of the superclass' with a given name.
+     *
+     * If no superclass with [name] is found then [ObjectDef] is returned.
+     *
+     * @param name the name of the wanted class.
+     * @return the superclass definition.
+     */
     open fun superclassOf(name: String): ClassDefinition {
         if (this.name == name) {
             return this.superclass()
@@ -76,7 +150,97 @@ abstract class ClassDefinition(
         return this.superclass().superclassOf(name)
     }
 
-    abstract fun asJavaValue(instance: ClassInstance): Any?
+    /**
+     * This checks whether the class definition inherits,
+     * or is, a given [definition].
+     *
+     * @param definition the definition to check.
+     * @return whether the class definition inherits from [definition].
+     */
+    open fun inheritsFrom(definition: ClassDefinition): Boolean {
+        // The reason we cache them here is that if we do it when the class is
+        // constructed we cannot guarantee that the superclass has been defined yet
+        if (!this.superclasses.isInitialized()) {
+            this.cacheSuperclasses()
+        }
+        return this == definition || this.superclasses.value.contains(definition)
+    }
+
+    /**
+     * Checks whether the class inherits from all the classes in a list.
+     *
+     * @param classDefinitions a list of all the definitions.
+     * @return whether the class inherits from all the definitions.
+     * @see inheritsFrom
+     */
+    fun inheritsFrom(classDefinitions: List<ClassDefinition>): Boolean {
+        for (definition in classDefinitions) {
+            if (this.inheritsFrom(definition)) {
+                return true
+            }
+        }
+        return false
+    }
+
+    /**
+     * This checks whether the class definition inherits,
+     * or is, a given definition.
+     *
+     * @param T the definition type.
+     * @param definitionKlass the class of the definition.
+     * @return whether the class definition inherits from definition.
+     */
+    fun <T: PrimitiveDefinition<*>> inheritsFrom(definitionKlass: KClass<out T>): Boolean {
+        return this.inheritsFrom(definitionKlass.java)
+    }
+
+    /**
+     * This checks whether the class definition inherits,
+     * or is, a given definition.
+     *
+     * @param T the definition type.
+     * @param definitionClass the class of the definition.
+     * @return whether the class definition inherits from definition.
+     */
+    fun <T: PrimitiveDefinition<*>> inheritsFrom(definitionClass: Class<out T>): Boolean {
+        return this.inheritsFrom(this.getPrimitiveDef(definitionClass))
+    }
+
+    /**
+     * Gets the [ClassInstance] of the definition [TypeDef]
+     * of the class definition.
+     *
+     * @return the type class instance.
+     */
+    fun getTypeInstance(): ClassInstance {
+        return this.typeInstance
+    }
+
+    /**
+     * Gets a primitive class definition for it's class.
+     *
+     * @param T the primitive definition type.
+     * @param clazz the primitive definition class.
+     * @return the primitive definition.
+     */
+    fun <T: PrimitiveDefinition<*>> getPrimitiveDef(clazz: Class<out T>): T {
+        return this.interpreter.getPrimitive(clazz)
+    }
+
+    /**
+     * Gets a primitive class definition for it's class.
+     *
+     * @param T the primitive definition type.
+     * @param klass the primitive definition class.
+     * @return the primitive definition.
+     */
+    fun <T: PrimitiveDefinition<*>> getPrimitiveDef(klass: KClass<out T>): T {
+        return this.interpreter.getPrimitive(klass)
+    }
+
+    internal open fun asJavaValue(instance: ClassInstance): Any? {
+        return null
+    }
 
     internal open fun cacheSuperclasses() {
         // We cache our superclasses to make
@@ -108,7 +272,9 @@ abstract class ClassDefinition(
         return thisInstance
     }
 
-    internal open fun call(instance: ClassInstance, interpreter: Interpreter, args: List<ClassInstance>): ClassInstance = this.superclass().call(instance, interpreter, args)
+    internal open fun call(instance: ClassInstance, interpreter: Interpreter, args: List<ClassInstance>): ClassInstance {
+        return this.superclass().call(instance, interpreter, args)
+    }
 
     internal open fun memberFunctionAccess(instance: ClassInstance, name: String, args: MutableList<ClassInstance>, trace: Trace, origin: ClassDefinition = this): ClassInstance {
         if (this.methods.isInitialized()) {
@@ -337,350 +503,11 @@ abstract class ClassDefinition(
         return this.superclass().toString(instance, interpreter, trace)
     }
 
-    final override fun equals(other: Any?) = this === other
-
-    final override fun hashCode() = this.name.hashCode()
-}
-
-class InterfaceDefinition(
-    name: String,
-    interpreter: Interpreter,
-    private val requiredMethods: List<Pair<String, Int>>
-): ClassDefinition(name, interpreter) {
-    fun hasRequiredMethods(classDefinition: ClassDefinition): Boolean {
-        for ((name, parameters) in this.requiredMethods) {
-            if (!classDefinition.hasMemberFunction(name, parameters + 1)) {
-                return false
-            }
-        }
-        return true
+    final override fun equals(other: Any?): Boolean {
+        return this === other
     }
 
-    override fun init(interpreter: Interpreter, instance: ClassInstance, args: MutableList<ClassInstance>, trace: CallTrace) {
-        runtimeError("Cannot create an interface class", trace)
-    }
-
-    override fun inheritsFrom(classDefinitions: List<ClassDefinition>): Boolean {
-        return false
-    }
-
-    override fun asJavaValue(instance: ClassInstance): Any? {
-        throw IllegalStateException("Tried to convert interface instance into java value, this is a bug!")
-    }
-
-    override fun accessConstructor(trace: Trace): ClassInstance {
-        runtimeError("Cannot construct an interface class", trace)
-    }
-
-    override fun callConstructor(interpreter: Interpreter, args: MutableList<ClassInstance>, trace: CallTrace): ClassInstance {
-        runtimeError("Cannot construct an interface class", trace)
-    }
-
-    override fun memberFunctionAccess(instance: ClassInstance, name: String, args: MutableList<ClassInstance>, trace: Trace, origin: ClassDefinition): ClassInstance {
-        throw IllegalStateException("Tried to access method in an interface class, this is a bug!")
-    }
-
-    override fun hasMemberFunction(name: String): Boolean {
-        throw IllegalStateException("Tried to check methods in an interface class, this is a bug!")
-    }
-
-    override fun hasMemberFunction(name: String, parameters: Int): Boolean {
-        throw IllegalStateException("Tried to check methods in an interface class, this is a bug!")
-    }
-
-    override fun memberAccess(instance: ClassInstance, interpreter: Interpreter, name: String, trace: LocatableTrace): ClassInstance {
-        throw IllegalStateException("Tried to access field in an interface class, this is a bug!")
-    }
-
-    override fun memberAssign(instance: ClassInstance, name: String, assignee: ClassInstance, trace: Trace): ClassInstance {
-        throw IllegalStateException("Tried to assign field in an interface class, this is a bug!")
-    }
-}
-
-abstract class PrimitiveDefinition<T: Any>(
-    name: String,
-    interpreter: Interpreter
-): ClassDefinition(name, interpreter) {
-    override fun init(interpreter: Interpreter, instance: ClassInstance, args: MutableList<ClassInstance>, trace: CallTrace) {
-        super.init(interpreter, instance, args, trace)
-        if (instance.getPrimitive(this) == null) {
-            throw IllegalStateException("Primitive '${this.name}' was not initialised correctly")
-        }
-    }
-    override fun accessConstructor(trace: Trace): ClassInstance {
-        if (!this.canConstructDirectly()) {
-            runtimeError("The cannot construct class '${this.name}'", trace)
-        }
-        return super.accessConstructor(trace)
-    }
-
-    override fun callConstructor(interpreter: Interpreter, args: MutableList<ClassInstance>, trace: CallTrace): ClassInstance {
-        if (!this.canConstructDirectly()) {
-            runtimeError("The cannot construct class '${this.name}'", trace)
-        }
-        return super.callConstructor(interpreter, args, trace)
-    }
-
-    protected fun construct(): ClassInstance {
-        return ClassInstance(this)
-    }
-
-    protected open fun create(value: T): ClassInstance {
-        return ClassInstance(this).also { it.setPrimitive(this, value) }
-    }
-
-    override fun superclass(): PrimitiveDefinition<in T> {
-        return this.getPrimitiveDef(ObjectDef::class)
-    }
-
-    final override fun interfaces(): Set<InterfaceDefinition> {
-        return super.interfaces()
-    }
-
-    open fun defineStaticFields(): List<Triple<String, Any?, Boolean>>? = null
-
-    open fun defineConstructors(): List<ConstructorFunction>? = null
-
-    open fun defineMethods(): List<MemberFunction>? = null
-
-    open fun defineStaticMethods(): List<BuiltInFunction>? = null
-
-    internal fun merge() {
-        val functionDef = this.interpreter.getPrimitive(FunctionDef::class)
-        this.defineConstructors()?.let { constructor ->
-            constructor.forEach { this.constructors.value.add(functionDef.create(it)) }
-        }
-        this.defineMethods()?.let { methods ->
-            methods.forEach { this.methods.value.add(functionDef.create(it)) }
-        }
-        this.defineStaticMethods()?.let { methods ->
-            methods.forEach { this.staticMethods.value.add(functionDef.create(it)) }
-        }
-        this.defineStaticFields()?.let {
-            for ((name, value, assignable) in it) {
-                val instance = this.interpreter.convertValue(value)
-                this.staticFields.value[name] = HintedField.of("${this.name}.$name", instance, assignable)
-            }
-        }
-    }
-
-    override fun equals(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace): Boolean {
-        val otherPrimitive = other.getPrimitive(this) ?: return false
-        if (this.superclass() != interpreter.getPrimitive(ObjectDef::class)) {
-            return this.superclass().equals(instance, interpreter, other, trace)
-        }
-        return instance.asPrimitive(this) == otherPrimitive
-    }
-
-    override fun hashCode(instance: ClassInstance, interpreter: Interpreter, trace: LocatableTrace): Int {
-        if (this.superclass() != interpreter.getPrimitive(ObjectDef::class)) {
-            return this.superclass().hashCode(instance, interpreter, trace)
-        }
-        return instance.asPrimitive(this).hashCode()
-    }
-
-    override fun toString(instance: ClassInstance, interpreter: Interpreter, trace: LocatableTrace): String {
-        if (this.superclass() != interpreter.getPrimitive(ObjectDef::class)) {
-            return this.superclass().toString(instance, interpreter, trace)
-        }
-        return instance.asPrimitive(this).toString()
-    }
-
-    override fun asJavaValue(instance: ClassInstance): Any? = instance.asPrimitive(this)
-}
-
-abstract class CreatableDefinition<T: Any>(
-    name: String,
-    interpreter: Interpreter
-): PrimitiveDefinition<T>(name, interpreter) {
-    public override fun create(value: T): ClassInstance {
-        return super.create(value)
-    }
-}
-
-open class ArucasClassDefinition(
-    name: String,
-    interpreter: Interpreter,
-    private val localTable: StackTable,
-    private val superclass: ClassDefinition?,
-    private val interfaces: Set<InterfaceDefinition>?
-): ClassDefinition(name, interpreter) {
-    val fields = lazy { HashMap<Parameter, Expression>() }
-    val operators = lazy { OperatorMap() }
-
-    init {
-        this.constructors.value // Unlazy
-    }
-
-    override fun init(interpreter: Interpreter, instance: ClassInstance, args: MutableList<ClassInstance>, trace: CallTrace) {
-        if (this.fields.isInitialized()) {
-            for ((argument, expression) in this.fields.value.entries) {
-                val fieldName = "<${this.name}>.${argument.name}"
-                val value = interpreter.evaluate(this.localTable, expression)
-                val field = HintedField(fieldName, argument.definitions(this.localTable, trace), true, value)
-                instance.addInstanceField(argument.name, field)
-            }
-        }
-
-        super.init(interpreter, instance, args, trace)
-
-        for (field in instance.getInstanceFields()) {
-            field.checkInstanceType(trace)
-        }
-    }
-
-    override fun canConstructDirectly(): Boolean {
-        return true
-    }
-
-    override fun superclass(): ClassDefinition {
-        return this.superclass ?: super.superclass()
-    }
-
-    override fun interfaces(): Set<InterfaceDefinition> {
-        return this.interfaces ?: super.interfaces()
-    }
-
-    override fun asJavaValue(instance: ClassInstance) = instance
-
-    override fun hasMemberFunction(name: String, parameters: Int): Boolean {
-        return this.methods.isInitialized() && this.methods.value.has(name, parameters)
-    }
-
-    override fun bracketAccess(instance: ClassInstance, interpreter: Interpreter, index: ClassInstance, trace: LocatableTrace): ClassInstance {
-        if (this.operators.isInitialized()) {
-            this.operators.value.get(LEFT_SQUARE_BRACKET, 2)?.let {
-                return interpreter.call(it, listOf(instance, index), CallTrace(trace, "${instance.definition.name}[${index.definition.name}]"))
-            }
-        }
-        return super.bracketAccess(instance, interpreter, index, trace)
-    }
-
-    override fun bracketAssign(instance: ClassInstance, interpreter: Interpreter, index: ClassInstance, assignee: ClassInstance, trace: LocatableTrace): ClassInstance {
-        if (this.operators.isInitialized()) {
-            this.operators.value.get(LEFT_SQUARE_BRACKET, 3)?.let {
-                return interpreter.call(it, listOf(instance, index, assignee), CallTrace(trace, "${instance.definition.name}[${index.definition.name}] = ${assignee.definition.name}"))
-            }
-        }
-        return super.bracketAssign(instance, interpreter, index, assignee, trace)
-    }
-
-    override fun unary(instance: ClassInstance, interpreter: Interpreter, type: Type, trace: LocatableTrace): ClassInstance {
-        if (this.operators.isInitialized()) {
-            this.operators.value.get(type, 1)?.let {
-                return interpreter.call(it, listOf(instance), CallTrace(trace, "$type${instance.definition.name}"))
-            }
-        }
-        return super.unary(instance, interpreter, type, trace)
-    }
-
-    override fun binary(instance: ClassInstance, interpreter: Interpreter, type: Type, other: ClassInstance, trace: LocatableTrace): ClassInstance {
-        if (this.operators.isInitialized()) {
-            this.operators.value.get(type, 2)?.let {
-                return interpreter.call(it, listOf(instance, other), CallTrace(trace, "${instance.definition.name} $type ${other.definition.name}"))
-            }
-        }
-        return super.binary(instance, interpreter, type, other, trace)
-    }
-
-    override fun copy(instance: ClassInstance, interpreter: Interpreter, trace: LocatableTrace): ClassInstance {
-        if (instance.definition.hasMemberFunction("copy", 1)) {
-            return instance.callMember(interpreter, "copy", listOf(), instance.definition, trace)
-        }
-        return super.copy(instance, interpreter, trace)
-    }
-
-    override fun equals(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace): Boolean {
-        if (this.operators.isInitialized()) {
-            this.operators.value.get(EQUALS, 2)?.let {
-                val callTrace = CallTrace(trace, "${instance.definition.name} == ${other.definition.name}")
-                val returnVal = interpreter.call(it, listOf(instance, other), callTrace)
-                return returnVal.getPrimitive(BooleanDef::class) ?: runtimeError("Expected '==' operator to return a Boolean")
-            }
-        }
-        return super.equals(instance, interpreter, other, trace)
-    }
-
-    override fun hashCode(instance: ClassInstance, interpreter: Interpreter, trace: LocatableTrace): Int {
-        if (this.hasMemberFunction("hashCode", 1)) {
-            return instance.callMemberPrimitive(interpreter, "hashCode", listOf(), NumberDef::class, trace).toInt()
-        }
-        return super.hashCode(instance, interpreter, trace)
-    }
-
-    override fun toString(instance: ClassInstance, interpreter: Interpreter, trace: LocatableTrace): String {
-        if (this.hasMemberFunction("toString", 1)) {
-            return instance.callMemberPrimitive(interpreter, "toString", listOf(), StringDef::class, trace)
-        }
-        return super.toString(instance, interpreter, trace)
-    }
-}
-
-class EnumDefinition(
-    name: String,
-    interpreter: Interpreter,
-    localTable: StackTable,
-    interfaces: Set<InterfaceDefinition>?
-): ArucasClassDefinition(name, interpreter, localTable, interpreter.getPrimitive(EnumDef::class), interfaces) {
-    private val enums = lazy { HashMap<String, ClassInstance>() }
-
-    init {
-        val valuesMethod = BuiltInFunction.of("values", this::values)
-        val fromStringMethod = BuiltInFunction.of("fromString", this::fromString)
-        this.staticMethods.value.add(this.interpreter.create(FunctionDef::class, valuesMethod))
-        this.staticMethods.value.add(this.interpreter.create(FunctionDef::class, fromStringMethod))
-    }
-
-    fun addEnum(interpreter: Interpreter, name: String, arguments: MutableList<ClassInstance>, trace: LocatableTrace) {
-        val callTrace = CallTrace(trace, "new ${this.name}::${arguments.size}")
-        val enum = ClassInstance(this)
-        enum.setPrimitive(this.superclass(), ArucasEnum(name, this.enums.value.size))
-        this.init(interpreter, enum, arguments, callTrace)
-        this.enums.value[name] = enum
-    }
-
-    fun getEnum(name: String): ClassInstance? {
-        return if (this.enums.isInitialized()) this.enums.value[name] else null;
-    }
-
-    fun getNames(): Collection<String> {
-        return if (!this.enums.isInitialized()) listOf() else this.enums.value.keys
-    }
-
-    override fun canExtend(): Boolean {
-        return false
-    }
-
-    override fun superclass(): EnumDef {
-        return super.superclass() as EnumDef
-    }
-
-    override fun accessConstructor(trace: Trace): Nothing {
-        runtimeError("Enums cannot be constructed", trace)
-    }
-
-    override fun callConstructor(interpreter: Interpreter, args: MutableList<ClassInstance>, trace: CallTrace): Nothing {
-        this.accessConstructor(trace)
-    }
-
-    override fun staticMemberAccess(interpreter: Interpreter, name: String, trace: LocatableTrace): ClassInstance {
-        if (this.enums.isInitialized()) {
-            this.enums.value[name]?.let { return it }
-        }
-        return super.staticMemberAccess(interpreter, name, trace)
-    }
-
-    @Suppress("UNUSED_PARAMETER")
-    private fun values(arguments: Arguments): ArucasList {
-        val list = ArucasList()
-        if (this.enums.isInitialized()) {
-            list.addAll(this.enums.value.values)
-        }
-        return list
-    }
-
-    private fun fromString(arguments: Arguments): ClassInstance {
-        val name = arguments.nextPrimitive(StringDef::class)
-        return this.getEnum(name) ?: arguments.interpreter.getNull()
+    final override fun hashCode(): Int {
+        return this.name.hashCode()
     }
 }

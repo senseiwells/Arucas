@@ -1,7 +1,7 @@
 package me.senseiwells.arucas.exceptions
 
 import me.senseiwells.arucas.builtin.ErrorDef
-import me.senseiwells.arucas.classes.ClassInstance
+import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.utils.Trace
 import java.util.*

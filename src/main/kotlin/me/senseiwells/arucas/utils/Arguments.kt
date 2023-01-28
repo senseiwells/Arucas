@@ -3,7 +3,7 @@ package me.senseiwells.arucas.utils
 import me.senseiwells.arucas.api.ArucasAPI
 import me.senseiwells.arucas.builtin.*
 import me.senseiwells.arucas.classes.ClassDefinition
-import me.senseiwells.arucas.classes.ClassInstance
+import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.classes.PrimitiveDefinition
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.exceptions.runtimeError

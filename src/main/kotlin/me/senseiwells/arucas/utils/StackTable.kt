@@ -1,7 +1,7 @@
 package me.senseiwells.arucas.utils
 
 import me.senseiwells.arucas.classes.ClassDefinition
-import me.senseiwells.arucas.classes.ClassInstance
+import me.senseiwells.arucas.classes.instance.ClassInstance
 
 /**
  * This class holds all the data in a given scopes. It also holds

@@ -1,5 +1,7 @@
-package me.senseiwells.arucas.classes
+package me.senseiwells.arucas.classes.instance
 
+import me.senseiwells.arucas.classes.ClassDefinition
+import me.senseiwells.arucas.classes.PrimitiveDefinition
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.core.Type
 import me.senseiwells.arucas.exceptions.runtimeError
@@ -8,7 +10,22 @@ import me.senseiwells.arucas.utils.LocatableTrace
 import me.senseiwells.arucas.utils.Trace
 import kotlin.reflect.KClass
 
-class ClassInstance internal constructor(val definition: ClassDefinition) {
+/**
+ * This class represents an instance of a [ClassDefinition].
+ * This holds a reference to its [definition] as it defines
+ * the instance's behaviour. However, a [ClassInstance] still
+ * holds its fields, as well as a primitive value (if the defining
+ * definition is a [PrimitiveDefinition]).
+ *
+ * @param definition the definition that this [ClassInstance] is an instance of.
+ * @see ClassDefinition
+ */
+class ClassInstance internal constructor(
+    /**
+     * The definition that this [ClassInstance] is an instance of.
+     */
+    val definition: ClassDefinition
+) {
     private val instanceFields by lazy { LinkedHashMap<String, HintedField>() }
     private var primitive: Any? = null
 
@@ -23,23 +40,41 @@ class ClassInstance internal constructor(val definition: ClassDefinition) {
         return interpreter.call(function, arguments, callTrace)
     }
 
-    fun unary(interpreter: Interpreter, type: Type, trace: LocatableTrace) = this.definition.unary(this, interpreter, type, trace)
+    fun unary(interpreter: Interpreter, type: Type, trace: LocatableTrace): ClassInstance {
+        return this.definition.unary(this, interpreter, type, trace)
+    }
 
-    fun binary(interpreter: Interpreter, type: Type, other: () -> ClassInstance, trace: LocatableTrace) = this.definition.binary(this, interpreter, type, other, trace)
+    fun binary(interpreter: Interpreter, type: Type, other: () -> ClassInstance, trace: LocatableTrace): ClassInstance {
+        return this.definition.binary(this, interpreter, type, other, trace)
+    }
 
-    fun memberAccess(interpreter: Interpreter, name: String, trace: LocatableTrace) = this.definition.memberAccess(this, interpreter, name, trace)
+    fun memberAccess(interpreter: Interpreter, name: String, trace: LocatableTrace): ClassInstance {
+        return this.definition.memberAccess(this, interpreter, name, trace)
+    }
 
-    fun memberAssign(name: String, assignee: ClassInstance, trace: Trace) = this.definition.memberAssign(this, name, assignee, trace)
+    fun memberAssign(name: String, assignee: ClassInstance, trace: Trace): ClassInstance {
+        return this.definition.memberAssign(this, name, assignee, trace)
+    }
 
-    fun bracketAccess(index: ClassInstance, interpreter: Interpreter, trace: LocatableTrace = Trace.INTERNAL) = this.definition.bracketAccess(this, interpreter, index, trace)
+    fun bracketAccess(index: ClassInstance, interpreter: Interpreter, trace: LocatableTrace = Trace.INTERNAL): ClassInstance {
+        return this.definition.bracketAccess(this, interpreter, index, trace)
+    }
 
-    fun bracketAssign(index: ClassInstance, interpreter: Interpreter, assignee: ClassInstance, trace: LocatableTrace = Trace.INTERNAL) = this.definition.bracketAssign(this, interpreter, index, assignee, trace)
+    fun bracketAssign(index: ClassInstance, interpreter: Interpreter, assignee: ClassInstance, trace: LocatableTrace = Trace.INTERNAL): ClassInstance {
+        return this.definition.bracketAssign(this, interpreter, index, assignee, trace)
+    }
 
-    fun addInstanceField(name: String, field: HintedField) = this.instanceFields.putIfAbsent(name, field)
+    fun addInstanceField(name: String, field: HintedField): HintedField? {
+        return this.instanceFields.putIfAbsent(name, field)
+    }
 
-    fun getInstanceField(name: String) = this.instanceFields[name]
+    fun getInstanceField(name: String): HintedField? {
+        return this.instanceFields[name]
+    }
 
-    fun getInstanceFields(): Iterable<HintedField> = this.instanceFields.values
+    fun getInstanceFields(): Iterable<HintedField> {
+        return this.instanceFields.values
+    }
 
     fun <T: Any> setPrimitive(definition: PrimitiveDefinition<T>, value: T) {
         if (!this.isOf(definition)) {
@@ -64,15 +99,29 @@ class ClassInstance internal constructor(val definition: ClassDefinition) {
         return null
     }
 
+    fun <T: PrimitiveDefinition<V>, V: Any> asPrimitive(klass: KClass<out T>): V {
+        return this.asPrimitive(klass.java)
+    }
+
+    fun <T: PrimitiveDefinition<V>, V: Any> asPrimitive(clazz: Class<out T>): V {
+        return this.asPrimitive(this.definition.getPrimitiveDef(clazz))
+    }
+
     fun <T: Any> asPrimitive(definition: PrimitiveDefinition<T>): T {
         return this.getPrimitive(definition)!!
     }
 
-    fun isOf(definition: ClassDefinition): Boolean = this.definition.inheritsFrom(definition)
+    fun isOf(definition: ClassDefinition): Boolean {
+        return this.definition.inheritsFrom(definition)
+    }
 
-    fun isOf(klass: KClass<out PrimitiveDefinition<*>>): Boolean = this.isOf(this.definition.getPrimitiveDef(klass))
+    fun isOf(klass: KClass<out PrimitiveDefinition<*>>): Boolean {
+        return this.isOf(this.definition.getPrimitiveDef(klass))
+    }
 
-    fun isOf(clazz: Class<out PrimitiveDefinition<*>>): Boolean = this.isOf(this.definition.getPrimitiveDef(clazz))
+    fun isOf(clazz: Class<out PrimitiveDefinition<*>>): Boolean {
+        return this.isOf(this.definition.getPrimitiveDef(clazz))
+    }
 
     fun callMember(interpreter: Interpreter, name: String, args: List<ClassInstance>, returnType: ClassDefinition, trace: LocatableTrace): ClassInstance {
         val functionName = "<${this.definition.name}>.$name::${args.size}"
@@ -99,20 +148,32 @@ class ClassInstance internal constructor(val definition: ClassDefinition) {
         return this.callMemberPrimitive(interpreter, name, args, returnType.java, trace)
     }
 
-    fun asJava() = this.definition.asJavaValue(this)
+    fun asJava(): Any? {
+        return this.definition.asJavaValue(this)
+    }
 
-    fun copy(interpreter: Interpreter, trace: LocatableTrace = Trace.INTERNAL) = this.definition.copy(this, interpreter, trace)
+    fun copy(interpreter: Interpreter, trace: LocatableTrace = Trace.INTERNAL): ClassInstance {
+        return this.definition.copy(this, interpreter, trace)
+    }
 
-    fun compare(interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace = Trace.INTERNAL) = this.definition.compare(this, interpreter, other, trace)
+    fun compare(interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace = Trace.INTERNAL): Int {
+        return this.definition.compare(this, interpreter, other, trace)
+    }
 
     @JvmOverloads
-    fun hashCode(interpreter: Interpreter, trace: LocatableTrace = Trace.INTERNAL) = this.definition.hashCode(this, interpreter, trace)
+    fun hashCode(interpreter: Interpreter, trace: LocatableTrace = Trace.INTERNAL): Int {
+        return this.definition.hashCode(this, interpreter, trace)
+    }
 
     @JvmOverloads
-    fun toString(interpreter: Interpreter, trace: LocatableTrace = Trace.INTERNAL) = this.definition.toString(this, interpreter, trace)
+    fun toString(interpreter: Interpreter, trace: LocatableTrace = Trace.INTERNAL): String {
+        return this.definition.toString(this, interpreter, trace)
+    }
 
     @JvmOverloads
-    fun equals(interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace = Trace.INTERNAL) = this.definition.equals(this, interpreter, other, trace)
+    fun equals(interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace = Trace.INTERNAL): Boolean {
+        return this.definition.equals(this, interpreter, other, trace)
+    }
 
     @Deprecated("ClassInstances should be compared with interpreter context", ReplaceWith("instance.equals(interpreter, other)"))
     override fun equals(other: Any?): Boolean {

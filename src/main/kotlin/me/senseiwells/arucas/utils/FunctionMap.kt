@@ -1,7 +1,7 @@
 package me.senseiwells.arucas.utils
 
 import me.senseiwells.arucas.builtin.FunctionDef
-import me.senseiwells.arucas.classes.ClassInstance
+import me.senseiwells.arucas.classes.instance.ClassInstance
 
 /**
  * This class holds [ClassInstance] that have the definition of [FunctionDef], allows

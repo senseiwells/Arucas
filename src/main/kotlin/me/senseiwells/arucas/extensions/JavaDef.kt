@@ -7,8 +7,8 @@ import me.senseiwells.arucas.builtin.FunctionDef
 import me.senseiwells.arucas.builtin.NumberDef
 import me.senseiwells.arucas.builtin.StringDef
 import me.senseiwells.arucas.classes.ClassDefinition
-import me.senseiwells.arucas.classes.ClassInstance
 import me.senseiwells.arucas.classes.CreatableDefinition
+import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.exceptions.runtimeError
 import me.senseiwells.arucas.utils.*
@@ -62,7 +62,7 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
 
     override fun memberAssign(instance: ClassInstance, name: String, assignee: ClassInstance, trace: Trace): ClassInstance {
         val java = this.asJavaNotNull(instance, trace)
-        ReflectionUtils.setField(java::class.java, java, assignee, name, interpreter.api.getObfuscator())
+        ReflectionUtils.setField(java::class.java, java, assignee, name, this.interpreter.api.getObfuscator())
         return assignee
     }
 

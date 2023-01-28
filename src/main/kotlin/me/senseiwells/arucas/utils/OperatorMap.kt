@@ -1,7 +1,7 @@
 package me.senseiwells.arucas.utils
 
 import me.senseiwells.arucas.builtin.FunctionDef
-import me.senseiwells.arucas.classes.ClassInstance
+import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.core.Type
 import java.util.*
 import kotlin.collections.HashMap
