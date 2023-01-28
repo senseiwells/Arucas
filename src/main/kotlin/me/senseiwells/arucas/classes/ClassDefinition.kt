@@ -52,7 +52,7 @@ abstract class ClassDefinition(
     /**
      * The [TypeDef] type instance of the definition.
      */
-    private val typeInstance by lazy { this.interpreter.create(TypeDef::class, this) }
+    private val typeInstance = lazy { this.interpreter.create(TypeDef::class, this) }
 
     /**
      * The constructors for the class.
@@ -213,7 +213,7 @@ abstract class ClassDefinition(
      * @return the type class instance.
      */
     fun getTypeInstance(): ClassInstance {
-        return this.typeInstance
+        return this.typeInstance.value
     }
 
     /**
