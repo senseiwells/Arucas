@@ -1,6 +1,7 @@
 package me.senseiwells.arucas.util
 
 import me.senseiwells.arucas.api.ArucasAPI
+import me.senseiwells.arucas.api.ArucasErrorHandler
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.exceptions.CompileError
 import me.senseiwells.arucas.exceptions.RuntimeError
@@ -9,8 +10,8 @@ import org.junit.jupiter.api.assertThrows
 import java.util.concurrent.ExecutionException
 
 object TestHelper {
-    val API_DEFAULT = ArucasAPI.Builder().addDefault().build()
-    val API_JAVA = ArucasAPI.Builder().addDefault().addBuiltInDefinitions(::JavaDef).build()
+    val API_DEFAULT = ArucasAPI.Builder().addDefault().setErrorHandler(ArucasErrorHandler.noop).build()
+    val API_JAVA = ArucasAPI.Builder().addDefault().setErrorHandler(ArucasErrorHandler.noop).addBuiltInDefinitions(::JavaDef).build()
 
     fun compile(code: String, api: ArucasAPI = API_DEFAULT) {
         Interpreter.of(code, "test-compile", api).compile()

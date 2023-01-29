@@ -238,6 +238,369 @@ abstract class ClassDefinition(
         return this.interpreter.getPrimitive(klass)
     }
 
+    /**
+     * This method defines the behaviour of bracket-accessing the object.
+     * ```
+     * list = ["a", "b", "c"];
+     * list[1]; // Bracket access
+     * ```
+     * If the behaviour is not overridden, the default behaviour from [ObjectDef] is used.
+     *
+     * @param instance the instance being bracket-accessed.
+     * @param interpreter the interpreter that called this method.
+     * @param index the value passed as the 'index'.
+     * @param trace the trace from where it was called.
+     * @return the [ClassInstance] from accessing the [instance].
+     */
+    open fun bracketAccess(instance: ClassInstance, interpreter: Interpreter, index: ClassInstance, trace: LocatableTrace): ClassInstance {
+        return this.superclass().bracketAccess(instance, interpreter, index, trace)
+    }
+
+    /**
+     * This method defines the behaviour of bracket-assigning the object.
+     * ```
+     * list = [null];
+     * list[0] = "foobar"; // Bracket assign
+     * ```
+     * If the behaviour is not overridden, the default behaviour from [ObjectDef] is used.
+     *
+     * @param instance the instance being bracket-assigned.
+     * @param interpreter the interpreter that called this method.
+     * @param index the 'index' to assign to.
+     * @param assignee the [ClassInstance] to assign to the [index].
+     * @param trace the trace from where it was called.
+     * @return the result of the bracket-assignment.
+     */
+    open fun bracketAssign(instance: ClassInstance, interpreter: Interpreter, index: ClassInstance, assignee: ClassInstance, trace: LocatableTrace): ClassInstance {
+        return this.superclass().bracketAssign(instance, interpreter, index, assignee, trace)
+    }
+
+    /**
+     * This method defines the behaviour of the `copy` method on the object.
+     *
+     * If the behaviour is not overridden, the default behaviour from [ObjectDef] is used.
+     *
+     * @param instance the instance to be copied.
+     * @param interpreter the interpreter that called this method.
+     * @param trace the trace from where it was called.
+     * @return the copied instance.
+     */
+    open fun copy(instance: ClassInstance, interpreter: Interpreter, trace: LocatableTrace): ClassInstance {
+        return this.superclass().copy(instance, interpreter, trace)
+    }
+
+    /**
+     * This method defines the behaviour of the `==` operator.
+     *
+     * If the behaviour is not overridden, the default behaviour from [ObjectDef] is used.
+     *
+     * @param instance the instance to check equality on.
+     * @param interpreter the interpreter that called this method.
+     * @param other the instance to check equality against.
+     * @param trace the trace from where it was called.
+     * @return whether they [instance] and [other] are equal.
+     */
+    open fun equals(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace): Boolean {
+        return this.superclass().equals(instance, interpreter, other, trace)
+    }
+
+    /**
+     * This method is called when hashing instances of the [ClassDefinition].
+     *
+     * If the behaviour is not overridden, the default behaviour from [ObjectDef] is used.
+     *
+     * @param instance the instance to check equality on.
+     * @param interpreter the interpreter that called this method.
+     * @param trace the trace from where it was called.
+     * @return the hashcode of the [instance].
+     */
+    open fun hashCode(instance: ClassInstance, interpreter: Interpreter, trace: LocatableTrace): Int {
+        return this.superclass().hashCode(instance, interpreter, trace)
+    }
+
+    /**
+     * This method is called when converting instances of the [ClassDefinition] into a string.
+     *
+     * If the behaviour is not overridden, the default behaviour from [ObjectDef] is used.
+     *
+     * @param instance the instance to convert into a string.
+     * @param interpreter the interpreter that called this method.
+     * @param trace the trace from where it was called.
+     * @return the [instance] converted into a string.
+     */
+    open fun toString(instance: ClassInstance, interpreter: Interpreter, trace: LocatableTrace): String {
+        return this.superclass().toString(instance, interpreter, trace)
+    }
+
+    /**
+     * This method defines the behaviour of the `!` unary operator.
+     * ```
+     * !true; // Not operator
+     * ```
+     * If the behaviour is not overridden, the default behaviour from [ObjectDef] is used.
+     *
+     * @param instance the instance to use the not operator on.
+     * @param interpreter the interpreter that called this method.
+     * @param trace the trace from where it was called.
+     * @return the not-ed [instance].
+     */
+    protected open fun not(instance: ClassInstance, interpreter: Interpreter, trace: LocatableTrace): Any? {
+        return this.superclass().not(instance, interpreter, trace)
+    }
+
+    /**
+     * This method defines the behaviour of the `+` unary operator.
+     * ```
+     * +10; // Plus operator
+     * ```
+     * If the behaviour is not overridden, the default behaviour from [ObjectDef] is used.
+     *
+     * @param instance the instance to use the plus on.
+     * @param interpreter the interpreter that called this method.
+     * @param trace the trace from where it was called.
+     * @return the positive [instance].
+     */
+    protected open fun plus(instance: ClassInstance, interpreter: Interpreter, trace: LocatableTrace): Any? {
+        return this.superclass().plus(instance, interpreter, trace)
+    }
+
+    /**
+     * This method defines the behaviour of the `-` unary operator.
+     * ```
+     * -10; // Minus operator
+     * ```
+     * If the behaviour is not overridden, the default behaviour from [ObjectDef] is used.
+     *
+     * @param instance the instance to use the minus on.
+     * @param interpreter the interpreter that called this method.
+     * @param trace the trace from where it was called.
+     * @return the negative [instance].
+     */
+    protected open fun minus(instance: ClassInstance, interpreter: Interpreter, trace: LocatableTrace): Any? {
+        return this.superclass().minus(instance, interpreter, trace)
+    }
+
+    /**
+     * This method defines the behaviour of the `+` binary operator.
+     * ```
+     * 10 + 10; // Plus operator
+     * ```
+     * If the behaviour is not overridden, the default behaviour from [ObjectDef] is used.
+     *
+     * @param instance the instance to use the plus on.
+     * @param interpreter the interpreter that called this method.
+     * @param other the instance that is being added to [instance].
+     * @param trace the trace from where it was called.
+     * @return the result of [instance] + [other].
+     */
+    protected open fun plus(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace): Any? {
+        return this.superclass().plus(instance, interpreter, other, trace)
+    }
+
+    /**
+     * This method defines the behaviour of the `-` binary operator.
+     * ```
+     * 10 - 10; // Minus operator
+     * ```
+     * If the behaviour is not overridden, the default behaviour from [ObjectDef] is used.
+     *
+     * @param instance the instance to use the minus on.
+     * @param interpreter the interpreter that called this method.
+     * @param other the instance that is being subtracted [instance].
+     * @param trace the trace from where it was called.
+     * @return the result of [instance] - [other].
+     */
+    protected open fun minus(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace): Any? {
+        return this.superclass().minus(instance, interpreter, other, trace)
+    }
+
+    /**
+     * This method defines the behaviour of the `*` binary operator.
+     * ```
+     * 10 * 10; // Multiplication operator
+     * ```
+     * If the behaviour is not overridden, the default behaviour from [ObjectDef] is used.
+     *
+     * @param instance the instance to multiply.
+     * @param interpreter the interpreter that called this method.
+     * @param other the instance that is being multiplied.
+     * @param trace the trace from where it was called.
+     * @return the result of the multiplication.
+     */
+    protected open fun multiply(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace): Any? {
+        return this.superclass().multiply(instance, interpreter, other, trace)
+    }
+
+    /**
+     * This method defines the behaviour of the `/` binary operator.
+     * ```
+     * 10 / 10; // Division operator
+     * ```
+     * If the behaviour is not overridden, the default behaviour from [ObjectDef] is used.
+     *
+     * @param instance the numerator.
+     * @param interpreter the interpreter that called this method.
+     * @param other the instance divisor.
+     * @param trace the trace from where it was called.
+     * @return the result of the division.
+     */
+    protected open fun divide(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace): Any? {
+        return this.superclass().divide(instance, interpreter, other, trace)
+    }
+
+    /**
+     * This method defines the behaviour of the `^` binary operator.
+     * ```
+     * 10 ^ 2; // Power operator
+     * ```
+     * If the behaviour is not overridden, the default behaviour from [ObjectDef] is used.
+     *
+     * @param instance the base of the exponent.
+     * @param interpreter the interpreter that called this method.
+     * @param other the exponent of the base.
+     * @param trace the trace from where it was called.
+     * @return the result of the power.
+     */
+    protected open fun power(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace): Any? {
+        return this.superclass().power(instance, interpreter, other, trace)
+    }
+
+    /**
+     * This method defines the behaviour of the `&&` binary operator.
+     * ```
+     * true && false; // And operator
+     * ```
+     * If the behaviour is not overridden, the default behaviour from [ObjectDef] is used.
+     *
+     * @param instance the [ClassInstance] on the left of the and.
+     * @param interpreter the interpreter that called this method.
+     * @param other the [ClassInstance] on the right of the and.
+     * @param trace the trace from where it was called.
+     * @return the result of the and.
+     */
+    protected open fun and(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace): Any? {
+        return this.superclass().and(instance, interpreter, other, trace)
+    }
+
+    /**
+     * This method defines the behaviour of the `||` binary operator.
+     * ```
+     * true || false; // Or operator
+     * ```
+     * If the behaviour is not overridden, the default behaviour from [ObjectDef] is used.
+     *
+     * @param instance the [ClassInstance] on the left of the or.
+     * @param interpreter the interpreter that called this method.
+     * @param other the [ClassInstance] on the right of the or.
+     * @param trace the trace from where it was called.
+     * @return the result of the or.
+     */
+    protected open fun or(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace): Any? {
+        return this.superclass().or(instance, interpreter, other, trace)
+    }
+
+    /**
+     * This method defines the behaviour of the `&` binary operator.
+     * ```
+     * true & false; // Bitwise and operator
+     * ```
+     * If the behaviour is not overridden, the default behaviour from [ObjectDef] is used.
+     *
+     * @param instance the [ClassInstance] on the left of the and.
+     * @param interpreter the interpreter that called this method.
+     * @param other the [ClassInstance] on the right of the and.
+     * @param trace the trace from where it was called.
+     * @return the result of the bitwise and.
+     */
+    protected open fun bitAnd(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace): Any? {
+        return this.superclass().bitAnd(instance, interpreter, other, trace)
+    }
+
+    /**
+     * This method defines the behaviour of the `|` binary operator.
+     * ```
+     * true | false; // Bitwise or operator
+     * ```
+     * If the behaviour is not overridden, the default behaviour from [ObjectDef] is used.
+     *
+     * @param instance the [ClassInstance] on the left of the or.
+     * @param interpreter the interpreter that called this method.
+     * @param other the [ClassInstance] on the right of the or.
+     * @param trace the trace from where it was called.
+     * @return the result of the bitwise or.
+     */
+    protected open fun bitOr(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace): Any? {
+        return this.superclass().bitOr(instance, interpreter, other, trace)
+    }
+
+    /**
+     * This method defines the behaviour of the `~` binary operator.
+     * ```
+     * true ~ false; // Xor operator
+     * ```
+     * If the behaviour is not overridden, the default behaviour from [ObjectDef] is used.
+     *
+     * @param instance the [ClassInstance] on the left of the xor.
+     * @param interpreter the interpreter that called this method.
+     * @param other the [ClassInstance] on the right of the xor.
+     * @param trace the trace from where it was called.
+     * @return the result of the xor.
+     */
+    protected open fun xor(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace): Any? {
+        return this.superclass().xor(instance, interpreter, other, trace)
+    }
+
+    /**
+     * This method defines the behaviour of the `<<` binary operator.
+     * ```
+     * 4 << 2; // Bitwise shift left operator
+     * ```
+     * If the behaviour is not overridden, the default behaviour from [ObjectDef] is used.
+     *
+     * @param instance the [ClassInstance] that is being shifted.
+     * @param interpreter the interpreter that called this method.
+     * @param other the [ClassInstance] to shift by.
+     * @param trace the trace where it was called.
+     * @return the result of the shift.
+     */
+    protected open fun shiftLeft(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace): Any? {
+        return this.superclass().shiftLeft(instance, interpreter, other, trace)
+    }
+
+    /**
+     * This method defines the behaviour of the `>>` binary operator.
+     * ```
+     * 4 >> 2; // Bitwise shift right operator
+     * ```
+     * If the behaviour is not overridden, the default behaviour from [ObjectDef] is used.
+     *
+     * @param instance the [ClassInstance] that is being shifted.
+     * @param interpreter the interpreter that called this method.
+     * @param other the [ClassInstance] to shift by.
+     * @param trace the trace where it was called.
+     * @return the result of the shift.
+     */
+    protected open fun shiftRight(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace): Any? {
+        return this.superclass().shiftRight(instance, interpreter, other, trace)
+    }
+
+    /**
+     * This method defines the behaviour of the comparison operators, `>=`, `>`, `<`, `<=`.
+     * ```
+     * 70 > 98; // Comparison operator
+     * ```
+     * If the behaviour is not overridden, the default behaviour from [ObjectDef] is used.
+     *
+     * @param instance the right hand side being compared.
+     * @param interpreter the interpreter that called this method.
+     * @param other the left hand side being compared.
+     * @param trace the trace where it was called.
+     * @return the result of the comparison.
+     */
+    protected open fun compare(instance: ClassInstance, interpreter: Interpreter, type: Type, other: ClassInstance, trace: LocatableTrace): Any? {
+        return this.superclass().compare(instance, interpreter, type, other, trace)
+    }
+
     internal open fun asJavaValue(instance: ClassInstance): Any? {
         return null
     }
@@ -377,10 +740,6 @@ abstract class ClassDefinition(
         return assignee
     }
 
-    internal open fun bracketAccess(instance: ClassInstance, interpreter: Interpreter, index: ClassInstance, trace: LocatableTrace): ClassInstance = this.superclass().bracketAccess(instance, interpreter, index, trace)
-
-    internal open fun bracketAssign(instance: ClassInstance, interpreter: Interpreter, index: ClassInstance, assignee: ClassInstance, trace: LocatableTrace): ClassInstance = this.superclass().bracketAssign(instance, interpreter, index, assignee, trace)
-
     internal open fun unary(instance: ClassInstance, interpreter: Interpreter, type: Type, trace: LocatableTrace): ClassInstance {
         return interpreter.convertValue(when (type) {
             NOT -> this.not(instance, interpreter, trace)
@@ -394,7 +753,7 @@ abstract class ClassDefinition(
         return this.binary(instance, interpreter, type, other(), trace)
     }
 
-    protected open fun binary(instance: ClassInstance, interpreter: Interpreter, type: Type, other: ClassInstance, trace: LocatableTrace): ClassInstance {
+    internal open fun binary(instance: ClassInstance, interpreter: Interpreter, type: Type, other: ClassInstance, trace: LocatableTrace): ClassInstance {
         return interpreter.convertValue(when (type) {
             PLUS -> this.plus(instance, interpreter, other, trace)
             MINUS -> this.minus(instance, interpreter, other, trace)
@@ -415,92 +774,12 @@ abstract class ClassDefinition(
         })
     }
 
-    internal open fun copy(instance: ClassInstance, interpreter: Interpreter, trace: LocatableTrace): ClassInstance {
-        return this.superclass().copy(instance, interpreter, trace)
-    }
-
-    protected open fun not(instance: ClassInstance, interpreter: Interpreter, trace: LocatableTrace): Any? {
-        return this.superclass().not(instance, interpreter, trace)
-    }
-
-    protected open fun plus(instance: ClassInstance, interpreter: Interpreter, trace: LocatableTrace): Any? {
-        return this.superclass().plus(instance, interpreter, trace)
-    }
-
-    protected open fun minus(instance: ClassInstance, interpreter: Interpreter, trace: LocatableTrace): Any? {
-        return this.superclass().minus(instance, interpreter, trace)
-    }
-
-    protected open fun plus(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace): Any? {
-        return this.superclass().plus(instance, interpreter, other, trace)
-    }
-
-    protected open fun minus(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace): Any? {
-        return this.superclass().minus(instance, interpreter, other, trace)
-    }
-
-    protected open fun multiply(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace): Any? {
-        return this.superclass().multiply(instance, interpreter, other, trace)
-    }
-
-    protected open fun divide(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace): Any? {
-        return this.superclass().divide(instance, interpreter, other, trace)
-    }
-
-    protected open fun power(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace): Any? {
-        return this.superclass().power(instance, interpreter, other, trace)
-    }
-
-    protected open fun and(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace): Any? {
-        return this.superclass().and(instance, interpreter, other, trace)
-    }
-
-    protected open fun or(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace): Any? {
-        return this.superclass().or(instance, interpreter, other, trace)
-    }
-
-    protected open fun bitAnd(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace): Any? {
-        return this.superclass().bitAnd(instance, interpreter, other, trace)
-    }
-
-    protected open fun bitOr(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace): Any? {
-        return this.superclass().bitOr(instance, interpreter, other, trace)
-    }
-
-    protected open fun xor(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace): Any? {
-        return this.superclass().xor(instance, interpreter, other, trace)
-    }
-
-    protected open fun shiftLeft(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace): Any? {
-        return this.superclass().shiftLeft(instance, interpreter, other, trace)
-    }
-
-    protected open fun shiftRight(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace): Any? {
-        return this.superclass().shiftRight(instance, interpreter, other, trace)
-    }
-
-    protected open fun compare(instance: ClassInstance, interpreter: Interpreter, type: Type, other: ClassInstance, trace: LocatableTrace): Any? {
-        return this.superclass().compare(instance, interpreter, type, other, trace)
-    }
-
     internal open fun compare(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace): Int {
         return this.superclass().compare(instance, interpreter, other, trace)
     }
 
     internal open fun notEquals(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace): Boolean {
         return this.superclass().notEquals(instance, interpreter, other, trace)
-    }
-
-    internal open fun equals(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace): Boolean {
-        return this.superclass().equals(instance, interpreter, other, trace)
-    }
-
-    internal open fun hashCode(instance: ClassInstance, interpreter: Interpreter, trace: LocatableTrace): Int {
-        return this.superclass().hashCode(instance, interpreter, trace)
-    }
-
-    internal open fun toString(instance: ClassInstance, interpreter: Interpreter, trace: LocatableTrace): String {
-        return this.superclass().toString(instance, interpreter, trace)
     }
 
     final override fun equals(other: Any?): Boolean {

@@ -6,7 +6,7 @@ import me.senseiwells.arucas.utils.Parameter
 import me.senseiwells.arucas.utils.Trace
 
 class HintedField(
-    private val name: String,
+    val name: String,
     private val definitions: Array<ClassDefinition>?,
     private val assignable: Boolean,
     instance: ClassInstance

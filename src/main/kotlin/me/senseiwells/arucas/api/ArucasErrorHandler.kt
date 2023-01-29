@@ -2,6 +2,7 @@ package me.senseiwells.arucas.api
 
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.exceptions.*
+import org.jetbrains.annotations.TestOnly
 
 /**
  * Interface to handle Errors in that happen during execution.
@@ -15,6 +16,16 @@ interface ArucasErrorHandler {
          */
         @JvmStatic
         val default = object: ArucasErrorHandler { }
+
+        /**
+         * No operation error handler - intended for testing so there is no output.
+         */
+        @get:TestOnly
+        val noop = object: ArucasErrorHandler {
+            override fun handleArucasError(arucasError: ArucasError, interpreter: Interpreter) { }
+
+            override fun handleInvalidPropagator(propagator: Propagator, interpreter: Interpreter) { }
+        }
     }
 
     /**

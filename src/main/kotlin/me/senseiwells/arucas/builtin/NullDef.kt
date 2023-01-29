@@ -19,6 +19,10 @@ class NullDef(interpreter: Interpreter): PrimitiveDefinition<Unit>(NULL, interpr
 
     override fun canExtend() = false
 
+    override fun asJavaValue(instance: ClassInstance): Any? {
+        return null
+    }
+
     override fun hashCode(instance: ClassInstance, interpreter: Interpreter, trace: LocatableTrace): Int {
         return 0
     }
