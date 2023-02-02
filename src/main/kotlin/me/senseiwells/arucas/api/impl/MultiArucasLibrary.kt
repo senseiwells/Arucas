@@ -2,7 +2,6 @@ package me.senseiwells.arucas.api.impl
 
 import me.senseiwells.arucas.api.ArucasLibrary
 import me.senseiwells.arucas.core.Interpreter
-import java.nio.file.Path
 
 /**
  * This implementation of [ArucasLibrary] allows for
@@ -15,8 +14,6 @@ import java.nio.file.Path
  * It is important to note that the order at which libraries
  * are added to this class determine the order in which
  * they are searched when importing.
- *
- * @param importPath the import path that will be used by all libraries.
  */
 class MultiArucasLibrary: ArucasLibrary {
     /**
@@ -29,7 +26,7 @@ class MultiArucasLibrary: ArucasLibrary {
      * can be its name, which can later be used to remove the library.
      *
      * @param identifier the identifier which can be used to remove the library.
-     * @param library the library generator, which provides the [Path].
+     * @param library the library to add.
      */
     @Synchronized
     fun addLibrary(identifier: String, library: ArucasLibrary) {
