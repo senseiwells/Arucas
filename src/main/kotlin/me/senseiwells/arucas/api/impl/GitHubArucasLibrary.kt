@@ -31,7 +31,7 @@ open class GitHubArucasLibrary @JvmOverloads constructor(
      * The GitHub library URL.
      */
     private val libraryURL: String = LIBRARY_URL
-): ArucasLibrary {
+): ArucasDownloadableLibrary(importPath) {
     /**
      * This method retrieves a library file. We do this
      * by fetching the files from a GitHub repository.
@@ -51,7 +51,7 @@ open class GitHubArucasLibrary @JvmOverloads constructor(
         val filePath = this.importPath.resolve("${import.joinToString(File.separator)}.arucas").ensureParentExists()
 
         if (local) {
-            interpreter.logDebug("Reading local import: '$name'")
+            interpreter.logDebug(".Reading local import: '$name'")
             return this.read(filePath)
         }
 
@@ -97,10 +97,6 @@ open class GitHubArucasLibrary @JvmOverloads constructor(
         return library
     }
 
-    protected open fun getCachePath(): Path {
-        return this.importPath.resolve(".ArucasCache.json").ensureParentExists()
-    }
-
     private fun updateCacheAndWrite(cache: JsonObject, thisCache: JsonObject, name: String) {
         thisCache.addProperty("last", System.currentTimeMillis() / 1_000)
         cache.add(name, thisCache)
@@ -113,9 +109,5 @@ open class GitHubArucasLibrary @JvmOverloads constructor(
         val library = this.read(filePath)
         interpreter.logDebug(library?.let { "Successfully found library locally" } ?: "Failed to find library locally")
         return library
-    }
-
-    private fun read(filePath: Path): String? {
-        return Util.Exception.catchAsNull { Files.readString(filePath) }
     }
 }

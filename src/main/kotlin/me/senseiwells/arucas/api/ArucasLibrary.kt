@@ -1,17 +1,20 @@
 package me.senseiwells.arucas.api
 
 import me.senseiwells.arucas.core.Interpreter
-import java.nio.file.Path
 
 /**
- * This interface is used for downloading arucas files.
+ * This interface provides the ability to get an import
+ * library from a given location.
+ *
+ * This can be implemented and only serves as a provider -
+ * any libraries that implement this interface should
+ * have defined imports otherwise [ArucasDownloadableLibrary]
+ * should be implemented where it downloads libraries
+ * from an outside source at runtime.
+ *
+ * @see ArucasDownloadableLibrary
  */
 interface ArucasLibrary {
-    /**
-     * This import path.
-     */
-    val importPath: Path
-
     /**
      * This method should retrieve a library.
      *
