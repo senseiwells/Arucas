@@ -1,7 +1,6 @@
 package me.senseiwells.arucas.api.impl
 
 import me.senseiwells.arucas.api.ArucasLibrary
-import me.senseiwells.arucas.core.Arucas
 import me.senseiwells.arucas.core.Interpreter
 import java.nio.file.Path
 
@@ -19,12 +18,7 @@ import java.nio.file.Path
  *
  * @param importPath the import path that will be used by all libraries.
  */
-class MultiArucasLibrary(
-    /**
-     * The import path that will be used by all libraries.
-     */
-    override val importPath: Path = Arucas.PATH.resolve("libs")
-): ArucasLibrary {
+class MultiArucasLibrary: ArucasLibrary {
     /**
      * The ordered map of libraries, mapping their identifier to the library.
      */
@@ -38,8 +32,8 @@ class MultiArucasLibrary(
      * @param library the library generator, which provides the [Path].
      */
     @Synchronized
-    fun addLibrary(identifier: String, library: (Path) -> ArucasLibrary) {
-        this.libraries[identifier] = library(this.importPath)
+    fun addLibrary(identifier: String, library: ArucasLibrary) {
+        this.libraries[identifier] = library
     }
 
     /**

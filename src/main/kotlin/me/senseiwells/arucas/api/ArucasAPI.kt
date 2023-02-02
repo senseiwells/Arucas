@@ -8,8 +8,8 @@ import me.senseiwells.arucas.api.impl.GitHubArucasLibrary
 import me.senseiwells.arucas.api.impl.MultiArucasLibrary
 import me.senseiwells.arucas.builtin.*
 import me.senseiwells.arucas.classes.ClassDefinition
-import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.classes.PrimitiveDefinition
+import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.exceptions.RuntimeError
 import me.senseiwells.arucas.extensions.JavaClassDef
@@ -147,7 +147,7 @@ interface ArucasAPI {
      *
      * @param rootPath the path to generate the native files to.
      */
-    fun generateNativeFiles(rootPath: Path = this.getLibraryManager().importPath) {
+    fun generateNativeFiles(rootPath: Path) {
         val docParser = CodeDocParser()
         val dummy = Interpreter.dummy(this)
 
@@ -281,7 +281,7 @@ interface ArucasAPI {
          * @param generator the library generator with the given library path.
          * @return the builder.
          */
-        fun addArucasLibrary(libraryName: String, generator: (Path) -> ArucasLibrary): Builder {
+        fun addArucasLibrary(libraryName: String, generator: ArucasLibrary): Builder {
             val library = this.library
             if (library is MultiArucasLibrary) {
                 library.addLibrary(libraryName, generator)
@@ -412,7 +412,7 @@ interface ArucasAPI {
          * @return the builder.
          */
         fun addDefaultLibrary(): Builder {
-            return this.addArucasLibrary("ArucasLibraries", ::GitHubArucasLibrary)
+            return this.addArucasLibrary("ArucasLibraries", GitHubArucasLibrary())
         }
 
         /**
