@@ -9,6 +9,7 @@ import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.core.Type
 import me.senseiwells.arucas.core.Type.*
 import me.senseiwells.arucas.exceptions.runtimeError
+import me.senseiwells.arucas.extensions.JavaDef
 import me.senseiwells.arucas.utils.*
 import kotlin.reflect.KClass
 
@@ -333,6 +334,17 @@ abstract class ClassDefinition(
     }
 
     /**
+     * This method is called when the value is converted into a [JavaDef].
+     *
+     * @param instance the instance to convert into a [Object].
+     * @return the java [Object] counterpart.
+     * @see PrimitiveDefinition.asJavaValue
+     */
+    open fun asJavaValue(instance: ClassInstance): Any? {
+        return null
+    }
+
+    /**
      * This method defines the behaviour of the `!` unary operator.
      * ```
      * !true; // Not operator
@@ -599,10 +611,6 @@ abstract class ClassDefinition(
      */
     protected open fun compare(instance: ClassInstance, interpreter: Interpreter, type: Type, other: ClassInstance, trace: LocatableTrace): Any? {
         return this.superclass().compare(instance, interpreter, type, other, trace)
-    }
-
-    internal open fun asJavaValue(instance: ClassInstance): Any? {
-        return null
     }
 
     internal open fun cacheSuperclasses() {
