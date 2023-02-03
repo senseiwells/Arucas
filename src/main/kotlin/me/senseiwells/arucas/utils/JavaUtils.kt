@@ -313,6 +313,42 @@ object JavaUtils {
     fun bracketAccess(first: Any, second: Any?, default: Any): Any? {
         RuntimeError.wrap {
             return when (first) {
+                is Array<*> -> when (second) {
+                    is Number -> first[second.toInt()]
+                    else -> default
+                }
+                is ByteArray -> when (second) {
+                    is Number -> first[second.toInt()]
+                    else -> default
+                }
+                is ShortArray -> when (second) {
+                    is Number -> first[second.toInt()]
+                    else -> default
+                }
+                is IntArray -> when (second) {
+                    is Number -> first[second.toInt()]
+                    else -> default
+                }
+                is LongArray -> when (second) {
+                    is Number -> first[second.toInt()]
+                    else -> default
+                }
+                is FloatArray -> when (second) {
+                    is Number -> first[second.toInt()]
+                    else -> default
+                }
+                is DoubleArray -> when (second) {
+                    is Number -> first[second.toInt()]
+                    else -> default
+                }
+                is CharArray -> when (second) {
+                    is Number -> first[second.toInt()]
+                    else -> default
+                }
+                is BooleanArray -> when (second) {
+                    is Number -> first[second.toInt()]
+                    else -> default
+                }
                 is List<*> -> when (second) {
                     is Number -> first[second.toInt()]
                     else -> default
@@ -327,6 +363,47 @@ object JavaUtils {
     fun bracketAssign(first: Any, second: Any?, third: Any?, default: Any): Any? {
         RuntimeError.wrap {
             return when (first) {
+                is Array<*> -> when (second) {
+                    is Number -> (first as Array<Any?>)[second.toInt()] = third
+                    else -> default
+                }
+                is ByteArray -> when {
+                    second is Number && third is Number -> first[second.toInt()] = third.toByte()
+                    else -> default
+                }
+                is ShortArray -> when {
+                    second is Number && third is Number -> first[second.toInt()] = third.toShort()
+                    else -> default
+                }
+                is IntArray -> when {
+                    second is Number && third is Number -> first[second.toInt()] = third.toInt()
+                    else -> default
+                }
+                is LongArray -> when {
+                    second is Number && third is Number -> first[second.toInt()] = third.toLong()
+                    else -> default
+                }
+                is FloatArray -> when {
+                    second is Number && third is Number -> first[second.toInt()] = third.toFloat()
+                    else -> default
+                }
+                is DoubleArray -> when {
+                    second is Number && third is Number -> first[second.toInt()] = third.toDouble()
+                    else -> default
+                }
+                is CharArray -> when (second) {
+                    is Number -> when {
+                        third is Number -> first[second.toInt()] = third.toChar()
+                        third is Char -> first[second.toInt()] = third
+                        third is CharSequence && third.length == 1 -> first[second.toInt()] = third[0]
+                        else -> default
+                    }
+                    else -> default
+                }
+                is BooleanArray -> when {
+                    second is Number && third is Boolean -> first[second.toInt()] = third
+                    else -> default
+                }
                 is MutableList<*> -> when (second) {
                     is Number -> (first as MutableList<Any?>).set(second.toInt(), third)
                     else -> default

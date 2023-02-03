@@ -3,8 +3,8 @@ package me.senseiwells.arucas.builtin
 import me.senseiwells.arucas.api.docs.ClassDoc
 import me.senseiwells.arucas.api.docs.ConstructorDoc
 import me.senseiwells.arucas.api.docs.FunctionDoc
-import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.classes.CreatableDefinition
+import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.core.Type
 import me.senseiwells.arucas.exceptions.RuntimeError
@@ -136,10 +136,10 @@ class StringDef(interpreter: Interpreter): CreatableDefinition<String>(STRING, i
         examples = ["'hello'.chars(); // ['h', 'e', 'l', 'l', 'o']"]
     )
     private fun chars(arguments: Arguments): ArucasList {
-        val string = arguments.next().asPrimitive(this)
+        val string = arguments.nextPrimitive(this)
         val list = ArucasList()
         for (i in string.indices) {
-            list[i] = this.create(string[i].toString())
+            list.add(this.create(string[i].toString()))
         }
         return list
     }

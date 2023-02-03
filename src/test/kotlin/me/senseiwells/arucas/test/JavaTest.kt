@@ -68,5 +68,13 @@ class JavaTest {
             return map;
             """, TestHelper.API_JAVA
         )
+        TestHelper.assertEquals(100,
+            """
+            array = Java.byteArray(10);
+            array[0] = 0x10;
+            array[9] = 84;
+            return array[0] + array[9] + 0.0; // Convert to double
+            """, TestHelper.API_JAVA
+        )
     }
 }
