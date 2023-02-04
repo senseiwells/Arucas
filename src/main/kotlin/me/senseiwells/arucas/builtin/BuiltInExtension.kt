@@ -1,7 +1,10 @@
 package me.senseiwells.arucas.builtin
 
 import me.senseiwells.arucas.api.ArucasExtension
-import me.senseiwells.arucas.api.docs.FunctionDoc
+import me.senseiwells.arucas.api.docs.annotations.ExtensionDoc
+import me.senseiwells.arucas.api.docs.annotations.FunctionDoc
+import me.senseiwells.arucas.api.docs.annotations.ParameterDoc
+import me.senseiwells.arucas.api.docs.annotations.ReturnDoc
 import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.core.Arucas
 import me.senseiwells.arucas.exceptions.Propagator
@@ -25,12 +28,14 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import kotlin.random.Random
 
+@ExtensionDoc(
+    name = "BuiltInExtension",
+    desc = ["An extension that provides basic functionality."]
+)
 class BuiltInExtension: ArucasExtension {
     private companion object {
         val INPUT_LOCK = Any()
     }
-
-    override fun getName() = "BuiltInExtension"
 
     override fun getBuiltInFunctions(): List<BuiltInFunction> {
         return listOf(
@@ -68,8 +73,14 @@ class BuiltInExtension: ArucasExtension {
 
     @FunctionDoc(
         name = "print",
-        desc = ["This prints a value to the output handler"],
-        params = [OBJECT, "printValue", "the value to print"],
+        desc = ["This prints a value to the output handler."],
+        params = [
+            ParameterDoc(
+                type = ObjectDef::class,
+                name = "value",
+                desc = ["the value to print."]
+            )
+        ],
         examples = ["print('Hello World');"]
     )
     private fun print(arguments: Arguments) {
@@ -77,15 +88,14 @@ class BuiltInExtension: ArucasExtension {
     }
 
     @FunctionDoc(
-        isVarArgs = true,
         name = "print",
         desc = [
-            "This prints a number of values to the console",
+            "This prints a number of values to the console.",
             "If there are no arguments then this will print a new line,",
-            "other wise it will print the contents without a new line"
+            "other wise it will print the contents without a new line."
         ],
-        params = [OBJECT, "printValue...", "the value to print"],
-        examples = ["print('Hello World', 'This is a test', 123);"]
+        params = [ParameterDoc(ObjectDef::class, "value", ["the value to print."], true)],
+        examples = ["print('Hello World', 'This is a test', 123); // prints 'Hello WorldThis is a test123'"]
     )
     private fun printVarArgs(arguments: Arguments) {
         if (!arguments.hasNext()) {
@@ -105,7 +115,7 @@ class BuiltInExtension: ArucasExtension {
             "This logs something to the debug output.",
             "It only prints if debug mode is enabled: `debug(true)`"
         ],
-        params = [OBJECT, "printValue", "the value to print"],
+        params = [ParameterDoc(ObjectDef::class, "value", ["The value to print."])],
         examples = [
             """
             debug(true); // Enable debug for testing
@@ -122,8 +132,8 @@ class BuiltInExtension: ArucasExtension {
     @FunctionDoc(
         name = "input",
         desc = ["This is used to take an input from the user"],
-        params = [STRING, "prompt", "the prompt to show the user"],
-        returns = [STRING, "the input from the user"],
+        params = [ParameterDoc(StringDef::class, "prompt", ["The prompt to show the user."])],
+        returns = [ReturnDoc(StringDef::class, ["The input from the user."])],
         examples = ["input('What is your name?');"]
     )
     private fun input(arguments: Arguments): String {
