@@ -1,16 +1,16 @@
 package me.senseiwells.arucas.builtin
 
-import me.senseiwells.arucas.api.docs.ClassDoc
-import me.senseiwells.arucas.api.docs.FunctionDoc
-import me.senseiwells.arucas.classes.instance.ClassInstance
+import me.senseiwells.arucas.api.docs.annotations.ClassDoc
+import me.senseiwells.arucas.api.docs.annotations.FunctionDoc
+import me.senseiwells.arucas.api.docs.annotations.ReturnDoc
 import me.senseiwells.arucas.classes.CreatableDefinition
+import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.core.Type
 import me.senseiwells.arucas.utils.Arguments
 import me.senseiwells.arucas.utils.LocatableTrace
 import me.senseiwells.arucas.utils.MemberFunction
 import me.senseiwells.arucas.utils.StringUtils
-import me.senseiwells.arucas.utils.Util.Types.BOOLEAN
 import me.senseiwells.arucas.utils.Util.Types.NUMBER
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
@@ -122,7 +122,7 @@ class NumberDef(interpreter: Interpreter): CreatableDefinition<Double>(NUMBER, i
     @FunctionDoc(
         name = "round",
         desc = ["This allows you to round a number to the nearest integer"],
-        returns = [NUMBER, "the rounded number"],
+        returns = ReturnDoc(NumberDef::class, ["The rounded number."]),
         examples = ["3.5.round();"]
     )
     private fun round(arguments: Arguments): Int {
@@ -132,7 +132,7 @@ class NumberDef(interpreter: Interpreter): CreatableDefinition<Double>(NUMBER, i
     @FunctionDoc(
         name = "ceil",
         desc = ["This allows you to round a number up to the nearest integer"],
-        returns = [NUMBER, "the rounded number"],
+        returns = ReturnDoc(NumberDef::class, ["The rounded number."]),
         examples = ["3.5.ceil();"]
     )
     private fun ceil(arguments: Arguments): Double {
@@ -142,7 +142,7 @@ class NumberDef(interpreter: Interpreter): CreatableDefinition<Double>(NUMBER, i
     @FunctionDoc(
         name = "floor",
         desc = ["This allows you to round a number down to the nearest integer"],
-        returns = [NUMBER, "the rounded number"],
+        returns = ReturnDoc(NumberDef::class, ["The rounded number."]),
         examples = ["3.5.floor();"]
     )
     private fun floor(arguments: Arguments): Double {
@@ -152,7 +152,7 @@ class NumberDef(interpreter: Interpreter): CreatableDefinition<Double>(NUMBER, i
     @FunctionDoc(
         name = "isInfinite",
         desc = ["This allows you to check if a number is infinite"],
-        returns = [BOOLEAN, "true if the number is infinite"],
+        returns = ReturnDoc(BooleanDef::class, ["True if the number is infinite."]),
         examples = ["(1/0).isInfinite();"]
     )
     private fun isInfinite(arguments: Arguments): Boolean {
@@ -162,7 +162,7 @@ class NumberDef(interpreter: Interpreter): CreatableDefinition<Double>(NUMBER, i
     @FunctionDoc(
         name = "isNaN",
         desc = ["This allows you to check if a number is not a number"],
-        returns = [BOOLEAN, "true if the number is not a number"],
+        returns = ReturnDoc(BooleanDef::class, ["True if the number is not a number."]),
         examples = ["(0/0).isNaN();"]
     )
     private fun isNan(arguments: Arguments): Boolean {

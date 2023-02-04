@@ -1,18 +1,17 @@
 package me.senseiwells.arucas.builtin
 
-import me.senseiwells.arucas.api.docs.ClassDoc
-import me.senseiwells.arucas.api.docs.ConstructorDoc
-import me.senseiwells.arucas.api.docs.FunctionDoc
-import me.senseiwells.arucas.classes.instance.ClassInstance
+import me.senseiwells.arucas.api.docs.annotations.ClassDoc
+import me.senseiwells.arucas.api.docs.annotations.ConstructorDoc
+import me.senseiwells.arucas.api.docs.annotations.FunctionDoc
+import me.senseiwells.arucas.api.docs.annotations.ReturnDoc
 import me.senseiwells.arucas.classes.CreatableDefinition
+import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.exceptions.runtimeError
 import me.senseiwells.arucas.utils.Arguments
 import me.senseiwells.arucas.utils.ConstructorFunction
 import me.senseiwells.arucas.utils.MemberFunction
-import me.senseiwells.arucas.utils.Util.Types.BOOLEAN
 import me.senseiwells.arucas.utils.Util.Types.ITERATOR
-import me.senseiwells.arucas.utils.Util.Types.OBJECT
 import me.senseiwells.arucas.utils.impl.ArucasIterator
 
 @ClassDoc(
@@ -66,7 +65,7 @@ class IteratorDef(interpreter: Interpreter): CreatableDefinition<ArucasIterator>
     @FunctionDoc(
         name = "hasNext",
         desc = ["Checks whether the iterator has a next item to iterate"],
-        returns = [BOOLEAN, "whether there are items left to iterate"],
+        returns = ReturnDoc(BooleanDef::class, ["Whether there are items left to iterate."]),
         examples = [
             """
             iterator = [].iterator();
@@ -85,7 +84,7 @@ class IteratorDef(interpreter: Interpreter): CreatableDefinition<ArucasIterator>
     @FunctionDoc(
         name = "next",
         desc = ["Gets the next item in the iterator, may throw if there is no next item"],
-        returns = [OBJECT, "the next item"],
+        returns = ReturnDoc(ObjectDef::class, ["The next item."]),
         examples = [
             """
             iterator = [10, 20].iterator();

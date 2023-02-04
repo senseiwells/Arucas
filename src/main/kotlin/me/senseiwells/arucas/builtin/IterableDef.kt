@@ -1,8 +1,9 @@
 package me.senseiwells.arucas.builtin
 
-import me.senseiwells.arucas.api.docs.ClassDoc
-import me.senseiwells.arucas.api.docs.ConstructorDoc
-import me.senseiwells.arucas.api.docs.FunctionDoc
+import me.senseiwells.arucas.api.docs.annotations.ClassDoc
+import me.senseiwells.arucas.api.docs.annotations.ConstructorDoc
+import me.senseiwells.arucas.api.docs.annotations.FunctionDoc
+import me.senseiwells.arucas.api.docs.annotations.ReturnDoc
 import me.senseiwells.arucas.classes.CreatableDefinition
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.exceptions.runtimeError
@@ -10,7 +11,6 @@ import me.senseiwells.arucas.utils.Arguments
 import me.senseiwells.arucas.utils.ConstructorFunction
 import me.senseiwells.arucas.utils.MemberFunction
 import me.senseiwells.arucas.utils.Util.Types.ITERABLE
-import me.senseiwells.arucas.utils.Util.Types.ITERATOR
 import me.senseiwells.arucas.utils.impl.ArucasIterable
 import me.senseiwells.arucas.utils.impl.ArucasIterator
 
@@ -60,7 +60,7 @@ class IterableDef(interpreter: Interpreter): CreatableDefinition<ArucasIterable>
     @FunctionDoc(
         name = "iterator",
         desc = ["This gets the generated iterator"],
-        returns = [ITERATOR, "the generated iterator"],
+        returns = ReturnDoc(IteratorDef::class, ["The generated iterator."]),
         examples = [
             """
             iterable = [];

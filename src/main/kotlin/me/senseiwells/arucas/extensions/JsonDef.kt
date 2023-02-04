@@ -4,21 +4,17 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
 import com.google.gson.JsonSyntaxException
-import me.senseiwells.arucas.api.docs.ClassDoc
-import me.senseiwells.arucas.api.docs.FunctionDoc
-import me.senseiwells.arucas.builtin.FileDef
-import me.senseiwells.arucas.builtin.StringDef
+import me.senseiwells.arucas.api.docs.annotations.ClassDoc
+import me.senseiwells.arucas.api.docs.annotations.FunctionDoc
+import me.senseiwells.arucas.api.docs.annotations.ParameterDoc
+import me.senseiwells.arucas.api.docs.annotations.ReturnDoc
+import me.senseiwells.arucas.builtin.*
 import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.classes.CreatableDefinition
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.exceptions.runtimeError
 import me.senseiwells.arucas.utils.*
-import me.senseiwells.arucas.utils.Util.Types.FILE
 import me.senseiwells.arucas.utils.Util.Types.JSON
-import me.senseiwells.arucas.utils.Util.Types.LIST
-import me.senseiwells.arucas.utils.Util.Types.MAP
-import me.senseiwells.arucas.utils.Util.Types.OBJECT
-import me.senseiwells.arucas.utils.Util.Types.STRING
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.nio.file.Files
@@ -58,8 +54,8 @@ class JsonDef(interpreter: Interpreter): CreatableDefinition<JsonElement>(JSON, 
             "This converts a string into a Json provided it is formatted correctly,",
             "otherwise throwing an error"
         ],
-        params = [STRING, "string", "the string that you want to parse into a Json"],
-        returns = [JSON, "the Json parsed from the string"],
+        params = [ParameterDoc(StringDef::class, "string", ["The string that you want to parse into a Json."])],
+        returns = ReturnDoc(JsonDef::class, ["The Json parsed from the string."]),
         examples = ["Json.fromString('{\"key\":\"value\"}');"]
     )
     private fun fromString(arguments: Arguments): ClassInstance {
@@ -79,8 +75,8 @@ class JsonDef(interpreter: Interpreter): CreatableDefinition<JsonElement>(JSON, 
             "any values that are not Numbers, Booleans, Lists, Maps, or Null will use their",
             "toString() member to convert them to a string"
         ],
-        params = [LIST, "list", "the list that you want to parse into a Json"],
-        returns = [JSON, "the Json parsed from the list"],
+        params = [ParameterDoc(ListDef::class, "list", ["The list that you want to parse into a Json."])],
+        returns = ReturnDoc(JsonDef::class, ["The Json parsed from the list."]),
         examples = ["Json.fromList(['value', 1, true]);"]
     )
     private fun fromList(arguments: Arguments): ClassInstance {
@@ -92,8 +88,8 @@ class JsonDef(interpreter: Interpreter): CreatableDefinition<JsonElement>(JSON, 
         isStatic = true,
         name = "fromFile",
         desc = ["This will read a file and parse it into a Json, this will throw an error if the file cannot be read"],
-        params = [FILE, "file", "the file that you want to parse into a Json"],
-        returns = [JSON, "the Json parsed from the file"],
+        params = [ParameterDoc(FileDef::class, "file", ["The file that you want to parse into a Json."])],
+        returns = ReturnDoc(JsonDef::class, ["The Json parsed from the file."]),
         examples = ["Json.fromFile(new File('this/path/is/an/example.json'));"]
     )
     private fun fromFile(arguments: Arguments): ClassInstance {
@@ -114,8 +110,8 @@ class JsonDef(interpreter: Interpreter): CreatableDefinition<JsonElement>(JSON, 
             "any values that are not Numbers, Booleans, Lists, Maps, or Null will use their",
             "toString() member to convert them to a string"
         ],
-        params = [MAP, "map", "the map that you want to parse into a Json"],
-        returns = [JSON, "the Json parsed from the map"],
+        params = [ParameterDoc(MapDef::class, "map", ["The map that you want to parse into a Json."])],
+        returns = ReturnDoc(JsonDef::class, ["The Json parsed from the map."]),
         examples = ["Json.fromMap({'key': ['value1', 'value2']});"]
     )
     private fun fromMap(arguments: Arguments): ClassInstance {
@@ -133,7 +129,7 @@ class JsonDef(interpreter: Interpreter): CreatableDefinition<JsonElement>(JSON, 
     @FunctionDoc(
         name = "getValue",
         desc = ["This converts the Json back into an object"],
-        returns = [OBJECT, "the Value parsed from the Json"],
+        returns = ReturnDoc(ObjectDef::class, ["The Value parsed from the Json."]),
         examples = ["json.getValue();"]
     )
     private fun getValue(arguments: Arguments): ClassInstance {
@@ -148,7 +144,7 @@ class JsonDef(interpreter: Interpreter): CreatableDefinition<JsonElement>(JSON, 
             "if the file given is a directory or cannot be",
             "written to, an error will be thrown"
         ],
-        params = [FILE, "file", "the file that you want to write to"],
+        params = [ParameterDoc(FileDef::class, "file", ["The file that you want to write to."])],
         examples = ["json.writeToFile(new File('D:/cool/realDirectory'));"]
     )
     private fun writeToFile(arguments: Arguments) {

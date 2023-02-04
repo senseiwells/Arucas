@@ -1,5 +1,6 @@
 package me.senseiwells.arucas.api.docs
 
+@Deprecated("me.senseiwells.arucas.api.docs.annotations.FieldDoc should be used instead.")
 @Target(AnnotationTarget.FIELD)
 annotation class FieldDoc(
     val isStatic: Boolean = true,

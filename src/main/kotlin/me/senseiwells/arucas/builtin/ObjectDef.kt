@@ -1,7 +1,9 @@
 package me.senseiwells.arucas.builtin
 
-import me.senseiwells.arucas.api.docs.ClassDoc
-import me.senseiwells.arucas.api.docs.FunctionDoc
+import me.senseiwells.arucas.api.docs.annotations.ClassDoc
+import me.senseiwells.arucas.api.docs.annotations.FunctionDoc
+import me.senseiwells.arucas.api.docs.annotations.ParameterDoc
+import me.senseiwells.arucas.api.docs.annotations.ReturnDoc
 import me.senseiwells.arucas.classes.ClassDefinition
 import me.senseiwells.arucas.classes.PrimitiveDefinition
 import me.senseiwells.arucas.classes.instance.ClassInstance
@@ -13,11 +15,7 @@ import me.senseiwells.arucas.utils.Arguments
 import me.senseiwells.arucas.utils.LocatableTrace
 import me.senseiwells.arucas.utils.MemberFunction
 import me.senseiwells.arucas.utils.Trace
-import me.senseiwells.arucas.utils.Util.Types.BOOLEAN
-import me.senseiwells.arucas.utils.Util.Types.NUMBER
 import me.senseiwells.arucas.utils.Util.Types.OBJECT
-import me.senseiwells.arucas.utils.Util.Types.STRING
-import me.senseiwells.arucas.utils.Util.Types.TYPE
 
 @ClassDoc(
     name = OBJECT,
@@ -150,7 +148,7 @@ class ObjectDef(interpreter: Interpreter): PrimitiveDefinition<Any>(OBJECT, inte
     @FunctionDoc(
         name = "toString",
         desc = ["This returns the string representation of the value"],
-        returns = [STRING, "the string representation of the value"],
+        returns = ReturnDoc(StringDef::class, ["The string representation of the value."]),
         examples = ["[10, 11, 12].toString(); // [10, 11, 12]"]
     )
     private fun toString(arguments: Arguments): String {
@@ -165,7 +163,7 @@ class ObjectDef(interpreter: Interpreter): PrimitiveDefinition<Any>(OBJECT, inte
             "to be used as keys in a map or set. If two objects are equal, they must",
             "have the same hash code"
         ],
-        returns = [NUMBER, "the hash code of the value"],
+        returns = ReturnDoc(NumberDef::class, ["The hash code of the value."]),
         examples = ["[10, 11, 12].hashCode(); // -1859087"]
     )
     private fun hashCode(arguments: Arguments): Int {
@@ -175,7 +173,7 @@ class ObjectDef(interpreter: Interpreter): PrimitiveDefinition<Any>(OBJECT, inte
     @FunctionDoc(
         name = "uniqueHash",
         desc = ["This returns the unique hash of the value, this is different for every instance of a value"],
-        returns = [NUMBER, "the unique hash of the value"],
+        returns = ReturnDoc(NumberDef::class, ["The unique hash of the value."]),
         examples = ["'thing'.uniqueHash();"]
     )
     private fun uniqueHash(arguments: Arguments): Int {
@@ -191,7 +189,7 @@ class ObjectDef(interpreter: Interpreter): PrimitiveDefinition<Any>(OBJECT, inte
             "Any object that has not implemented the copy method will also",
             "return the same instance"
         ],
-        returns = [OBJECT, "a copy of the value"],
+        returns = ReturnDoc(ObjectDef::class, ["A copy of the value."]),
         examples = ["[10, 11, 12].copy(); // [10, 11, 12]"]
     )
     private fun copy(arguments: Arguments): ClassInstance {
@@ -201,8 +199,8 @@ class ObjectDef(interpreter: Interpreter): PrimitiveDefinition<Any>(OBJECT, inte
     @FunctionDoc(
         name = "instanceOf",
         desc = ["This returns true if the value is an instance of the given type"],
-        params = [TYPE, "type", "the type to check against"],
-        returns = [BOOLEAN, "true if the value is an instance of the given type"],
+        params = [ParameterDoc(TypeDef::class, "type", ["The type to check against."])],
+        returns = ReturnDoc(BooleanDef::class, ["True if the value is an instance of the given type."]),
         examples = ["[10, 11, 12].instanceOf(List.type); // true"]
     )
     private fun instanceOf(arguments: Arguments): Boolean {

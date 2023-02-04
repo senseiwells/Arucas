@@ -1,18 +1,16 @@
 package me.senseiwells.arucas.builtin
 
-import me.senseiwells.arucas.api.docs.ClassDoc
-import me.senseiwells.arucas.api.docs.FunctionDoc
-import me.senseiwells.arucas.classes.instance.ClassInstance
+import me.senseiwells.arucas.api.docs.annotations.ClassDoc
+import me.senseiwells.arucas.api.docs.annotations.FunctionDoc
+import me.senseiwells.arucas.api.docs.annotations.ParameterDoc
+import me.senseiwells.arucas.api.docs.annotations.ReturnDoc
 import me.senseiwells.arucas.classes.CreatableDefinition
+import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.exceptions.runtimeError
 import me.senseiwells.arucas.utils.Arguments
 import me.senseiwells.arucas.utils.BuiltInFunction
 import me.senseiwells.arucas.utils.MemberFunction
-import me.senseiwells.arucas.utils.Util.Types.BOOLEAN
-import me.senseiwells.arucas.utils.Util.Types.FUNCTION
-import me.senseiwells.arucas.utils.Util.Types.NUMBER
-import me.senseiwells.arucas.utils.Util.Types.STRING
 import me.senseiwells.arucas.utils.Util.Types.THREAD
 import me.senseiwells.arucas.utils.impl.ArucasThread
 
@@ -44,7 +42,7 @@ class ThreadDef(interpreter: Interpreter): CreatableDefinition<ArucasThread>(THR
             "this may throw an error if the thread is not safe to get,",
             "which happens when running outside of Arucas Threads"
         ],
-        returns = [THREAD, "the current thread"],
+        returns = ReturnDoc(ThreadDef::class, ["The current thread."]),
         examples = ["Thread.getCurrentThread();"]
     )
     @Suppress("UNUSED_PARAMETER")
@@ -64,8 +62,8 @@ class ThreadDef(interpreter: Interpreter): CreatableDefinition<ArucasThread>(THR
             "terminate when it finishes executing the function, threads will stop automatically",
             "when the program stops, you are also able to stop threads by using the Thread object"
         ],
-        params = [FUNCTION, "function", "the function you want to run on a new thread"],
-        returns = [THREAD, "the new thread"],
+        params = [ParameterDoc(FunctionDef::class, "function", ["The function you want to run on a new thread."])],
+        returns = ReturnDoc(ThreadDef::class, ["The new thread."]),
         examples = [
             """
             Thread.runThreaded(fun() {
@@ -84,10 +82,10 @@ class ThreadDef(interpreter: Interpreter): CreatableDefinition<ArucasThread>(THR
         name = "runThreaded",
         desc = ["This starts a new thread with a specific name and runs a function on it"],
         params = [
-            STRING, "name", "the name of the thread",
-            FUNCTION, "function", "the function you want to run on a new thread"
+            ParameterDoc(StringDef::class, "name", ["The name of the thread."]),
+            ParameterDoc(FunctionDef::class, "function", ["The function you want to run on a new thread."])
         ],
-        returns = [THREAD, "the new thread"],
+        returns = ReturnDoc(ThreadDef::class, ["The new thread."]),
         examples = [
             """
             Thread.runThreaded("MyThread", fun() {
@@ -134,7 +132,7 @@ class ThreadDef(interpreter: Interpreter): CreatableDefinition<ArucasThread>(THR
     @FunctionDoc(
         name = "isAlive",
         desc = ["This checks if the thread is alive (still running)"],
-        returns = [BOOLEAN, "true if the thread is alive, false if not"],
+        returns = ReturnDoc(BooleanDef::class, ["True if the thread is alive, false if not."]),
         examples = ["Thread.getCurrentThread().isAlive();"]
     )
     private fun isAlive(arguments: Arguments): Boolean {
@@ -144,7 +142,7 @@ class ThreadDef(interpreter: Interpreter): CreatableDefinition<ArucasThread>(THR
     @FunctionDoc(
         name = "getAge",
         desc = ["This gets the age of the thread in milliseconds"],
-        returns = [NUMBER, "the age of the thread"],
+        returns = ReturnDoc(NumberDef::class, ["The age of the thread."]),
         examples = ["Thread.getCurrentThread().getAge();"]
     )
     private fun getAge(arguments: Arguments): Long {
@@ -154,7 +152,7 @@ class ThreadDef(interpreter: Interpreter): CreatableDefinition<ArucasThread>(THR
     @FunctionDoc(
         name = "getName",
         desc = ["This gets the name of the thread"],
-        returns = [STRING, "the name of the thread"],
+        returns = ReturnDoc(StringDef::class, ["The name of the thread."]),
         examples = ["Thread.getCurrentThread().getName();"]
     )
     private fun getName(arguments: Arguments): String {

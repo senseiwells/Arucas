@@ -1,16 +1,15 @@
 package me.senseiwells.arucas.builtin
 
-import me.senseiwells.arucas.api.docs.ClassDoc
-import me.senseiwells.arucas.api.docs.FunctionDoc
-import me.senseiwells.arucas.classes.instance.ClassInstance
+import me.senseiwells.arucas.api.docs.annotations.ClassDoc
+import me.senseiwells.arucas.api.docs.annotations.FunctionDoc
+import me.senseiwells.arucas.api.docs.annotations.ReturnDoc
 import me.senseiwells.arucas.classes.PrimitiveDefinition
+import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.utils.Arguments
 import me.senseiwells.arucas.utils.LocatableTrace
 import me.senseiwells.arucas.utils.MemberFunction
 import me.senseiwells.arucas.utils.Util.Types.ENUM
-import me.senseiwells.arucas.utils.Util.Types.NUMBER
-import me.senseiwells.arucas.utils.Util.Types.STRING
 import me.senseiwells.arucas.utils.impl.ArucasEnum
 
 @ClassDoc(
@@ -37,7 +36,7 @@ class EnumDef(interpreter: Interpreter): PrimitiveDefinition<ArucasEnum>(ENUM, i
     @FunctionDoc(
         name = "getName",
         desc = ["This allows you to get the name of an enum value"],
-        returns = [STRING, "the name of the enum value"],
+        returns = ReturnDoc(StringDef::class, ["The name of the enum value."]),
         examples = ["enum.getName();"]
     )
     private fun getName(arguments: Arguments): String {
@@ -47,7 +46,7 @@ class EnumDef(interpreter: Interpreter): PrimitiveDefinition<ArucasEnum>(ENUM, i
     @FunctionDoc(
         name = "ordinal",
         desc = ["This allows you to get the ordinal of the enum value"],
-        returns = [NUMBER, "the ordinal of the enum value"],
+        returns = ReturnDoc(NumberDef::class, ["The ordinal of the enum value."]),
         examples = ["enum.ordinal();"]
     )
     private fun ordinal(arguments: Arguments): Int {

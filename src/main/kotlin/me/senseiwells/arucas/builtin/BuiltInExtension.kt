@@ -12,11 +12,6 @@ import me.senseiwells.arucas.exceptions.runtimeError
 import me.senseiwells.arucas.utils.Arguments
 import me.senseiwells.arucas.utils.BuiltInFunction
 import me.senseiwells.arucas.utils.Util
-import me.senseiwells.arucas.utils.Util.Types.BOOLEAN
-import me.senseiwells.arucas.utils.Util.Types.ITERABLE
-import me.senseiwells.arucas.utils.Util.Types.NUMBER
-import me.senseiwells.arucas.utils.Util.Types.OBJECT
-import me.senseiwells.arucas.utils.Util.Types.STRING
 import me.senseiwells.arucas.utils.impl.ArucasIterable
 import me.senseiwells.arucas.utils.impl.ArucasThread
 import java.io.IOException
@@ -52,7 +47,7 @@ class BuiltInExtension: ArucasExtension {
             BuiltInFunction.of("isMain", this::isMain),
             BuiltInFunction.of("getArucasVersion", this::getArucasVersion),
 
-            BuiltInFunction.of("runFromString", 1, this::runFromString, "Use 'eval(code)' instead"),
+            BuiltInFunction.of("runFromString", 1, this::runFromString),
             BuiltInFunction.of("eval", 1, this::eval),
             BuiltInFunction.of("run", 1, this::run),
             BuiltInFunction.of("stop", this::stop),
@@ -74,13 +69,7 @@ class BuiltInExtension: ArucasExtension {
     @FunctionDoc(
         name = "print",
         desc = ["This prints a value to the output handler."],
-        params = [
-            ParameterDoc(
-                type = ObjectDef::class,
-                name = "value",
-                desc = ["the value to print."]
-            )
-        ],
+        params = [ParameterDoc(ObjectDef::class, "value", ["The value to print."])],
         examples = ["print('Hello World');"]
     )
     private fun print(arguments: Arguments) {
@@ -94,7 +83,7 @@ class BuiltInExtension: ArucasExtension {
             "If there are no arguments then this will print a new line,",
             "other wise it will print the contents without a new line."
         ],
-        params = [ParameterDoc(ObjectDef::class, "value", ["the value to print."], true)],
+        params = [ParameterDoc(ObjectDef::class, "value", ["The value to print."], true)],
         examples = ["print('Hello World', 'This is a test', 123); // prints 'Hello WorldThis is a test123'"]
     )
     private fun printVarArgs(arguments: Arguments) {
@@ -131,10 +120,13 @@ class BuiltInExtension: ArucasExtension {
 
     @FunctionDoc(
         name = "input",
-        desc = ["This is used to take an input from the user"],
+        desc = [
+            "This is used to take an input from the user. The execution of",
+            "the script is paused until the user has inputted a value."
+        ],
         params = [ParameterDoc(StringDef::class, "prompt", ["The prompt to show the user."])],
-        returns = [ReturnDoc(StringDef::class, ["The input from the user."])],
-        examples = ["input('What is your name?');"]
+        returns = ReturnDoc(StringDef::class, ["The input from the user."]),
+        examples = ["name = input('What is your name?');"]
     )
     private fun input(arguments: Arguments): String {
         // This just ensures that we don't try to take
@@ -151,7 +143,7 @@ class BuiltInExtension: ArucasExtension {
     @FunctionDoc(
         name = "sleep",
         desc = ["This pauses your program for a certain amount of milliseconds"],
-        params = [NUMBER, "milliseconds", "milliseconds to sleep"],
+        params = [ParameterDoc(NumberDef::class, "milliseconds", ["The number of milliseconds to sleep."])],
         examples = ["sleep(1000);"]
     )
     private fun sleep(arguments: Arguments) {
@@ -176,7 +168,7 @@ class BuiltInExtension: ArucasExtension {
     @FunctionDoc(
         name = "debug",
         desc = ["This is used to enable or disable debug mode"],
-        params = [BOOLEAN, "bool", "true to enable debug mode, false to disable debug mode"],
+        params = [ParameterDoc(BooleanDef::class, "bool", ["True to enable debug mode, false to disable debug mode."])],
         examples = ["debug(true);"]
     )
     private fun debug(arguments: Arguments) {
@@ -195,7 +187,7 @@ class BuiltInExtension: ArucasExtension {
     @FunctionDoc(
         name = "experimental",
         desc = ["This is used to enable or disable experimental mode"],
-        params = [BOOLEAN, "bool", "true to enable experimental mode, false to disable experimental mode"],
+        params = [ParameterDoc(BooleanDef::class, "bool", ["True to enable experimental mode, false to disable experimental mode."])],
         examples = ["experimental(true);"]
     )
     private fun experimental(arguments: Arguments) {
@@ -205,7 +197,7 @@ class BuiltInExtension: ArucasExtension {
     @FunctionDoc(
         name = "suppressDeprecated",
         desc = ["This is used to enable or disable suppressing deprecation warnings"],
-        params = [BOOLEAN, "bool", "true to enable, false to disable warnings"],
+        params = [ParameterDoc(BooleanDef::class, "bool", ["True to enable, false to disable warnings."])],
         examples = ["suppressDeprecated(true);"]
     )
     private fun suppressDeprecated(arguments: Arguments) {
@@ -215,7 +207,7 @@ class BuiltInExtension: ArucasExtension {
     @FunctionDoc(
         name = "isMain",
         desc = ["This is used to check whether the script is the main script"],
-        returns = [BOOLEAN, "true if the script is the main script, false if it is not"],
+        returns = ReturnDoc(BooleanDef::class, ["True if the script is the main script, false if it is not."]),
         examples = ["isMain();"]
     )
     private fun isMain(arguments: Arguments): Boolean {
@@ -225,7 +217,7 @@ class BuiltInExtension: ArucasExtension {
     @FunctionDoc(
         name = "getArucasVersion",
         desc = ["This is used to get the version of Arucas that is currently running"],
-        returns = [STRING, "the version of Arucas that is currently running"],
+        returns = ReturnDoc(StringDef::class, ["The version of Arucas that is currently running."]),
         examples = ["getArucasVersion();"]
     )
     @Suppress("UNUSED_PARAMETER")
@@ -240,7 +232,7 @@ class BuiltInExtension: ArucasExtension {
             "This is used to evaluate a string as code.",
             "This will not inherit imports that are in the parent script"
         ],
-        params = [STRING, "code", "the code to run"],
+        params = [ParameterDoc(StringDef::class, "code", ["The code to run."])],
         examples = ["runFromString('print(\"Hello World\");');"]
     )
     private fun runFromString(arguments: Arguments): ClassInstance {
@@ -253,8 +245,8 @@ class BuiltInExtension: ArucasExtension {
             "This is used to evaluate a string as code.",
             "This will not inherit imports that are in the parent script"
         ],
-        params = [STRING, "code", "the code to evaluate"],
-        returns = [OBJECT, "the result of the evaluation"],
+        params = [ParameterDoc(StringDef::class, "code", ["The code to evaluate."])],
+        returns = ReturnDoc(ObjectDef::class, ["The result of the evaluation."]),
         examples = ["eval('1 + 1');"]
     )
     private fun eval(arguments: Arguments): ClassInstance {
@@ -266,8 +258,8 @@ class BuiltInExtension: ArucasExtension {
     @FunctionDoc(
         name = "run",
         desc = ["This is used to run a .arucas file, you can use on script to run other scripts"],
-        params = [STRING, "path", "as a file path"],
-        returns = [OBJECT, "any value that the file returns"],
+        params = [ParameterDoc(StringDef::class, "path", ["As a file path."])],
+        returns = ReturnDoc(ObjectDef::class, ["Any value that the file returns."]),
         examples = ["run('/home/user/script.arucas');"]
     )
     private fun run(arguments: Arguments): Any {
@@ -298,7 +290,7 @@ class BuiltInExtension: ArucasExtension {
     @FunctionDoc(
         name = "len",
         desc = ["This is used to get the length of a collection or string"],
-        params = [STRING, "sizable", "the collection or string"],
+        params = [ParameterDoc(StringDef::class, "sizable", ["The collection or string."])],
         examples = ["len(\"Hello World\");"]
     )
     private fun len(arguments: Arguments): Number {
@@ -322,8 +314,8 @@ class BuiltInExtension: ArucasExtension {
     @FunctionDoc(
         name = "random",
         desc = ["This is used to generate a random integer between 0 and the bound"],
-        params = [NUMBER, "bound", "the maximum bound (exclusive)"],
-        returns = [NUMBER, "the random integer"],
+        params = [ParameterDoc(NumberDef::class, "bound", ["The maximum bound (exclusive)."])],
+        returns = ReturnDoc(NumberDef::class, ["The random integer."]),
         examples = ["random(10);"]
     )
     private fun random(arguments: Arguments): Number {
@@ -337,8 +329,8 @@ class BuiltInExtension: ArucasExtension {
     @FunctionDoc(
         name = "range",
         desc = ["This is used to generate a range of integers starting from 0, incrementing by 1"],
-        params = [NUMBER, "bound", "the maximum bound (exclusive)"],
-        returns = [ITERABLE, "an iterable object that returns the range of integers"],
+        params = [ParameterDoc(NumberDef::class, "bound", ["The maximum bound (exclusive)."])],
+        returns = ReturnDoc(IterableDef::class, ["An iterable object that returns the range of integers."]),
         examples = ["range(10);"]
     )
     private fun range1(arguments: Arguments): ArucasIterable {
@@ -352,8 +344,8 @@ class BuiltInExtension: ArucasExtension {
             "This is used to generate a range of numbers starting",
             "from a start value and ending at a bound value incrementing by 1"
         ],
-        params = [NUMBER, "start", "the start value", NUMBER, "bound", "the maximum bound (exclusive)"],
-        returns = [ITERABLE, "an iterable object that returns the range of integers"],
+        params = [ParameterDoc(NumberDef::class, "start", ["The start value."]), ParameterDoc(NumberDef::class, "bound", ["The maximum bound (exclusive)."])],
+        returns = ReturnDoc(IterableDef::class, ["An iterable object that returns the range of integers."]),
         examples = ["range(0, 10);"]
     )
     private fun range2(arguments: Arguments): ArucasIterable {
@@ -368,11 +360,11 @@ class BuiltInExtension: ArucasExtension {
             "This is used to generate a range of numbers starting from a",
             "start value and ending at a bound value incrementing by a step value"],
         params = [
-            NUMBER, "start", "the start value",
-            NUMBER, "bound", "the maximum bound (exclusive)",
-            NUMBER, "step", "the step value"
+            ParameterDoc(NumberDef::class, "start", ["The start value."]),
+            ParameterDoc(NumberDef::class, "bound", ["The maximum bound (exclusive)."]),
+            ParameterDoc(NumberDef::class, "step", ["The step value."])
         ],
-        returns = [ITERABLE, "an iterable object that returns the range of integers"],
+        returns = ReturnDoc(IterableDef::class, ["An iterable object that returns the range of integers."]),
         examples = ["range(0, 10, 2);"]
     )
     private fun range3(arguments: Arguments): ArucasIterable {
@@ -385,7 +377,7 @@ class BuiltInExtension: ArucasExtension {
     @FunctionDoc(
         name = "getTime",
         desc = ["This is used to get the current time formatted with HH:mm:ss in your local time"],
-        returns = [STRING, "the current time formatted with HH:mm:ss"],
+        returns = ReturnDoc(StringDef::class, ["The current time formatted with HH:mm:ss."]),
         examples = ["getTime();"]
     )
     @Suppress("UNUSED_PARAMETER")
@@ -396,7 +388,7 @@ class BuiltInExtension: ArucasExtension {
     @FunctionDoc(
         name = "getNanoTime",
         desc = ["This is used to get the current time in nanoseconds"],
-        returns = [NUMBER, "the current time in nanoseconds"],
+        returns = ReturnDoc(NumberDef::class, ["The current time in nanoseconds."]),
         examples = ["getNanoTime();"]
     )
     @Suppress("UNUSED_PARAMETER")
@@ -407,7 +399,7 @@ class BuiltInExtension: ArucasExtension {
     @FunctionDoc(
         name = "getMilliTime",
         desc = ["This is used to get the current time in milliseconds"],
-        returns = [NUMBER, "the current time in milliseconds"],
+        returns = ReturnDoc(NumberDef::class, ["The current time in milliseconds."]),
         examples = ["getMilliTime();"]
     )
     @Suppress("UNUSED_PARAMETER")
@@ -418,7 +410,7 @@ class BuiltInExtension: ArucasExtension {
     @FunctionDoc(
         name = "getUnixTime",
         desc = ["This is used to get the current time in seconds since the Unix epoch"],
-        returns = [NUMBER, "the current time in seconds since the Unix epoch"],
+        returns = ReturnDoc(NumberDef::class, ["The current time in seconds since the Unix epoch."]),
         examples = ["getUnixTime();"]
     )
     @Suppress("UNUSED_PARAMETER")
@@ -429,7 +421,7 @@ class BuiltInExtension: ArucasExtension {
     @FunctionDoc(
         name = "getDate",
         desc = ["This is used to get the current date formatted with dd/MM/yyyy in your local time"],
-        returns = [STRING, "the current date formatted with dd/MM/yyyy"],
+        returns = ReturnDoc(StringDef::class, ["The current date formatted with dd/MM/yyyy."]),
         examples = ["getDate();"]
     )
     @Suppress("UNUSED_PARAMETER")

@@ -1,18 +1,11 @@
 package me.senseiwells.arucas.builtin
 
-import me.senseiwells.arucas.api.docs.ClassDoc
-import me.senseiwells.arucas.api.docs.ConstructorDoc
-import me.senseiwells.arucas.api.docs.FunctionDoc
-import me.senseiwells.arucas.classes.instance.ClassInstance
+import me.senseiwells.arucas.api.docs.annotations.*
 import me.senseiwells.arucas.classes.CreatableDefinition
+import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.exceptions.runtimeError
 import me.senseiwells.arucas.utils.*
-import me.senseiwells.arucas.utils.Util.Types.BOOLEAN
-import me.senseiwells.arucas.utils.Util.Types.COLLECTION
-import me.senseiwells.arucas.utils.Util.Types.FUNCTION
-import me.senseiwells.arucas.utils.Util.Types.LIST
-import me.senseiwells.arucas.utils.Util.Types.OBJECT
 import me.senseiwells.arucas.utils.Util.Types.SET
 import me.senseiwells.arucas.utils.impl.ArucasList
 import me.senseiwells.arucas.utils.impl.ArucasMap
@@ -61,12 +54,11 @@ class SetDef(interpreter: Interpreter): CreatableDefinition<ArucasSet>(SET, inte
     }
 
     @FunctionDoc(
-        isVarArgs = true,
         isStatic = true,
         name = "of",
         desc = ["This allows you to create a set with an arbitrary number of values"],
-        params = [OBJECT, "values...", "the values you want to add to the set"],
-        returns = [SET, "the set you created"],
+        params = [ParameterDoc(ObjectDef::class, "values", ["The values you want to add to the set."])],
+        returns = ReturnDoc(SetDef::class, ["The set you created."]),
         examples = ["Set.of('object', 81, 96, 'case');"]
     )
     private fun of(arguments: Arguments): ClassInstance {
@@ -79,7 +71,7 @@ class SetDef(interpreter: Interpreter): CreatableDefinition<ArucasSet>(SET, inte
         isStatic = true,
         name = "unordered",
         desc = ["This creates an unordered set"],
-        returns = [SET, "the unordered set"],
+        returns = ReturnDoc(SetDef::class, ["The unordered set."]),
         examples = ["Set.unordered();"]
     )
     @Suppress("UNUSED_PARAMETER")
@@ -107,8 +99,8 @@ class SetDef(interpreter: Interpreter): CreatableDefinition<ArucasSet>(SET, inte
     @FunctionDoc(
         name = "add",
         desc = ["This allows you to add a value to the set"],
-        params = [OBJECT, "value", "the value you want to add to the set"],
-        returns = [BOOLEAN, "whether the value was successfully added to the set"],
+        params = [ParameterDoc(ObjectDef::class, "value", ["The value you want to add to the set."])],
+        returns = ReturnDoc(BooleanDef::class, ["Whether the value was successfully added to the set."]),
         examples = ["Set.of().add('object');"]
     )
     private fun add(arguments: Arguments): Boolean {
@@ -124,8 +116,8 @@ class SetDef(interpreter: Interpreter): CreatableDefinition<ArucasSet>(SET, inte
             "from the set that will have the same hashcode but be in a different state",
             "as the value you are passing in"
         ],
-        params = [OBJECT, "value", "the value you want to get from the set"],
-        returns = [OBJECT, "the value you wanted to get, null if it wasn't in the set"],
+        params = [ParameterDoc(ObjectDef::class, "value", ["The value you want to get from the set."])],
+        returns = ReturnDoc(ObjectDef::class, ["The value you wanted to get, null if it wasn't in the set."]),
         examples = ["Set.of('object').get('object');"]
     )
     private operator fun get(arguments: Arguments): ClassInstance {
@@ -136,8 +128,8 @@ class SetDef(interpreter: Interpreter): CreatableDefinition<ArucasSet>(SET, inte
     @FunctionDoc(
         name = "remove",
         desc = ["This allows you to remove a value from the set"],
-        params = [OBJECT, "value", "the value you want to remove from the set"],
-        returns = [BOOLEAN, "whether the value was removed from the set"],
+        params = [ParameterDoc(ObjectDef::class, "value", ["The value you want to remove from the set."])],
+        returns = ReturnDoc(BooleanDef::class, ["Whether the value was removed from the set."]),
         examples = ["Set.of('object').remove('object');"]
     )
     private fun remove(arguments: Arguments): Boolean {
@@ -148,8 +140,8 @@ class SetDef(interpreter: Interpreter): CreatableDefinition<ArucasSet>(SET, inte
     @FunctionDoc(
         name = "removeAll",
         desc = ["This allows you to remove all values in a collection from the set"],
-        params = [COLLECTION, "value", "the values you want to remove from the set"],
-        returns = [SET, "the set with the values removed"],
+        params = [ParameterDoc(CollectionDef::class, "value", ["The values you want to remove from the set."])],
+        returns = ReturnDoc(SetDef::class, ["The set with the values removed."]),
         examples = ["Set.of('object', 'object').removeAll(Set.of('object'));"]
     )
     private fun removeAll(arguments: Arguments): ClassInstance {
@@ -162,8 +154,8 @@ class SetDef(interpreter: Interpreter): CreatableDefinition<ArucasSet>(SET, inte
     @FunctionDoc(
         name = "addAll",
         desc = ["This allows you to add all the values in a collection into the set"],
-        params = [COLLECTION, "collection", "the collection of values you want to add"],
-        returns = [SET, "the modified set"],
+        params = [ParameterDoc(CollectionDef::class, "collection", ["The collection of values you want to add."])],
+        returns = ReturnDoc(SetDef::class, ["The modified set."]),
         examples = ["Set.of().addAll(Set.of('object', 81, 96, 'case'));"]
     )
     private fun addAll(arguments: Arguments): ClassInstance {
@@ -176,8 +168,8 @@ class SetDef(interpreter: Interpreter): CreatableDefinition<ArucasSet>(SET, inte
     @FunctionDoc(
         name = "contains",
         desc = ["This allows you to check whether a value is in the set"],
-        params = [OBJECT, "value", "the value that you want to check in the set"],
-        returns = [BOOLEAN, "whether the value is in the set"],
+        params = [ParameterDoc(ObjectDef::class, "value", ["The value that you want to check in the set."])],
+        returns = ReturnDoc(BooleanDef::class, ["Whether the value is in the set."]),
         examples = ["Set.of('object').contains('object');"]
     )
     private fun contains(arguments: Arguments): Boolean {
@@ -188,8 +180,8 @@ class SetDef(interpreter: Interpreter): CreatableDefinition<ArucasSet>(SET, inte
     @FunctionDoc(
         name = "containsAll",
         desc = ["This allows you to check whether a collection of values are all in the set"],
-        params = [COLLECTION, "collection", "the collection of values you want to check in the set"],
-        returns = [BOOLEAN, "whether all the values are in the set"],
+        params = [ParameterDoc(CollectionDef::class, "collection", ["The collection of values you want to check in the set."])],
+        returns = ReturnDoc(BooleanDef::class, ["Whether all the values are in the set."]),
         examples = ["Set.of('object').containsAll(Set.of('object', 81, 96, 'case'));"]
     )
     private fun containsAll(arguments: Arguments): Boolean {
@@ -210,7 +202,7 @@ class SetDef(interpreter: Interpreter): CreatableDefinition<ArucasSet>(SET, inte
     @FunctionDoc(
         name = "toList",
         desc = ["This returns a list of all the values in the set"],
-        returns = [LIST, "the list of values in the set"],
+        returns = ReturnDoc(ListDef::class, ["The list of values in the set."]),
         examples = ["Set.of('object', 81, 96, 'case').toList();"]
     )
     private fun toList(arguments: Arguments): ArucasList {
@@ -221,8 +213,8 @@ class SetDef(interpreter: Interpreter): CreatableDefinition<ArucasSet>(SET, inte
     @FunctionDoc(
         name = "filter",
         desc = ["This allows you to filter the set"],
-        params = [FUNCTION, "function", "the function you want to filter the set by"],
-        returns = [SET, "the filtered set"],
+        params = [ParameterDoc(FunctionDef::class, "function", ["The function you want to filter the set by."])],
+        returns = ReturnDoc(SetDef::class, ["The filtered set."]),
         examples = ["Set.of(-9, 81, 96, 15).filter(fun(value) { return value > 80; });"]
     )
     private fun filter(arguments: Arguments): ClassInstance {
@@ -242,8 +234,8 @@ class SetDef(interpreter: Interpreter): CreatableDefinition<ArucasSet>(SET, inte
     @FunctionDoc(
         name = "map",
         desc = ["This allows you to map the set"],
-        params = [FUNCTION, "function", "the function you want to map the set by"],
-        returns = [SET, "the mapped set"],
+        params = [ParameterDoc(FunctionDef::class, "function", ["The function you want to map the set by."])],
+        returns = ReturnDoc(SetDef::class, ["The mapped set."]),
         examples = ["Set.of(-9, 81, 96, 15).map(fun(value) { return value * 2; });"]
     )
     private fun map(arguments: Arguments): ClassInstance {
@@ -260,8 +252,8 @@ class SetDef(interpreter: Interpreter): CreatableDefinition<ArucasSet>(SET, inte
     @FunctionDoc(
         name = "reduce",
         desc = ["This allows you to reduce the set"],
-        params = [FUNCTION, "function", "the function you want to reduce the set by"],
-        returns = [OBJECT, "the reduced set"],
+        params = [ParameterDoc(FunctionDef::class, "function", ["The function you want to reduce the set by."])],
+        returns = ReturnDoc(ObjectDef::class, ["The reduced set."]),
         examples = ["Set.of(-9, 81, 96, 15).reduce(fun(value, next) { return value + next; });"]
     )
     private fun reduce(arguments: Arguments): ClassInstance {
@@ -279,10 +271,10 @@ class SetDef(interpreter: Interpreter): CreatableDefinition<ArucasSet>(SET, inte
         name = "reduce",
         desc = ["This reduces the list using the reducer starting with an identity"],
         params = [
-            OBJECT, "identity", "the identity",
-            FUNCTION, "reducer", "a function that takes a value and returns a new value"
+            ParameterDoc(ObjectDef::class, "identity", ["The identity."]),
+            ParameterDoc(FunctionDef::class, "reducer", ["A function that takes a value and returns a new value."])
         ],
-        returns = [OBJECT, "the reduced value"],
+        returns = ReturnDoc(ObjectDef::class, ["The reduced value."]),
         examples = ["Set.of(-9, 81, 96, 15).reduce(\"\", fun(value, next) { return value + next; });" ]
     )
     private fun reduce2(arguments: Arguments): Any {

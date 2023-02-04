@@ -1,8 +1,9 @@
 package me.senseiwells.arucas.builtin
 
-import me.senseiwells.arucas.api.docs.ClassDoc
-import me.senseiwells.arucas.api.docs.ConstructorDoc
-import me.senseiwells.arucas.api.docs.FunctionDoc
+import me.senseiwells.arucas.api.docs.annotations.ClassDoc
+import me.senseiwells.arucas.api.docs.annotations.ConstructorDoc
+import me.senseiwells.arucas.api.docs.annotations.FunctionDoc
+import me.senseiwells.arucas.api.docs.annotations.ReturnDoc
 import me.senseiwells.arucas.classes.PrimitiveDefinition
 import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.core.Interpreter
@@ -11,9 +12,7 @@ import me.senseiwells.arucas.utils.Arguments
 import me.senseiwells.arucas.utils.ConstructorFunction
 import me.senseiwells.arucas.utils.LocatableTrace
 import me.senseiwells.arucas.utils.MemberFunction
-import me.senseiwells.arucas.utils.Util.Types.BOOLEAN
 import me.senseiwells.arucas.utils.Util.Types.COLLECTION
-import me.senseiwells.arucas.utils.Util.Types.NUMBER
 import me.senseiwells.arucas.utils.impl.ArucasCollection
 
 @ClassDoc(
@@ -70,7 +69,7 @@ class CollectionDef(interpreter: Interpreter): PrimitiveDefinition<ArucasCollect
     @FunctionDoc(
         name = "size",
         desc = ["This allows you to get the size of the collection"],
-        returns = [NUMBER, "the size of the list"],
+        returns = ReturnDoc(NumberDef::class, ["The size of the list."]),
         examples = ["['object', 81, 96, 'case'].size();"]
     )
     private fun size(arguments: Arguments): Int {
@@ -84,7 +83,7 @@ class CollectionDef(interpreter: Interpreter): PrimitiveDefinition<ArucasCollect
     @FunctionDoc(
         name = "isEmpty",
         desc = ["This allows you to check if the collection is empty"],
-        returns = [BOOLEAN, "true if the collection is empty"],
+        returns = ReturnDoc(BooleanDef::class, ["True if the collection is empty."]),
         examples = ["['object', 81, 96, 'case'].isEmpty(); // false"]
     )
     private fun isEmpty(arguments: Arguments): Boolean {

@@ -1,18 +1,14 @@
 package me.senseiwells.arucas.builtin
 
-import me.senseiwells.arucas.api.docs.ClassDoc
-import me.senseiwells.arucas.api.docs.ConstructorDoc
-import me.senseiwells.arucas.api.docs.FunctionDoc
-import me.senseiwells.arucas.classes.instance.ClassInstance
+import me.senseiwells.arucas.api.docs.annotations.*
 import me.senseiwells.arucas.classes.PrimitiveDefinition
+import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.exceptions.RuntimeError
 import me.senseiwells.arucas.utils.Arguments
 import me.senseiwells.arucas.utils.ConstructorFunction
 import me.senseiwells.arucas.utils.MemberFunction
 import me.senseiwells.arucas.utils.Util.Types.ERROR
-import me.senseiwells.arucas.utils.Util.Types.OBJECT
-import me.senseiwells.arucas.utils.Util.Types.STRING
 
 @ClassDoc(
     name = ERROR,
@@ -49,7 +45,7 @@ class ErrorDef(interpreter: Interpreter): PrimitiveDefinition<RuntimeError.Aruca
 
     @ConstructorDoc(
         desc = ["This creates a new Error value with the given details as a message"],
-        params = [STRING, "details", "the details of the error"],
+        params = [ParameterDoc(StringDef::class, "details", ["The details of the error."])],
         examples = ["new Error('This is an error');"]
     )
     private fun construct1(arguments: Arguments) {
@@ -61,7 +57,7 @@ class ErrorDef(interpreter: Interpreter): PrimitiveDefinition<RuntimeError.Aruca
 
     @ConstructorDoc(
         desc = ["This creates a new Error value with the given details as a message and the given value"],
-        params = [STRING, "details", "the details of the error", OBJECT, "value", "the value that is related to the error"],
+        params = [ParameterDoc(StringDef::class, "details", ["The details of the error."]), ParameterDoc(ObjectDef::class, "value", ["The value that is related to the error."])],
         examples = ["new Error('This is an error', [1, 2, 3]);"]
     )
     private fun construct2(arguments: Arguments) {
@@ -83,7 +79,7 @@ class ErrorDef(interpreter: Interpreter): PrimitiveDefinition<RuntimeError.Aruca
     @FunctionDoc(
         name = "getDetails",
         desc = ["This returns the raw message of the error"],
-        returns = [STRING, "the details of the error"],
+        returns = ReturnDoc(StringDef::class, ["The details of the error."]),
         examples = ["error.getDetails();"]
     )
     private fun getDetails(arguments: Arguments): String {
@@ -93,7 +89,7 @@ class ErrorDef(interpreter: Interpreter): PrimitiveDefinition<RuntimeError.Aruca
     @FunctionDoc(
         name = "getValue",
         desc = ["This returns the value that is related to the error"],
-        returns = [OBJECT, "the value that is related to the error"],
+        returns = ReturnDoc(ObjectDef::class, ["The value that is related to the error."]),
         examples = ["error.getValue();"]
     )
     private fun getValue(arguments: Arguments): ClassInstance {
@@ -103,7 +99,7 @@ class ErrorDef(interpreter: Interpreter): PrimitiveDefinition<RuntimeError.Aruca
     @FunctionDoc(
         name = "getStackTraceString",
         desc = ["This prints the stack trace of this error"],
-        returns = [STRING, "the stack trace converted to a string"],
+        returns = ReturnDoc(StringDef::class, ["The stack trace converted to a string."]),
         examples = ["error.getStackTraceString();"]
     )
     private fun getStackTraceString(arguments: Arguments): String {

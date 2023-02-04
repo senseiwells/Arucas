@@ -1,20 +1,15 @@
 package me.senseiwells.arucas.builtin
 
-import me.senseiwells.arucas.api.docs.ClassDoc
-import me.senseiwells.arucas.api.docs.ConstructorDoc
-import me.senseiwells.arucas.api.docs.FunctionDoc
-import me.senseiwells.arucas.classes.instance.ClassInstance
+import me.senseiwells.arucas.api.docs.annotations.*
 import me.senseiwells.arucas.classes.CreatableDefinition
+import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.exceptions.runtimeError
 import me.senseiwells.arucas.utils.Arguments
 import me.senseiwells.arucas.utils.BuiltInFunction
 import me.senseiwells.arucas.utils.ConstructorFunction
 import me.senseiwells.arucas.utils.MemberFunction
-import me.senseiwells.arucas.utils.Util.Types.BOOLEAN
 import me.senseiwells.arucas.utils.Util.Types.FILE
-import me.senseiwells.arucas.utils.Util.Types.LIST
-import me.senseiwells.arucas.utils.Util.Types.STRING
 import me.senseiwells.arucas.utils.impl.ArucasList
 import java.awt.Desktop
 import java.io.File
@@ -34,7 +29,7 @@ class FileDef(interpreter: Interpreter): CreatableDefinition<File>(FILE, interpr
 
     @ConstructorDoc(
         desc = ["This creates a new File object with set path"],
-        params = [STRING, "path", "the path of the file"],
+        params = [ParameterDoc(StringDef::class, "path", ["The path of the file."])],
         examples = ["new File('foo/bar/script.arucas');"]
     )
     private fun construct(arguments: Arguments) {
@@ -53,7 +48,7 @@ class FileDef(interpreter: Interpreter): CreatableDefinition<File>(FILE, interpr
         isStatic = true,
         name = "getDirectory",
         desc = ["This returns the file of user directory"],
-        returns = [FILE, "the file of the working directory"],
+        returns = ReturnDoc(FileDef::class, ["The file of the working directory."]),
         examples = ["File.getDirectory();"]
     )
     @Suppress("UNUSED_PARAMETER")
@@ -81,7 +76,7 @@ class FileDef(interpreter: Interpreter): CreatableDefinition<File>(FILE, interpr
     @FunctionDoc(
         name = "getName",
         desc = ["This returns the name of the file"],
-        returns = [STRING, "the name of the file"],
+        returns = ReturnDoc(StringDef::class, ["The name of the file."]),
         examples = ["File.getName();"]
     )
     private fun getName(arguments: Arguments): String {
@@ -92,7 +87,7 @@ class FileDef(interpreter: Interpreter): CreatableDefinition<File>(FILE, interpr
     @FunctionDoc(
         name = "read",
         desc = ["This reads the file and returns the contents as a string"],
-        returns = [STRING, "the contents of the file"],
+        returns = ReturnDoc(StringDef::class, ["The contents of the file."]),
         examples = ["file.read();"]
     )
     private fun read(arguments: Arguments): String {
@@ -107,7 +102,7 @@ class FileDef(interpreter: Interpreter): CreatableDefinition<File>(FILE, interpr
     @FunctionDoc(
         name = "write",
         desc = ["This writes a string to a file"],
-        params = [STRING, "string", "the string to write to the file"],
+        params = [ParameterDoc(StringDef::class, "string", ["The string to write to the file."])],
         examples = ["file.write('Hello World!');"]
     )
     private fun write(arguments: Arguments) {
@@ -123,7 +118,7 @@ class FileDef(interpreter: Interpreter): CreatableDefinition<File>(FILE, interpr
     @FunctionDoc(
         name = "delete",
         desc = ["This deletes the file"],
-        returns = [BOOLEAN, "true if the file was deleted"],
+        returns = ReturnDoc(BooleanDef::class, ["True if the file was deleted."]),
         examples = ["file.delete();"]
     )
     private fun delete(arguments: Arguments): Boolean {
@@ -134,7 +129,7 @@ class FileDef(interpreter: Interpreter): CreatableDefinition<File>(FILE, interpr
     @FunctionDoc(
         name = "exists",
         desc = ["This returns if the file exists"],
-        returns = [BOOLEAN, "true if the file exists"],
+        returns = ReturnDoc(BooleanDef::class, ["True if the file exists."]),
         examples = ["file.exists();"]
     )
     private fun exists(arguments: Arguments): Boolean {
@@ -145,7 +140,7 @@ class FileDef(interpreter: Interpreter): CreatableDefinition<File>(FILE, interpr
     @FunctionDoc(
         name = "getSubFiles",
         desc = ["This returns a list of all the sub files in the directory"],
-        returns = [LIST, "a list of all the sub files in the directory"],
+        returns = ReturnDoc(ListDef::class, ["A list of all the sub files in the directory."]),
         examples = ["file.getSubFiles();"]
     )
     private fun getSubFiles(arguments: Arguments): ArucasList {
@@ -162,8 +157,8 @@ class FileDef(interpreter: Interpreter): CreatableDefinition<File>(FILE, interpr
     @FunctionDoc(
         name = "resolve",
         desc = ["This gets a resolves file object from the current one"],
-        params = [STRING, "filePath", "the relative file path"],
-        returns = [FILE, "the resolved file"],
+        params = [ParameterDoc(StringDef::class, "filePath", ["The relative file path."])],
+        returns = ReturnDoc(FileDef::class, ["The resolved file."]),
         examples = ["file.resolve('child.txt');"]
     )
     private fun resolve(arguments: Arguments): File {
@@ -175,7 +170,7 @@ class FileDef(interpreter: Interpreter): CreatableDefinition<File>(FILE, interpr
     @FunctionDoc(
         name = "createDirectory",
         desc = ["This creates all parent directories of the file if they don't already exist"],
-        returns = [BOOLEAN, "true if the directories were created"],
+        returns = ReturnDoc(BooleanDef::class, ["True if the directories were created."]),
         examples = ["file.createDirectory();"]
     )
     private fun createDirectory(arguments: Arguments): Boolean {
@@ -186,7 +181,7 @@ class FileDef(interpreter: Interpreter): CreatableDefinition<File>(FILE, interpr
     @FunctionDoc(
         name = "getPath",
         desc = ["This returns the path of the file"],
-        returns = [STRING, "the path of the file"],
+        returns = ReturnDoc(StringDef::class, ["The path of the file."]),
         examples = ["file.getPath();"]
     )
     private fun getPath(arguments: Arguments): String {
@@ -197,7 +192,7 @@ class FileDef(interpreter: Interpreter): CreatableDefinition<File>(FILE, interpr
     @FunctionDoc(
         name = "getAbsolutePath",
         desc = ["This returns the absolute path of the file"],
-        returns = [STRING, "the absolute path of the file"],
+        returns = ReturnDoc(StringDef::class, ["The absolute path of the file."]),
         examples = ["file.getAbsolutePath();"]
     )
     private fun getAbsolutePath(arguments: Arguments): String {

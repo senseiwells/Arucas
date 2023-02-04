@@ -1,19 +1,13 @@
 package me.senseiwells.arucas.builtin
 
-import me.senseiwells.arucas.api.docs.ClassDoc
-import me.senseiwells.arucas.api.docs.ConstructorDoc
-import me.senseiwells.arucas.api.docs.FunctionDoc
+import me.senseiwells.arucas.api.docs.annotations.*
 import me.senseiwells.arucas.classes.CreatableDefinition
 import me.senseiwells.arucas.classes.PrimitiveDefinition
 import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.exceptions.runtimeError
 import me.senseiwells.arucas.utils.*
-import me.senseiwells.arucas.utils.Util.Types.BOOLEAN
-import me.senseiwells.arucas.utils.Util.Types.FUNCTION
-import me.senseiwells.arucas.utils.Util.Types.LIST
 import me.senseiwells.arucas.utils.Util.Types.MAP
-import me.senseiwells.arucas.utils.Util.Types.OBJECT
 import me.senseiwells.arucas.utils.impl.ArucasList
 import me.senseiwells.arucas.utils.impl.ArucasMap
 import me.senseiwells.arucas.utils.impl.ArucasOrderedMap
@@ -61,7 +55,7 @@ class MapDef(interpreter: Interpreter): CreatableDefinition<ArucasMap>(MAP, inte
     }
 
     @ConstructorDoc(
-        desc = ["This creates an empty map, this cannot be called directly, only from child classes"],
+        desc = ["This creates an empty map, this cannot be called directly, only from child classes."],
         examples = [
             """
             class ChildMap: Map {
@@ -84,8 +78,8 @@ class MapDef(interpreter: Interpreter): CreatableDefinition<ArucasMap>(MAP, inte
     @FunctionDoc(
         isStatic = true,
         name = "unordered",
-        desc = ["This function allows you to create an unordered map"],
-        returns = [MAP, "an unordered map"],
+        desc = ["This function allows you to create an unordered map."],
+        returns = ReturnDoc(MapDef::class, ["An unordered map."]),
         examples = ["Map.unordered();"]
     )
     @Suppress("UNUSED_PARAMETER")
@@ -111,9 +105,9 @@ class MapDef(interpreter: Interpreter): CreatableDefinition<ArucasMap>(MAP, inte
 
     @FunctionDoc(
         name = "get",
-        desc = ["This allows you to get the value of a key in the map"],
-        params = [OBJECT, "key", "the key you want to get the value of"],
-        returns = [OBJECT, "the value of the key, will return null if non-existent"],
+        desc = ["This allows you to get the value of a key in the map."],
+        params = [ParameterDoc(ObjectDef::class, "key", ["The key you want to get the value of."])],
+        returns = ReturnDoc(ObjectDef::class, ["The value of the key, will return null if non-existent."]),
         examples = ["{'key': 'value'}.get('key'); // 'value'"]
     )
     private fun get(arguments: Arguments): ClassInstance {
@@ -124,9 +118,12 @@ class MapDef(interpreter: Interpreter): CreatableDefinition<ArucasMap>(MAP, inte
 
     @FunctionDoc(
         name = "put",
-        desc = ["This allows you to put a key and value in the map"],
-        params = [OBJECT, "key", "the key you want to put", OBJECT, "value", "the value you want to put"],
-        returns = [OBJECT, "the previous value associated with the key, null if none"],
+        desc = ["This allows you to put a key and value in the map."],
+        params = [
+            ParameterDoc(ObjectDef::class, "key", ["The key you want to put."]),
+            ParameterDoc(ObjectDef::class, "value", ["The value you want to put."])
+        ],
+        returns = ReturnDoc(ObjectDef::class, ["The previous value associated with the key, null if none."]),
         examples = ["{'key': 'value'}.put('key2', 'value2'); // null"]
     )
     private fun put(arguments: Arguments): ClassInstance {
@@ -138,8 +135,8 @@ class MapDef(interpreter: Interpreter): CreatableDefinition<ArucasMap>(MAP, inte
 
     @FunctionDoc(
         name = "putAll",
-        desc = ["This allows you to put all the keys and values of another map into this map"],
-        params = [MAP, "another map", "the map you want to merge into this map"],
+        desc = ["This allows you to put all the keys and values of another map into this map."],
+        params = [ParameterDoc(MapDef::class, "anotherMap", ["The map you want to merge into this map."])],
         examples = ["(map = {'key': 'value'}).putAll({'key2': 'value2'}); // map = {'key': 'value', 'key2': 'value2'}"]
     )
     private fun putAll(arguments: Arguments) {
@@ -149,8 +146,11 @@ class MapDef(interpreter: Interpreter): CreatableDefinition<ArucasMap>(MAP, inte
 
     @FunctionDoc(
         name = "putIfAbsent",
-        desc = ["This allows you to put a key and value in the map if it doesn't exist"],
-        params = [OBJECT, "key", "the key you want to put", OBJECT, "value", "the value you want to put"],
+        desc = ["This allows you to put a key and value in the map if it doesn't exist."],
+        params = [
+            ParameterDoc(ObjectDef::class, "key", ["The key you want to put."]),
+            ParameterDoc(ObjectDef::class, "value", ["The value you want to put."])
+        ],
         examples = ["(map = {'key': 'value'}).putIfAbsent('key2', 'value2'); // map = {'key': 'value', 'key2': 'value2'}"]
     )
     private fun putIfAbsent(arguments: Arguments) {
@@ -162,9 +162,9 @@ class MapDef(interpreter: Interpreter): CreatableDefinition<ArucasMap>(MAP, inte
 
     @FunctionDoc(
         name = "remove",
-        desc = ["This allows you to remove a key and its value from the map"],
-        params = [OBJECT, "key", "the key you want to remove"],
-        returns = [OBJECT, "the value associated with the key, null if none"],
+        desc = ["This allows you to remove a key and its value from the map."],
+        params = [ParameterDoc(ObjectDef::class, "key", ["The key you want to remove."])],
+        returns = ReturnDoc(ObjectDef::class, ["The value associated with the key, null if none."]),
         examples = ["{'key': 'value'}.remove('key'); // 'value'"]
     )
     private fun remove(arguments: Arguments): ClassInstance? {
@@ -174,7 +174,7 @@ class MapDef(interpreter: Interpreter): CreatableDefinition<ArucasMap>(MAP, inte
 
     @FunctionDoc(
         name = "clear",
-        desc = ["This allows you to clear the map of all the keys and values"],
+        desc = ["This allows you to clear the map of all the keys and values."],
         examples = ["(map = {'key': 'value'}).clear(); // map = {}"]
     )
     private fun clear(arguments: Arguments) {
@@ -183,9 +183,9 @@ class MapDef(interpreter: Interpreter): CreatableDefinition<ArucasMap>(MAP, inte
 
     @FunctionDoc(
         name = "containsKey",
-        desc = ["This allows you to check if the map contains a specific key"],
-        params = [OBJECT, "key", "the key you want to check"],
-        returns = [BOOLEAN, "true if the map contains the key, false otherwise"],
+        desc = ["This allows you to check if the map contains a specific key."],
+        params = [ParameterDoc(ObjectDef::class, "key", ["The key you want to check."])],
+        returns = ReturnDoc(BooleanDef::class, ["True if the map contains the key, false otherwise."]),
         examples = ["{'key': 'value'}.containsKey('key'); // true"]
     )
     private fun containsKey(arguments: Arguments): Boolean {
@@ -196,9 +196,9 @@ class MapDef(interpreter: Interpreter): CreatableDefinition<ArucasMap>(MAP, inte
 
     @FunctionDoc(
         name = "containsValue",
-        desc = ["This allows you to check if the map contains a specific value"],
-        params = [OBJECT, "value", "the value you want to check"],
-        returns = [BOOLEAN, "true if the map contains the value, false otherwise"],
+        desc = ["This allows you to check if the map contains a specific value."],
+        params = [ParameterDoc(ObjectDef::class, "value", ["The value you want to check."])],
+        returns = ReturnDoc(BooleanDef::class, ["True if the map contains the value, false otherwise."]),
         examples = ["{'key': 'value'}.containsValue('foo'); // false"]
     )
     private fun containsValue(arguments: Arguments): Boolean {
@@ -209,8 +209,8 @@ class MapDef(interpreter: Interpreter): CreatableDefinition<ArucasMap>(MAP, inte
 
     @FunctionDoc(
         name = "getKeys",
-        desc = ["This allows you to get the keys in the map"],
-        returns = [LIST, "a complete list of all the keys"],
+        desc = ["This allows you to get the keys in the map."],
+        returns = ReturnDoc(ListDef::class, ["A complete list of all the keys."]),
         examples = ["{'key': 'value', 'key2': 'value2'}.getKeys(); // ['key', 'key2']"]
     )
     private fun getKeys(arguments: Arguments): ArucasList {
@@ -219,8 +219,8 @@ class MapDef(interpreter: Interpreter): CreatableDefinition<ArucasMap>(MAP, inte
 
     @FunctionDoc(
         name = "getValues",
-        desc = ["This allows you to get the values in the map"],
-        returns = [LIST, "a complete list of all the values"],
+        desc = ["This allows you to get the values in the map."],
+        returns = ReturnDoc(ListDef::class, ["A complete list of all the values."]),
         examples = ["{'key': 'value', 'key2': 'value2'}.getValues(); // ['value', 'value2']"]
     )
     private fun getValues(arguments: Arguments): ArucasList {
@@ -229,9 +229,9 @@ class MapDef(interpreter: Interpreter): CreatableDefinition<ArucasMap>(MAP, inte
 
     @FunctionDoc(
         name = "map",
-        desc = ["This allows you to map the values in the map and returns a new map"],
-        params = [FUNCTION, "remapper", "the function you want to map the values with"],
-        returns = [MAP, "a new map with the mapped values"],
+        desc = ["This allows you to map the values in the map and returns a new map."],
+        params = [ParameterDoc(FunctionDef::class, "remapper", ["The function you want to map the values with."])],
+        returns = ReturnDoc(MapDef::class, ["A new map with the mapped values."]),
         examples = [
             """
             map = {'key': 'value', 'key2': 'value2'}

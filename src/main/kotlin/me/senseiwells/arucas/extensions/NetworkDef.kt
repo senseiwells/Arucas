@@ -1,7 +1,10 @@
 package me.senseiwells.arucas.extensions
 
-import me.senseiwells.arucas.api.docs.ClassDoc
-import me.senseiwells.arucas.api.docs.FunctionDoc
+import me.senseiwells.arucas.api.docs.annotations.ClassDoc
+import me.senseiwells.arucas.api.docs.annotations.FunctionDoc
+import me.senseiwells.arucas.api.docs.annotations.ParameterDoc
+import me.senseiwells.arucas.api.docs.annotations.ReturnDoc
+import me.senseiwells.arucas.builtin.BooleanDef
 import me.senseiwells.arucas.builtin.FileDef
 import me.senseiwells.arucas.builtin.StringDef
 import me.senseiwells.arucas.classes.PrimitiveDefinition
@@ -10,10 +13,7 @@ import me.senseiwells.arucas.exceptions.runtimeError
 import me.senseiwells.arucas.utils.Arguments
 import me.senseiwells.arucas.utils.BuiltInFunction
 import me.senseiwells.arucas.utils.Util
-import me.senseiwells.arucas.utils.Util.Types.BOOLEAN
-import me.senseiwells.arucas.utils.Util.Types.FILE
 import me.senseiwells.arucas.utils.Util.Types.NETWORK
-import me.senseiwells.arucas.utils.Util.Types.STRING
 import java.awt.Desktop
 import java.io.IOException
 import java.net.URI
@@ -37,8 +37,8 @@ class NetworkDef(interpreter: Interpreter): PrimitiveDefinition<Unit>(NETWORK, i
         isStatic = true,
         name = "requestUrl",
         desc = ["Requests an url and returns the response"],
-        params = [STRING, "url", "the url to request"],
-        returns = [STRING, "the response from the url"],
+        params = [ParameterDoc(StringDef::class, "url", ["The url to request."])],
+        returns = ReturnDoc(StringDef::class, ["The response from the url."]),
         examples = ["Network.requestUrl('https://google.com');"]
     )
     private fun requestUrl(arguments: Arguments): String {
@@ -50,8 +50,11 @@ class NetworkDef(interpreter: Interpreter): PrimitiveDefinition<Unit>(NETWORK, i
         isStatic = true,
         name = "downloadFile",
         desc = ["Downloads a file from an url to a file"],
-        params = [STRING, "url", "the url to download from", FILE, "file", "the file to download to"],
-        returns = [BOOLEAN, "whether the download was successful"],
+        params = [
+            ParameterDoc(StringDef::class, "url", ["The url to download from."]),
+            ParameterDoc(FileDef::class, "file", ["The file to download to."])
+        ],
+        returns = ReturnDoc(BooleanDef::class, ["Whether the download was successful."]),
         examples = ["Network.downloadFile('https://arucas.com', new File('dir/downloads'));"]
     )
     private fun downloadFile(arguments: Arguments): Boolean {
@@ -64,7 +67,7 @@ class NetworkDef(interpreter: Interpreter): PrimitiveDefinition<Unit>(NETWORK, i
         isStatic = true,
         name = "openUrl",
         desc = ["Opens an url in the default browser"],
-        params = [STRING, "url", "the url to open"],
+        params = [ParameterDoc(StringDef::class, "url", ["The url to open."])],
         examples = ["Network.openUrl('https://google.com');"]
     )
     private fun openUrl(arguments: Arguments) {

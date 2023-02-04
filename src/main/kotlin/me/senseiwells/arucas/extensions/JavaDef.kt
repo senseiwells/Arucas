@@ -1,24 +1,17 @@
 package me.senseiwells.arucas.extensions
 
-import me.senseiwells.arucas.api.docs.ClassDoc
-import me.senseiwells.arucas.api.docs.FunctionDoc
-import me.senseiwells.arucas.builtin.BooleanDef
-import me.senseiwells.arucas.builtin.FunctionDef
-import me.senseiwells.arucas.builtin.NumberDef
-import me.senseiwells.arucas.builtin.StringDef
+import me.senseiwells.arucas.api.docs.annotations.ClassDoc
+import me.senseiwells.arucas.api.docs.annotations.FunctionDoc
+import me.senseiwells.arucas.api.docs.annotations.ParameterDoc
+import me.senseiwells.arucas.api.docs.annotations.ReturnDoc
+import me.senseiwells.arucas.builtin.*
 import me.senseiwells.arucas.classes.ClassDefinition
 import me.senseiwells.arucas.classes.CreatableDefinition
 import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.exceptions.runtimeError
 import me.senseiwells.arucas.utils.*
-import me.senseiwells.arucas.utils.Util.Types.BOOLEAN
-import me.senseiwells.arucas.utils.Util.Types.FUNCTION
 import me.senseiwells.arucas.utils.Util.Types.JAVA
-import me.senseiwells.arucas.utils.Util.Types.JAVA_CLASS
-import me.senseiwells.arucas.utils.Util.Types.NUMBER
-import me.senseiwells.arucas.utils.Util.Types.OBJECT
-import me.senseiwells.arucas.utils.Util.Types.STRING
 import java.util.function.Consumer
 import java.util.function.Function
 import java.util.function.Predicate
@@ -29,7 +22,7 @@ import java.util.function.Supplier
     desc = [
         "This class wraps Java values allowing for interactions between Java and Arucas.",
         "This class cannot be instantiated or extended but you can create Java values by",
-        "using the static method 'Java.valueOf()' to convert Arucas to Java"
+        "using the static method 'Java.valueOf()' to convert Arucas to Java."
     ],
     importPath = "util.Internal"
 )
@@ -193,8 +186,8 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
         isStatic = true,
         name = "classOf",
         desc = ["Gets a Java class from the name of the class"],
-        params = [STRING, "className", "the name of the class you want to get"],
-        returns = [JAVA_CLASS, "the Java class value which can be used as a class reference"],
+        params = [ParameterDoc(StringDef::class, "className", ["The name of the class you want to get."])],
+        returns = ReturnDoc(JavaClassDef::class, ["The Java class value which can be used as a class reference."]),
         examples = ["Java.classOf('java.util.ArrayList');"]
     )
     private fun classOf(arguments: Arguments): ClassInstance {
@@ -208,8 +201,8 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
         isStatic = true,
         name = "classFromName",
         desc = ["Gets a Java class from the name of the class"],
-        params = [STRING, "className", "the name of the class you want to get"],
-        returns = [JAVA, "the Java Class<?> value wrapped in the Java wrapper"],
+        params = [ParameterDoc(StringDef::class, "className", ["The name of the class you want to get."])],
+        returns = ReturnDoc(JavaDef::class, ["The Java Class<?> value wrapped in the Java wrapper."]),
         examples = ["Java.classFromName('java.util.ArrayList');"]
     )
     private fun classFromName(arguments: Arguments): ClassInstance {
@@ -223,8 +216,8 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
         isStatic = true,
         name = "getStaticField",
         desc = ["Gets a static field Java value from a Java class"],
-        params = [STRING, "className", "the name of the class", STRING, "fieldName", "the name of the field"],
-        returns = [JAVA, "the Java value of the field wrapped in the Java wrapper"],
+        params = [ParameterDoc(StringDef::class, "className", ["The name of the class."]), ParameterDoc(StringDef::class, "fieldName", ["The name of the field."])],
+        returns = ReturnDoc(JavaDef::class, ["The Java value of the field wrapped in the Java wrapper."]),
         examples = ["Java.getStaticField('java.lang.Integer', 'MAX_VALUE');"]
     )
     private fun getStaticField(arguments: Arguments): ClassInstance {
@@ -242,9 +235,9 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
         name = "setStaticField",
         desc = ["Sets a static field in a Java class with a new value"],
         params = [
-            STRING, "className", "the name of the class",
-            STRING, "fieldName", "the name of the field",
-            OBJECT, "newValue", "the new value"
+            ParameterDoc(StringDef::class, "className", ["The name of the class."]),
+            ParameterDoc(StringDef::class, "fieldName", ["The name of the field."]),
+            ParameterDoc(ObjectDef::class, "newValue", ["The new value."])
         ],
         examples = [
             """
@@ -272,11 +265,11 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
             "parameter is no longer used internally but remains for backwards compatibility"
         ],
         params = [
-            STRING, "className", "the name of the class",
-            STRING, "methodName", "the name of the method",
-            NUMBER, "parameters", "the number of parameters"
+            ParameterDoc(StringDef::class, "className", ["The name of the class."]),
+            ParameterDoc(StringDef::class, "methodName", ["The name of the method."]),
+            ParameterDoc(NumberDef::class, "parameters", ["The number of parameters."])
         ],
-        returns = [FUNCTION, "the delegated Java method in an Arucas Function"],
+        returns = ReturnDoc(FunctionDef::class, ["The delegated Java method in an Arucas Function."]),
         examples = ["Java.getStaticMethodDelegate('java.lang.Integer', 'parseInt', 1);"]
     )
     private fun getStaticMethodDelegate(arguments: Arguments): ClassInstance {
@@ -289,7 +282,6 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
 
     @FunctionDoc(
         deprecated = ["You should use 'Java.classOf(name)' then call the static method"],
-        isVarArgs = true,
         isStatic = true,
         name = "callStaticMethod",
         desc = [
@@ -298,11 +290,11 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
             "instance of the class then call the static method on that"
         ],
         params = [
-            STRING, "className", "the name of the class",
-            STRING, "methodName", "the name of the method",
-            OBJECT, "parameters...", "any parameters to call the method with"
+            ParameterDoc(StringDef::class, "className", ["The name of the class."]),
+            ParameterDoc(StringDef::class, "methodName", ["The name of the method."]),
+            ParameterDoc(ObjectDef::class, "parameters", ["Any parameters to call the method with."], true),
         ],
-        returns = [JAVA, "the return value of the method wrapped in the Java wrapper"],
+        returns = ReturnDoc(JavaDef::class, ["The return value of the method wrapped in the Java wrapper."]),
         examples = ["Java.callStaticMethod('java.lang.Integer', 'parseInt', '123');"]
     )
     private fun callStaticMethod(arguments: Arguments): ClassInstance {
@@ -316,7 +308,6 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
 
     @FunctionDoc(
         deprecated = ["You should use 'Java.classOf(name)' then call the result to construct the class"],
-        isVarArgs = true,
         isStatic = true,
         name = "constructClass",
         desc = [
@@ -325,10 +316,10 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
             "instance then call the constructor on that instance"
         ],
         params = [
-            STRING, "className", "the name of the class",
-            OBJECT, "parameters...", "any parameters to pass to the constructor"
+            ParameterDoc(StringDef::class, "className", ["The name of the class."]),
+            ParameterDoc(ObjectDef::class, "parameters", ["Any parameters to pass to the constructor."], true),
         ],
-        returns = [JAVA, "the constructed Java Object wrapped in the Java wrapper"],
+        returns = ReturnDoc(JavaDef::class, ["The constructed Java Object wrapped in the Java wrapper."]),
         examples = ["Java.constructClass('java.util.ArrayList');"]
     )
     private fun constructClass(arguments: Arguments): ClassInstance {
@@ -343,8 +334,8 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
         isStatic = true,
         name = "valueOf",
         desc = ["Converts any Arucas value into a Java value then wraps it in the Java wrapper and returns it"],
-        params = [OBJECT, "value", "any value to get the Java value of"],
-        returns = [JAVA, "the Java wrapper value, null if argument was null"],
+        params = [ParameterDoc(ObjectDef::class, "value", ["Any value to get the Java value of."])],
+        returns = ReturnDoc(JavaDef::class, ["The Java wrapper value, null if argument was null."]),
         examples = ["Java.valueOf('Hello World!');"]
     )
     private fun valueOf(arguments: Arguments): ClassInstance {
@@ -355,8 +346,8 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
         isStatic = true,
         name = "doubleOf",
         desc = ["Creates a Java value double, to be used in Java"],
-        params = [NUMBER, "num", "the number to convert to a Java double"],
-        returns = [JAVA, "the double in Java wrapper"],
+        params = [ParameterDoc(NumberDef::class, "num", ["The number to convert to a Java double."])],
+        returns = ReturnDoc(JavaDef::class, ["The double in Java wrapper."]),
         examples = ["Java.doubleOf(1.0);"]
     )
     private fun doubleOf(arguments: Arguments): ClassInstance {
@@ -367,8 +358,8 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
         isStatic = true,
         name = "floatOf",
         desc = ["Creates a Java value float, to be used in Java"],
-        params = [NUMBER, "num", "the number to convert to a Java float"],
-        returns = [JAVA, "the float in Java wrapper"],
+        params = [ParameterDoc(NumberDef::class, "num", ["The number to convert to a Java float."])],
+        returns = ReturnDoc(JavaDef::class, ["The float in Java wrapper."]),
         examples = ["Java.floatOf(1.0);"]
     )
     private fun floatOf(arguments: Arguments): ClassInstance {
@@ -379,8 +370,8 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
         isStatic = true,
         name = "intOf",
         desc = ["Creates a Java value int, to be used in Java"],
-        params = [NUMBER, "num", "the number to convert to a Java int"],
-        returns = [JAVA, "the int in Java wrapper"],
+        params = [ParameterDoc(NumberDef::class, "num", ["The number to convert to a Java int."])],
+        returns = ReturnDoc(JavaDef::class, ["The int in Java wrapper."]),
         examples = ["Java.intOf(1);"]
     )
     private fun intOf(arguments: Arguments): ClassInstance {
@@ -391,8 +382,8 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
         isStatic = true,
         name = "longOf",
         desc = ["Creates a Java value long, to be used in Java"],
-        params = [NUMBER, "num", "the number to convert to a Java long"],
-        returns = [JAVA, "the long in Java wrapper"],
+        params = [ParameterDoc(NumberDef::class, "num", ["The number to convert to a Java long."])],
+        returns = ReturnDoc(JavaDef::class, ["The long in Java wrapper."]),
         examples = ["Java.longOf(1);"]
     )
     private fun longOf(arguments: Arguments): ClassInstance {
@@ -403,8 +394,8 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
         isStatic = true,
         name = "shortOf",
         desc = ["Creates a Java value short, to be used in Java"],
-        params = [NUMBER, "num", "the number to convert to a Java short"],
-        returns = [JAVA, "the short in Java wrapper"],
+        params = [ParameterDoc(NumberDef::class, "num", ["The number to convert to a Java short."])],
+        returns = ReturnDoc(JavaDef::class, ["The short in Java wrapper."]),
         examples = ["Java.shortOf(1);"]
     )
     private fun shortOf(arguments: Arguments): ClassInstance {
@@ -415,8 +406,8 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
         isStatic = true,
         name = "byteOf",
         desc = ["Creates a Java value byte, to be used in Java"],
-        params = [NUMBER, "num", "the number to convert to a Java byte"],
-        returns = [JAVA, "the byte in Java wrapper"],
+        params = [ParameterDoc(NumberDef::class, "num", ["The number to convert to a Java byte."])],
+        returns = ReturnDoc(JavaDef::class, ["The byte in Java wrapper."]),
         examples = ["Java.byteOf(1);"]
     )
     private fun byteOf(arguments: Arguments): ClassInstance {
@@ -427,8 +418,8 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
         isStatic = true,
         name = "charOf",
         desc = ["Creates a Java value char, to be used in Java"],
-        params = [STRING, "char", "the char to convert to a Java char"],
-        returns = [JAVA, "the char in Java wrapper"],
+        params = [ParameterDoc(StringDef::class, "char", ["The char to convert to a Java char."])],
+        returns = ReturnDoc(JavaDef::class, ["The char in Java wrapper."]),
         examples = ["Java.charOf('a');"]
     )
     private fun charOf(arguments: Arguments): ClassInstance {
@@ -443,8 +434,8 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
         isStatic = true,
         name = "booleanOf",
         desc = ["Creates a Java value boolean, to be used in Java"],
-        params = [BOOLEAN, "bool", "the boolean to convert to a Java boolean"],
-        returns = [JAVA, "the boolean in Java wrapper"],
+        params = [ParameterDoc(BooleanDef::class, "bool", ["The boolean to convert to a Java boolean."])],
+        returns = ReturnDoc(JavaDef::class, ["The boolean in Java wrapper."]),
         examples = ["Java.booleanOf(true);"]
     )
     private fun booleanOf(arguments: Arguments): ClassInstance {
@@ -452,15 +443,14 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
     }
 
     @FunctionDoc(
-        isVarArgs = true,
         isStatic = true,
         name = "arrayOf",
         desc = [
             "Creates a Java Object array with a given values, this will be the size of the array,",
             "this cannot be used to create primitive arrays"
         ],
-        params = [OBJECT, "values...", "the values to add to the array"],
-        returns = [JAVA, "the Java Object array"],
+        params = [ParameterDoc(ObjectDef::class, "values", ["The values to add to the array."], true)],
+        returns = ReturnDoc(JavaDef::class, ["The Java Object array."]),
         examples = ["Java.arrayOf(1, 2, 3, 'string!', false);"]
     )
     private fun arrayOf(arguments: Arguments): ClassInstance {
@@ -475,8 +465,8 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
             "Creates a Java Object array with a given size, the array is filled with null values",
             "by default and can be filled with any Java values, this array cannot be expanded"
         ],
-        params = [NUMBER, "size", "the size of the array"],
-        returns = [JAVA, "the Java Object array"],
+        params = [ParameterDoc(NumberDef::class, "size", ["The size of the array."])],
+        returns = ReturnDoc(JavaDef::class, ["The Java Object array."]),
         examples = ["Java.arrayWithSize(10);"]
     )
     private fun objectArray(arguments: Arguments): ClassInstance {
@@ -491,8 +481,8 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
             "Creates a Java double array with a given size, the array is filled with 0's",
             "by default and can be filled with only doubles"
         ],
-        params = [NUMBER, "size", "the size of the array"],
-        returns = [JAVA, "the Java double array"],
+        params = [ParameterDoc(NumberDef::class, "size", ["The size of the array."])],
+        returns = ReturnDoc(JavaDef::class, ["The Java double array."]),
         examples = ["Java.doubleArray(10);"]
     )
     private fun doubleArray(arguments: Arguments): ClassInstance {
@@ -507,8 +497,8 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
             "Creates a Java float array with a given size, the array is filled with 0's",
             "by default and can be filled with only floats"
         ],
-        params = [NUMBER, "size", "the size of the array"],
-        returns = [JAVA, "the Java float array"],
+        params = [ParameterDoc(NumberDef::class, "size", ["The size of the array."])],
+        returns = ReturnDoc(JavaDef::class, ["The Java float array."]),
         examples = ["Java.floatArray(10);"]
     )
     private fun floatArray(arguments: Arguments): ClassInstance {
@@ -523,8 +513,8 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
             "Creates a Java int array with a given size, the array is filled with 0's",
             "by default and can be filled with only ints"
         ],
-        params = [NUMBER, "size", "the size of the array"],
-        returns = [JAVA, "the Java int array"],
+        params = [ParameterDoc(NumberDef::class, "size", ["The size of the array."])],
+        returns = ReturnDoc(JavaDef::class, ["The Java int array."]),
         examples = ["Java.intArray(10);"]
     )
     private fun intArray(arguments: Arguments): ClassInstance {
@@ -539,8 +529,8 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
             "Creates a Java long array with a given size, the array is filled with 0's",
             "by default and can be filled with only longs"
         ],
-        params = [NUMBER, "size", "the size of the array"],
-        returns = [JAVA, "the Java long array"],
+        params = [ParameterDoc(NumberDef::class, "size", ["The size of the array."])],
+        returns = ReturnDoc(JavaDef::class, ["The Java long array."]),
         examples = ["Java.longArray(10);"]
     )
     private fun longArray(arguments: Arguments): ClassInstance {
@@ -555,8 +545,8 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
             "Creates a Java short array with a given size, the array is filled with 0's",
             "by default and can be filled with only shorts"
         ],
-        params = [NUMBER, "size", "the size of the array"],
-        returns = [JAVA, "the Java short array"],
+        params = [ParameterDoc(NumberDef::class, "size", ["The size of the array."])],
+        returns = ReturnDoc(JavaDef::class, ["The Java short array."]),
         examples = ["Java.shortArray(10);"]
     )
     private fun shortArray(arguments: Arguments): ClassInstance {
@@ -571,8 +561,8 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
             "Creates a Java byte array with a given size, the array is filled with 0's",
             "by default and can be filled with only bytes"
         ],
-        params = [NUMBER, "size", "the size of the array"],
-        returns = [JAVA, "the Java byte array"],
+        params = [ParameterDoc(NumberDef::class, "size", ["The size of the array."])],
+        returns = ReturnDoc(JavaDef::class, ["The Java byte array."]),
         examples = ["Java.byteArray(10);"]
     )
     private fun byteArray(arguments: Arguments): ClassInstance {
@@ -587,8 +577,8 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
             "Creates a Java char array with a given size, the array is filled with null characters's",
             "by default and can be filled with only chars"
         ],
-        params = [NUMBER, "size", "the size of the array"],
-        returns = [JAVA, "the Java char array"],
+        params = [ParameterDoc(NumberDef::class, "size", ["The size of the array."])],
+        returns = ReturnDoc(JavaDef::class, ["The Java char array."]),
         examples = ["Java.charArray(10);"]
     )
     private fun charArray(arguments: Arguments): ClassInstance {
@@ -603,8 +593,8 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
             "Creates a Java boolean array with a given size, the array is filled with false",
             "by default and can be filled with only booleans"
         ],
-        params = [NUMBER, "size", "the size of the array"],
-        returns = [JAVA, "the Java boolean array"],
+        params = [ParameterDoc(NumberDef::class, "size", ["The size of the array."])],
+        returns = ReturnDoc(JavaDef::class, ["The Java boolean array."]),
         examples = ["Java.booleanArray(10);"]
     )
     private fun booleanArray(arguments: Arguments): ClassInstance {
@@ -619,8 +609,8 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
             "Creates a Java Runnable object from a given function, this must",
             "have no paramters and any return values will be ignored"
         ],
-        params = [FUNCTION, "function", "the function to be executed"],
-        returns = [JAVA, "the Java Runnable object"],
+        params = [ParameterDoc(FunctionDef::class, "function", ["The function to be executed."])],
+        returns = ReturnDoc(JavaDef::class, ["The Java Runnable object."]),
         examples = [
             """
             Java.runnableOf(fun() {
@@ -643,8 +633,8 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
             "Creates a Java Consumer object from a given function, it must have one",
             "parameter and any return values will be ignored"
         ],
-        params = [FUNCTION, "function", "the function to be executed"],
-        returns = [JAVA, "the Java Consumer object"],
+        params = [ParameterDoc(FunctionDef::class, "function", ["The function to be executed."])],
+        returns = ReturnDoc(JavaDef::class, ["The Java Consumer object."]),
         examples = [
             """
             Java.consumerOf(fun(something) {
@@ -664,8 +654,8 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
         isStatic = true,
         name = "supplierOf",
         desc = ["Creates a Java Supplier object from a given function"],
-        params = [FUNCTION, "function", "the function to be executed, this must have no parameters and must return (supply) a value"],
-        returns = [JAVA, "the Java Supplier object"],
+        params = [ParameterDoc(FunctionDef::class, "function", ["The function to be executed, this must have no parameters and must return (supply) a value."])],
+        returns = ReturnDoc(JavaDef::class, ["The Java Supplier object."]),
         examples = [
             """
             Java.supplierOf(fun() {
@@ -685,8 +675,8 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
         isStatic = true,
         name = "functionOf",
         desc = ["Creates a Java Function object from a given function"],
-        params = [FUNCTION, "function", "the function to be executed, this must have one parameter and must return a value"],
-        returns = [JAVA, "the Java Function object"],
+        params = [ParameterDoc(FunctionDef::class, "function", ["The function to be executed, this must have one parameter and must return a value."])],
+        returns = ReturnDoc(JavaDef::class, ["The Java Function object."]),
         examples = [
             """
             Java.functionOf(fun(something) {
@@ -706,8 +696,8 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
         isStatic = true,
         name = "predicateOf",
         desc = ["Creates a Java Predicate object from a given function"],
-        params = [FUNCTION, "function", "the function to be executed, this must have one parameter and must return a boolean"],
-        returns = [JAVA, "the Java Predicate object"],
+        params = [ParameterDoc(FunctionDef::class, "function", ["The function to be executed, this must have one parameter and must return a boolean."])],
+        returns = ReturnDoc(JavaDef::class, ["The Java Predicate object."]),
         examples = [
             """
             Java.predicateOf(fun(something) {
@@ -743,10 +733,10 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
             "be of a Java value if it cannot be converted. For example, Strings, Numbers, Lists",
             "will be converted but "
         ],
-        returns = [
-            OBJECT, "the Value in Arucas, this may still be of Java value if the value cannot be " +
-            "converted into an Arucas value, values like Strings, Numbers, Lists, etc... will be converted"
-        ],
+        returns = ReturnDoc(ObjectDef::class, [
+            "The Value in Arucas, this may still be of Java value if the value cannot be",
+            "converted into an Arucas value, values like Strings, Numbers, Lists, etc... will be converted."
+        ]),
         examples = ["Java.valueOf([1, 2, 3]).toArucas();"]
     )
     private fun toArucas(arguments: Arguments): ClassInstance {
@@ -760,8 +750,8 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
             "This returns the Java wrapped value of the specified field.",
             "There is no reason for you to be using this method, it will be removed in future versions"
         ],
-        params = [STRING, "fieldName", "the name of the field"],
-        returns = [JAVA, "the Java wrapped value of the field"],
+        params = [ParameterDoc(StringDef::class, "fieldName", ["The name of the field."])],
+        returns = ReturnDoc(JavaDef::class, ["The Java wrapped value of the field."]),
         examples = ["Java.constructClass('me.senseiwells.impl.Test').getField('A');"]
     )
     private fun getField(arguments: Arguments): ClassInstance {
@@ -780,8 +770,8 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
             "There is no reason for you to be using this method, it will be removed in future versions"
         ],
         params = [
-            STRING, "fieldName", "the name of the field",
-            OBJECT, "value", "the value to set the field to, the value type must match the type of the field"
+            ParameterDoc(StringDef::class, "fieldName", ["The name of the field."]),
+            ParameterDoc(ObjectDef::class, "value", ["The value to set the field to, the value type must match the type of the field."])
         ],
         examples = ["Java.constructClass('me.senseiwells.impl.Test').setField('A', 'Hello');"]
     )
@@ -792,7 +782,6 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
     }
 
     @FunctionDoc(
-        isVarArgs = true,
         deprecated = ["You should call the method directly on the value: Java.valueOf('').isBlank();"],
         name = "callMethod",
         desc = [
@@ -802,10 +791,10 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
             "But this is extremely rare so almost all of the time you should all the method normally."
         ],
         params = [
-            STRING, "methodName", "the name of the method",
-            OBJECT, "parameters...", "the parameters to call the method with"
+            ParameterDoc(StringDef::class, "methodName", ["The name of the method."]),
+            ParameterDoc(ObjectDef::class, "parameters", ["the parameters to call the method with"], true)
         ],
-        returns = [JAVA, "the return value of the method call wrapped in the Java wrapper"],
+        returns = ReturnDoc(JavaDef::class, ["The return value of the method call wrapped in the Java wrapper."]),
         examples = ["Java.valueOf('').callMethod('isBlank');"]
     )
     private fun callMethod(arguments: Arguments): ClassInstance {
@@ -829,10 +818,10 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
             "call the delegate. The parameter remains for backwards compatability."
         ],
         params = [
-            STRING, "methodName", "the name of the method",
-            NUMBER, "parameters", "the number of parameters"
+            ParameterDoc(StringDef::class, "methodName", ["The name of the method."]),
+            ParameterDoc(NumberDef::class, "parameters", ["The number of parameters."])
         ],
-        returns = [FUNCTION, "the function containing the Java method delegate"],
+        returns = ReturnDoc(FunctionDef::class, ["The function containing the Java method delegate."]),
         examples = ["Java.valueOf('string!').getMethodDelegate('isBlank', 0);"]
     )
     private fun getMethodDelegate(arguments: Arguments): ClassInstance {

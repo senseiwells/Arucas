@@ -1,5 +1,6 @@
 package me.senseiwells.arucas.api.docs
 
+@Deprecated("me.senseiwells.arucas.api.docs.annotations.FunctionDoc should be used instead.")
 @Target(AnnotationTarget.FUNCTION)
 annotation class FunctionDoc(
     val isVarArgs: Boolean = false,

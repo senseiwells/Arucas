@@ -1,16 +1,16 @@
 package me.senseiwells.arucas.builtin
 
-import me.senseiwells.arucas.api.docs.ClassDoc
-import me.senseiwells.arucas.api.docs.FunctionDoc
-import me.senseiwells.arucas.classes.instance.ClassInstance
+import me.senseiwells.arucas.api.docs.annotations.ClassDoc
+import me.senseiwells.arucas.api.docs.annotations.FunctionDoc
+import me.senseiwells.arucas.api.docs.annotations.ParameterDoc
+import me.senseiwells.arucas.api.docs.annotations.ReturnDoc
 import me.senseiwells.arucas.classes.CreatableDefinition
+import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.utils.Arguments
 import me.senseiwells.arucas.utils.BuiltInFunction
 import me.senseiwells.arucas.utils.MemberFunction
-import me.senseiwells.arucas.utils.Util.Types.BOOLEAN
 import me.senseiwells.arucas.utils.Util.Types.FUTURE
-import me.senseiwells.arucas.utils.Util.Types.OBJECT
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Future
 
@@ -19,7 +19,7 @@ import java.util.concurrent.Future
     desc = [
         "This class is used to represent values that are in the future.",
         "More precisely values that are being evaluated on another thread,",
-        "this allows you to access those values once they've been processed"
+        "this allows you to access those values once they've been processed."
     ]
 )
 class FutureDef(interpreter: Interpreter): CreatableDefinition<Future<*>>(FUTURE, interpreter) {
@@ -34,9 +34,9 @@ class FutureDef(interpreter: Interpreter): CreatableDefinition<Future<*>>(FUTURE
     @FunctionDoc(
         isStatic = true,
         name = "completed",
-        desc = ["This returns a future that with a complete value"],
-        params = [OBJECT, "value", "The value to complete the future with"],
-        returns = [FUTURE, "The future that has been completed with the value"],
+        desc = ["This returns a future that with a complete value."],
+        params = [ParameterDoc(ObjectDef::class, "value", ["The value to complete the future with."])],
+        returns = ReturnDoc(FutureDef::class, ["The future that has been completed with the value."]),
         examples = ["future = Future.completed(true);"]
     )
     private fun completed(arguments: Arguments): ClassInstance {
@@ -56,7 +56,7 @@ class FutureDef(interpreter: Interpreter): CreatableDefinition<Future<*>>(FUTURE
             "This blocks the current thread until the future has",
             "been completed and then returns the value of the future"
         ],
-        returns = [OBJECT, "The value of the future"],
+        returns = ReturnDoc(ObjectDef::class, ["The value of the future."]),
         examples = ["future.await();"]
     )
     private fun await(arguments: Arguments): Any? {
@@ -68,7 +68,7 @@ class FutureDef(interpreter: Interpreter): CreatableDefinition<Future<*>>(FUTURE
     @FunctionDoc(
         name = "isComplete",
         desc = ["This returns whether the future has been completed"],
-        returns = [BOOLEAN, "Whether the future has been completed"],
+        returns = ReturnDoc(BooleanDef::class, ["Whether the future has been completed."]),
         examples = ["future.isComplete();"]
     )
     private fun isComplete(arguments: Arguments): Boolean {

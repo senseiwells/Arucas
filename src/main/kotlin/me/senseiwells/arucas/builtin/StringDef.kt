@@ -1,8 +1,6 @@
 package me.senseiwells.arucas.builtin
 
-import me.senseiwells.arucas.api.docs.ClassDoc
-import me.senseiwells.arucas.api.docs.ConstructorDoc
-import me.senseiwells.arucas.api.docs.FunctionDoc
+import me.senseiwells.arucas.api.docs.annotations.*
 import me.senseiwells.arucas.classes.CreatableDefinition
 import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.core.Interpreter
@@ -10,10 +8,6 @@ import me.senseiwells.arucas.core.Type
 import me.senseiwells.arucas.exceptions.RuntimeError
 import me.senseiwells.arucas.exceptions.runtimeError
 import me.senseiwells.arucas.utils.*
-import me.senseiwells.arucas.utils.Util.Types.BOOLEAN
-import me.senseiwells.arucas.utils.Util.Types.LIST
-import me.senseiwells.arucas.utils.Util.Types.NUMBER
-import me.senseiwells.arucas.utils.Util.Types.OBJECT
 import me.senseiwells.arucas.utils.Util.Types.STRING
 import me.senseiwells.arucas.utils.impl.ArucasList
 import java.util.*
@@ -122,7 +116,7 @@ class StringDef(interpreter: Interpreter): CreatableDefinition<String>(STRING, i
         deprecated = ["Use '<String>.chars()' instead"],
         name = "toList",
         desc = ["This makes a list of all the characters in the string"],
-        returns = [LIST, "the list of characters"],
+        returns = ReturnDoc(ListDef::class, ["The list of characters."]),
         examples = ["'hello'.toList(); // ['h', 'e', 'l', 'l', 'o']"]
     )
     private fun toList(arguments: Arguments): ArucasList {
@@ -132,7 +126,7 @@ class StringDef(interpreter: Interpreter): CreatableDefinition<String>(STRING, i
     @FunctionDoc(
         name = "chars",
         desc = ["This makes a list of all the characters in the string"],
-        returns = [LIST, "the list of characters"],
+        returns = ReturnDoc(ListDef::class, ["The list of characters."]),
         examples = ["'hello'.chars(); // ['h', 'e', 'l', 'l', 'o']"]
     )
     private fun chars(arguments: Arguments): ArucasList {
@@ -147,7 +141,7 @@ class StringDef(interpreter: Interpreter): CreatableDefinition<String>(STRING, i
     @FunctionDoc(
         name = "length",
         desc = ["This returns the length of the string"],
-        returns = [NUMBER, "the length of the string"],
+        returns = ReturnDoc(NumberDef::class, ["The length of the string."]),
         examples = ["'hello'.length(); // 5"]
     )
     private fun length(arguments: Arguments): Int {
@@ -157,7 +151,7 @@ class StringDef(interpreter: Interpreter): CreatableDefinition<String>(STRING, i
     @FunctionDoc(
         name = "uppercase",
         desc = ["This returns the string in uppercase"],
-        returns = [STRING, "the string in uppercase"],
+        returns = ReturnDoc(StringDef::class, ["The string in uppercase."]),
         examples = ["'hello'.uppercase(); // 'HELLO'"]
     )
     private fun uppercase(arguments: Arguments): String {
@@ -167,7 +161,7 @@ class StringDef(interpreter: Interpreter): CreatableDefinition<String>(STRING, i
     @FunctionDoc(
         name = "lowercase",
         desc = ["This returns the string in lowercase"],
-        returns = [STRING, "the string in lowercase"],
+        returns = ReturnDoc(StringDef::class, ["The string in lowercase."]),
         examples = ["'HELLO'.lowercase(); // 'hello'"]
     )
     private fun lowercase(arguments: Arguments): String {
@@ -177,7 +171,7 @@ class StringDef(interpreter: Interpreter): CreatableDefinition<String>(STRING, i
     @FunctionDoc(
         name = "capitalize",
         desc = ["This returns the string in capitalized form"],
-        returns = [STRING, "the string in capitalized form"],
+        returns = ReturnDoc(StringDef::class, ["The string in capitalized form."]),
         examples = ["'hello'.capitalize(); // 'Hello'"]
     )
     private fun capitalize(arguments: Arguments): String {
@@ -189,7 +183,7 @@ class StringDef(interpreter: Interpreter): CreatableDefinition<String>(STRING, i
     @FunctionDoc(
         name = "reverse",
         desc = ["This returns the string in reverse"],
-        returns = [STRING, "the string in reverse"],
+        returns = ReturnDoc(StringDef::class, ["The string in reverse."]),
         examples = ["'hello'.reverse(); // 'olleh'"]
     )
     private fun reverse(arguments: Arguments): String {
@@ -199,8 +193,8 @@ class StringDef(interpreter: Interpreter): CreatableDefinition<String>(STRING, i
     @FunctionDoc(
         name = "contains",
         desc = ["This returns whether the string contains the given string"],
-        params = [STRING, "string", "the string to check"],
-        returns = [BOOLEAN, "whether the string contains the given string"],
+        params = [ParameterDoc(StringDef::class, "string", ["The string to check."])],
+        returns = ReturnDoc(BooleanDef::class, ["Whether the string contains the given string."]),
         examples = ["'hello'.contains('lo'); // true"]
     )
     private fun contains(arguments: Arguments): Boolean {
@@ -212,8 +206,8 @@ class StringDef(interpreter: Interpreter): CreatableDefinition<String>(STRING, i
     @FunctionDoc(
         name = "startsWith",
         desc = ["This returns whether the string starts with the given string"],
-        params = [STRING, "string", "the string to check"],
-        returns = [BOOLEAN, "whether the string starts with the given string"],
+        params = [ParameterDoc(StringDef::class, "string", ["The string to check."])],
+        returns = ReturnDoc(BooleanDef::class, ["Whether the string starts with the given string."]),
         examples = ["'hello'.startsWith('he'); // true"]
     )
     private fun startsWith(arguments: Arguments): Boolean {
@@ -225,8 +219,8 @@ class StringDef(interpreter: Interpreter): CreatableDefinition<String>(STRING, i
     @FunctionDoc(
         name = "endsWith",
         desc = ["This returns whether the string ends with the given string"],
-        params = [STRING, "string", "the string to check"],
-        returns = [BOOLEAN, "whether the string ends with the given string"],
+        params = [ParameterDoc(StringDef::class, "string", ["The string to check."])],
+        returns = ReturnDoc(BooleanDef::class, ["Whether the string ends with the given string."]),
         examples = ["'hello'.endsWith('lo'); // true"]
     )
     private fun endsWith(arguments: Arguments): Boolean {
@@ -236,15 +230,14 @@ class StringDef(interpreter: Interpreter): CreatableDefinition<String>(STRING, i
     }
 
     @FunctionDoc(
-        isVarArgs = true,
         name = "format",
         desc = [
             "This formats the string using the given arguments.",
             "This internally uses the Java String.format() method.",
             "For how to use see here: https://www.javatpoint.com/java-string-format"
         ],
-        params = [OBJECT, "objects...", "the objects to insert"],
-        returns = [STRING, "the formatted string"],
+        params = [ParameterDoc(ObjectDef::class, "objects", ["The objects to insert."], true)],
+        returns = ReturnDoc(StringDef::class, ["The formatted string."]),
         examples = ["'%s %s'.format('hello', 'world'); // 'hello world'"]
     )
     private fun format(arguments: Arguments): String {
@@ -263,7 +256,7 @@ class StringDef(interpreter: Interpreter): CreatableDefinition<String>(STRING, i
             "This method can convert hex or denary into numbers.",
             "If the string is not a number, it will throw an error"
         ],
-        returns = [NUMBER, "the number"],
+        returns = ReturnDoc(NumberDef::class, ["The number."]),
         examples = ["'99'.toNumber(); // 99"]
     )
     private fun toNumber(arguments: Arguments): Number {
@@ -278,7 +271,7 @@ class StringDef(interpreter: Interpreter): CreatableDefinition<String>(STRING, i
     @FunctionDoc(
         name = "strip",
         desc = ["This strips the whitespace from the string"],
-        returns = [STRING, "the stripped string"],
+        returns = ReturnDoc(StringDef::class, ["The stripped string."]),
         examples = ["'  hello  '.strip(); // 'hello'"]
     )
     private fun strip(arguments: Arguments): String {
@@ -290,10 +283,10 @@ class StringDef(interpreter: Interpreter): CreatableDefinition<String>(STRING, i
         name = "subString",
         desc = ["This returns a substring of the string"],
         params = [
-            NUMBER, "from", "the start index (inclusive)",
-            NUMBER, "to", "the end index (exclusive)"
+            ParameterDoc(NumberDef::class, "from", ["The start index (inclusive)."]),
+            ParameterDoc(NumberDef::class, "to", ["The end index (exclusive)."])
         ],
-        returns = [STRING, "the substring"],
+        returns = ReturnDoc(StringDef::class, ["The substring."]),
         examples = ["'hello'.subString(1, 3); // 'el'"]
     )
     private fun subString(arguments: Arguments): String {
@@ -308,8 +301,8 @@ class StringDef(interpreter: Interpreter): CreatableDefinition<String>(STRING, i
     @FunctionDoc(
         name = "split",
         desc = ["This splits the string into a list of strings based on a regex"],
-        params = [STRING, "regex", "the regex to split the string with"],
-        returns = [LIST, "the list of strings"],
+        params = [ParameterDoc(StringDef::class, "regex", ["The regex to split the string with."])],
+        returns = ReturnDoc(ListDef::class, ["The list of strings."]),
         examples = ["'foo/bar/baz'.split('/');"]
     )
     private fun split(arguments: Arguments): List<String> {
@@ -323,8 +316,8 @@ class StringDef(interpreter: Interpreter): CreatableDefinition<String>(STRING, i
     @FunctionDoc(
         name = "matches",
         desc = ["This returns whether the string matches the given regex"],
-        params = [STRING, "regex", "the regex to match the string with"],
-        returns = [BOOLEAN, "whether the string matches the given regex"],
+        params = [ParameterDoc(StringDef::class, "regex", ["The regex to match the string with."])],
+        returns = ReturnDoc(BooleanDef::class, ["Whether the string matches the given regex."]),
         examples = ["'foo'.matches('f.*'); // true"]
     )
     private fun matches(arguments: Arguments): Boolean {
@@ -339,8 +332,8 @@ class StringDef(interpreter: Interpreter): CreatableDefinition<String>(STRING, i
             "This finds all matches of the regex in the string,",
             "this does not find groups, for that use `<String>.findGroups(regex)`"
         ],
-        params = [STRING, "regex", "the regex to search the string with"],
-        returns = [LIST, "the list of all instances of the regex in the string"],
+        params = [ParameterDoc(StringDef::class, "regex", ["The regex to search the string with."])],
+        returns = ReturnDoc(ListDef::class, ["The list of all instances of the regex in the string."]),
         examples = ["'102i 1i'.find('([\\\\d+])i'); // ['2i', '1i']"]
     )
     private fun find(arguments: Arguments): ArucasList {
@@ -360,8 +353,8 @@ class StringDef(interpreter: Interpreter): CreatableDefinition<String>(STRING, i
             "the first group of each match will be the complete match and following",
             "will be the groups of the regex, a group may be empty if it doesn't exist"
         ],
-        params = [STRING, "regex", "the regex to search the string with"],
-        returns = [LIST, "a list of match groups, which is a list containing matches"],
+        params = [ParameterDoc(StringDef::class, "regex", ["The regex to search the string with."])],
+        returns = ReturnDoc(ListDef::class, ["A list of match groups, which is a list containing matches."]),
         examples = ["'102i 1i'.findAll('([\\\\d+])i'); // [['2i', '2'], ['1i', '1']]"]
     )
     private fun findAll(arguments: Arguments): ArucasList {
@@ -382,10 +375,10 @@ class StringDef(interpreter: Interpreter): CreatableDefinition<String>(STRING, i
         name = "replaceAll",
         desc = ["This replaces all the instances of a regex with the replace string"],
         params = [
-            STRING, "regex", "the regex you want to replace",
-            STRING, "replacement", "the string you want to replace it with"
+            ParameterDoc(StringDef::class, "regex", ["The regex you want to replace."]),
+            ParameterDoc(StringDef::class, "replacement", ["The string you want to replace it with."])
         ],
-        returns = [STRING, "the modified string"],
+        returns = ReturnDoc(StringDef::class, ["The modified string."]),
         examples = ["'hello'.replaceAll('l', 'x'); // 'hexxo'"]
     )
     private fun replaceAll(arguments: Arguments): String {
@@ -399,10 +392,10 @@ class StringDef(interpreter: Interpreter): CreatableDefinition<String>(STRING, i
         name = "replaceFirst",
         desc = ["This replaces the first instance of a regex with the replace string"],
         params = [
-            STRING, "regex", "the regex you want to replace",
-            STRING, "replacement", "the string you want to replace it with"
+            ParameterDoc(StringDef::class, "regex", ["The regex you want to replace."]),
+            ParameterDoc(StringDef::class, "replacement", ["The string you want to replace it with."])
         ],
-        returns = [STRING, "the modified string"],
+        returns = ReturnDoc(StringDef::class, ["The modified string."]),
         examples = ["'hello'.replaceFirst('l', 'x'); // 'hexlo'"]
     )
     private fun replaceFirst(arguments: Arguments): String {

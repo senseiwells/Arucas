@@ -1,20 +1,13 @@
 package me.senseiwells.arucas.builtin
 
-import me.senseiwells.arucas.api.docs.ClassDoc
-import me.senseiwells.arucas.api.docs.ConstructorDoc
-import me.senseiwells.arucas.api.docs.FunctionDoc
-import me.senseiwells.arucas.classes.instance.ClassInstance
+import me.senseiwells.arucas.api.docs.annotations.*
 import me.senseiwells.arucas.classes.CreatableDefinition
 import me.senseiwells.arucas.classes.PrimitiveDefinition
+import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.exceptions.runtimeError
 import me.senseiwells.arucas.utils.*
-import me.senseiwells.arucas.utils.Util.Types.BOOLEAN
-import me.senseiwells.arucas.utils.Util.Types.COLLECTION
-import me.senseiwells.arucas.utils.Util.Types.FUNCTION
 import me.senseiwells.arucas.utils.Util.Types.LIST
-import me.senseiwells.arucas.utils.Util.Types.NUMBER
-import me.senseiwells.arucas.utils.Util.Types.OBJECT
 import me.senseiwells.arucas.utils.impl.ArucasList
 
 @ClassDoc(
@@ -112,8 +105,8 @@ class ListDef(interpreter: Interpreter): CreatableDefinition<ArucasList>(LIST, i
             "This allows you to get the value at a specific index, alternative to bracket accessor,",
             "this will throw an error if the index given is out of bounds"
         ],
-        params = [NUMBER, "index", "the index of the value you want to get"],
-        returns = [OBJECT, "the value at the index"],
+        params = [ParameterDoc(NumberDef::class, "index", ["The index of the value you want to get."])],
+        returns = ReturnDoc(ObjectDef::class, ["The value at the index."]),
         examples = ["['object', 81, 96, 'case'].get(1); // 81"]
     )
     private fun get(arguments: Arguments): ClassInstance {
@@ -127,10 +120,10 @@ class ListDef(interpreter: Interpreter): CreatableDefinition<ArucasList>(LIST, i
             "this will throw an erroor if the index given is out of bounds"
         ],
         params = [
-            OBJECT, "value", "the value you want to set",
-            NUMBER, "index", "the index you want to set the value at"
+            ParameterDoc(ObjectDef::class, "value", ["The value you want to set."]),
+            ParameterDoc(NumberDef::class, "index", ["The index you want to set the value at."])
         ],
-        returns = [LIST, "the list"],
+        returns = ReturnDoc(ListDef::class, ["The list."]),
         examples = ["['object', 81, 96, 'case'].set('foo', 1); // ['object', 'foo', 96, 'case']"]
     )
     private fun set(arguments: Arguments): ClassInstance {
@@ -145,8 +138,8 @@ class ListDef(interpreter: Interpreter): CreatableDefinition<ArucasList>(LIST, i
             "This allows you to remove the value at a specific index, alternative to bracket assignment.",
             "This will throw an error if the index is out of bounds"
         ],
-        params = [NUMBER, "index", "the index of the value you want to remove"],
-        returns = [OBJECT, "the value that was removed"],
+        params = [ParameterDoc(NumberDef::class, "index", ["The index of the value you want to remove."])],
+        returns = ReturnDoc(ObjectDef::class, ["The value that was removed."]),
         examples = ["['object', 81, 96, 'case'].remove(1); // 81"]
     )
     private fun remove(arguments: Arguments): ClassInstance {
@@ -158,8 +151,8 @@ class ListDef(interpreter: Interpreter): CreatableDefinition<ArucasList>(LIST, i
     @FunctionDoc(
         name = "append",
         desc = ["This allows you to append a value to the end of the list"],
-        params = [OBJECT, "value", "the value you want to append"],
-        returns = [LIST, "the list"],
+        params = [ParameterDoc(ObjectDef::class, "value", ["The value you want to append."])],
+        returns = ReturnDoc(ListDef::class, ["The list."]),
         examples = ["['object', 81, 96, 'case'].append('foo'); // ['object', 81, 96, 'case', 'foo']"]
     )
     private fun append(arguments: Arguments): ClassInstance {
@@ -171,8 +164,8 @@ class ListDef(interpreter: Interpreter): CreatableDefinition<ArucasList>(LIST, i
     @FunctionDoc(
         name = "prepend",
         desc = ["This allows you to prepend a value to the beginning of the list"],
-        params = [OBJECT, "value", "the value you want to prepend"],
-        returns = [LIST, "the list"],
+        params = [ParameterDoc(ObjectDef::class, "value", ["The value you want to prepend."])],
+        returns = ReturnDoc(ListDef::class, ["The list."]),
         examples = ["['object', 81, 96].prepend('foo'); // ['foo', 'object', 81, 96]"]
     )
     private fun prepend(arguments: Arguments): ClassInstance {
@@ -184,8 +177,8 @@ class ListDef(interpreter: Interpreter): CreatableDefinition<ArucasList>(LIST, i
     @FunctionDoc(
         name = "insert",
         desc = ["This allows you to insert a value at a specific index, this will throw an error if the index is out of bounds"],
-        params = [OBJECT, "value", "the value you want to insert", NUMBER, "index", "the index you want to insert the value at"],
-        returns = [LIST, "the list"],
+        params = [ParameterDoc(ObjectDef::class, "value", ["The value you want to insert."]), ParameterDoc(NumberDef::class, "index", ["The index you want to insert the value at."])],
+        returns = ReturnDoc(ListDef::class, ["The list."]),
         examples = ["['object', 81, 96, 'case'].insert('foo', 1); // ['object', 'foo', 81, 96, 'case']"]
     )
     private fun insert(arguments: Arguments): ClassInstance {
@@ -198,8 +191,8 @@ class ListDef(interpreter: Interpreter): CreatableDefinition<ArucasList>(LIST, i
     @FunctionDoc(
         name = "indexOf",
         desc = ["This allows you to get the index of a specific value"],
-        params = [OBJECT, "value", "the value you want to get the index of"],
-        returns = [NUMBER, "the index of the value"],
+        params = [ParameterDoc(ObjectDef::class, "value", ["The value you want to get the index of."])],
+        returns = ReturnDoc(NumberDef::class, ["The index of the value."]),
         examples = ["['object', 81, 96, 'case', 81].indexOf(81); // 1"]
     )
     private fun indexOf(arguments: Arguments): Int {
@@ -210,8 +203,8 @@ class ListDef(interpreter: Interpreter): CreatableDefinition<ArucasList>(LIST, i
     @FunctionDoc(
         name = "lastIndexOf",
         desc = ["This allows you to get the last index of a specific value"],
-        params = [OBJECT, "value", "the value you want to get the last index of"],
-        returns = [NUMBER, "the last index of the value"],
+        params = [ParameterDoc(ObjectDef::class, "value", ["The value you want to get the last index of."])],
+        returns = ReturnDoc(NumberDef::class, ["The last index of the value."]),
         examples = ["['object', 81, 96, 'case', 96].lastIndexOf(96); // 4"]
     )
     private fun lastIndexOf(arguments: Arguments): Int {
@@ -222,8 +215,8 @@ class ListDef(interpreter: Interpreter): CreatableDefinition<ArucasList>(LIST, i
     @FunctionDoc(
         name = "contains",
         desc = ["This allows you to check if the list contains a specific value"],
-        params = [OBJECT, "value", "the value you want to check"],
-        returns = [BOOLEAN, "true if the list contains the value"],
+        params = [ParameterDoc(ObjectDef::class, "value", ["The value you want to check."])],
+        returns = ReturnDoc(BooleanDef::class, ["True if the list contains the value."]),
         examples = ["['object', 81, 96, 'case'].contains('case'); // true"]
     )
     private fun contains(arguments: Arguments): Boolean {
@@ -234,8 +227,8 @@ class ListDef(interpreter: Interpreter): CreatableDefinition<ArucasList>(LIST, i
     @FunctionDoc(
         name = "containsAll",
         desc = ["This allows you to check if the list contains all the values in another collection"],
-        params = [COLLECTION, "collection", "the collection you want to check agains"],
-        returns = [BOOLEAN, "true if the list contains all the values in the collection"],
+        params = [ParameterDoc(CollectionDef::class, "collection", ["The collection you want to check agains."])],
+        returns = ReturnDoc(BooleanDef::class, ["True if the list contains all the values in the collection."]),
         examples = ["['object', 81, 96, 'case'].containsAll(['foo', 'object']); // false"]
     )
     private fun containsAll(arguments: Arguments): Boolean {
@@ -247,8 +240,8 @@ class ListDef(interpreter: Interpreter): CreatableDefinition<ArucasList>(LIST, i
     @FunctionDoc(
         name = "addAll",
         desc = ["This allows you to add all the values in another collection to the list"],
-        params = [COLLECTION, "collection", "the collection you want to add to the list"],
-        returns = [LIST, "the list"],
+        params = [ParameterDoc(CollectionDef::class, "collection", ["The collection you want to add to the list."])],
+        returns = ReturnDoc(ListDef::class, ["The list."]),
         examples = ["['object', 81, 96, 'case'].addAll(['foo', 'object']); // ['object', 81, 96, 'case', 'foo', 'object']"]
     )
     private fun addAll(arguments: Arguments): ClassInstance {
@@ -261,8 +254,8 @@ class ListDef(interpreter: Interpreter): CreatableDefinition<ArucasList>(LIST, i
     @FunctionDoc(
         name = "removeAll",
         desc = ["This allows you to remove all the values in another collection from the list"],
-        params = [COLLECTION, "collection", "the collection you want to remove from the list"],
-        returns = [LIST, "the list"],
+        params = [ParameterDoc(CollectionDef::class, "collection", ["The collection you want to remove from the list."])],
+        returns = ReturnDoc(ListDef::class, ["The list."]),
         examples = ["['object', 81, 96, 'case'].removeAll(['foo', 'object']); // [81, 96, 'case']"]
     )
     private fun removeAll(arguments: Arguments): ClassInstance {
@@ -275,8 +268,8 @@ class ListDef(interpreter: Interpreter): CreatableDefinition<ArucasList>(LIST, i
     @FunctionDoc(
         name = "retainAll",
         desc = ["This allows you to retain only the values that are in both lists"],
-        params = [LIST, "list", "the list you want to retain values from"],
-        returns = [LIST, "the list"],
+        params = [ParameterDoc(ListDef::class, "list", ["The list you want to retain values from."])],
+        returns = ReturnDoc(ListDef::class, ["The list."]),
         examples = ["['object', 81, 96, 'case'].retainAll(['case', 'object', 54]); // ['object', 'case']"]
     )
     private fun retainAll(arguments: Arguments): ClassInstance {
@@ -299,7 +292,7 @@ class ListDef(interpreter: Interpreter): CreatableDefinition<ArucasList>(LIST, i
     @FunctionDoc(
         name = "sort",
         desc = ["This allows you to sort the list using the elements compare method"],
-        returns = [LIST, "the sorted list"],
+        returns = ReturnDoc(ListDef::class, ["The sorted list."]),
         examples = ["['d', 'a', 'c', 'b'].sort(); // ['a', 'b', 'c', 'd']"]
     )
     private fun sort(arguments: Arguments): ClassInstance {
@@ -313,8 +306,8 @@ class ListDef(interpreter: Interpreter): CreatableDefinition<ArucasList>(LIST, i
     @FunctionDoc(
         name = "sort",
         desc = ["This allows you to sort the list using a comparator function"],
-        params = [FUNCTION, "comparator", "the comparator function"],
-        returns = [LIST, "the sorted list"],
+        params = [ParameterDoc(FunctionDef::class, "comparator", ["The comparator function."])],
+        returns = ReturnDoc(ListDef::class, ["The sorted list."]),
         examples = ["[6, 5, 9, -10].sort(fun(a, b) { return a - b; }); // [-10, 5, 6, 9]"]
     )
     private fun sort1(arguments: Arguments): ClassInstance {
@@ -335,8 +328,8 @@ class ListDef(interpreter: Interpreter): CreatableDefinition<ArucasList>(LIST, i
             "true or false, based on the element on whether it should be kept or not,",
             "and returns a new list with the filtered elements"
         ],
-        params = [FUNCTION, "predicate", "a function that takes a value and returns Boolean"],
-        returns = [LIST, "the filtered collection"],
+        params = [ParameterDoc(FunctionDef::class, "predicate", ["A function that takes a value and returns Boolean."])],
+        returns = ReturnDoc(ListDef::class, ["The filtered collection."]),
         examples = [
             """
             (list = [1, 2, 3]).filter(fun(v) {
@@ -362,8 +355,8 @@ class ListDef(interpreter: Interpreter): CreatableDefinition<ArucasList>(LIST, i
             "This maps the list using the mapper, a function that takes a value and",
             "returns a new value, and returns a new list with the mapped elements"
         ],
-        params = [FUNCTION, "mapper", "a function that takes a value and returns a new value"],
-        returns = [LIST, "the mapped collection"],
+        params = [ParameterDoc(FunctionDef::class, "mapper", ["A function that takes a value and returns a new value."])],
+        returns = ReturnDoc(ListDef::class, ["The mapped collection."]),
         examples = [
             """
             (list = [1, 2, 3]).map(fun(v) {
@@ -388,8 +381,8 @@ class ListDef(interpreter: Interpreter): CreatableDefinition<ArucasList>(LIST, i
             "This reduces the list using the reducer, a function that takes an",
             "accumulated value and a new value and returns the next accumulated value",
         ],
-        params = [FUNCTION, "reducer", "a function that takes a value and returns a new value"],
-        returns = [OBJECT, "the reduced value"],
+        params = [ParameterDoc(FunctionDef::class, "reducer", ["A function that takes a value and returns a new value."])],
+        returns = ReturnDoc(ObjectDef::class, ["The reduced value."]),
         examples = [
             """
             // a will start at 1 and b at 2
@@ -419,10 +412,10 @@ class ListDef(interpreter: Interpreter): CreatableDefinition<ArucasList>(LIST, i
             "This reduces the list using the reducer starting with an identity"
         ],
         params = [
-            OBJECT, "identity", "the identity",
-            FUNCTION, "reducer", "a function that takes a value and returns a new value"
+            ParameterDoc(ObjectDef::class, "identity", ["The identity."]),
+            ParameterDoc(FunctionDef::class, "reducer", ["A function that takes a value and returns a new value."])
         ],
-        returns = [OBJECT, "the reduced value"],
+        returns = ReturnDoc(ObjectDef::class, ["The reduced value."]),
         examples = [
             """
             (list = [1, 2, 3]).reduce("", fun(a, b) {
@@ -448,7 +441,7 @@ class ListDef(interpreter: Interpreter): CreatableDefinition<ArucasList>(LIST, i
             "be expanded and added to the list. However collections inside those",
             "collections will not be flattened, this is returned as a new list"
         ],
-        returns = [LIST, "the flattened list"],
+        returns = ReturnDoc(ListDef::class, ["The flattened list."]),
         examples = [
             """
             (list = [1, 2, 3, [4, 5], [6, [7]]]).flatten();
@@ -470,7 +463,7 @@ class ListDef(interpreter: Interpreter): CreatableDefinition<ArucasList>(LIST, i
     @FunctionDoc(
         name = "reverse",
         desc = ["This allows you to reverse the list"],
-        returns = [LIST, "the reversed list"],
+        returns = ReturnDoc(ListDef::class, ["The reversed list."]),
         examples = ["['a', 'b', 'c', 'd'].reverse(); // ['d', 'c', 'b', 'a']"]
     )
     private fun reverse(arguments: Arguments): ClassInstance {
@@ -482,7 +475,7 @@ class ListDef(interpreter: Interpreter): CreatableDefinition<ArucasList>(LIST, i
     @FunctionDoc(
         name = "shuffle",
         desc = ["This allows you to shuffle the list"],
-        returns = [LIST, "the shuffled list"],
+        returns = ReturnDoc(ListDef::class, ["The shuffled list."]),
         examples = ["['a', 'b', 'c', 'd'].shuffle(); // some random order ¯\\_(ツ)_/¯"]
     )
     private fun shuffle(arguments: Arguments): ClassInstance {

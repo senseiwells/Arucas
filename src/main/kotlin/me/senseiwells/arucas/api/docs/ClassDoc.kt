@@ -4,6 +4,7 @@ import me.senseiwells.arucas.builtin.ObjectDef
 import me.senseiwells.arucas.utils.Util
 import kotlin.reflect.KClass
 
+@Deprecated("me.senseiwells.arucas.api.docs.annotations.ClassDoc should be used instead.")
 @Target(AnnotationTarget.CLASS)
 annotation class ClassDoc(
     val name: String,

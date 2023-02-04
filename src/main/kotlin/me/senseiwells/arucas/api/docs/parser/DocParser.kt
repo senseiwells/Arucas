@@ -16,6 +16,7 @@ abstract class DocParser protected constructor() {
     companion object {
         @JvmStatic
         fun generateAll(path: Path, api: ArucasAPI) {
+            TODO()
             val jsonPath = path.ensureExists().resolve("json").ensureExists()
             val mdPath = path.resolve("markdown").ensureExists()
             val snippetPath = path.resolve("snippets").ensureExists()
