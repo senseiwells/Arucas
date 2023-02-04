@@ -5,7 +5,6 @@ import me.senseiwells.arucas.classes.PrimitiveDefinition
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.utils.Arguments
 import me.senseiwells.arucas.utils.BuiltInFunction
-import me.senseiwells.arucas.utils.Util.Collection.to
 import me.senseiwells.arucas.utils.Util.Types.MATH
 import kotlin.math.*
 
@@ -15,23 +14,23 @@ import kotlin.math.*
 )
 class MathDef(interpreter: Interpreter): PrimitiveDefinition<Unit>(MATH, interpreter) {
     @FieldDoc(name = "pi", desc = ["The value of pi"], type = NumberDef::class, examples = ["Math.pi;"])
-    val pi = Math.PI
+    private val pi = Math.PI
 
     @FieldDoc(name = "e", desc = ["The value of e"], type = NumberDef::class, examples = ["Math.e;"])
-    val e = Math.E
+    private val e = Math.E
 
     @FieldDoc(name = "root2", desc = ["The value of root 2"], type = NumberDef::class, examples = ["Math.root2;"])
-    val root2 = sqrt(2.0)
+    private val root2 = sqrt(2.0)
 
     override fun canExtend(): Boolean {
         return false
     }
 
-    override fun defineStaticFields(): List<Triple<String, Any?, Boolean>> {
+    override fun defineStaticFields(): List<PrimitiveField> {
         return listOf(
-            "pi" to this.pi to false,
-            "e" to this.e to false,
-            "root2" to this.root2 to false
+            PrimitiveField("pi", this.pi, false),
+            PrimitiveField("e", this.e, false),
+            PrimitiveField("root2", this.root2, false)
         )
     }
 

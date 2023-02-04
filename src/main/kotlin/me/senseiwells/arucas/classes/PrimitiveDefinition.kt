@@ -57,13 +57,13 @@ abstract class PrimitiveDefinition<T: Any>(
     }
 
     /**
-     * This returns a list of ([String], [Any], [Boolean]) which is used
-     * to define a static field, the string is the name of the field, the value
-     * is the value of the field, and the boolean is whether the field is final.
+     * This returns a list of [PrimitiveField] which is used
+     * to define a static field.
      *
-     * @return the list of triples.
+     * @return the list of [PrimitiveField]s.
+     * @see PrimitiveField
      */
-    open fun defineStaticFields(): List<Triple<String, Any?, Boolean>>? {
+    open fun defineStaticFields(): List<PrimitiveField>? {
         return null
     }
 
@@ -162,4 +162,13 @@ abstract class PrimitiveDefinition<T: Any>(
             }
         }
     }
+
+    /**
+     * Simple data class representing a field.
+     *
+     * @param name the name of the field.
+     * @param value the value of the field.
+     * @param isAssignable whether the field can be re-assigned.
+     */
+    data class PrimitiveField(val name: String, val value: Any?, val isAssignable: Boolean)
 }
