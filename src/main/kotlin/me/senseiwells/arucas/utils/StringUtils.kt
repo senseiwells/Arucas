@@ -1,5 +1,7 @@
 package me.senseiwells.arucas.utils
 
+import java.util.*
+
 object StringUtils {
     /**
      * Joins all arguments using `StringBuilder`.
@@ -191,18 +193,6 @@ object StringUtils {
     }
 
     /**
-     * Converts a number into a hex string with a given minimum length.
-     *
-     * @param value  the value to be converted to a hex string
-     * @param length the minimum length of that hex string
-     * @return a hex string
-     */
-    private fun toHexString(value: Long, length: Int): String {
-        require(length >= 1) { "The minimum length of the returned string cannot be less than one." }
-        return String.format("%0" + length + "x", value)
-    }
-
-    /**
      * Converts a string into a number.
      *
      * If the input string has a negative sign it will be handled correctly.
@@ -235,5 +225,40 @@ object StringUtils {
         // Check for hex
         val result = if (s.startsWith("0x")) s.substring(2).toLong(16).toDouble() else s.toDouble()
         return if (isNegative) -result else result
+    }
+
+    /**
+     * Ensures that the first character of the first string is
+     * capital and also ensures the last character of the last
+     * string ends with a full stop.
+     */
+    fun ensurePunctuation(strings: Array<String>): Array<String> {
+        if (strings.isNotEmpty()) {
+            strings[0] = capitalise(strings[0])
+            val last = strings[strings.lastIndex]
+            if (!last.endsWith(".")) {
+                strings[strings.lastIndex] = "$last."
+            }
+        }
+        return strings
+    }
+
+    /**
+     * Capitalises a string.
+     */
+    fun capitalise(string: String): String {
+        return string.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+    }
+
+    /**
+     * Converts a number into a hex string with a given minimum length.
+     *
+     * @param value  the value to be converted to a hex string
+     * @param length the minimum length of that hex string
+     * @return a hex string
+     */
+    private fun toHexString(value: Long, length: Int): String {
+        require(length >= 1) { "The minimum length of the returned string cannot be less than one." }
+        return String.format("%0" + length + "x", value)
     }
 }

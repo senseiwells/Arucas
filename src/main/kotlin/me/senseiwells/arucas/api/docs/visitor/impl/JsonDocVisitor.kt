@@ -108,7 +108,7 @@ class JsonDocVisitor: ArucasDocVisitor() {
         val allParameters = JsonArray()
         for (param in params) {
             val parameterObject = JsonObject()
-            parameterObject.addProperty("name", param.getName())
+            parameterObject.addProperty("name", param.getName() + if (param.isVarargs()) "..." else "")
             parameterObject.addProperty("type", param.getType().getName())
             parameterObject.addProperty("desc", param.getFormattedDescription())
             allParameters.add(parameterObject)

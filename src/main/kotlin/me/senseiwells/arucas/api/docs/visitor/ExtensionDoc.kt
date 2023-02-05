@@ -1,5 +1,6 @@
 package me.senseiwells.arucas.api.docs.visitor
 
+import me.senseiwells.arucas.utils.StringUtils
 import me.senseiwells.arucas.utils.Util
 import me.senseiwells.arucas.api.docs.annotations.ExtensionDoc as ExtensionDocAnnotation
 
@@ -9,6 +10,8 @@ import me.senseiwells.arucas.api.docs.annotations.ExtensionDoc as ExtensionDocAn
  * @param doc the [ExtensionDocAnnotation] to wrap.
  */
 class ExtensionDoc(private val doc: ExtensionDocAnnotation): Describable {
+    private val lazyDescription by lazy { StringUtils.ensurePunctuation(this.doc.desc) }
+
     /**
      * This gets the name of the extension.
      *
@@ -24,7 +27,7 @@ class ExtensionDoc(private val doc: ExtensionDocAnnotation): Describable {
      * @return the description of the extension.
      */
     override fun getDescription(): Array<String> {
-        return this.doc.desc
+        return this.lazyDescription
     }
 
     /**

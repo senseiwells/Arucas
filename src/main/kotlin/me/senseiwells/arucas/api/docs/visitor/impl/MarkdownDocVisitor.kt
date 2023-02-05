@@ -78,7 +78,7 @@ class MarkdownDocVisitor: ArucasDocVisitor() {
         }
 
         builder.append(function.getName()).append("(")
-        builder.append(function.getParameters().joinToString(", ") { it.getName() })
+        builder.append(function.getParameters().joinToString(", ") { it.getName() + if (it.isVarargs()) "..." else "" })
         builder.append(")`\n")
 
         if (function.isDeprecated()) {
@@ -105,13 +105,13 @@ class MarkdownDocVisitor: ArucasDocVisitor() {
         return builder.toString()
     }
 
-    private fun parseConstructor(clazz: String, constructor: me.senseiwells.arucas.api.docs.visitor.ConstructorDoc): String {
+    private fun parseConstructor(clazz: String, constructor: ConstructorDoc): String {
         val builder = StringBuilder()
         builder.append("### `new ")
         builder.append(clazz)
         builder.append("(")
 
-        builder.append(constructor.getParameters().joinToString(", ") { it.getName() })
+        builder.append(constructor.getParameters().joinToString(", ") { it.getName() + if (it.isVarargs()) "..." else "" })
         builder.append(")`\n")
 
         this.parseDescription(builder, constructor.getDescription())

@@ -1,5 +1,6 @@
 package me.senseiwells.arucas.api.docs.visitor
 
+import me.senseiwells.arucas.utils.StringUtils
 import me.senseiwells.arucas.api.docs.annotations.ReturnDoc as ReturnDocAnnotation
 
 /**
@@ -12,6 +13,7 @@ class ReturnDoc(
     private val origin: ArucasDocParser,
     private val doc: ReturnDocAnnotation
 ): Describable {
+    private val lazyDescription by lazy { StringUtils.ensurePunctuation(this.doc.desc) }
     private val lazyType by lazy { this.origin.getClassDoc(this.doc.type.java) }
 
     /**
@@ -20,7 +22,7 @@ class ReturnDoc(
      * @return the description of the return value.
      */
     override fun getDescription(): Array<String> {
-        return this.doc.desc
+        return this.lazyDescription
     }
 
     /**

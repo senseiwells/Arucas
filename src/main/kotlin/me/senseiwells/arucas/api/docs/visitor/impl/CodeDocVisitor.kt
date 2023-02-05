@@ -112,7 +112,7 @@ class CodeDocVisitor: ArucasDocVisitor() {
 
     private fun addArgumentsToBuilder(builder: StringBuilder, args: List<ParameterDoc>) {
         builder.append(args.joinToString(", ") {
-            "${it.getName()}: ${it.getAllTypes().joinToString(" | ") { t -> t.getName() }}"
+            "${it.getName()}${if (it.isVarargs()) "..." else ""}: ${it.getAllTypes().joinToString(" | ") { t -> t.getName() }}"
         })
     }
 

@@ -1,5 +1,6 @@
 package me.senseiwells.arucas.api.docs.visitor
 
+import me.senseiwells.arucas.utils.StringUtils
 import me.senseiwells.arucas.utils.Util
 import me.senseiwells.arucas.api.docs.annotations.ClassDoc as ClassDocAnnotation
 
@@ -15,6 +16,7 @@ class ClassDoc(
     private val doc: ClassDocAnnotation,
     private val importPath: String?
 ): Describable {
+    private val lazyDescription by lazy { StringUtils.ensurePunctuation(this.doc.desc) }
     private val lazySuperclass by lazy { this.origin.getClassDoc(this.doc.superclass.java) }
 
     /**
@@ -32,7 +34,7 @@ class ClassDoc(
      * @return the description of the class.
      */
     override fun getDescription(): Array<String> {
-        return this.doc.desc
+        return this.lazyDescription
     }
 
     /**
