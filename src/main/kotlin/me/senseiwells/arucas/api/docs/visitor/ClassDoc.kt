@@ -51,7 +51,7 @@ class ClassDoc(private val doc: ClassDocAnnotation): Describable {
      *
      * @return the [ClassDoc] of the superclass.
      */
-    fun getSuperclassInfo(): ClassDoc {
+    fun getSuperclass(): ClassDoc {
         return ClassDoc(this.doc.superclass.java.getAnnotation(ClassDocAnnotation::class.java))
     }
 

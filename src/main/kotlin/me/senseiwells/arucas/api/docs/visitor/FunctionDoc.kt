@@ -45,12 +45,39 @@ class FunctionDoc(private val doc: FunctionDocAnnotation): Describable {
     }
 
     /**
+     * This gets whether the function has parameters.
+     *
+     * @return whether the function has parameters.
+     */
+    fun hasParameters(): Boolean {
+        return this.getParameterCount() != 0
+    }
+
+    /**
+     * This gets whether the function has a varargs parameter.
+     *
+     * @return whether the function has a vararg parameter.
+     */
+    fun isVarArgs(): Boolean {
+        return this.doc.params.any { it.isVarargs }
+    }
+
+    /**
      * This gets the [ReturnDoc] for the function.
      *
      * @return the return documentation for the function.
      */
     fun getReturns(): ReturnDoc {
         return ReturnDoc(this.doc.returns)
+    }
+
+    /**
+     * This gets whether the function has a return value.
+     *
+     * @return whether the function has a described return value.
+     */
+    fun hasReturns(): Boolean {
+        return this.doc.returns.desc.isNotEmpty()
     }
 
     /**

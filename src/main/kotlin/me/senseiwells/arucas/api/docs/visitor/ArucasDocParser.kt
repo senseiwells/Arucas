@@ -101,23 +101,18 @@ class ArucasDocParser(private val api: ArucasAPI) {
     private fun parseExtension(extension: ArucasExtension) {
         val extensionDoc = this.getExtensionDoc(extension)
 
-        this.visitors.forEach { it.visitExtension(extensionDoc) }
-
         val functions = LinkedList<FunctionDoc>()
         for (method in extension::class.java.declaredMethods) {
             functions.add(this.getFunctionDoc(method) ?: continue)
         }
         this.sortFunctions(functions)
-        for (function in functions) {
-            this.visitors.forEach { it.visitExtensionFunction(extensionDoc, function) }
-        }
+
+        this.visitors.forEach { it.visitExtension(extensionDoc, functions) }
     }
 
     private fun parseClass(definition: ClassDefinition) {
         val definitionClass = definition::class.java
         val classDoc = this.getClassDoc(definitionClass)
-
-        this.visitors.forEach { it.visitClass(classDoc) }
 
         val staticFields = LinkedList<FieldDoc>()
         val constructors = LinkedList<ConstructorDoc>()
@@ -149,10 +144,7 @@ class ArucasDocParser(private val api: ArucasAPI) {
         this.sortFunctions(methods)
         this.sortFunctions(staticMethods)
 
-        this.visitors.forEach { v -> staticFields.forEach { v.visitStaticField(classDoc, it) } }
-        this.visitors.forEach { v -> constructors.forEach { v.visitConstructor(classDoc, it) } }
-        this.visitors.forEach { v -> methods.forEach { v.visitMethod(classDoc, it) } }
-        this.visitors.forEach { v -> staticMethods.forEach { v.visitStaticMethod(classDoc, it) } }
+        this.visitors.forEach { it.visitClass(classDoc, staticFields, constructors, methods, staticMethods) }
     }
 
     private fun getExtensionDoc(extension: ArucasExtension): ExtensionDoc {

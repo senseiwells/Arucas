@@ -17,7 +17,20 @@ import me.senseiwells.arucas.classes.PrimitiveDefinition
  *
  * @see ArucasDocParser
  */
-interface ArucasDocVisitor {
+abstract class ArucasDocVisitor {
+    /**
+     * This visits all the children components. Overriding this
+     * will prevent the other methods from being called.
+     *
+     * @param extensionDoc the documentation for the extension.
+     * @param functions the list of function documentation.
+     */
+    open fun visitExtension(extensionDoc: ExtensionDoc, functions: List<FunctionDoc>) {
+        this.visitExtension(extensionDoc)
+
+        functions.forEach { this.visitExtensionFunction(extensionDoc, it) }
+    }
+
     /**
      * This visits an [ExtensionDoc]. Following this
      * [visitExtensionFunction] will be called with the
@@ -25,15 +38,34 @@ interface ArucasDocVisitor {
      *
      * @param extensionDoc the documentation for the extension.
      */
-    fun visitExtension(extensionDoc: ExtensionDoc) { }
+    protected open fun visitExtension(extensionDoc: ExtensionDoc) { }
 
     /**
      * This visits a [FunctionDoc] from an extension.
      *
-     * @param functionDoc the documentation for the extension function.
      * @param extensionDoc the extension documentation where the function is defined in.
+     * @param functionDoc the documentation for the extension function.
      */
-    fun visitExtensionFunction(extensionDoc: ExtensionDoc, functionDoc: FunctionDoc) { }
+    protected open fun visitExtensionFunction(extensionDoc: ExtensionDoc, functionDoc: FunctionDoc) { }
+
+    /**
+     * This visits all the child components. Overriding this
+     * will prevent the other methods from being called.
+     *
+     * @param classDoc the documentation for the class.
+     * @param fields the field documentation.
+     * @param constructors the constructor documentation.
+     * @param methods the method documentation.
+     * @param staticMethods the static method documentation.
+     */
+    open fun visitClass(classDoc: ClassDoc, fields: List<FieldDoc>, constructors: List<ConstructorDoc>, methods: List<FunctionDoc>, staticMethods: List<FunctionDoc>) {
+        this.visitClass(classDoc)
+
+        fields.forEach { this.visitStaticField(classDoc, it) }
+        constructors.forEach { this.visitConstructor(classDoc, it) }
+        methods.forEach { this.visitMethod(classDoc, it) }
+        staticMethods.forEach { this.visitStaticMethod(classDoc, it) }
+    }
 
     /**
      * This visits a [ClassDoc]. Following this [visitStaticField],
@@ -42,37 +74,37 @@ interface ArucasDocVisitor {
      *
      * @param classDoc the documentation for the class.
      */
-    fun visitClass(classDoc: ClassDoc) { }
+    protected open fun visitClass(classDoc: ClassDoc) { }
 
     /**
      * This visits a [FieldDoc] from a class.
      *
+     * @param classDoc the class that the function was defined in.
      * @param fieldDoc the documentation for the static class field.
-     * @param classDoc the class that the field was defined in.
      */
-    fun visitStaticField(classDoc: ClassDoc, fieldDoc: FieldDoc) { }
+    protected open fun visitStaticField(classDoc: ClassDoc, fieldDoc: FieldDoc) { }
 
     /**
      * This visits a [ConstructorDoc] from a class.
      *
+     * @param classDoc the class that the function was defined in.
      * @param constructorDoc the documentation for the class constructor.
-     * @param classDoc the class that the constructor was defined in.
      */
-    fun visitConstructor(classDoc: ClassDoc, constructorDoc: ConstructorDoc) { }
+    protected open fun visitConstructor(classDoc: ClassDoc, constructorDoc: ConstructorDoc) { }
 
     /**
      * This visits a [FunctionDoc] (method) from a class.
      *
-     * @param functionDoc the documentation for the class method.
      * @param classDoc the class that the function was defined in.
+     * @param functionDoc the documentation for the class method.
      */
-    fun visitMethod(classDoc: ClassDoc, functionDoc: FunctionDoc) { }
+    protected open fun visitMethod(classDoc: ClassDoc, functionDoc: FunctionDoc) { }
 
     /**
      * This visits a [FunctionDoc] (static method) from a class.
      *
-     * @param functionDoc the documentation for the static class method.
      * @param classDoc the class that the function was defined in.
+     * @param functionDoc the documentation for the static class method.
      */
-    fun visitStaticMethod(classDoc: ClassDoc, functionDoc: FunctionDoc) { }
+    protected open fun visitStaticMethod(classDoc: ClassDoc, functionDoc: FunctionDoc) { }
 }

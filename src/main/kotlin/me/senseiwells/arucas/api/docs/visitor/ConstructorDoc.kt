@@ -36,6 +36,24 @@ class ConstructorDoc(private val doc: ConstructorDocAnnotation): Describable {
     }
 
     /**
+     * This gets whether the function has parameters.
+     *
+     * @return whether the function has parameters.
+     */
+    fun hasParameters(): Boolean {
+        return this.getParameterCount() != 0
+    }
+
+    /**
+     * This gets whether the function has a varargs parameter.
+     *
+     * @return whether the function has a vararg parameter.
+     */
+    fun isVarArgs(): Boolean {
+        return this.doc.params.any { it.isVarargs }
+    }
+
+    /**
      * This gets the examples for the constructor.
      *
      * @return the examples.
