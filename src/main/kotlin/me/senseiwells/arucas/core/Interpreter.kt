@@ -658,10 +658,10 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
 
     @Suppress("SameParameterValue")
     private fun getVariable(name: String, trace: Trace, visitable: Visitable? = null): ClassInstance {
-        return this.getVariableNullable(name, visitable) ?: runtimeError("No such variable '$name' exists", trace)
+        return this.getVariableNullable(name, trace, visitable) ?: runtimeError("No such variable '$name' exists", trace)
     }
 
-    private fun getVariableNullable(name: String, visitable: Visitable? = null): ClassInstance? {
+    private fun getVariableNullable(name: String, trace: Trace, visitable: Visitable? = null): ClassInstance? {
         visitable ?: return this.currentTable.getVar(name)
         val distance = this.localCache.getVar(visitable)
         distance?.let {
@@ -674,6 +674,9 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
             this.currentTable.getVar(name)?.let { variable ->
                 this.logDebug("Local variable '$name' was defined previously in a scope but was accessed in scopes above")
                 return variable
+            }
+            if (name == "this") {
+                runtimeError("Tried to access 'this' or 'super' in a static context", trace)
             }
             throw IllegalArgumentException("Failed to fetch variable '${name}' at cached location (${it})")
         }
@@ -1101,7 +1104,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
     }
 
     override fun visitAccess(access: AccessExpression): ClassInstance {
-        val variable = this.getVariableNullable(access.name, access)
+        val variable = this.getVariableNullable(access.name, access.trace, access)
         variable?.let { return it }
         if (this.functions.has(access.name) || this.currentTable.hasFunction(access.name)) {
             val child = this.branch()
@@ -1159,7 +1162,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
     override fun visitMemberAccess(access: MemberAccessExpression): ClassInstance {
         val instance = when (val expression = access.expression) {
             is AccessExpression -> {
-                val instance = this.getVariableNullable(expression.name, expression)
+                val instance = this.getVariableNullable(expression.name, access.trace, expression)
                 instance ?: this.getClass(expression.name, expression.trace, expression).let {
                     return it.staticMemberAccess(this, access.name, access.trace)
                 }
@@ -1177,7 +1180,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
     override fun visitMemberAssign(assign: MemberAssignExpression): ClassInstance {
         val assignee = this.evaluate(assign.assignee)
         val instance = if (assign.expression is AccessExpression) {
-            val instance = this.getVariableNullable(assign.expression.name, assign.expression)
+            val instance = this.getVariableNullable(assign.expression.name, assign.trace, assign.expression)
             instance ?: this.getClass(assign.expression.name, assign.expression.trace, assign).let {
                 it.staticMemberAssign(this, assign.name, assignee, assign.trace)
                 return assignee
@@ -1195,7 +1198,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         }
         val instance = when (val expression = call.expression) {
             is AccessExpression -> {
-                val instance = this.getVariableNullable(expression.name, expression)
+                val instance = this.getVariableNullable(expression.name, call.trace, expression)
                 instance ?: this.getClass(expression.name, expression.trace, expression).let {
                     return it.staticFunctionCall(this, call.name, arguments, call.trace)
                 }
