@@ -9,8 +9,8 @@ import me.senseiwells.arucas.api.docs.annotations.FunctionDoc
 import me.senseiwells.arucas.api.docs.annotations.ParameterDoc
 import me.senseiwells.arucas.api.docs.annotations.ReturnDoc
 import me.senseiwells.arucas.builtin.*
-import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.classes.CreatableDefinition
+import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.exceptions.runtimeError
 import me.senseiwells.arucas.utils.*
@@ -24,8 +24,7 @@ import java.nio.file.Files
     desc = [
         "This class allows you to create and manipulate JSON objects.",
         "This class cannot be instantiated or extended"
-    ],
-    importPath = "util.Json"
+    ]
 )
 class JsonDef(interpreter: Interpreter): CreatableDefinition<JsonElement>(JSON, interpreter) {
     private companion object {

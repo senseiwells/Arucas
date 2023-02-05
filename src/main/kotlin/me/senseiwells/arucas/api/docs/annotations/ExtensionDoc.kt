@@ -22,7 +22,7 @@ import me.senseiwells.arucas.utils.Util
  * @param name the name of the extension.
  * @param desc the description for the extension.
  * @param language the language that the extension was written in.
- * @see TODO
+ * @see me.senseiwells.arucas.api.docs.visitor.ExtensionDoc
  */
 @Target(AnnotationTarget.CLASS)
 annotation class ExtensionDoc(

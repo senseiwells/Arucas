@@ -28,6 +28,18 @@ import me.senseiwells.arucas.api.docs.annotations.ReturnDoc as ReturnDocAnnotati
  * Classes are parsed starting with static fields, then constructors,
  * then constructors, then methods, then static methods.
  *
+ * If you are to use this for data generation it is very important
+ * to note that all your classes and extensions must be annotated
+ * this is because these can be referred from elsewhere. Any methods,
+ * constructors, or fields that are annotated will not be parsed.
+ * See [me.senseiwells.arucas.api.docs.annotations] for annotations.
+ *
+ * As of writing this documentation the legacy annotations;
+ * [me.senseiwells.arucas.api.docs.ClassDoc], [me.senseiwells.arucas.api.docs.ConstructorDoc],
+ * [me.senseiwells.arucas.api.docs.FieldDoc], and [me.senseiwells.arucas.api.docs.FunctionDoc]
+ * are still supported and will be parsed, however this will
+ * be removed in the future.
+ *
  * ```kt
  * val api = ArucasAPI.Builder().addDefault().build()
  * val parser = ArucasDocParser(api)
@@ -38,11 +50,13 @@ import me.senseiwells.arucas.api.docs.annotations.ReturnDoc as ReturnDocAnnotati
  * @see ArucasDocVisitor
  */
 class ArucasDocParser(private val api: ArucasAPI) {
-    private val universe = TreeMap<String, ClassDefinition>()
+    private val universe = TreeMap<String, Pair<String?, ClassDefinition>>()
     private val builtin = ArrayList<ClassDefinition>()
-    private val modules = ArrayList<ClassDefinition>()
+    private val modules = TreeMap<String, Collection<ClassDefinition>>()
     private val extensions = ArrayList<ArucasExtension>()
     private val visitors = ArrayList<ArucasDocVisitor>()
+
+    private val classDocCache = HashMap<Class<*>, ClassDoc>()
 
     init {
         this.loadApi()
@@ -53,9 +67,23 @@ class ArucasDocParser(private val api: ArucasAPI) {
      * will be called when [parse] is called.
      *
      * @param visitor the visitor to add.
+     * @return this parser.
      */
-    fun addVisitor(visitor: ArucasDocVisitor) {
+    fun addVisitor(visitor: ArucasDocVisitor): ArucasDocParser {
         this.visitors.add(visitor)
+        return this
+    }
+
+    /**
+     * This adds multiple [ArucasDocVisitor] to the parser which
+     * will be called when [parse] is called.
+     *
+     * @param visitor the visitors to add.
+     * @return this parser.
+     */
+    fun addVisitors(vararg visitor: ArucasDocVisitor): ArucasDocParser {
+        this.visitors.addAll(visitor)
+        return this
     }
 
     /**
@@ -66,36 +94,46 @@ class ArucasDocParser(private val api: ArucasAPI) {
      */
     fun parse() {
         this.parseExtensions()
-        for (definition in this.universe.values) {
+        this.visitors.forEach { it.startClasses() }
+        for ((_, definition) in this.universe.values) {
             this.parseClass(definition)
         }
+        this.visitors.forEach { it.finishClasses() }
     }
 
     /**
      * This parses all the extensions in alphabetical order.
      */
     fun parseExtensions() {
+        this.visitors.forEach { it.startExtensions() }
         for (extension in this.extensions) {
             this.parseExtension(extension)
         }
+        this.visitors.forEach { it.finishExtensions() }
     }
 
     /**
      * This parses only the built-in definitions in alphabetical order.
      */
     fun parseBuiltIn() {
+        this.visitors.forEach { it.startClasses() }
         for (definition in this.builtin) {
             this.parseClass(definition)
         }
+        this.visitors.forEach { it.finishClasses() }
     }
 
     /**
      * This parses only the module definitions in alphabetical order.
      */
     fun parseModules() {
-        for (definition in this.modules) {
-            this.parseClass(definition)
+        this.visitors.forEach { it.startClasses() }
+        for (definitions in this.modules.values) {
+            for (definition in definitions) {
+                this.parseClass(definition)
+            }
         }
+        this.visitors.forEach { it.finishClasses() }
     }
 
     private fun parseExtension(extension: ArucasExtension) {
@@ -112,7 +150,7 @@ class ArucasDocParser(private val api: ArucasAPI) {
 
     private fun parseClass(definition: ClassDefinition) {
         val definitionClass = definition::class.java
-        val classDoc = this.getClassDoc(definitionClass)
+        val classDoc = getClassDoc(definitionClass)
 
         val staticFields = LinkedList<FieldDoc>()
         val constructors = LinkedList<ConstructorDoc>()
@@ -147,7 +185,7 @@ class ArucasDocParser(private val api: ArucasAPI) {
         this.visitors.forEach { it.visitClass(classDoc, staticFields, constructors, methods, staticMethods) }
     }
 
-    private fun getExtensionDoc(extension: ArucasExtension): ExtensionDoc {
+    internal fun getExtensionDoc(extension: ArucasExtension): ExtensionDoc {
         var annotation = extension::class.java.getAnnotation(ExtensionDocAnnotation::class.java)
         if (annotation == null) {
             annotation = ExtensionDocAnnotation(extension.getName(), arrayOf())
@@ -155,7 +193,7 @@ class ArucasDocParser(private val api: ArucasAPI) {
         return ExtensionDoc(annotation)
     }
 
-    private fun getFunctionDoc(method: Method): FunctionDoc? {
+    internal fun getFunctionDoc(method: Method): FunctionDoc? {
         var annotation = method.getAnnotation(FunctionDocAnnotation::class.java)
         if (annotation == null) {
             @Suppress("DEPRECATION")
@@ -170,10 +208,14 @@ class ArucasDocParser(private val api: ArucasAPI) {
                 old.examples
             )
         }
-        return FunctionDoc(annotation)
+        return FunctionDoc(this, annotation)
     }
 
-    private fun getClassDoc(clazz: Class<*>): ClassDoc {
+    internal fun getClassDoc(clazz: Class<*>): ClassDoc {
+        val cached = this.classDocCache[clazz]
+        if (cached != null) {
+            return cached
+        }
         var annotation = clazz.getAnnotation(ClassDocAnnotation::class.java)
         if (annotation == null) {
             @Suppress("DEPRECATION")
@@ -185,27 +227,30 @@ class ArucasDocParser(private val api: ArucasAPI) {
                 @Suppress("UNCHECKED_CAST")
                 superclass = old.superclass as KClass<out PrimitiveDefinition<*>>
             }
-            annotation = ClassDocAnnotation(old.name, old.desc, old.importPath, superclass, old.language)
+            annotation = ClassDocAnnotation(old.name, old.desc, superclass, old.language)
         }
-        return ClassDoc(annotation)
+        val importPath = this.universe[annotation.name]?.first
+        val classDoc = ClassDoc(this, annotation, importPath)
+        this.classDocCache[clazz] = classDoc
+        return classDoc
     }
 
-    private fun getConstructorDoc(method: Method): ConstructorDoc? {
+    internal fun getConstructorDoc(method: Method): ConstructorDoc? {
         var annotation = method.getAnnotation(ConstructorDocAnnotation::class.java)
         if (annotation == null) {
             @Suppress("DEPRECATION")
             val old = method.getAnnotation(me.senseiwells.arucas.api.docs.ConstructorDoc::class.java) ?: return null
             annotation = ConstructorDocAnnotation(old.desc, this.convertParameters(old.params), old.examples)
         }
-        return ConstructorDoc(annotation)
+        return ConstructorDoc(this, annotation)
     }
 
-    private fun getFieldDoc(field: Field): FieldDoc? {
+    internal fun getFieldDoc(field: Field): FieldDoc? {
         var annotation = field.getAnnotation(FieldDocAnnotation::class.java)
         if (annotation == null) {
             @Suppress("DEPRECATION")
             val old = field.getAnnotation(me.senseiwells.arucas.api.docs.FieldDoc::class.java) ?: return null
-            val definition = this.universe[old.type]
+            val definition = this.universe[old.type]?.second
             if (definition !is PrimitiveDefinition<*>) {
                 throw IllegalArgumentException("No such primitive definition with name ${old.type}")
             }
@@ -213,7 +258,7 @@ class ArucasDocParser(private val api: ArucasAPI) {
             val clazz = (definition as PrimitiveDefinition<*>)::class
             annotation = FieldDocAnnotation(old.isStatic, old.name, old.desc, clazz, old.assignable, old.examples)
         }
-        return FieldDoc(annotation)
+        return FieldDoc(this, annotation)
     }
 
     private fun convertParameters(parameters: Array<String>): Array<ParameterDocAnnotation> {
@@ -223,7 +268,7 @@ class ArucasDocParser(private val api: ArucasAPI) {
         val size = parameters.size / 3
         val list = Array(size) {
             val i = 3 * it
-            val definition = this.universe[parameters[i]]
+            val definition = this.universe[parameters[i]]?.second
             if (definition !is PrimitiveDefinition<*>) {
                 throw IllegalArgumentException("No such primitive definition with name ${parameters[i]}")
             }
@@ -238,7 +283,7 @@ class ArucasDocParser(private val api: ArucasAPI) {
         if (returns.size != 2) {
             throw IllegalStateException("Incorrect returns: ${returns.contentToString()}")
         }
-        val definition = this.universe[returns[0]]
+        val definition = this.universe[returns[0]]?.second
         if (definition !is PrimitiveDefinition<*>) {
             throw IllegalArgumentException("No such primitive definition with name ${returns[0]}")
         }
@@ -258,17 +303,16 @@ class ArucasDocParser(private val api: ArucasAPI) {
         val interpreter = Interpreter.dummy(this.api)
 
         for (builtin in interpreter.modules.builtIns()) {
-            this.universe[builtin.name] = builtin
+            this.universe[builtin.name] = null to builtin
             this.builtin.add(builtin)
         }
         this.builtin.sortWith { a, b -> a.name.compareTo(b.name) }
-        interpreter.modules.forEach { _, modules ->
+        interpreter.modules.forEach { path, modules ->
             for (module in modules) {
-                this.universe[module.name] = module
-                this.modules.add(module)
+                this.universe[module.name] = path to module
             }
+            this.modules[path] = modules.sortedWith { a, b -> a.name.compareTo(b.name) }
         }
-        this.modules.sortWith { a, b -> a.name.compareTo(b.name) }
 
         val extensions = this.api.getBuiltInExtensions()
         if (extensions != null) {

@@ -6,6 +6,7 @@ import me.senseiwells.arucas.api.docs.FunctionDoc
 import me.senseiwells.arucas.classes.ClassDefinition
 import me.senseiwells.arucas.utils.Util
 
+@Deprecated("This has been replaced by CodeDocVisitor")
 class CodeDocParser: DocParser() {
     companion object {
         private const val INDENT = "    "

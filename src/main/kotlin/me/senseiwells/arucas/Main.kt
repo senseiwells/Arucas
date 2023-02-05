@@ -1,9 +1,8 @@
 package me.senseiwells.arucas
 
 import me.senseiwells.arucas.api.ArucasAPI
-import me.senseiwells.arucas.api.docs.parser.DocParser
+import me.senseiwells.arucas.api.docs.visitor.impl.ArucasDocVisitors
 import me.senseiwells.arucas.api.impl.DefaultArucasIO
-import me.senseiwells.arucas.api.impl.ResourceArucasLibrary
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.utils.ArgumentParser
 import me.senseiwells.arucas.utils.Properties
@@ -14,7 +13,6 @@ import kotlin.system.exitProcess
 fun main(args: Array<String>) {
     val builder = ArucasAPI.Builder()
         .addDefault()
-        .addArucasLibrary("Resource", ResourceArucasLibrary("libraries"))
 
     val properties = Properties()
     builder.setInterpreterProperties { properties }
@@ -29,7 +27,7 @@ fun main(args: Array<String>) {
         p.addBool("-cmdLine") { cmdLine = it }
         p.addInt("-maxErrorLength") { properties.errorMaxLength = it }
         p.addStr("-run") { runFile(api, it) }
-        p.addStr("-generate") { DocParser.generateAll(Path.of(it), api) }
+        p.addStr("-generate") { ArucasDocVisitors.generateDefault(Path.of(it), api) }
 
         p.parse(args)
     }

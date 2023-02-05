@@ -6,26 +6,17 @@ import me.senseiwells.arucas.api.docs.ClassDoc
 import me.senseiwells.arucas.api.docs.ConstructorDoc
 import me.senseiwells.arucas.api.docs.FieldDoc
 import me.senseiwells.arucas.api.docs.FunctionDoc
+import me.senseiwells.arucas.api.docs.visitor.impl.ArucasDocVisitors
 import me.senseiwells.arucas.classes.ClassDefinition
 import me.senseiwells.arucas.core.Interpreter
-import me.senseiwells.arucas.utils.Util.File.ensureExists
-import java.nio.file.Files
 import java.nio.file.Path
 
+@Deprecated("Replaced with ArucasDocParser")
 abstract class DocParser protected constructor() {
     companion object {
         @JvmStatic
         fun generateAll(path: Path, api: ArucasAPI) {
-            TODO()
-            val jsonPath = path.ensureExists().resolve("json").ensureExists()
-            val mdPath = path.resolve("markdown").ensureExists()
-            val snippetPath = path.resolve("snippets").ensureExists()
-            Files.writeString(snippetPath.resolve("ArucasSnippets.json"), SnippetParser.of(api).parse())
-            Files.writeString(jsonPath.resolve("AllDocs.json"), JsonParser.of(api).parse())
-            api.generateNativeFiles(path.resolve("libs"))
-            val markdownParser = MarkdownParser.of(api)
-            Files.writeString(mdPath.resolve("Extensions.md"), markdownParser.parseExtensions())
-            Files.writeString(mdPath.resolve("Classes.md"), markdownParser.parseClasses())
+            ArucasDocVisitors.generateDefault(path, api)
         }
     }
 

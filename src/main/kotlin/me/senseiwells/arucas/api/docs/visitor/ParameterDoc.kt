@@ -1,14 +1,26 @@
 package me.senseiwells.arucas.api.docs.visitor
 
-import me.senseiwells.arucas.api.docs.annotations.ClassDoc as ClassDocAnnotation
 import me.senseiwells.arucas.api.docs.annotations.ParameterDoc as ParameterDocAnnotation
 
 /**
  * This class serves as a wrapper for [ParameterDocAnnotation].
  *
+ * @param origin the doc parser where this class was created.
  * @param doc the [ParameterDocAnnotation] to wrap.
  */
-class ParameterDoc(private val doc: ParameterDocAnnotation): Describable {
+class ParameterDoc(
+    private val origin: ArucasDocParser,
+    private val doc: ParameterDocAnnotation
+): Describable {
+    private val lazyType by lazy { this.origin.getClassDoc(this.doc.type.java) }
+    private val lazyAllTypes by lazy {
+        val types = mutableListOf(this.getType())
+        types.addAll(this.doc.alternativeTypes.map {
+            this.origin.getClassDoc(it.java)
+        })
+        types
+    }
+
     /**
      * This gets the name of the parameter.
      *
@@ -33,7 +45,7 @@ class ParameterDoc(private val doc: ParameterDocAnnotation): Describable {
      * @return the [ClassDoc] of the main type.
      */
     fun getType(): ClassDoc {
-        return ClassDoc(this.doc.type.java.getAnnotation(ClassDocAnnotation::class.java))
+        return this.lazyType
     }
 
     /**
@@ -43,11 +55,7 @@ class ParameterDoc(private val doc: ParameterDocAnnotation): Describable {
      * @return the list of [ClassDoc]s of the parameter types.
      */
     fun getAllTypes(): List<ClassDoc> {
-        val types = mutableListOf(this.getType())
-        types.addAll(this.doc.alternativeTypes.map {
-            ClassDoc(it.java.getAnnotation(ClassDocAnnotation::class.java))
-        })
-        return types
+        return this.lazyAllTypes
     }
 
     /**

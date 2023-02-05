@@ -16,7 +16,7 @@ import kotlin.reflect.KClass
  * @param desc the description of the parameter.
  * @param isVarargs whether the parameter is varargs (accepts arbitrary number of arguments).
  * @param alternativeTypes alternative types for the parameter that may be expected.
- * @see TODO
+ * @see me.senseiwells.arucas.api.docs.visitor.ParameterDoc
  */
 annotation class ParameterDoc(
     /**

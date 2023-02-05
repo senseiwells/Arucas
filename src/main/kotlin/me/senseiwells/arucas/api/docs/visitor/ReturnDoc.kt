@@ -1,14 +1,19 @@
 package me.senseiwells.arucas.api.docs.visitor
 
-import me.senseiwells.arucas.api.docs.annotations.ClassDoc as ClassDocAnnotation
 import me.senseiwells.arucas.api.docs.annotations.ReturnDoc as ReturnDocAnnotation
 
 /**
  * This class serves as a wrapper for [ReturnDocAnnotation].
  *
+ * @param origin the doc parser where this class was created.
  * @param doc the [ReturnDocAnnotation] to wrap.
  */
-class ReturnDoc(private val doc: ReturnDocAnnotation): Describable {
+class ReturnDoc(
+    private val origin: ArucasDocParser,
+    private val doc: ReturnDocAnnotation
+): Describable {
+    private val lazyType by lazy { this.origin.getClassDoc(this.doc.type.java) }
+
     /**
      * This gets the description of the return value.
      *
@@ -24,6 +29,6 @@ class ReturnDoc(private val doc: ReturnDocAnnotation): Describable {
      * @return the [ClassDoc] of the return type.
      */
     fun getType(): ClassDoc {
-        return ClassDoc(this.doc.type.java.getAnnotation(ClassDocAnnotation::class.java))
+        return this.lazyType
     }
 }

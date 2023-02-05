@@ -1,14 +1,19 @@
 package me.senseiwells.arucas.api.docs.visitor
 
-import me.senseiwells.arucas.api.docs.annotations.ClassDoc as ClassDocAnnotation
 import me.senseiwells.arucas.api.docs.annotations.FieldDoc as FieldDocAnnotation
 
 /**
  * This class serves as a wrapper for [FieldDocAnnotation].
  *
+ * @param origin the doc parser where this class was created.
  * @param doc the [FieldDocAnnotation] to wrap.
  */
-class FieldDoc(private val doc: FieldDocAnnotation): Describable {
+class FieldDoc(
+    private val origin: ArucasDocParser,
+    private val doc: FieldDocAnnotation
+): Describable {
+    private val lazyType by lazy { this.origin.getClassDoc(this.doc.type.java) }
+
     /**
      * This gets the name of the field.
      *
@@ -33,7 +38,7 @@ class FieldDoc(private val doc: FieldDocAnnotation): Describable {
      * @return the [ClassDoc] of the field type.
      */
     fun getType(): ClassDoc {
-        return ClassDoc(this.doc.type.java.getAnnotation(ClassDocAnnotation::class.java))
+        return this.lazyType
     }
 
     /**

@@ -21,8 +21,7 @@ import java.net.URISyntaxException
 
 @ClassDoc(
     name = NETWORK,
-    desc = ["Allows you to do http requests. This is a utility class and cannot be constructed."],
-    importPath = "util.Network"
+    desc = ["Allows you to do http requests. This is a utility class and cannot be constructed."]
 )
 class NetworkDef(interpreter: Interpreter): PrimitiveDefinition<Unit>(NETWORK, interpreter) {
     override fun defineStaticMethods(): List<BuiltInFunction> {

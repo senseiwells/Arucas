@@ -5,9 +5,15 @@ import me.senseiwells.arucas.api.docs.annotations.ConstructorDoc as ConstructorD
 /**
  * This class serves as a wrapper for [ConstructorDocAnnotation].
  *
+ * @param origin the doc parser where this class was created.
  * @param doc the [ConstructorDocAnnotation] to wrap.
  */
-class ConstructorDoc(private val doc: ConstructorDocAnnotation): Describable {
+class ConstructorDoc(
+    private val origin: ArucasDocParser,
+    private val doc: ConstructorDocAnnotation
+): Describable {
+    private val lazyParameters by lazy { this.doc.params.map { ParameterDoc(this.origin, it) } }
+
     /**
      * This gets the description of the constructor.
      *
@@ -23,7 +29,7 @@ class ConstructorDoc(private val doc: ConstructorDocAnnotation): Describable {
      * @return the parameter documentations for the constructors.
      */
     fun getParameters(): List<ParameterDoc> {
-        return this.doc.params.map { ParameterDoc(it) }
+        return this.lazyParameters
     }
 
     /**

@@ -12,7 +12,7 @@
           {
             "name": "bool",
             "type": "Boolean",
-            "desc": "true to enable debug mode, false to disable debug mode"
+            "desc": "True to enable debug mode, false to disable debug mode."
           }
         ],
         "examples": [
@@ -30,12 +30,12 @@
           {
             "name": "code",
             "type": "String",
-            "desc": "the code to evaluate"
+            "desc": "The code to evaluate."
           }
         ],
         "returns": {
           "type": "Object",
-          "desc": "the result of the evaluation"
+          "desc": "The result of the evaluation."
         },
         "examples": [
           "eval('1 + 1');"
@@ -51,7 +51,7 @@
           {
             "name": "bool",
             "type": "Boolean",
-            "desc": "true to enable experimental mode, false to disable experimental mode"
+            "desc": "True to enable experimental mode, false to disable experimental mode."
           }
         ],
         "examples": [
@@ -66,7 +66,7 @@
         ],
         "returns": {
           "type": "String",
-          "desc": "the version of Arucas that is currently running"
+          "desc": "The version of Arucas that is currently running."
         },
         "examples": [
           "getArucasVersion();"
@@ -80,7 +80,7 @@
         ],
         "returns": {
           "type": "String",
-          "desc": "the current date formatted with dd/MM/yyyy"
+          "desc": "The current date formatted with dd/MM/yyyy."
         },
         "examples": [
           "getDate();"
@@ -94,7 +94,7 @@
         ],
         "returns": {
           "type": "Number",
-          "desc": "the current time in milliseconds"
+          "desc": "The current time in milliseconds."
         },
         "examples": [
           "getMilliTime();"
@@ -108,7 +108,7 @@
         ],
         "returns": {
           "type": "Number",
-          "desc": "the current time in nanoseconds"
+          "desc": "The current time in nanoseconds."
         },
         "examples": [
           "getNanoTime();"
@@ -122,7 +122,7 @@
         ],
         "returns": {
           "type": "String",
-          "desc": "the current time formatted with HH:mm:ss"
+          "desc": "The current time formatted with HH:mm:ss."
         },
         "examples": [
           "getTime();"
@@ -136,7 +136,7 @@
         ],
         "returns": {
           "type": "Number",
-          "desc": "the current time in seconds since the Unix epoch"
+          "desc": "The current time in seconds since the Unix epoch."
         },
         "examples": [
           "getUnixTime();"
@@ -146,21 +146,22 @@
         "name": "input",
         "is_arbitrary": false,
         "desc": [
-          "This is used to take an input from the user"
+          "This is used to take an input from the user. The execution of",
+          "the script is paused until the user has inputted a value."
         ],
         "params": [
           {
             "name": "prompt",
             "type": "String",
-            "desc": "the prompt to show the user"
+            "desc": "The prompt to show the user."
           }
         ],
         "returns": {
           "type": "String",
-          "desc": "the input from the user"
+          "desc": "The input from the user."
         },
         "examples": [
-          "input('What is your name?');"
+          "name = input('What is your name?');"
         ]
       },
       {
@@ -191,7 +192,7 @@
         ],
         "returns": {
           "type": "Boolean",
-          "desc": "true if the script is the main script, false if it is not"
+          "desc": "True if the script is the main script, false if it is not."
         },
         "examples": [
           "isMain();"
@@ -207,7 +208,7 @@
           {
             "name": "sizable",
             "type": "String",
-            "desc": "the collection or string"
+            "desc": "The collection or string."
           }
         ],
         "examples": [
@@ -218,13 +219,13 @@
         "name": "print",
         "is_arbitrary": false,
         "desc": [
-          "This prints a value to the output handler"
+          "This prints a value to the output handler."
         ],
         "params": [
           {
-            "name": "printValue",
+            "name": "value",
             "type": "Object",
-            "desc": "the value to print"
+            "desc": "The value to print."
           }
         ],
         "examples": [
@@ -235,19 +236,19 @@
         "name": "print",
         "is_arbitrary": true,
         "desc": [
-          "This prints a number of values to the console",
+          "This prints a number of values to the console.",
           "If there are no arguments then this will print a new line,",
-          "other wise it will print the contents without a new line"
+          "other wise it will print the contents without a new line."
         ],
         "params": [
           {
-            "name": "printValue...",
+            "name": "value",
             "type": "Object",
-            "desc": "the value to print"
+            "desc": "The value to print."
           }
         ],
         "examples": [
-          "print('Hello World', 'This is a test', 123);"
+          "print('Hello World', 'This is a test', 123); // prints 'Hello WorldThis is a test123'"
         ]
       },
       {
@@ -259,9 +260,9 @@
         ],
         "params": [
           {
-            "name": "printValue",
+            "name": "value",
             "type": "Object",
-            "desc": "the value to print"
+            "desc": "The value to print."
           }
         ],
         "examples": [
@@ -278,12 +279,12 @@
           {
             "name": "bound",
             "type": "Number",
-            "desc": "the maximum bound (exclusive)"
+            "desc": "The maximum bound (exclusive)."
           }
         ],
         "returns": {
           "type": "Number",
-          "desc": "the random integer"
+          "desc": "The random integer."
         },
         "examples": [
           "random(10);"
@@ -299,12 +300,12 @@
           {
             "name": "bound",
             "type": "Number",
-            "desc": "the maximum bound (exclusive)"
+            "desc": "The maximum bound (exclusive)."
           }
         ],
         "returns": {
           "type": "Iterable",
-          "desc": "an iterable object that returns the range of integers"
+          "desc": "An iterable object that returns the range of integers."
         },
         "examples": [
           "range(10);"
@@ -321,17 +322,17 @@
           {
             "name": "start",
             "type": "Number",
-            "desc": "the start value"
+            "desc": "The start value."
           },
           {
             "name": "bound",
             "type": "Number",
-            "desc": "the maximum bound (exclusive)"
+            "desc": "The maximum bound (exclusive)."
           }
         ],
         "returns": {
           "type": "Iterable",
-          "desc": "an iterable object that returns the range of integers"
+          "desc": "An iterable object that returns the range of integers."
         },
         "examples": [
           "range(0, 10);"
@@ -348,22 +349,22 @@
           {
             "name": "start",
             "type": "Number",
-            "desc": "the start value"
+            "desc": "The start value."
           },
           {
             "name": "bound",
             "type": "Number",
-            "desc": "the maximum bound (exclusive)"
+            "desc": "The maximum bound (exclusive)."
           },
           {
             "name": "step",
             "type": "Number",
-            "desc": "the step value"
+            "desc": "The step value."
           }
         ],
         "returns": {
           "type": "Iterable",
-          "desc": "an iterable object that returns the range of integers"
+          "desc": "An iterable object that returns the range of integers."
         },
         "examples": [
           "range(0, 10, 2);"
@@ -379,12 +380,12 @@
           {
             "name": "path",
             "type": "String",
-            "desc": "as a file path"
+            "desc": "As a file path."
           }
         ],
         "returns": {
           "type": "Object",
-          "desc": "any value that the file returns"
+          "desc": "Any value that the file returns."
         },
         "examples": [
           "run('/home/user/script.arucas');"
@@ -404,7 +405,7 @@
           {
             "name": "code",
             "type": "String",
-            "desc": "the code to run"
+            "desc": "The code to run."
           }
         ],
         "examples": [
@@ -421,7 +422,7 @@
           {
             "name": "milliseconds",
             "type": "Number",
-            "desc": "milliseconds to sleep"
+            "desc": "The number of milliseconds to sleep."
           }
         ],
         "examples": [
@@ -448,7 +449,7 @@
           {
             "name": "bool",
             "type": "Boolean",
-            "desc": "true to enable, false to disable warnings"
+            "desc": "True to enable, false to disable warnings."
           }
         ],
         "examples": [
@@ -501,7 +502,7 @@
           ],
           "returns": {
             "type": "Boolean",
-            "desc": "true if the collection is empty"
+            "desc": "True if the collection is empty."
           },
           "examples": [
             "['object', 81, 96, 'case'].isEmpty(); // false"
@@ -515,7 +516,7 @@
           ],
           "returns": {
             "type": "Number",
-            "desc": "the size of the list"
+            "desc": "The size of the list."
           },
           "examples": [
             "['object', 81, 96, 'case'].size();"
@@ -543,7 +544,7 @@
           ],
           "returns": {
             "type": "String",
-            "desc": "the name of the enum value"
+            "desc": "The name of the enum value."
           },
           "examples": [
             "enum.getName();"
@@ -557,7 +558,7 @@
           ],
           "returns": {
             "type": "Number",
-            "desc": "the ordinal of the enum value"
+            "desc": "The ordinal of the enum value."
           },
           "examples": [
             "enum.ordinal();"
@@ -592,7 +593,7 @@
             {
               "name": "details",
               "type": "String",
-              "desc": "the details of the error"
+              "desc": "The details of the error."
             }
           ],
           "examples": [
@@ -607,12 +608,12 @@
             {
               "name": "details",
               "type": "String",
-              "desc": "the details of the error"
+              "desc": "The details of the error."
             },
             {
               "name": "value",
               "type": "Object",
-              "desc": "the value that is related to the error"
+              "desc": "The value that is related to the error."
             }
           ],
           "examples": [
@@ -629,7 +630,7 @@
           ],
           "returns": {
             "type": "String",
-            "desc": "the details of the error"
+            "desc": "The details of the error."
           },
           "examples": [
             "error.getDetails();"
@@ -643,7 +644,7 @@
           ],
           "returns": {
             "type": "String",
-            "desc": "the stack trace converted to a string"
+            "desc": "The stack trace converted to a string."
           },
           "examples": [
             "error.getStackTraceString();"
@@ -657,7 +658,7 @@
           ],
           "returns": {
             "type": "Object",
-            "desc": "the value that is related to the error"
+            "desc": "The value that is related to the error."
           },
           "examples": [
             "error.getValue();"
@@ -683,7 +684,7 @@
             {
               "name": "path",
               "type": "String",
-              "desc": "the path of the file"
+              "desc": "The path of the file."
             }
           ],
           "examples": [
@@ -700,7 +701,7 @@
           ],
           "returns": {
             "type": "Boolean",
-            "desc": "true if the directories were created"
+            "desc": "True if the directories were created."
           },
           "examples": [
             "file.createDirectory();"
@@ -714,7 +715,7 @@
           ],
           "returns": {
             "type": "Boolean",
-            "desc": "true if the file was deleted"
+            "desc": "True if the file was deleted."
           },
           "examples": [
             "file.delete();"
@@ -728,7 +729,7 @@
           ],
           "returns": {
             "type": "Boolean",
-            "desc": "true if the file exists"
+            "desc": "True if the file exists."
           },
           "examples": [
             "file.exists();"
@@ -742,7 +743,7 @@
           ],
           "returns": {
             "type": "String",
-            "desc": "the absolute path of the file"
+            "desc": "The absolute path of the file."
           },
           "examples": [
             "file.getAbsolutePath();"
@@ -756,7 +757,7 @@
           ],
           "returns": {
             "type": "String",
-            "desc": "the name of the file"
+            "desc": "The name of the file."
           },
           "examples": [
             "File.getName();"
@@ -770,7 +771,7 @@
           ],
           "returns": {
             "type": "String",
-            "desc": "the path of the file"
+            "desc": "The path of the file."
           },
           "examples": [
             "file.getPath();"
@@ -784,7 +785,7 @@
           ],
           "returns": {
             "type": "List",
-            "desc": "a list of all the sub files in the directory"
+            "desc": "A list of all the sub files in the directory."
           },
           "examples": [
             "file.getSubFiles();"
@@ -808,7 +809,7 @@
           ],
           "returns": {
             "type": "String",
-            "desc": "the contents of the file"
+            "desc": "The contents of the file."
           },
           "examples": [
             "file.read();"
@@ -824,12 +825,12 @@
             {
               "name": "filePath",
               "type": "String",
-              "desc": "the relative file path"
+              "desc": "The relative file path."
             }
           ],
           "returns": {
             "type": "File",
-            "desc": "the resolved file"
+            "desc": "The resolved file."
           },
           "examples": [
             "file.resolve('child.txt');"
@@ -845,7 +846,7 @@
             {
               "name": "string",
               "type": "String",
-              "desc": "the string to write to the file"
+              "desc": "The string to write to the file."
             }
           ],
           "examples": [
@@ -862,7 +863,7 @@
           ],
           "returns": {
             "type": "File",
-            "desc": "the file of the working directory"
+            "desc": "The file of the working directory."
           },
           "examples": [
             "File.getDirectory();"
@@ -898,7 +899,7 @@
       "desc": [
         "This class is used to represent values that are in the future.",
         "More precisely values that are being evaluated on another thread,",
-        "this allows you to access those values once they've been processed"
+        "this allows you to access those values once they've been processed."
       ],
       "import_path": null,
       "superclass": "Object",
@@ -914,7 +915,7 @@
           ],
           "returns": {
             "type": "Object",
-            "desc": "The value of the future"
+            "desc": "The value of the future."
           },
           "examples": [
             "future.await();"
@@ -928,7 +929,7 @@
           ],
           "returns": {
             "type": "Boolean",
-            "desc": "Whether the future has been completed"
+            "desc": "Whether the future has been completed."
           },
           "examples": [
             "future.isComplete();"
@@ -940,18 +941,18 @@
           "name": "completed",
           "is_arbitrary": false,
           "desc": [
-            "This returns a future that with a complete value"
+            "This returns a future that with a complete value."
           ],
           "params": [
             {
               "name": "value",
               "type": "Object",
-              "desc": "The value to complete the future with"
+              "desc": "The value to complete the future with."
             }
           ],
           "returns": {
             "type": "Future",
-            "desc": "The future that has been completed with the value"
+            "desc": "The future that has been completed with the value."
           },
           "examples": [
             "future = Future.completed(true);"
@@ -988,7 +989,7 @@
           ],
           "returns": {
             "type": "Iterator",
-            "desc": "the generated iterator"
+            "desc": "The generated iterator."
           },
           "examples": [
             "iterable = [];\ni = iterable.iterator();\nwhile (i.hasNext()) {\n    next = i.next();\n}\n\n// Or just, compiles to above\nforeach (next : iterable); "
@@ -1027,7 +1028,7 @@
           ],
           "returns": {
             "type": "Boolean",
-            "desc": "whether there are items left to iterate"
+            "desc": "Whether there are items left to iterate."
           },
           "examples": [
             "iterator = [].iterator();\niterator.hasNext();"
@@ -1041,7 +1042,7 @@
           ],
           "returns": {
             "type": "Object",
-            "desc": "the next item"
+            "desc": "The next item."
           },
           "examples": [
             "iterator = [10, 20].iterator();\niterator.next(); // 10\niterator.next(); // 20"
@@ -1055,7 +1056,7 @@
       "desc": [
         "This class wraps Java values allowing for interactions between Java and Arucas.",
         "This class cannot be instantiated or extended but you can create Java values by",
-        "using the static method 'Java.valueOf()' to convert Arucas to Java"
+        "using the static method 'Java.valueOf()' to convert Arucas to Java."
       ],
       "import_path": "util.Internal",
       "superclass": "Object",
@@ -1078,17 +1079,17 @@
             {
               "name": "methodName",
               "type": "String",
-              "desc": "the name of the method"
+              "desc": "The name of the method."
             },
             {
-              "name": "parameters...",
+              "name": "parameters",
               "type": "Object",
               "desc": "the parameters to call the method with"
             }
           ],
           "returns": {
             "type": "Java",
-            "desc": "the return value of the method call wrapped in the Java wrapper"
+            "desc": "The return value of the method call wrapped in the Java wrapper."
           },
           "examples": [
             "Java.valueOf('').callMethod('isBlank');"
@@ -1108,12 +1109,12 @@
             {
               "name": "fieldName",
               "type": "String",
-              "desc": "the name of the field"
+              "desc": "The name of the field."
             }
           ],
           "returns": {
             "type": "Java",
-            "desc": "the Java wrapped value of the field"
+            "desc": "The Java wrapped value of the field."
           },
           "examples": [
             "Java.constructClass('me.senseiwells.impl.Test').getField('A');"
@@ -1137,17 +1138,17 @@
             {
               "name": "methodName",
               "type": "String",
-              "desc": "the name of the method"
+              "desc": "The name of the method."
             },
             {
               "name": "parameters",
               "type": "Number",
-              "desc": "the number of parameters"
+              "desc": "The number of parameters."
             }
           ],
           "returns": {
             "type": "Function",
-            "desc": "the function containing the Java method delegate"
+            "desc": "The function containing the Java method delegate."
           },
           "examples": [
             "Java.valueOf('string!').getMethodDelegate('isBlank', 0);"
@@ -1167,12 +1168,12 @@
             {
               "name": "fieldName",
               "type": "String",
-              "desc": "the name of the field"
+              "desc": "The name of the field."
             },
             {
               "name": "value",
               "type": "Object",
-              "desc": "the value to set the field to, the value type must match the type of the field"
+              "desc": "The value to set the field to, the value type must match the type of the field."
             }
           ],
           "examples": [
@@ -1189,7 +1190,7 @@
           ],
           "returns": {
             "type": "Object",
-            "desc": "the Value in Arucas, this may still be of Java value if the value cannot be converted into an Arucas value, values like Strings, Numbers, Lists, etc... will be converted"
+            "desc": "The Value in Arucas, this may still be of Java value if the value cannot be converted into an Arucas value, values like Strings, Numbers, Lists, etc... will be converted."
           },
           "examples": [
             "Java.valueOf([1, 2, 3]).toArucas();"
@@ -1206,14 +1207,14 @@
           ],
           "params": [
             {
-              "name": "values...",
+              "name": "values",
               "type": "Object",
-              "desc": "the values to add to the array"
+              "desc": "The values to add to the array."
             }
           ],
           "returns": {
             "type": "Java",
-            "desc": "the Java Object array"
+            "desc": "The Java Object array."
           },
           "examples": [
             "Java.arrayOf(1, 2, 3, 'string!', false);"
@@ -1230,12 +1231,12 @@
             {
               "name": "size",
               "type": "Number",
-              "desc": "the size of the array"
+              "desc": "The size of the array."
             }
           ],
           "returns": {
             "type": "Java",
-            "desc": "the Java boolean array"
+            "desc": "The Java boolean array."
           },
           "examples": [
             "Java.booleanArray(10);"
@@ -1251,12 +1252,12 @@
             {
               "name": "bool",
               "type": "Boolean",
-              "desc": "the boolean to convert to a Java boolean"
+              "desc": "The boolean to convert to a Java boolean."
             }
           ],
           "returns": {
             "type": "Java",
-            "desc": "the boolean in Java wrapper"
+            "desc": "The boolean in Java wrapper."
           },
           "examples": [
             "Java.booleanOf(true);"
@@ -1273,12 +1274,12 @@
             {
               "name": "size",
               "type": "Number",
-              "desc": "the size of the array"
+              "desc": "The size of the array."
             }
           ],
           "returns": {
             "type": "Java",
-            "desc": "the Java byte array"
+            "desc": "The Java byte array."
           },
           "examples": [
             "Java.byteArray(10);"
@@ -1294,12 +1295,12 @@
             {
               "name": "num",
               "type": "Number",
-              "desc": "the number to convert to a Java byte"
+              "desc": "The number to convert to a Java byte."
             }
           ],
           "returns": {
             "type": "Java",
-            "desc": "the byte in Java wrapper"
+            "desc": "The byte in Java wrapper."
           },
           "examples": [
             "Java.byteOf(1);"
@@ -1320,22 +1321,22 @@
             {
               "name": "className",
               "type": "String",
-              "desc": "the name of the class"
+              "desc": "The name of the class."
             },
             {
               "name": "methodName",
               "type": "String",
-              "desc": "the name of the method"
+              "desc": "The name of the method."
             },
             {
-              "name": "parameters...",
+              "name": "parameters",
               "type": "Object",
-              "desc": "any parameters to call the method with"
+              "desc": "Any parameters to call the method with."
             }
           ],
           "returns": {
             "type": "Java",
-            "desc": "the return value of the method wrapped in the Java wrapper"
+            "desc": "The return value of the method wrapped in the Java wrapper."
           },
           "examples": [
             "Java.callStaticMethod('java.lang.Integer', 'parseInt', '123');"
@@ -1352,12 +1353,12 @@
             {
               "name": "size",
               "type": "Number",
-              "desc": "the size of the array"
+              "desc": "The size of the array."
             }
           ],
           "returns": {
             "type": "Java",
-            "desc": "the Java char array"
+            "desc": "The Java char array."
           },
           "examples": [
             "Java.charArray(10);"
@@ -1373,12 +1374,12 @@
             {
               "name": "char",
               "type": "String",
-              "desc": "the char to convert to a Java char"
+              "desc": "The char to convert to a Java char."
             }
           ],
           "returns": {
             "type": "Java",
-            "desc": "the char in Java wrapper"
+            "desc": "The char in Java wrapper."
           },
           "examples": [
             "Java.charOf('a');"
@@ -1397,12 +1398,12 @@
             {
               "name": "className",
               "type": "String",
-              "desc": "the name of the class you want to get"
+              "desc": "The name of the class you want to get."
             }
           ],
           "returns": {
             "type": "Java",
-            "desc": "the Java Class<?> value wrapped in the Java wrapper"
+            "desc": "The Java Class<?> value wrapped in the Java wrapper."
           },
           "examples": [
             "Java.classFromName('java.util.ArrayList');"
@@ -1418,12 +1419,12 @@
             {
               "name": "className",
               "type": "String",
-              "desc": "the name of the class you want to get"
+              "desc": "The name of the class you want to get."
             }
           ],
           "returns": {
             "type": "JavaClass",
-            "desc": "the Java class value which can be used as a class reference"
+            "desc": "The Java class value which can be used as a class reference."
           },
           "examples": [
             "Java.classOf('java.util.ArrayList');"
@@ -1444,17 +1445,17 @@
             {
               "name": "className",
               "type": "String",
-              "desc": "the name of the class"
+              "desc": "The name of the class."
             },
             {
-              "name": "parameters...",
+              "name": "parameters",
               "type": "Object",
-              "desc": "any parameters to pass to the constructor"
+              "desc": "Any parameters to pass to the constructor."
             }
           ],
           "returns": {
             "type": "Java",
-            "desc": "the constructed Java Object wrapped in the Java wrapper"
+            "desc": "The constructed Java Object wrapped in the Java wrapper."
           },
           "examples": [
             "Java.constructClass('java.util.ArrayList');"
@@ -1471,12 +1472,12 @@
             {
               "name": "function",
               "type": "Function",
-              "desc": "the function to be executed"
+              "desc": "The function to be executed."
             }
           ],
           "returns": {
             "type": "Java",
-            "desc": "the Java Consumer object"
+            "desc": "The Java Consumer object."
           },
           "examples": [
             "Java.consumerOf(fun(something) {\n    print(something);\n});"
@@ -1493,12 +1494,12 @@
             {
               "name": "size",
               "type": "Number",
-              "desc": "the size of the array"
+              "desc": "The size of the array."
             }
           ],
           "returns": {
             "type": "Java",
-            "desc": "the Java double array"
+            "desc": "The Java double array."
           },
           "examples": [
             "Java.doubleArray(10);"
@@ -1514,12 +1515,12 @@
             {
               "name": "num",
               "type": "Number",
-              "desc": "the number to convert to a Java double"
+              "desc": "The number to convert to a Java double."
             }
           ],
           "returns": {
             "type": "Java",
-            "desc": "the double in Java wrapper"
+            "desc": "The double in Java wrapper."
           },
           "examples": [
             "Java.doubleOf(1.0);"
@@ -1536,12 +1537,12 @@
             {
               "name": "size",
               "type": "Number",
-              "desc": "the size of the array"
+              "desc": "The size of the array."
             }
           ],
           "returns": {
             "type": "Java",
-            "desc": "the Java float array"
+            "desc": "The Java float array."
           },
           "examples": [
             "Java.floatArray(10);"
@@ -1557,12 +1558,12 @@
             {
               "name": "num",
               "type": "Number",
-              "desc": "the number to convert to a Java float"
+              "desc": "The number to convert to a Java float."
             }
           ],
           "returns": {
             "type": "Java",
-            "desc": "the float in Java wrapper"
+            "desc": "The float in Java wrapper."
           },
           "examples": [
             "Java.floatOf(1.0);"
@@ -1578,12 +1579,12 @@
             {
               "name": "function",
               "type": "Function",
-              "desc": "the function to be executed, this must have one parameter and must return a value"
+              "desc": "The function to be executed, this must have one parameter and must return a value."
             }
           ],
           "returns": {
             "type": "Java",
-            "desc": "the Java Function object"
+            "desc": "The Java Function object."
           },
           "examples": [
             "Java.functionOf(fun(something) {\n    return something;\n});"
@@ -1602,17 +1603,17 @@
             {
               "name": "className",
               "type": "String",
-              "desc": "the name of the class"
+              "desc": "The name of the class."
             },
             {
               "name": "fieldName",
               "type": "String",
-              "desc": "the name of the field"
+              "desc": "The name of the field."
             }
           ],
           "returns": {
             "type": "Java",
-            "desc": "the Java value of the field wrapped in the Java wrapper"
+            "desc": "The Java value of the field wrapped in the Java wrapper."
           },
           "examples": [
             "Java.getStaticField('java.lang.Integer', 'MAX_VALUE');"
@@ -1634,22 +1635,22 @@
             {
               "name": "className",
               "type": "String",
-              "desc": "the name of the class"
+              "desc": "The name of the class."
             },
             {
               "name": "methodName",
               "type": "String",
-              "desc": "the name of the method"
+              "desc": "The name of the method."
             },
             {
               "name": "parameters",
               "type": "Number",
-              "desc": "the number of parameters"
+              "desc": "The number of parameters."
             }
           ],
           "returns": {
             "type": "Function",
-            "desc": "the delegated Java method in an Arucas Function"
+            "desc": "The delegated Java method in an Arucas Function."
           },
           "examples": [
             "Java.getStaticMethodDelegate('java.lang.Integer', 'parseInt', 1);"
@@ -1666,12 +1667,12 @@
             {
               "name": "size",
               "type": "Number",
-              "desc": "the size of the array"
+              "desc": "The size of the array."
             }
           ],
           "returns": {
             "type": "Java",
-            "desc": "the Java int array"
+            "desc": "The Java int array."
           },
           "examples": [
             "Java.intArray(10);"
@@ -1687,12 +1688,12 @@
             {
               "name": "num",
               "type": "Number",
-              "desc": "the number to convert to a Java int"
+              "desc": "The number to convert to a Java int."
             }
           ],
           "returns": {
             "type": "Java",
-            "desc": "the int in Java wrapper"
+            "desc": "The int in Java wrapper."
           },
           "examples": [
             "Java.intOf(1);"
@@ -1709,12 +1710,12 @@
             {
               "name": "size",
               "type": "Number",
-              "desc": "the size of the array"
+              "desc": "The size of the array."
             }
           ],
           "returns": {
             "type": "Java",
-            "desc": "the Java long array"
+            "desc": "The Java long array."
           },
           "examples": [
             "Java.longArray(10);"
@@ -1730,12 +1731,12 @@
             {
               "name": "num",
               "type": "Number",
-              "desc": "the number to convert to a Java long"
+              "desc": "The number to convert to a Java long."
             }
           ],
           "returns": {
             "type": "Java",
-            "desc": "the long in Java wrapper"
+            "desc": "The long in Java wrapper."
           },
           "examples": [
             "Java.longOf(1);"
@@ -1752,12 +1753,12 @@
             {
               "name": "size",
               "type": "Number",
-              "desc": "the size of the array"
+              "desc": "The size of the array."
             }
           ],
           "returns": {
             "type": "Java",
-            "desc": "the Java Object array"
+            "desc": "The Java Object array."
           },
           "examples": [
             "Java.arrayWithSize(10);"
@@ -1773,12 +1774,12 @@
             {
               "name": "function",
               "type": "Function",
-              "desc": "the function to be executed, this must have one parameter and must return a boolean"
+              "desc": "The function to be executed, this must have one parameter and must return a boolean."
             }
           ],
           "returns": {
             "type": "Java",
-            "desc": "the Java Predicate object"
+            "desc": "The Java Predicate object."
           },
           "examples": [
             "Java.predicateOf(fun(something) {\n    return something == 'something';\n});"
@@ -1795,12 +1796,12 @@
             {
               "name": "function",
               "type": "Function",
-              "desc": "the function to be executed"
+              "desc": "The function to be executed."
             }
           ],
           "returns": {
             "type": "Java",
-            "desc": "the Java Runnable object"
+            "desc": "The Java Runnable object."
           },
           "examples": [
             "Java.runnableOf(fun() {\n    print('runnable');\n});"
@@ -1819,17 +1820,17 @@
             {
               "name": "className",
               "type": "String",
-              "desc": "the name of the class"
+              "desc": "The name of the class."
             },
             {
               "name": "fieldName",
               "type": "String",
-              "desc": "the name of the field"
+              "desc": "The name of the field."
             },
             {
               "name": "newValue",
               "type": "Object",
-              "desc": "the new value"
+              "desc": "The new value."
             }
           ],
           "examples": [
@@ -1847,12 +1848,12 @@
             {
               "name": "size",
               "type": "Number",
-              "desc": "the size of the array"
+              "desc": "The size of the array."
             }
           ],
           "returns": {
             "type": "Java",
-            "desc": "the Java short array"
+            "desc": "The Java short array."
           },
           "examples": [
             "Java.shortArray(10);"
@@ -1868,12 +1869,12 @@
             {
               "name": "num",
               "type": "Number",
-              "desc": "the number to convert to a Java short"
+              "desc": "The number to convert to a Java short."
             }
           ],
           "returns": {
             "type": "Java",
-            "desc": "the short in Java wrapper"
+            "desc": "The short in Java wrapper."
           },
           "examples": [
             "Java.shortOf(1);"
@@ -1889,12 +1890,12 @@
             {
               "name": "function",
               "type": "Function",
-              "desc": "the function to be executed, this must have no parameters and must return (supply) a value"
+              "desc": "The function to be executed, this must have no parameters and must return (supply) a value."
             }
           ],
           "returns": {
             "type": "Java",
-            "desc": "the Java Supplier object"
+            "desc": "The Java Supplier object."
           },
           "examples": [
             "Java.supplierOf(fun() {\n    return 'supplier';\n});"
@@ -1910,12 +1911,12 @@
             {
               "name": "value",
               "type": "Object",
-              "desc": "any value to get the Java value of"
+              "desc": "Any value to get the Java value of."
             }
           ],
           "returns": {
             "type": "Java",
-            "desc": "the Java wrapper value, null if argument was null"
+            "desc": "The Java wrapper value, null if argument was null."
           },
           "examples": [
             "Java.valueOf('Hello World!');"
@@ -1956,7 +1957,7 @@
           ],
           "returns": {
             "type": "Object",
-            "desc": "the Value parsed from the Json"
+            "desc": "The Value parsed from the Json."
           },
           "examples": [
             "json.getValue();"
@@ -1974,7 +1975,7 @@
             {
               "name": "file",
               "type": "File",
-              "desc": "the file that you want to write to"
+              "desc": "The file that you want to write to."
             }
           ],
           "examples": [
@@ -1993,12 +1994,12 @@
             {
               "name": "file",
               "type": "File",
-              "desc": "the file that you want to parse into a Json"
+              "desc": "The file that you want to parse into a Json."
             }
           ],
           "returns": {
             "type": "Json",
-            "desc": "the Json parsed from the file"
+            "desc": "The Json parsed from the file."
           },
           "examples": [
             "Json.fromFile(new File('this/path/is/an/example.json'));"
@@ -2016,12 +2017,12 @@
             {
               "name": "list",
               "type": "List",
-              "desc": "the list that you want to parse into a Json"
+              "desc": "The list that you want to parse into a Json."
             }
           ],
           "returns": {
             "type": "Json",
-            "desc": "the Json parsed from the list"
+            "desc": "The Json parsed from the list."
           },
           "examples": [
             "Json.fromList(['value', 1, true]);"
@@ -2039,12 +2040,12 @@
             {
               "name": "map",
               "type": "Map",
-              "desc": "the map that you want to parse into a Json"
+              "desc": "The map that you want to parse into a Json."
             }
           ],
           "returns": {
             "type": "Json",
-            "desc": "the Json parsed from the map"
+            "desc": "The Json parsed from the map."
           },
           "examples": [
             "Json.fromMap({'key': ['value1', 'value2']});"
@@ -2061,12 +2062,12 @@
             {
               "name": "string",
               "type": "String",
-              "desc": "the string that you want to parse into a Json"
+              "desc": "The string that you want to parse into a Json."
             }
           ],
           "returns": {
             "type": "Json",
-            "desc": "the Json parsed from the string"
+            "desc": "The Json parsed from the string."
           },
           "examples": [
             "Json.fromString('{\"key\":\"value\"}');"
@@ -2103,12 +2104,12 @@
             {
               "name": "collection",
               "type": "Collection",
-              "desc": "the collection you want to add to the list"
+              "desc": "The collection you want to add to the list."
             }
           ],
           "returns": {
             "type": "List",
-            "desc": "the list"
+            "desc": "The list."
           },
           "examples": [
             "['object', 81, 96, 'case'].addAll(['foo', 'object']); // ['object', 81, 96, 'case', 'foo', 'object']"
@@ -2124,12 +2125,12 @@
             {
               "name": "value",
               "type": "Object",
-              "desc": "the value you want to append"
+              "desc": "The value you want to append."
             }
           ],
           "returns": {
             "type": "List",
-            "desc": "the list"
+            "desc": "The list."
           },
           "examples": [
             "['object', 81, 96, 'case'].append('foo'); // ['object', 81, 96, 'case', 'foo']"
@@ -2155,12 +2156,12 @@
             {
               "name": "value",
               "type": "Object",
-              "desc": "the value you want to check"
+              "desc": "The value you want to check."
             }
           ],
           "returns": {
             "type": "Boolean",
-            "desc": "true if the list contains the value"
+            "desc": "True if the list contains the value."
           },
           "examples": [
             "['object', 81, 96, 'case'].contains('case'); // true"
@@ -2176,12 +2177,12 @@
             {
               "name": "collection",
               "type": "Collection",
-              "desc": "the collection you want to check agains"
+              "desc": "The collection you want to check agains."
             }
           ],
           "returns": {
             "type": "Boolean",
-            "desc": "true if the list contains all the values in the collection"
+            "desc": "True if the list contains all the values in the collection."
           },
           "examples": [
             "['object', 81, 96, 'case'].containsAll(['foo', 'object']); // false"
@@ -2199,12 +2200,12 @@
             {
               "name": "predicate",
               "type": "Function",
-              "desc": "a function that takes a value and returns Boolean"
+              "desc": "A function that takes a value and returns Boolean."
             }
           ],
           "returns": {
             "type": "List",
-            "desc": "the filtered collection"
+            "desc": "The filtered collection."
           },
           "examples": [
             "(list = [1, 2, 3]).filter(fun(v) {\n    return v > 1;\n});\n// list = [2, 3]"
@@ -2220,7 +2221,7 @@
           ],
           "returns": {
             "type": "List",
-            "desc": "the flattened list"
+            "desc": "The flattened list."
           },
           "examples": [
             "(list = [1, 2, 3, [4, 5], [6, [7]]]).flatten();\n// list = [1, 2, 3, 4, 5, 6, [7]]"
@@ -2237,12 +2238,12 @@
             {
               "name": "index",
               "type": "Number",
-              "desc": "the index of the value you want to get"
+              "desc": "The index of the value you want to get."
             }
           ],
           "returns": {
             "type": "Object",
-            "desc": "the value at the index"
+            "desc": "The value at the index."
           },
           "examples": [
             "['object', 81, 96, 'case'].get(1); // 81"
@@ -2258,12 +2259,12 @@
             {
               "name": "value",
               "type": "Object",
-              "desc": "the value you want to get the index of"
+              "desc": "The value you want to get the index of."
             }
           ],
           "returns": {
             "type": "Number",
-            "desc": "the index of the value"
+            "desc": "The index of the value."
           },
           "examples": [
             "['object', 81, 96, 'case', 81].indexOf(81); // 1"
@@ -2279,17 +2280,17 @@
             {
               "name": "value",
               "type": "Object",
-              "desc": "the value you want to insert"
+              "desc": "The value you want to insert."
             },
             {
               "name": "index",
               "type": "Number",
-              "desc": "the index you want to insert the value at"
+              "desc": "The index you want to insert the value at."
             }
           ],
           "returns": {
             "type": "List",
-            "desc": "the list"
+            "desc": "The list."
           },
           "examples": [
             "['object', 81, 96, 'case'].insert('foo', 1); // ['object', 'foo', 81, 96, 'case']"
@@ -2305,12 +2306,12 @@
             {
               "name": "value",
               "type": "Object",
-              "desc": "the value you want to get the last index of"
+              "desc": "The value you want to get the last index of."
             }
           ],
           "returns": {
             "type": "Number",
-            "desc": "the last index of the value"
+            "desc": "The last index of the value."
           },
           "examples": [
             "['object', 81, 96, 'case', 96].lastIndexOf(96); // 4"
@@ -2327,12 +2328,12 @@
             {
               "name": "mapper",
               "type": "Function",
-              "desc": "a function that takes a value and returns a new value"
+              "desc": "A function that takes a value and returns a new value."
             }
           ],
           "returns": {
             "type": "List",
-            "desc": "the mapped collection"
+            "desc": "The mapped collection."
           },
           "examples": [
             "(list = [1, 2, 3]).map(fun(v) {\n    return v * 2;\n});\n// list = [2, 4, 6]"
@@ -2348,12 +2349,12 @@
             {
               "name": "value",
               "type": "Object",
-              "desc": "the value you want to prepend"
+              "desc": "The value you want to prepend."
             }
           ],
           "returns": {
             "type": "List",
-            "desc": "the list"
+            "desc": "The list."
           },
           "examples": [
             "['object', 81, 96].prepend('foo'); // ['foo', 'object', 81, 96]"
@@ -2370,12 +2371,12 @@
             {
               "name": "reducer",
               "type": "Function",
-              "desc": "a function that takes a value and returns a new value"
+              "desc": "A function that takes a value and returns a new value."
             }
           ],
           "returns": {
             "type": "Object",
-            "desc": "the reduced value"
+            "desc": "The reduced value."
           },
           "examples": [
             "// a will start at 1 and b at 2\n// next accumulator will be 3\n// a will be 3 and b will be 3 = 6\n(list = [1, 2, 3]).reduce(fun(a, b) {\n    return a + b;\n});\n// 6"
@@ -2391,17 +2392,17 @@
             {
               "name": "identity",
               "type": "Object",
-              "desc": "the identity"
+              "desc": "The identity."
             },
             {
               "name": "reducer",
               "type": "Function",
-              "desc": "a function that takes a value and returns a new value"
+              "desc": "A function that takes a value and returns a new value."
             }
           ],
           "returns": {
             "type": "Object",
-            "desc": "the reduced value"
+            "desc": "The reduced value."
           },
           "examples": [
             "(list = [1, 2, 3]).reduce(\"\", fun(a, b) {\n    return a + b;\n});\n// \"123\""
@@ -2418,12 +2419,12 @@
             {
               "name": "index",
               "type": "Number",
-              "desc": "the index of the value you want to remove"
+              "desc": "The index of the value you want to remove."
             }
           ],
           "returns": {
             "type": "Object",
-            "desc": "the value that was removed"
+            "desc": "The value that was removed."
           },
           "examples": [
             "['object', 81, 96, 'case'].remove(1); // 81"
@@ -2439,12 +2440,12 @@
             {
               "name": "collection",
               "type": "Collection",
-              "desc": "the collection you want to remove from the list"
+              "desc": "The collection you want to remove from the list."
             }
           ],
           "returns": {
             "type": "List",
-            "desc": "the list"
+            "desc": "The list."
           },
           "examples": [
             "['object', 81, 96, 'case'].removeAll(['foo', 'object']); // [81, 96, 'case']"
@@ -2460,12 +2461,12 @@
             {
               "name": "list",
               "type": "List",
-              "desc": "the list you want to retain values from"
+              "desc": "The list you want to retain values from."
             }
           ],
           "returns": {
             "type": "List",
-            "desc": "the list"
+            "desc": "The list."
           },
           "examples": [
             "['object', 81, 96, 'case'].retainAll(['case', 'object', 54]); // ['object', 'case']"
@@ -2479,7 +2480,7 @@
           ],
           "returns": {
             "type": "List",
-            "desc": "the reversed list"
+            "desc": "The reversed list."
           },
           "examples": [
             "['a', 'b', 'c', 'd'].reverse(); // ['d', 'c', 'b', 'a']"
@@ -2496,17 +2497,17 @@
             {
               "name": "value",
               "type": "Object",
-              "desc": "the value you want to set"
+              "desc": "The value you want to set."
             },
             {
               "name": "index",
               "type": "Number",
-              "desc": "the index you want to set the value at"
+              "desc": "The index you want to set the value at."
             }
           ],
           "returns": {
             "type": "List",
-            "desc": "the list"
+            "desc": "The list."
           },
           "examples": [
             "['object', 81, 96, 'case'].set('foo', 1); // ['object', 'foo', 96, 'case']"
@@ -2520,7 +2521,7 @@
           ],
           "returns": {
             "type": "List",
-            "desc": "the shuffled list"
+            "desc": "The shuffled list."
           },
           "examples": [
             "['a', 'b', 'c', 'd'].shuffle(); // some random order ¯\\_(ツ)_/¯"
@@ -2534,7 +2535,7 @@
           ],
           "returns": {
             "type": "List",
-            "desc": "the sorted list"
+            "desc": "The sorted list."
           },
           "examples": [
             "['d', 'a', 'c', 'b'].sort(); // ['a', 'b', 'c', 'd']"
@@ -2550,12 +2551,12 @@
             {
               "name": "comparator",
               "type": "Function",
-              "desc": "the comparator function"
+              "desc": "The comparator function."
             }
           ],
           "returns": {
             "type": "List",
-            "desc": "the sorted list"
+            "desc": "The sorted list."
           },
           "examples": [
             "[6, 5, 9, -10].sort(fun(a, b) { return a - b; }); // [-10, 5, 6, 9]"
@@ -2576,7 +2577,7 @@
       "constructors": [
         {
           "desc": [
-            "This creates an empty map, this cannot be called directly, only from child classes"
+            "This creates an empty map, this cannot be called directly, only from child classes."
           ],
           "examples": [
             "class ChildMap: Map {\n    ChildMap(): super();\n}"
@@ -2588,7 +2589,7 @@
           "name": "clear",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to clear the map of all the keys and values"
+            "This allows you to clear the map of all the keys and values."
           ],
           "examples": [
             "(map = {'key': 'value'}).clear(); // map = {}"
@@ -2598,18 +2599,18 @@
           "name": "containsKey",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to check if the map contains a specific key"
+            "This allows you to check if the map contains a specific key."
           ],
           "params": [
             {
               "name": "key",
               "type": "Object",
-              "desc": "the key you want to check"
+              "desc": "The key you want to check."
             }
           ],
           "returns": {
             "type": "Boolean",
-            "desc": "true if the map contains the key, false otherwise"
+            "desc": "True if the map contains the key, false otherwise."
           },
           "examples": [
             "{'key': 'value'}.containsKey('key'); // true"
@@ -2619,18 +2620,18 @@
           "name": "containsValue",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to check if the map contains a specific value"
+            "This allows you to check if the map contains a specific value."
           ],
           "params": [
             {
               "name": "value",
               "type": "Object",
-              "desc": "the value you want to check"
+              "desc": "The value you want to check."
             }
           ],
           "returns": {
             "type": "Boolean",
-            "desc": "true if the map contains the value, false otherwise"
+            "desc": "True if the map contains the value, false otherwise."
           },
           "examples": [
             "{'key': 'value'}.containsValue('foo'); // false"
@@ -2640,18 +2641,18 @@
           "name": "get",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to get the value of a key in the map"
+            "This allows you to get the value of a key in the map."
           ],
           "params": [
             {
               "name": "key",
               "type": "Object",
-              "desc": "the key you want to get the value of"
+              "desc": "The key you want to get the value of."
             }
           ],
           "returns": {
             "type": "Object",
-            "desc": "the value of the key, will return null if non-existent"
+            "desc": "The value of the key, will return null if non-existent."
           },
           "examples": [
             "{'key': 'value'}.get('key'); // 'value'"
@@ -2661,11 +2662,11 @@
           "name": "getKeys",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to get the keys in the map"
+            "This allows you to get the keys in the map."
           ],
           "returns": {
             "type": "List",
-            "desc": "a complete list of all the keys"
+            "desc": "A complete list of all the keys."
           },
           "examples": [
             "{'key': 'value', 'key2': 'value2'}.getKeys(); // ['key', 'key2']"
@@ -2675,11 +2676,11 @@
           "name": "getValues",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to get the values in the map"
+            "This allows you to get the values in the map."
           ],
           "returns": {
             "type": "List",
-            "desc": "a complete list of all the values"
+            "desc": "A complete list of all the values."
           },
           "examples": [
             "{'key': 'value', 'key2': 'value2'}.getValues(); // ['value', 'value2']"
@@ -2689,18 +2690,18 @@
           "name": "map",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to map the values in the map and returns a new map"
+            "This allows you to map the values in the map and returns a new map."
           ],
           "params": [
             {
               "name": "remapper",
               "type": "Function",
-              "desc": "the function you want to map the values with"
+              "desc": "The function you want to map the values with."
             }
           ],
           "returns": {
             "type": "Map",
-            "desc": "a new map with the mapped values"
+            "desc": "A new map with the mapped values."
           },
           "examples": [
             "map = {'key': 'value', 'key2': 'value2'}\nmap.map(fun(k, v) {\n    return [v, k];\n});\n// map = {'value': 'key', 'value2': 'key2'}"
@@ -2710,23 +2711,23 @@
           "name": "put",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to put a key and value in the map"
+            "This allows you to put a key and value in the map."
           ],
           "params": [
             {
               "name": "key",
               "type": "Object",
-              "desc": "the key you want to put"
+              "desc": "The key you want to put."
             },
             {
               "name": "value",
               "type": "Object",
-              "desc": "the value you want to put"
+              "desc": "The value you want to put."
             }
           ],
           "returns": {
             "type": "Object",
-            "desc": "the previous value associated with the key, null if none"
+            "desc": "The previous value associated with the key, null if none."
           },
           "examples": [
             "{'key': 'value'}.put('key2', 'value2'); // null"
@@ -2736,13 +2737,13 @@
           "name": "putAll",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to put all the keys and values of another map into this map"
+            "This allows you to put all the keys and values of another map into this map."
           ],
           "params": [
             {
-              "name": "another map",
+              "name": "anotherMap",
               "type": "Map",
-              "desc": "the map you want to merge into this map"
+              "desc": "The map you want to merge into this map."
             }
           ],
           "examples": [
@@ -2753,18 +2754,18 @@
           "name": "putIfAbsent",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to put a key and value in the map if it doesn't exist"
+            "This allows you to put a key and value in the map if it doesn't exist."
           ],
           "params": [
             {
               "name": "key",
               "type": "Object",
-              "desc": "the key you want to put"
+              "desc": "The key you want to put."
             },
             {
               "name": "value",
               "type": "Object",
-              "desc": "the value you want to put"
+              "desc": "The value you want to put."
             }
           ],
           "examples": [
@@ -2775,18 +2776,18 @@
           "name": "remove",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to remove a key and its value from the map"
+            "This allows you to remove a key and its value from the map."
           ],
           "params": [
             {
               "name": "key",
               "type": "Object",
-              "desc": "the key you want to remove"
+              "desc": "The key you want to remove."
             }
           ],
           "returns": {
             "type": "Object",
-            "desc": "the value associated with the key, null if none"
+            "desc": "The value associated with the key, null if none."
           },
           "examples": [
             "{'key': 'value'}.remove('key'); // 'value'"
@@ -2798,11 +2799,11 @@
           "name": "unordered",
           "is_arbitrary": false,
           "desc": [
-            "This function allows you to create an unordered map"
+            "This function allows you to create an unordered map."
           ],
           "returns": {
             "type": "Map",
-            "desc": "an unordered map"
+            "desc": "An unordered map."
           },
           "examples": [
             "Map.unordered();"
@@ -2865,12 +2866,12 @@
             {
               "name": "num",
               "type": "Number",
-              "desc": "the number to get the absolute value of"
+              "desc": "The number to get the absolute value of."
             }
           ],
           "returns": {
             "type": "Number",
-            "desc": "the absolute value of the number"
+            "desc": "The absolute value of the number."
           },
           "examples": [
             "Math.abs(-3);"
@@ -2886,12 +2887,12 @@
             {
               "name": "num",
               "type": "Number",
-              "desc": "the number to get the arc cosine of"
+              "desc": "The number to get the arc cosine of."
             }
           ],
           "returns": {
             "type": "Number",
-            "desc": "the arc cosine of the number"
+            "desc": "The arc cosine of the number."
           },
           "examples": [
             "Math.arccos(Math.cos(Math.pi));"
@@ -2907,12 +2908,12 @@
             {
               "name": "num",
               "type": "Number",
-              "desc": "the number to get the arc sine of"
+              "desc": "The number to get the arc sine of."
             }
           ],
           "returns": {
             "type": "Number",
-            "desc": "the arc sine of the number"
+            "desc": "The arc sine of the number."
           },
           "examples": [
             "Math.arcsin(Math.sin(Math.pi));"
@@ -2928,12 +2929,12 @@
             {
               "name": "num",
               "type": "Number",
-              "desc": "the number to get the arc tangent of"
+              "desc": "The number to get the arc tangent of."
             }
           ],
           "returns": {
             "type": "Number",
-            "desc": "the arc tangent of the number"
+            "desc": "The arc tangent of the number."
           },
           "examples": [
             "Math.arctan(Math.tan(Math.pi));"
@@ -2950,17 +2951,17 @@
             {
               "name": "y",
               "type": "Number",
-              "desc": "the ordinate coordinate"
+              "desc": "The ordinate coordinate."
             },
             {
               "name": "x",
               "type": "Number",
-              "desc": "the abscissa coordinate"
+              "desc": "The abscissa coordinate."
             }
           ],
           "returns": {
             "type": "Number",
-            "desc": "the theta component of the point (r, theta)"
+            "desc": "The theta component of the point (r, theta)."
           },
           "examples": [
             "Math.arctan2(Math.tan(Math.pi), Math.cos(Math.pi)); // -3.141592"
@@ -2976,12 +2977,12 @@
             {
               "name": "num",
               "type": "Number",
-              "desc": "the number to round"
+              "desc": "The number to round."
             }
           ],
           "returns": {
             "type": "Number",
-            "desc": "the rounded number"
+            "desc": "The rounded number."
           },
           "examples": [
             "Math.ceil(3.5);"
@@ -2997,22 +2998,22 @@
             {
               "name": "value",
               "type": "Number",
-              "desc": "the value to clamp"
+              "desc": "The value to clamp."
             },
             {
               "name": "min",
               "type": "Number",
-              "desc": "the minimum"
+              "desc": "The minimum."
             },
             {
               "name": "max",
               "type": "Number",
-              "desc": "the maximum"
+              "desc": "The maximum."
             }
           ],
           "returns": {
             "type": "Number",
-            "desc": "the clamped value"
+            "desc": "The clamped value."
           },
           "examples": [
             "Math.clamp(10, 2, 8);"
@@ -3028,12 +3029,12 @@
             {
               "name": "num",
               "type": "Number",
-              "desc": "the number to get the cosine of"
+              "desc": "The number to get the cosine of."
             }
           ],
           "returns": {
             "type": "Number",
-            "desc": "the cosine of the number"
+            "desc": "The cosine of the number."
           },
           "examples": [
             "Math.cos(Math.pi);"
@@ -3049,12 +3050,12 @@
             {
               "name": "num",
               "type": "Number",
-              "desc": "the number to get the cosecant of"
+              "desc": "The number to get the cosecant of."
             }
           ],
           "returns": {
             "type": "Number",
-            "desc": "the cosecant of the number"
+            "desc": "The cosecant of the number."
           },
           "examples": [
             "Math.cosec(Math.pi);"
@@ -3070,12 +3071,12 @@
             {
               "name": "num",
               "type": "Number",
-              "desc": "the number to get the hyperbolic cosine of"
+              "desc": "The number to get the hyperbolic cosine of."
             }
           ],
           "returns": {
             "type": "Number",
-            "desc": "the hyperbolic cosine of the number"
+            "desc": "The hyperbolic cosine of the number."
           },
           "examples": [
             "Math.cosh(1);"
@@ -3091,12 +3092,12 @@
             {
               "name": "num",
               "type": "Number",
-              "desc": "the number to get the cotangent of"
+              "desc": "The number to get the cotangent of."
             }
           ],
           "returns": {
             "type": "Number",
-            "desc": "the cotangent of the number"
+            "desc": "The cotangent of the number."
           },
           "examples": [
             "Math.cot(Math.pi);"
@@ -3112,12 +3113,12 @@
             {
               "name": "num",
               "type": "Number",
-              "desc": "the number to round"
+              "desc": "The number to round."
             }
           ],
           "returns": {
             "type": "Number",
-            "desc": "the rounded number"
+            "desc": "The rounded number."
           },
           "examples": [
             "Math.floor(3.5);"
@@ -3133,22 +3134,22 @@
             {
               "name": "start",
               "type": "Number",
-              "desc": "the first number"
+              "desc": "The first number."
             },
             {
               "name": "end",
               "type": "Number",
-              "desc": "the second number"
+              "desc": "The second number."
             },
             {
               "name": "delta",
               "type": "Number",
-              "desc": "the interpolation factor"
+              "desc": "The interpolation factor."
             }
           ],
           "returns": {
             "type": "Number",
-            "desc": "the interpolated number"
+            "desc": "The interpolated number."
           },
           "examples": [
             "Math.lerp(0, 10, 0.5);"
@@ -3164,12 +3165,12 @@
             {
               "name": "num",
               "type": "Number",
-              "desc": "the number to get the logarithm of"
+              "desc": "The number to get the logarithm of."
             }
           ],
           "returns": {
             "type": "Number",
-            "desc": "the natural logarithm of the number"
+            "desc": "The natural logarithm of the number."
           },
           "examples": [
             "Math.ln(Math.e);"
@@ -3185,17 +3186,17 @@
             {
               "name": "base",
               "type": "Number",
-              "desc": "the base"
+              "desc": "The base."
             },
             {
               "name": "num",
               "type": "Number",
-              "desc": "the number to get the logarithm of"
+              "desc": "The number to get the logarithm of."
             }
           ],
           "returns": {
             "type": "Number",
-            "desc": "the logarithm of the number"
+            "desc": "The logarithm of the number."
           },
           "examples": [
             "Math.log(2, 4);"
@@ -3211,12 +3212,12 @@
             {
               "name": "num",
               "type": "Number",
-              "desc": "the number to get the logarithm of"
+              "desc": "The number to get the logarithm of."
             }
           ],
           "returns": {
             "type": "Number",
-            "desc": "the base 10 logarithm of the number"
+            "desc": "The base 10 logarithm of the number."
           },
           "examples": [
             "Math.log10(100);"
@@ -3232,17 +3233,17 @@
             {
               "name": "num1",
               "type": "Number",
-              "desc": "the first number to compare"
+              "desc": "The first number to compare."
             },
             {
               "name": "num2",
               "type": "Number",
-              "desc": "the second number to compare"
+              "desc": "The second number to compare."
             }
           ],
           "returns": {
             "type": "Number",
-            "desc": "the largest number"
+            "desc": "The largest number."
           },
           "examples": [
             "Math.max(5, 2);"
@@ -3258,17 +3259,17 @@
             {
               "name": "num1",
               "type": "Number",
-              "desc": "the first number to compare"
+              "desc": "The first number to compare."
             },
             {
               "name": "num2",
               "type": "Number",
-              "desc": "the second number to compare"
+              "desc": "The second number to compare."
             }
           ],
           "returns": {
             "type": "Number",
-            "desc": "the smallest number"
+            "desc": "The smallest number."
           },
           "examples": [
             "Math.min(5, 2);"
@@ -3284,17 +3285,17 @@
             {
               "name": "num1",
               "type": "Number",
-              "desc": "the number to divide"
+              "desc": "The number to divide."
             },
             {
               "name": "num2",
               "type": "Number",
-              "desc": "the divisor"
+              "desc": "The divisor."
             }
           ],
           "returns": {
             "type": "Number",
-            "desc": "the modulus of the division"
+            "desc": "The modulus of the division."
           },
           "examples": [
             "Math.mod(5, 2);"
@@ -3310,17 +3311,17 @@
             {
               "name": "num1",
               "type": "Number",
-              "desc": "the number to divide"
+              "desc": "The number to divide."
             },
             {
               "name": "num2",
               "type": "Number",
-              "desc": "the divisor"
+              "desc": "The divisor."
             }
           ],
           "returns": {
             "type": "Number",
-            "desc": "the remainder of the division"
+            "desc": "The remainder of the division."
           },
           "examples": [
             "Math.rem(5, 2);"
@@ -3336,12 +3337,12 @@
             {
               "name": "num",
               "type": "Number",
-              "desc": "the number to round"
+              "desc": "The number to round."
             }
           ],
           "returns": {
             "type": "Number",
-            "desc": "the rounded number"
+            "desc": "The rounded number."
           },
           "examples": [
             "Math.round(3.5);"
@@ -3357,12 +3358,12 @@
             {
               "name": "num",
               "type": "Number",
-              "desc": "the number to get the secant of"
+              "desc": "The number to get the secant of."
             }
           ],
           "returns": {
             "type": "Number",
-            "desc": "the secant of the number"
+            "desc": "The secant of the number."
           },
           "examples": [
             "Math.sec(Math.pi);"
@@ -3379,12 +3380,12 @@
             {
               "name": "num",
               "type": "Number",
-              "desc": "the number to get the sign of"
+              "desc": "The number to get the sign of."
             }
           ],
           "returns": {
             "type": "Number",
-            "desc": "the sign of the number"
+            "desc": "The sign of the number."
           },
           "examples": [
             "Math.signum(3);"
@@ -3400,12 +3401,12 @@
             {
               "name": "num",
               "type": "Number",
-              "desc": "the number to get the sine of"
+              "desc": "The number to get the sine of."
             }
           ],
           "returns": {
             "type": "Number",
-            "desc": "the sine of the number"
+            "desc": "The sine of the number."
           },
           "examples": [
             "Math.sin(Math.pi);"
@@ -3421,12 +3422,12 @@
             {
               "name": "num",
               "type": "Number",
-              "desc": "the number to get the hyperbolic sine of"
+              "desc": "The number to get the hyperbolic sine of."
             }
           ],
           "returns": {
             "type": "Number",
-            "desc": "the hyperbolic sine of the number"
+            "desc": "The hyperbolic sine of the number."
           },
           "examples": [
             "Math.sinh(1);"
@@ -3442,12 +3443,12 @@
             {
               "name": "num",
               "type": "Number",
-              "desc": "the number to square root"
+              "desc": "The number to square root."
             }
           ],
           "returns": {
             "type": "Number",
-            "desc": "the square root of the number"
+            "desc": "The square root of the number."
           },
           "examples": [
             "Math.sqrt(9);"
@@ -3463,12 +3464,12 @@
             {
               "name": "num",
               "type": "Number",
-              "desc": "the number to get the tangent of"
+              "desc": "The number to get the tangent of."
             }
           ],
           "returns": {
             "type": "Number",
-            "desc": "the tangent of the number"
+            "desc": "The tangent of the number."
           },
           "examples": [
             "Math.tan(Math.pi);"
@@ -3484,12 +3485,12 @@
             {
               "name": "num",
               "type": "Number",
-              "desc": "the number to get the hyperbolic tangent of"
+              "desc": "The number to get the hyperbolic tangent of."
             }
           ],
           "returns": {
             "type": "Number",
-            "desc": "the hyperbolic tangent of the number"
+            "desc": "The hyperbolic tangent of the number."
           },
           "examples": [
             "Math.tanh(1);"
@@ -3505,12 +3506,12 @@
             {
               "name": "num",
               "type": "Number",
-              "desc": "the number to convert"
+              "desc": "The number to convert."
             }
           ],
           "returns": {
             "type": "Number",
-            "desc": "the number in degrees"
+            "desc": "The number in degrees."
           },
           "examples": [
             "Math.toDegrees(Math.pi);"
@@ -3526,12 +3527,12 @@
             {
               "name": "num",
               "type": "Number",
-              "desc": "the number to convert"
+              "desc": "The number to convert."
             }
           ],
           "returns": {
             "type": "Number",
-            "desc": "the number in radians"
+            "desc": "The number in radians."
           },
           "examples": [
             "Math.toRadians(90);"
@@ -3544,7 +3545,7 @@
       "desc": [
         "Allows you to do http requests. This is a utility class and cannot be constructed."
       ],
-      "import_path": "util.Network",
+      "import_path": null,
       "superclass": "Object",
       "static_members": [],
       "constructors": [],
@@ -3560,17 +3561,17 @@
             {
               "name": "url",
               "type": "String",
-              "desc": "the url to download from"
+              "desc": "The url to download from."
             },
             {
               "name": "file",
               "type": "File",
-              "desc": "the file to download to"
+              "desc": "The file to download to."
             }
           ],
           "returns": {
             "type": "Boolean",
-            "desc": "whether the download was successful"
+            "desc": "Whether the download was successful."
           },
           "examples": [
             "Network.downloadFile('https://arucas.com', new File('dir/downloads'));"
@@ -3586,7 +3587,7 @@
             {
               "name": "url",
               "type": "String",
-              "desc": "the url to open"
+              "desc": "The url to open."
             }
           ],
           "examples": [
@@ -3603,12 +3604,12 @@
             {
               "name": "url",
               "type": "String",
-              "desc": "the url to request"
+              "desc": "The url to request."
             }
           ],
           "returns": {
             "type": "String",
-            "desc": "the response from the url"
+            "desc": "The response from the url."
           },
           "examples": [
             "Network.requestUrl('https://google.com');"
@@ -3648,7 +3649,7 @@
           ],
           "returns": {
             "type": "Number",
-            "desc": "the rounded number"
+            "desc": "The rounded number."
           },
           "examples": [
             "3.5.ceil();"
@@ -3662,7 +3663,7 @@
           ],
           "returns": {
             "type": "Number",
-            "desc": "the rounded number"
+            "desc": "The rounded number."
           },
           "examples": [
             "3.5.floor();"
@@ -3676,7 +3677,7 @@
           ],
           "returns": {
             "type": "Boolean",
-            "desc": "true if the number is infinite"
+            "desc": "True if the number is infinite."
           },
           "examples": [
             "(1/0).isInfinite();"
@@ -3690,7 +3691,7 @@
           ],
           "returns": {
             "type": "Boolean",
-            "desc": "true if the number is not a number"
+            "desc": "True if the number is not a number."
           },
           "examples": [
             "(0/0).isNaN();"
@@ -3704,7 +3705,7 @@
           ],
           "returns": {
             "type": "Number",
-            "desc": "the rounded number"
+            "desc": "The rounded number."
           },
           "examples": [
             "3.5.round();"
@@ -3737,7 +3738,7 @@
           ],
           "returns": {
             "type": "Object",
-            "desc": "a copy of the value"
+            "desc": "A copy of the value."
           },
           "examples": [
             "[10, 11, 12].copy(); // [10, 11, 12]"
@@ -3754,7 +3755,7 @@
           ],
           "returns": {
             "type": "Number",
-            "desc": "the hash code of the value"
+            "desc": "The hash code of the value."
           },
           "examples": [
             "[10, 11, 12].hashCode(); // -1859087"
@@ -3770,12 +3771,12 @@
             {
               "name": "type",
               "type": "Type",
-              "desc": "the type to check against"
+              "desc": "The type to check against."
             }
           ],
           "returns": {
             "type": "Boolean",
-            "desc": "true if the value is an instance of the given type"
+            "desc": "True if the value is an instance of the given type."
           },
           "examples": [
             "[10, 11, 12].instanceOf(List.type); // true"
@@ -3789,7 +3790,7 @@
           ],
           "returns": {
             "type": "String",
-            "desc": "the string representation of the value"
+            "desc": "The string representation of the value."
           },
           "examples": [
             "[10, 11, 12].toString(); // [10, 11, 12]"
@@ -3803,7 +3804,7 @@
           ],
           "returns": {
             "type": "Number",
-            "desc": "the unique hash of the value"
+            "desc": "The unique hash of the value."
           },
           "examples": [
             "'thing'.uniqueHash();"
@@ -3842,12 +3843,12 @@
             {
               "name": "value",
               "type": "Object",
-              "desc": "the value you want to add to the set"
+              "desc": "The value you want to add to the set."
             }
           ],
           "returns": {
             "type": "Boolean",
-            "desc": "whether the value was successfully added to the set"
+            "desc": "Whether the value was successfully added to the set."
           },
           "examples": [
             "Set.of().add('object');"
@@ -3863,12 +3864,12 @@
             {
               "name": "collection",
               "type": "Collection",
-              "desc": "the collection of values you want to add"
+              "desc": "The collection of values you want to add."
             }
           ],
           "returns": {
             "type": "Set",
-            "desc": "the modified set"
+            "desc": "The modified set."
           },
           "examples": [
             "Set.of().addAll(Set.of('object', 81, 96, 'case'));"
@@ -3894,12 +3895,12 @@
             {
               "name": "value",
               "type": "Object",
-              "desc": "the value that you want to check in the set"
+              "desc": "The value that you want to check in the set."
             }
           ],
           "returns": {
             "type": "Boolean",
-            "desc": "whether the value is in the set"
+            "desc": "Whether the value is in the set."
           },
           "examples": [
             "Set.of('object').contains('object');"
@@ -3915,12 +3916,12 @@
             {
               "name": "collection",
               "type": "Collection",
-              "desc": "the collection of values you want to check in the set"
+              "desc": "The collection of values you want to check in the set."
             }
           ],
           "returns": {
             "type": "Boolean",
-            "desc": "whether all the values are in the set"
+            "desc": "Whether all the values are in the set."
           },
           "examples": [
             "Set.of('object').containsAll(Set.of('object', 81, 96, 'case'));"
@@ -3936,12 +3937,12 @@
             {
               "name": "function",
               "type": "Function",
-              "desc": "the function you want to filter the set by"
+              "desc": "The function you want to filter the set by."
             }
           ],
           "returns": {
             "type": "Set",
-            "desc": "the filtered set"
+            "desc": "The filtered set."
           },
           "examples": [
             "Set.of(-9, 81, 96, 15).filter(fun(value) { return value > 80; });"
@@ -3960,12 +3961,12 @@
             {
               "name": "value",
               "type": "Object",
-              "desc": "the value you want to get from the set"
+              "desc": "The value you want to get from the set."
             }
           ],
           "returns": {
             "type": "Object",
-            "desc": "the value you wanted to get, null if it wasn't in the set"
+            "desc": "The value you wanted to get, null if it wasn't in the set."
           },
           "examples": [
             "Set.of('object').get('object');"
@@ -3981,12 +3982,12 @@
             {
               "name": "function",
               "type": "Function",
-              "desc": "the function you want to map the set by"
+              "desc": "The function you want to map the set by."
             }
           ],
           "returns": {
             "type": "Set",
-            "desc": "the mapped set"
+            "desc": "The mapped set."
           },
           "examples": [
             "Set.of(-9, 81, 96, 15).map(fun(value) { return value * 2; });"
@@ -4002,12 +4003,12 @@
             {
               "name": "function",
               "type": "Function",
-              "desc": "the function you want to reduce the set by"
+              "desc": "The function you want to reduce the set by."
             }
           ],
           "returns": {
             "type": "Object",
-            "desc": "the reduced set"
+            "desc": "The reduced set."
           },
           "examples": [
             "Set.of(-9, 81, 96, 15).reduce(fun(value, next) { return value + next; });"
@@ -4023,17 +4024,17 @@
             {
               "name": "identity",
               "type": "Object",
-              "desc": "the identity"
+              "desc": "The identity."
             },
             {
               "name": "reducer",
               "type": "Function",
-              "desc": "a function that takes a value and returns a new value"
+              "desc": "A function that takes a value and returns a new value."
             }
           ],
           "returns": {
             "type": "Object",
-            "desc": "the reduced value"
+            "desc": "The reduced value."
           },
           "examples": [
             "Set.of(-9, 81, 96, 15).reduce(\"\", fun(value, next) { return value + next; });"
@@ -4049,12 +4050,12 @@
             {
               "name": "value",
               "type": "Object",
-              "desc": "the value you want to remove from the set"
+              "desc": "The value you want to remove from the set."
             }
           ],
           "returns": {
             "type": "Boolean",
-            "desc": "whether the value was removed from the set"
+            "desc": "Whether the value was removed from the set."
           },
           "examples": [
             "Set.of('object').remove('object');"
@@ -4070,12 +4071,12 @@
             {
               "name": "value",
               "type": "Collection",
-              "desc": "the values you want to remove from the set"
+              "desc": "The values you want to remove from the set."
             }
           ],
           "returns": {
             "type": "Set",
-            "desc": "the set with the values removed"
+            "desc": "The set with the values removed."
           },
           "examples": [
             "Set.of('object', 'object').removeAll(Set.of('object'));"
@@ -4089,7 +4090,7 @@
           ],
           "returns": {
             "type": "List",
-            "desc": "the list of values in the set"
+            "desc": "The list of values in the set."
           },
           "examples": [
             "Set.of('object', 81, 96, 'case').toList();"
@@ -4099,20 +4100,20 @@
       "static_methods": [
         {
           "name": "of",
-          "is_arbitrary": true,
+          "is_arbitrary": false,
           "desc": [
             "This allows you to create a set with an arbitrary number of values"
           ],
           "params": [
             {
-              "name": "values...",
+              "name": "values",
               "type": "Object",
-              "desc": "the values you want to add to the set"
+              "desc": "The values you want to add to the set."
             }
           ],
           "returns": {
             "type": "Set",
-            "desc": "the set you created"
+            "desc": "The set you created."
           },
           "examples": [
             "Set.of('object', 81, 96, 'case');"
@@ -4126,7 +4127,7 @@
           ],
           "returns": {
             "type": "Set",
-            "desc": "the unordered set"
+            "desc": "The unordered set."
           },
           "examples": [
             "Set.unordered();"
@@ -4164,7 +4165,7 @@
           ],
           "returns": {
             "type": "String",
-            "desc": "the string in capitalized form"
+            "desc": "The string in capitalized form."
           },
           "examples": [
             "'hello'.capitalize(); // 'Hello'"
@@ -4178,7 +4179,7 @@
           ],
           "returns": {
             "type": "List",
-            "desc": "the list of characters"
+            "desc": "The list of characters."
           },
           "examples": [
             "'hello'.chars(); // ['h', 'e', 'l', 'l', 'o']"
@@ -4194,12 +4195,12 @@
             {
               "name": "string",
               "type": "String",
-              "desc": "the string to check"
+              "desc": "The string to check."
             }
           ],
           "returns": {
             "type": "Boolean",
-            "desc": "whether the string contains the given string"
+            "desc": "Whether the string contains the given string."
           },
           "examples": [
             "'hello'.contains('lo'); // true"
@@ -4215,12 +4216,12 @@
             {
               "name": "string",
               "type": "String",
-              "desc": "the string to check"
+              "desc": "The string to check."
             }
           ],
           "returns": {
             "type": "Boolean",
-            "desc": "whether the string ends with the given string"
+            "desc": "Whether the string ends with the given string."
           },
           "examples": [
             "'hello'.endsWith('lo'); // true"
@@ -4237,12 +4238,12 @@
             {
               "name": "regex",
               "type": "String",
-              "desc": "the regex to search the string with"
+              "desc": "The regex to search the string with."
             }
           ],
           "returns": {
             "type": "List",
-            "desc": "the list of all instances of the regex in the string"
+            "desc": "The list of all instances of the regex in the string."
           },
           "examples": [
             "'102i 1i'.find('([\\\\d+])i'); // ['2i', '1i']"
@@ -4260,12 +4261,12 @@
             {
               "name": "regex",
               "type": "String",
-              "desc": "the regex to search the string with"
+              "desc": "The regex to search the string with."
             }
           ],
           "returns": {
             "type": "List",
-            "desc": "a list of match groups, which is a list containing matches"
+            "desc": "A list of match groups, which is a list containing matches."
           },
           "examples": [
             "'102i 1i'.findAll('([\\\\d+])i'); // [['2i', '2'], ['1i', '1']]"
@@ -4281,14 +4282,14 @@
           ],
           "params": [
             {
-              "name": "objects...",
+              "name": "objects",
               "type": "Object",
-              "desc": "the objects to insert"
+              "desc": "The objects to insert."
             }
           ],
           "returns": {
             "type": "String",
-            "desc": "the formatted string"
+            "desc": "The formatted string."
           },
           "examples": [
             "'%s %s'.format('hello', 'world'); // 'hello world'"
@@ -4302,7 +4303,7 @@
           ],
           "returns": {
             "type": "Number",
-            "desc": "the length of the string"
+            "desc": "The length of the string."
           },
           "examples": [
             "'hello'.length(); // 5"
@@ -4316,7 +4317,7 @@
           ],
           "returns": {
             "type": "String",
-            "desc": "the string in lowercase"
+            "desc": "The string in lowercase."
           },
           "examples": [
             "'HELLO'.lowercase(); // 'hello'"
@@ -4332,12 +4333,12 @@
             {
               "name": "regex",
               "type": "String",
-              "desc": "the regex to match the string with"
+              "desc": "The regex to match the string with."
             }
           ],
           "returns": {
             "type": "Boolean",
-            "desc": "whether the string matches the given regex"
+            "desc": "Whether the string matches the given regex."
           },
           "examples": [
             "'foo'.matches('f.*'); // true"
@@ -4353,17 +4354,17 @@
             {
               "name": "regex",
               "type": "String",
-              "desc": "the regex you want to replace"
+              "desc": "The regex you want to replace."
             },
             {
               "name": "replacement",
               "type": "String",
-              "desc": "the string you want to replace it with"
+              "desc": "The string you want to replace it with."
             }
           ],
           "returns": {
             "type": "String",
-            "desc": "the modified string"
+            "desc": "The modified string."
           },
           "examples": [
             "'hello'.replaceAll('l', 'x'); // 'hexxo'"
@@ -4379,17 +4380,17 @@
             {
               "name": "regex",
               "type": "String",
-              "desc": "the regex you want to replace"
+              "desc": "The regex you want to replace."
             },
             {
               "name": "replacement",
               "type": "String",
-              "desc": "the string you want to replace it with"
+              "desc": "The string you want to replace it with."
             }
           ],
           "returns": {
             "type": "String",
-            "desc": "the modified string"
+            "desc": "The modified string."
           },
           "examples": [
             "'hello'.replaceFirst('l', 'x'); // 'hexlo'"
@@ -4403,7 +4404,7 @@
           ],
           "returns": {
             "type": "String",
-            "desc": "the string in reverse"
+            "desc": "The string in reverse."
           },
           "examples": [
             "'hello'.reverse(); // 'olleh'"
@@ -4419,12 +4420,12 @@
             {
               "name": "regex",
               "type": "String",
-              "desc": "the regex to split the string with"
+              "desc": "The regex to split the string with."
             }
           ],
           "returns": {
             "type": "List",
-            "desc": "the list of strings"
+            "desc": "The list of strings."
           },
           "examples": [
             "'foo/bar/baz'.split('/');"
@@ -4440,12 +4441,12 @@
             {
               "name": "string",
               "type": "String",
-              "desc": "the string to check"
+              "desc": "The string to check."
             }
           ],
           "returns": {
             "type": "Boolean",
-            "desc": "whether the string starts with the given string"
+            "desc": "Whether the string starts with the given string."
           },
           "examples": [
             "'hello'.startsWith('he'); // true"
@@ -4459,7 +4460,7 @@
           ],
           "returns": {
             "type": "String",
-            "desc": "the stripped string"
+            "desc": "The stripped string."
           },
           "examples": [
             "'  hello  '.strip(); // 'hello'"
@@ -4475,17 +4476,17 @@
             {
               "name": "from",
               "type": "Number",
-              "desc": "the start index (inclusive)"
+              "desc": "The start index (inclusive)."
             },
             {
               "name": "to",
               "type": "Number",
-              "desc": "the end index (exclusive)"
+              "desc": "The end index (exclusive)."
             }
           ],
           "returns": {
             "type": "String",
-            "desc": "the substring"
+            "desc": "The substring."
           },
           "examples": [
             "'hello'.subString(1, 3); // 'el'"
@@ -4502,7 +4503,7 @@
           ],
           "returns": {
             "type": "List",
-            "desc": "the list of characters"
+            "desc": "The list of characters."
           },
           "examples": [
             "'hello'.toList(); // ['h', 'e', 'l', 'l', 'o']"
@@ -4518,7 +4519,7 @@
           ],
           "returns": {
             "type": "Number",
-            "desc": "the number"
+            "desc": "The number."
           },
           "examples": [
             "'99'.toNumber(); // 99"
@@ -4532,7 +4533,7 @@
           ],
           "returns": {
             "type": "String",
-            "desc": "the string in uppercase"
+            "desc": "The string in uppercase."
           },
           "examples": [
             "'hello'.uppercase(); // 'HELLO'"
@@ -4571,7 +4572,7 @@
           ],
           "returns": {
             "type": "Future",
-            "desc": "the future value that can be awaited"
+            "desc": "The future value that can be awaited."
           },
           "examples": [
             "task = new Task()\n    .then(fun() print(\"hello\"))\n    .then(fun() print(\" \"))\n    .then(fun() print(\"world\"))\n    .then(fun() 10);\nf = task.run(); // prints 'hello world'\nprint(f.await()); // prints 10"
@@ -4589,12 +4590,12 @@
             {
               "name": "function",
               "type": "Function",
-              "desc": "the function to run at the end of the task"
+              "desc": "The function to run at the end of the task."
             }
           ],
           "returns": {
             "type": "Task",
-            "desc": "the task, this allows for chaining"
+            "desc": "The task, this allows for chaining."
           },
           "examples": [
             "task = new Task()\n    .then(fun() print(\"hello\"))\n    .then(fun() print(\" \"))\n    .then(fun() print(\"world\"))\n    .then(fun() 10);\nf = task.run(); // prints 'hello world'\nprint(f.await()); // prints 10"
@@ -4634,7 +4635,7 @@
           ],
           "returns": {
             "type": "Number",
-            "desc": "the age of the thread"
+            "desc": "The age of the thread."
           },
           "examples": [
             "Thread.getCurrentThread().getAge();"
@@ -4648,7 +4649,7 @@
           ],
           "returns": {
             "type": "String",
-            "desc": "the name of the thread"
+            "desc": "The name of the thread."
           },
           "examples": [
             "Thread.getCurrentThread().getName();"
@@ -4662,7 +4663,7 @@
           ],
           "returns": {
             "type": "Boolean",
-            "desc": "true if the thread is alive, false if not"
+            "desc": "True if the thread is alive, false if not."
           },
           "examples": [
             "Thread.getCurrentThread().isAlive();"
@@ -4713,7 +4714,7 @@
           ],
           "returns": {
             "type": "Thread",
-            "desc": "the current thread"
+            "desc": "The current thread."
           },
           "examples": [
             "Thread.getCurrentThread();"
@@ -4731,12 +4732,12 @@
             {
               "name": "function",
               "type": "Function",
-              "desc": "the function you want to run on a new thread"
+              "desc": "The function you want to run on a new thread."
             }
           ],
           "returns": {
             "type": "Thread",
-            "desc": "the new thread"
+            "desc": "The new thread."
           },
           "examples": [
             "Thread.runThreaded(fun() {\n    print(\"Running asynchronously!\");\n});"
@@ -4752,17 +4753,17 @@
             {
               "name": "name",
               "type": "String",
-              "desc": "the name of the thread"
+              "desc": "The name of the thread."
             },
             {
               "name": "function",
               "type": "Function",
-              "desc": "the function you want to run on a new thread"
+              "desc": "The function you want to run on a new thread."
             }
           ],
           "returns": {
             "type": "Thread",
-            "desc": "the new thread"
+            "desc": "The new thread."
           },
           "examples": [
             "Thread.runThreaded(\"MyThread\", fun() {\n    print(\"Running asynchronously on MyThread\");\n});"
@@ -4788,7 +4789,7 @@
           ],
           "returns": {
             "type": "String",
-            "desc": "the name of the type"
+            "desc": "The name of the type."
           },
           "examples": [
             "String.type.getName();"
@@ -4804,12 +4805,12 @@
             {
               "name": "type",
               "type": "Type",
-              "desc": "the other type you want to check against"
+              "desc": "The other type you want to check against."
             }
           ],
           "returns": {
             "type": "Boolean",
-            "desc": "whether the type is of that type"
+            "desc": "Whether the type is of that type."
           },
           "examples": [
             "String.type.inheritsFrom(Number.type);"
@@ -4827,12 +4828,12 @@
             {
               "name": "value",
               "type": "Object",
-              "desc": "the value you want to get the type of"
+              "desc": "The value you want to get the type of."
             }
           ],
           "returns": {
             "type": "Type",
-            "desc": "the type of the value"
+            "desc": "The type of the value."
           },
           "examples": [
             "Type.of(0);"

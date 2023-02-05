@@ -33,7 +33,7 @@ import kotlin.reflect.KClass
  * @param type the type of the field represented by the [KClass] of a [PrimitiveDefinition].
  * @param assignable whether the field is re-assignable.
  * @param examples examples of the field in use.
- * @see TODO
+ * @see me.senseiwells.arucas.api.docs.visitor.FieldDoc
  */
 @Target(AnnotationTarget.FIELD)
 annotation class FieldDoc(

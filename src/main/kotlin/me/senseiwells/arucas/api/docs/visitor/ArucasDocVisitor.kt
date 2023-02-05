@@ -19,6 +19,11 @@ import me.senseiwells.arucas.classes.PrimitiveDefinition
  */
 abstract class ArucasDocVisitor {
     /**
+     * This gets called before extensions are parsed.
+     */
+    open fun startExtensions() { }
+
+    /**
      * This visits all the children components. Overriding this
      * will prevent the other methods from being called.
      *
@@ -41,12 +46,22 @@ abstract class ArucasDocVisitor {
     protected open fun visitExtension(extensionDoc: ExtensionDoc) { }
 
     /**
+     * This gets called after extensions are parsed.
+     */
+    open fun finishExtensions() { }
+
+    /**
      * This visits a [FunctionDoc] from an extension.
      *
      * @param extensionDoc the extension documentation where the function is defined in.
      * @param functionDoc the documentation for the extension function.
      */
     protected open fun visitExtensionFunction(extensionDoc: ExtensionDoc, functionDoc: FunctionDoc) { }
+
+    /**
+     * This gets called before classes are parsed.
+     */
+    open fun startClasses() { }
 
     /**
      * This visits all the child components. Overriding this
@@ -107,4 +122,9 @@ abstract class ArucasDocVisitor {
      * @param functionDoc the documentation for the static class method.
      */
     protected open fun visitStaticMethod(classDoc: ClassDoc, functionDoc: FunctionDoc) { }
+
+    /**
+     * This gets called after classes are parsed.
+     */
+    open fun finishClasses() { }
 }

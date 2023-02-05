@@ -6,9 +6,17 @@ import me.senseiwells.arucas.api.docs.annotations.ClassDoc as ClassDocAnnotation
 /**
  * This class serves as a wrapper for [ClassDocAnnotation].
  *
+ * @param origin the doc parser where this class was created.
  * @param doc the [ClassDocAnnotation] to wrap.
+ * @param importPath the import path of the class.
  */
-class ClassDoc(private val doc: ClassDocAnnotation): Describable {
+class ClassDoc(
+    private val origin: ArucasDocParser,
+    private val doc: ClassDocAnnotation,
+    private val importPath: String?
+): Describable {
+    private val lazySuperclass by lazy { this.origin.getClassDoc(this.doc.superclass.java) }
+
     /**
      * This gets the name of the class.
      *
@@ -33,7 +41,7 @@ class ClassDoc(private val doc: ClassDocAnnotation): Describable {
      * @return whether the class is importable.
      */
     fun isImportable(): Boolean {
-        return this.doc.importPath.isNotBlank()
+        return this.importPath != null
     }
 
     /**
@@ -42,7 +50,7 @@ class ClassDoc(private val doc: ClassDocAnnotation): Describable {
      * @return the import path of the class.
      */
     fun getImportPath(): String {
-        return this.doc.importPath
+        return this.importPath!!
     }
 
     /**
@@ -52,7 +60,7 @@ class ClassDoc(private val doc: ClassDocAnnotation): Describable {
      * @return the [ClassDoc] of the superclass.
      */
     fun getSuperclass(): ClassDoc {
-        return ClassDoc(this.doc.superclass.java.getAnnotation(ClassDocAnnotation::class.java))
+        return this.lazySuperclass
     }
 
     /**

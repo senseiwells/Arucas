@@ -7,6 +7,7 @@ import me.senseiwells.arucas.api.docs.FieldDoc
 import me.senseiwells.arucas.api.docs.FunctionDoc
 import me.senseiwells.arucas.classes.ClassDefinition
 
+@Deprecated("This has been replaced by MarkdownDocVisitor")
 open class MarkdownParser protected constructor(): DocParser() {
     companion object {
         @JvmStatic

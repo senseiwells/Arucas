@@ -16,7 +16,6 @@ import kotlin.reflect.KClass
  *         "This example class is for example purposes only!",
  *         "You can also have multiple lines."
  *     ],
- *     importPath = "util.Network",
  *     superclass = CollectionDef::class,
  *     language = Util.Language.Kotlin
  * )
@@ -30,11 +29,9 @@ import kotlin.reflect.KClass
  *
  * @param name the name of the class.
  * @param desc the description of the class.
- * @param importPath the path that will be used for importing
- * this is only applicable for classes that are importable.
  * @param superclass the class' superclass [KClass].
  * @param language the language that the class was written in.
- * @see TODO
+ * @see me.senseiwells.arucas.api.docs.visitor.ClassDoc
  */
 @Target(AnnotationTarget.CLASS)
 annotation class ClassDoc(
@@ -46,10 +43,6 @@ annotation class ClassDoc(
      * The description of the class.
      */
     val desc: Array<String>,
-    /**
-     * The path that will be used for importing this is only applicable for classes that are importable.
-     */
-    val importPath: String = "",
     /**
      * The class' superclass [KClass].
      */

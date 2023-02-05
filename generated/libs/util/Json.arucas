@@ -6,7 +6,7 @@
 class Json {
     /*
      * This converts the Json back into an object
-     * Returns - Object: the Value parsed from the Json
+     * Returns - Object: The Value parsed from the Json.
      */
     fun getValue(): Object;
 
@@ -14,14 +14,14 @@ class Json {
      * This writes the Json to a file
      * if the file given is a directory or cannot be
      * written to, an error will be thrown
-     * Parameter - File (file): the file that you want to write to
+     * Parameter - File (file): The file that you want to write to.
      */
     fun writeToFile(file: File): Null;
 
     /*
      * This will read a file and parse it into a Json, this will throw an error if the file cannot be read
-     * Parameter - File (file): the file that you want to parse into a Json
-     * Returns - Json: the Json parsed from the file
+     * Parameter - File (file): The file that you want to parse into a Json.
+     * Returns - Json: The Json parsed from the file.
      */
     static fun fromFile(file: File): Json;
 
@@ -29,8 +29,8 @@ class Json {
      * This converts a list into a Json, an important thing to note is that
      * any values that are not Numbers, Booleans, Lists, Maps, or Null will use their
      * toString() member to convert them to a string
-     * Parameter - List (list): the list that you want to parse into a Json
-     * Returns - Json: the Json parsed from the list
+     * Parameter - List (list): The list that you want to parse into a Json.
+     * Returns - Json: The Json parsed from the list.
      */
     static fun fromList(list: List): Json;
 
@@ -38,16 +38,16 @@ class Json {
      * This converts a map into a Json, an important thing to note is that
      * any values that are not Numbers, Booleans, Lists, Maps, or Null will use their
      * toString() member to convert them to a string
-     * Parameter - Map (map): the map that you want to parse into a Json
-     * Returns - Json: the Json parsed from the map
+     * Parameter - Map (map): The map that you want to parse into a Json.
+     * Returns - Json: The Json parsed from the map.
      */
     static fun fromMap(map: Map): Json;
 
     /*
      * This converts a string into a Json provided it is formatted correctly,
      * otherwise throwing an error
-     * Parameter - String (string): the string that you want to parse into a Json
-     * Returns - Json: the Json parsed from the string
+     * Parameter - String (string): The string that you want to parse into a Json.
+     * Returns - Json: The Json parsed from the string.
      */
     static fun fromString(string: String): Json;
 }

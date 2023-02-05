@@ -23,8 +23,7 @@ import java.util.function.Supplier
         "This class wraps Java values allowing for interactions between Java and Arucas.",
         "This class cannot be instantiated or extended but you can create Java values by",
         "using the static method 'Java.valueOf()' to convert Arucas to Java."
-    ],
-    importPath = "util.Internal"
+    ]
 )
 class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpreter) {
     private companion object Null

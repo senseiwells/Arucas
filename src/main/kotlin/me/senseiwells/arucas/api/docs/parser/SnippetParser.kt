@@ -4,6 +4,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import me.senseiwells.arucas.api.ArucasAPI
 
+@Deprecated("This has been replaced by VSCSnippetDocVisitor")
 open class SnippetParser protected constructor(): DocParser() {
     companion object {
         private val GSON = GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create()

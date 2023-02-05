@@ -36,7 +36,7 @@ import me.senseiwells.arucas.classes.PrimitiveDefinition
  * @param params the parameters for the function, see [ParameterDoc].
  * @param returns the return value documentation, see [ReturnDoc].
  * @param examples examples of the method in use.
- * @see TODO
+ * @see me.senseiwells.arucas.api.docs.visitor.FunctionDoc
  */
 @Target(AnnotationTarget.FUNCTION)
 annotation class FunctionDoc(

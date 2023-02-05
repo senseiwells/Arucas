@@ -5,9 +5,15 @@ import me.senseiwells.arucas.api.docs.annotations.FunctionDoc as FunctionDocAnno
 /**
  * This class serves as a wrapper for [FunctionDocAnnotation].
  *
+ * @param origin the doc parser where this class was created.
  * @param doc the [FunctionDocAnnotation] to wrap.
  */
-class FunctionDoc(private val doc: FunctionDocAnnotation): Describable {
+class FunctionDoc(
+    private val origin: ArucasDocParser,
+    private val doc: FunctionDocAnnotation
+): Describable {
+    private val lazyParameters by lazy { this.doc.params.map { ParameterDoc(this.origin, it) } }
+
     /**
      * This gets the name of the function.
      *
@@ -32,7 +38,7 @@ class FunctionDoc(private val doc: FunctionDocAnnotation): Describable {
      * @return the parameter documentations for the function.
      */
     fun getParameters(): List<ParameterDoc> {
-        return this.doc.params.map { ParameterDoc(it) }
+        return this.lazyParameters
     }
 
     /**
@@ -68,7 +74,7 @@ class FunctionDoc(private val doc: FunctionDocAnnotation): Describable {
      * @return the return documentation for the function.
      */
     fun getReturns(): ReturnDoc {
-        return ReturnDoc(this.doc.returns)
+        return ReturnDoc(this.origin, this.doc.returns)
     }
 
     /**

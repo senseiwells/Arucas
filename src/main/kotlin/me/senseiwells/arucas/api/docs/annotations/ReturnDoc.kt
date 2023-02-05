@@ -12,6 +12,7 @@ import kotlin.reflect.KClass
  *
  * @param type the type of the return value.
  * @param desc description of the return value.
+ * @see me.senseiwells.arucas.api.docs.visitor.ReturnDoc
  */
 annotation class ReturnDoc(
     /**

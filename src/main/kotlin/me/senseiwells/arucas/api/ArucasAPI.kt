@@ -2,7 +2,8 @@ package me.senseiwells.arucas.api
 
 import com.google.gson.JsonElement
 import me.senseiwells.arucas.api.ArucasAPI.Builder
-import me.senseiwells.arucas.api.docs.parser.CodeDocParser
+import me.senseiwells.arucas.api.docs.visitor.ArucasDocParser
+import me.senseiwells.arucas.api.docs.visitor.impl.CodeDocVisitor
 import me.senseiwells.arucas.api.impl.DefaultArucasIO
 import me.senseiwells.arucas.api.impl.GitHubArucasLibrary
 import me.senseiwells.arucas.api.impl.MultiArucasLibrary
@@ -17,7 +18,6 @@ import me.senseiwells.arucas.extensions.JavaDef
 import me.senseiwells.arucas.extensions.JsonDef
 import me.senseiwells.arucas.extensions.NetworkDef
 import me.senseiwells.arucas.utils.*
-import me.senseiwells.arucas.utils.Util.Collection.sort
 import me.senseiwells.arucas.utils.Util.File.ensureParentExists
 import me.senseiwells.arucas.utils.impl.*
 import java.io.File
@@ -148,24 +148,20 @@ interface ArucasAPI {
      * @param rootPath the path to generate the native files to.
      */
     fun generateNativeFiles(rootPath: Path) {
-        val docParser = CodeDocParser()
-        val dummy = Interpreter.dummy(this)
+        val visitor = CodeDocVisitor()
+        ArucasDocParser(this).addVisitor(visitor).parse()
 
-        dummy.modules.builtIns().sort().let {
-            val generationPath = rootPath.resolve("BuiltIn.arucas").ensureParentExists()
-            Files.writeString(generationPath, docParser.parseClasses(it))
-        }
+        val builtInPath = rootPath.resolve("BuiltIn.arucas").ensureParentExists()
+        Files.writeString(builtInPath, visitor.getBuiltIns())
 
-        dummy.modules.forEach { p, c ->
-            val path = p.replace('.', '/') + ".arucas"
+        for ((importPath, content) in visitor.getModules()) {
+            val path = importPath.replace('.', File.separatorChar) + ".arucas"
             val generationPath = rootPath.resolve(path).ensureParentExists()
-            Files.writeString(generationPath, docParser.parseClasses(c.sort()))
+            Files.writeString(generationPath, content)
         }
 
-        this.getBuiltInExtensions()?.let {
-            val generationPath = rootPath.resolve("Extensions.arucas").ensureParentExists()
-            Files.writeString(generationPath, docParser.parseExtensions(it))
-        }
+        val extensionPath = rootPath.resolve("Extensions.arucas").ensureParentExists()
+        Files.writeString(extensionPath, visitor.getExtensions())
     }
 
 

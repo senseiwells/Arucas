@@ -18,8 +18,7 @@ import me.senseiwells.arucas.utils.Util.Types.JAVA_CLASS
         "This class 'acts' as a Java class. You are able to call this class which",
         "will invoke the Java class' constructor, and access and assign the static",
         "fields of the class. This class cannot be instantiated or extended."
-    ],
-    importPath = "util.Internal"
+    ]
 )
 class JavaClassDef(interpreter: Interpreter): CreatableDefinition<Class<*>>(JAVA_CLASS, interpreter) {
     override fun canExtend() = false
