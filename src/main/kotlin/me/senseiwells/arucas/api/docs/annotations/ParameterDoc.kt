@@ -19,9 +19,24 @@ import kotlin.reflect.KClass
  * @see TODO
  */
 annotation class ParameterDoc(
+    /**
+     * The type of the expected parameter.
+     */
     val type: KClass<out PrimitiveDefinition<*>>,
+    /**
+     * The name of the parameter.
+     */
     val name: String,
+    /**
+     * The description of the parameter.
+     */
     val desc: Array<String>,
+    /**
+     * Whether the parameter is varargs (accepts arbitrary number of arguments).
+     */
     val isVarargs: Boolean = false,
+    /**
+     * Alternative types for the parameter that may be expected.
+     */
     val alternativeTypes: Array<KClass<out PrimitiveDefinition<*>>> = [],
 )

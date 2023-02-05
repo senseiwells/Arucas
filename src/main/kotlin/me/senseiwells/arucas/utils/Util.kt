@@ -1,6 +1,7 @@
 package me.senseiwells.arucas.utils
 
 import com.google.gson.*
+import me.senseiwells.arucas.api.ArucasExtension
 import me.senseiwells.arucas.builtin.*
 import me.senseiwells.arucas.classes.ClassDefinition
 import me.senseiwells.arucas.classes.instance.ClassInstance

@@ -1,0 +1,46 @@
+package me.senseiwells.arucas.api.docs.visitor
+
+import me.senseiwells.arucas.api.docs.annotations.ConstructorDoc as ConstructorDocAnnotation
+
+/**
+ * This class serves as a wrapper for [ConstructorDocAnnotation].
+ *
+ * @param doc the [ConstructorDocAnnotation] to wrap.
+ */
+class ConstructorDoc(private val doc: ConstructorDocAnnotation): Describable {
+    /**
+     * This gets the description of the constructor.
+     *
+     * @return the description of the constructor.
+     */
+    override fun getDescription(): Array<String> {
+        return this.doc.desc
+    }
+
+    /**
+     * This gets the [ParameterDoc]s for the constructor.
+     *
+     * @return the parameter documentations for the constructors.
+     */
+    fun getParameters(): List<ParameterDoc> {
+        return this.doc.params.map { ParameterDoc(it) }
+    }
+
+    /**
+     * This gets the number of parameters the constructor has.
+     *
+     * @return the number of parameters the constructor has.
+     */
+    fun getParameterCount(): Int {
+        return this.doc.params.size
+    }
+
+    /**
+     * This gets the examples for the constructor.
+     *
+     * @return the examples.
+     */
+    fun getExamples(): Array<String> {
+        return this.doc.examples
+    }
+}

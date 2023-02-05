@@ -179,7 +179,11 @@ class MathDef(interpreter: Interpreter): PrimitiveDefinition<Unit>(MATH, interpr
         isStatic = true,
         name = "clamp",
         desc = ["Clamps a value between a minimum and maximum"],
-        params = [ParameterDoc(NumberDef::class, "value", ["The value to clamp."]), ParameterDoc(NumberDef::class, "min", ["The minimum."]), ParameterDoc(NumberDef::class, "max", ["The maximum."])],
+        params = [
+            ParameterDoc(NumberDef::class, "value", ["The value to clamp."]),
+            ParameterDoc(NumberDef::class, "min", ["The minimum."]),
+            ParameterDoc(NumberDef::class, "max", ["The maximum."])
+        ],
         returns = ReturnDoc(NumberDef::class, ["The clamped value."]),
         examples = ["Math.clamp(10, 2, 8);"]
     )

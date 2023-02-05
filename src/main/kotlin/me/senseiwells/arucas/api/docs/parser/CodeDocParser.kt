@@ -3,11 +3,10 @@ package me.senseiwells.arucas.api.docs.parser
 import me.senseiwells.arucas.api.ArucasExtension
 import me.senseiwells.arucas.api.docs.ClassDoc
 import me.senseiwells.arucas.api.docs.FunctionDoc
-import me.senseiwells.arucas.api.docs.annotations.ParameterDoc
 import me.senseiwells.arucas.classes.ClassDefinition
 import me.senseiwells.arucas.utils.Util
 
-class CodeDocParser : DocParser() {
+class CodeDocParser: DocParser() {
     companion object {
         private const val INDENT = "    "
         private const val NO_INDENT = ""

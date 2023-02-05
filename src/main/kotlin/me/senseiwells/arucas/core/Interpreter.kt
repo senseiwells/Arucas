@@ -665,17 +665,17 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         visitable ?: return this.currentTable.getVar(name)
         val distance = this.localCache.getVar(visitable)
         distance?.let {
-            this.currentTable.getVar(name, distance)?.let { return it }
+            this.currentTable.getVar(name, distance)?.let { variable -> return variable }
 
             // So theoretically it's possible that a variable defined in a function
             // was cached in that location but was since defined in the previous scopes
             // where it currently resides. This means that we need to check scopes above.
             // But this should be avoided as it can lead to unwanted behaviours.
-            this.currentTable.getVar(name)?.let {
+            this.currentTable.getVar(name)?.let { variable ->
                 this.logDebug("Local variable '$name' was defined previously in a scope but was accessed in scopes above")
-                return it
+                return variable
             }
-            throw IllegalArgumentException("Failed to fetch variable at cached location")
+            throw IllegalArgumentException("Failed to fetch variable '${name}' at cached location (${it})")
         }
         return this.globalTable.getVar(name)
     }
@@ -684,11 +684,11 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         if (visitable != null) {
             this.localCache.getFunction(visitable)?.let { distance ->
                 this.currentTable.getFunction(name, parameters, distance)?.let { return it }
-                throw IllegalArgumentException("Failed to fetch function at cached location")
+                throw IllegalArgumentException("Failed to fetch function '${name}::${parameters}' at cached location (${distance})")
             }
             this.localCache.getVar(visitable)?.let { distance ->
                 this.currentTable.getVar(name, distance)?.let { return it }
-                throw IllegalArgumentException("Failed to fetch function variable at cached location")
+                throw IllegalArgumentException("Failed to fetch function '${name}::${parameters}' at cached location (${distance})")
             }
             this.globalTable.getFunction(name, parameters)?.let { return it }
             this.globalTable.getVar(name)?.let { return it }
@@ -703,7 +703,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         if (visitable != null) {
             this.localCache.getClass(visitable)?.let { distance ->
                 this.currentTable.getClass(name, distance)?.let { return it }
-                throw IllegalArgumentException("Failed to fetch class at cached location")
+                throw IllegalArgumentException("Failed to fetch class '${name}' at cached location (${distance})")
             }
             this.globalTable.getClass(name)?.let { return it }
         }
