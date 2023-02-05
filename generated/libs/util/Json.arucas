@@ -1,11 +1,11 @@
 /* Native, implemented in Kotlin
  * This class allows you to create and manipulate JSON objects.
- * This class cannot be instantiated or extended
+ * This class cannot be instantiated or extended.
  * Import with 'import Json from util.Json'
  */
 class Json {
     /*
-     * This converts the Json back into an object
+     * This converts the Json back into an object.
      * Returns - Object: The Value parsed from the Json.
      */
     fun getValue(): Object;
@@ -13,13 +13,13 @@ class Json {
     /*
      * This writes the Json to a file
      * if the file given is a directory or cannot be
-     * written to, an error will be thrown
+     * written to, an error will be thrown.
      * Parameter - File (file): The file that you want to write to.
      */
     fun writeToFile(file: File): Null;
 
     /*
-     * This will read a file and parse it into a Json, this will throw an error if the file cannot be read
+     * This will read a file and parse it into a Json, this will throw an error if the file cannot be read.
      * Parameter - File (file): The file that you want to parse into a Json.
      * Returns - Json: The Json parsed from the file.
      */
@@ -28,7 +28,7 @@ class Json {
     /*
      * This converts a list into a Json, an important thing to note is that
      * any values that are not Numbers, Booleans, Lists, Maps, or Null will use their
-     * toString() member to convert them to a string
+     * toString() member to convert them to a string.
      * Parameter - List (list): The list that you want to parse into a Json.
      * Returns - Json: The Json parsed from the list.
      */
@@ -37,7 +37,7 @@ class Json {
     /*
      * This converts a map into a Json, an important thing to note is that
      * any values that are not Numbers, Booleans, Lists, Maps, or Null will use their
-     * toString() member to convert them to a string
+     * toString() member to convert them to a string.
      * Parameter - Map (map): The map that you want to parse into a Json.
      * Returns - Json: The Json parsed from the map.
      */
@@ -45,7 +45,7 @@ class Json {
 
     /*
      * This converts a string into a Json provided it is formatted correctly,
-     * otherwise throwing an error
+     * otherwise throwing an error.
      * Parameter - String (string): The string that you want to parse into a Json.
      * Returns - Json: The Json parsed from the string.
      */

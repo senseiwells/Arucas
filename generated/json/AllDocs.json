@@ -6,7 +6,7 @@
         "name": "debug",
         "is_arbitrary": false,
         "desc": [
-          "This is used to enable or disable debug mode"
+          "This is used to enable or disable debug mode."
         ],
         "params": [
           {
@@ -24,7 +24,7 @@
         "is_arbitrary": false,
         "desc": [
           "This is used to evaluate a string as code.",
-          "This will not inherit imports that are in the parent script"
+          "This will not inherit imports that are in the parent script."
         ],
         "params": [
           {
@@ -45,7 +45,7 @@
         "name": "experimental",
         "is_arbitrary": false,
         "desc": [
-          "This is used to enable or disable experimental mode"
+          "This is used to enable or disable experimental mode."
         ],
         "params": [
           {
@@ -62,7 +62,7 @@
         "name": "getArucasVersion",
         "is_arbitrary": false,
         "desc": [
-          "This is used to get the version of Arucas that is currently running"
+          "This is used to get the version of Arucas that is currently running."
         ],
         "returns": {
           "type": "String",
@@ -76,7 +76,7 @@
         "name": "getDate",
         "is_arbitrary": false,
         "desc": [
-          "This is used to get the current date formatted with dd/MM/yyyy in your local time"
+          "This is used to get the current date formatted with dd/MM/yyyy in your local time."
         ],
         "returns": {
           "type": "String",
@@ -90,7 +90,7 @@
         "name": "getMilliTime",
         "is_arbitrary": false,
         "desc": [
-          "This is used to get the current time in milliseconds"
+          "This is used to get the current time in milliseconds."
         ],
         "returns": {
           "type": "Number",
@@ -104,7 +104,7 @@
         "name": "getNanoTime",
         "is_arbitrary": false,
         "desc": [
-          "This is used to get the current time in nanoseconds"
+          "This is used to get the current time in nanoseconds."
         ],
         "returns": {
           "type": "Number",
@@ -118,7 +118,7 @@
         "name": "getTime",
         "is_arbitrary": false,
         "desc": [
-          "This is used to get the current time formatted with HH:mm:ss in your local time"
+          "This is used to get the current time formatted with HH:mm:ss in your local time."
         ],
         "returns": {
           "type": "String",
@@ -132,7 +132,7 @@
         "name": "getUnixTime",
         "is_arbitrary": false,
         "desc": [
-          "This is used to get the current time in seconds since the Unix epoch"
+          "This is used to get the current time in seconds since the Unix epoch."
         ],
         "returns": {
           "type": "Number",
@@ -168,7 +168,7 @@
         "name": "isDebug",
         "is_arbitrary": false,
         "desc": [
-          "This is used to determine whether the interpreter is in debug mode"
+          "This is used to determine whether the interpreter is in debug mode."
         ],
         "examples": [
           "isDebug();"
@@ -178,7 +178,7 @@
         "name": "isExperimental",
         "is_arbitrary": false,
         "desc": [
-          "This is used to determine whether the interpreter is in experimental mode"
+          "This is used to determine whether the interpreter is in experimental mode."
         ],
         "examples": [
           "isExperimental();"
@@ -188,7 +188,7 @@
         "name": "isMain",
         "is_arbitrary": false,
         "desc": [
-          "This is used to check whether the script is the main script"
+          "This is used to check whether the script is the main script."
         ],
         "returns": {
           "type": "Boolean",
@@ -202,7 +202,7 @@
         "name": "len",
         "is_arbitrary": false,
         "desc": [
-          "This is used to get the length of a collection or string"
+          "This is used to get the length of a collection or string."
         ],
         "params": [
           {
@@ -242,7 +242,7 @@
         ],
         "params": [
           {
-            "name": "value",
+            "name": "value...",
             "type": "Object",
             "desc": "The value to print."
           }
@@ -256,7 +256,7 @@
         "is_arbitrary": false,
         "desc": [
           "This logs something to the debug output.",
-          "It only prints if debug mode is enabled: `debug(true)`"
+          "It only prints if debug mode is enabled: `debug(true)`."
         ],
         "params": [
           {
@@ -273,7 +273,7 @@
         "name": "random",
         "is_arbitrary": false,
         "desc": [
-          "This is used to generate a random integer between 0 and the bound"
+          "This is used to generate a random integer between 0 and the bound."
         ],
         "params": [
           {
@@ -294,7 +294,7 @@
         "name": "range",
         "is_arbitrary": false,
         "desc": [
-          "This is used to generate a range of integers starting from 0, incrementing by 1"
+          "This is used to generate a range of integers starting from 0, incrementing by 1."
         ],
         "params": [
           {
@@ -316,7 +316,7 @@
         "is_arbitrary": false,
         "desc": [
           "This is used to generate a range of numbers starting",
-          "from a start value and ending at a bound value incrementing by 1"
+          "from a start value and ending at a bound value incrementing by 1."
         ],
         "params": [
           {
@@ -343,7 +343,7 @@
         "is_arbitrary": false,
         "desc": [
           "This is used to generate a range of numbers starting from a",
-          "start value and ending at a bound value incrementing by a step value"
+          "start value and ending at a bound value incrementing by a step value."
         ],
         "params": [
           {
@@ -374,7 +374,7 @@
         "name": "run",
         "is_arbitrary": false,
         "desc": [
-          "This is used to run a .arucas file, you can use on script to run other scripts"
+          "This is used to run a .arucas file, you can use on script to run other scripts."
         ],
         "params": [
           {
@@ -399,7 +399,7 @@
         ],
         "desc": [
           "This is used to evaluate a string as code.",
-          "This will not inherit imports that are in the parent script"
+          "This will not inherit imports that are in the parent script."
         ],
         "params": [
           {
@@ -416,7 +416,7 @@
         "name": "sleep",
         "is_arbitrary": false,
         "desc": [
-          "This pauses your program for a certain amount of milliseconds"
+          "This pauses your program for a certain amount of milliseconds."
         ],
         "params": [
           {
@@ -433,7 +433,7 @@
         "name": "stop",
         "is_arbitrary": false,
         "desc": [
-          "This is used to stop a script"
+          "This is used to stop a script."
         ],
         "examples": [
           "stop();"
@@ -443,7 +443,7 @@
         "name": "suppressDeprecated",
         "is_arbitrary": false,
         "desc": [
-          "This is used to enable or disable suppressing deprecation warnings"
+          "This is used to enable or disable suppressing deprecation warnings."
         ],
         "params": [
           {
@@ -463,7 +463,7 @@
       "name": "Boolean",
       "desc": [
         "This is the boolean type, representing either true or false.",
-        "This class cannot be instantiated, or extended"
+        "This class cannot be instantiated, or extended."
       ],
       "import_path": null,
       "superclass": "Object",
@@ -478,7 +478,7 @@
         "This class is used to represent a collection of objects,",
         "this class is used internally as the parent of maps, lists, and sets.",
         "This cannot be instantiated directly.",
-        "All collections inherit Iterable, and thus can be iterated over"
+        "All collections inherit Iterable, and thus can be iterated over."
       ],
       "import_path": null,
       "superclass": "Iterable",
@@ -486,7 +486,7 @@
       "constructors": [
         {
           "desc": [
-            "This creates a collection, this cannot be called directly, only from child classes"
+            "This creates a collection, this cannot be called directly, only from child classes."
           ],
           "examples": [
             "class ChildCollection: Collection {\n    ChildCollection(): super();\n    \n    fun size() {\n        return 0;\n    }\n}"
@@ -498,7 +498,7 @@
           "name": "isEmpty",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to check if the collection is empty"
+            "This allows you to check if the collection is empty."
           ],
           "returns": {
             "type": "Boolean",
@@ -512,7 +512,7 @@
           "name": "size",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to get the size of the collection"
+            "This allows you to get the size of the collection."
           ],
           "returns": {
             "type": "Number",
@@ -529,7 +529,7 @@
       "name": "Enum",
       "desc": [
         "This class is the super class of all enums in Arucas.",
-        "Enums cannot be instantiated or extended"
+        "Enums cannot be instantiated or extended."
       ],
       "import_path": null,
       "superclass": "Object",
@@ -540,7 +540,7 @@
           "name": "getName",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to get the name of an enum value"
+            "This allows you to get the name of an enum value."
           ],
           "returns": {
             "type": "String",
@@ -554,7 +554,7 @@
           "name": "ordinal",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to get the ordinal of the enum value"
+            "This allows you to get the ordinal of the enum value."
           ],
           "returns": {
             "type": "Number",
@@ -571,7 +571,7 @@
       "name": "Error",
       "desc": [
         "This class is used for errors, and this is the only type that can be thrown.",
-        "You are able to extend this class to create your own error types"
+        "You are able to extend this class to create your own error types."
       ],
       "import_path": null,
       "superclass": "Object",
@@ -579,7 +579,7 @@
       "constructors": [
         {
           "desc": [
-            "This creates a new Error value with no message"
+            "This creates a new Error value with no message."
           ],
           "examples": [
             "new Error();"
@@ -587,7 +587,7 @@
         },
         {
           "desc": [
-            "This creates a new Error value with the given details as a message"
+            "This creates a new Error value with the given details as a message."
           ],
           "params": [
             {
@@ -602,7 +602,7 @@
         },
         {
           "desc": [
-            "This creates a new Error value with the given details as a message and the given value"
+            "This creates a new Error value with the given details as a message and the given value."
           ],
           "params": [
             {
@@ -626,7 +626,7 @@
           "name": "getDetails",
           "is_arbitrary": false,
           "desc": [
-            "This returns the raw message of the error"
+            "This returns the raw message of the error."
           ],
           "returns": {
             "type": "String",
@@ -640,7 +640,7 @@
           "name": "getStackTraceString",
           "is_arbitrary": false,
           "desc": [
-            "This prints the stack trace of this error"
+            "This prints the stack trace of this error."
           ],
           "returns": {
             "type": "String",
@@ -654,7 +654,7 @@
           "name": "getValue",
           "is_arbitrary": false,
           "desc": [
-            "This returns the value that is related to the error"
+            "This returns the value that is related to the error."
           ],
           "returns": {
             "type": "Object",
@@ -670,7 +670,7 @@
     "File": {
       "name": "File",
       "desc": [
-        "This class allows you to read and write files"
+        "This class allows you to read and write files."
       ],
       "import_path": null,
       "superclass": "Object",
@@ -678,7 +678,7 @@
       "constructors": [
         {
           "desc": [
-            "This creates a new File object with set path"
+            "This creates a new File object with set path."
           ],
           "params": [
             {
@@ -697,7 +697,7 @@
           "name": "createDirectory",
           "is_arbitrary": false,
           "desc": [
-            "This creates all parent directories of the file if they don't already exist"
+            "This creates all parent directories of the file if they don't already exist."
           ],
           "returns": {
             "type": "Boolean",
@@ -711,7 +711,7 @@
           "name": "delete",
           "is_arbitrary": false,
           "desc": [
-            "This deletes the file"
+            "This deletes the file."
           ],
           "returns": {
             "type": "Boolean",
@@ -725,7 +725,7 @@
           "name": "exists",
           "is_arbitrary": false,
           "desc": [
-            "This returns if the file exists"
+            "This returns if the file exists."
           ],
           "returns": {
             "type": "Boolean",
@@ -739,7 +739,7 @@
           "name": "getAbsolutePath",
           "is_arbitrary": false,
           "desc": [
-            "This returns the absolute path of the file"
+            "This returns the absolute path of the file."
           ],
           "returns": {
             "type": "String",
@@ -753,7 +753,7 @@
           "name": "getName",
           "is_arbitrary": false,
           "desc": [
-            "This returns the name of the file"
+            "This returns the name of the file."
           ],
           "returns": {
             "type": "String",
@@ -767,7 +767,7 @@
           "name": "getPath",
           "is_arbitrary": false,
           "desc": [
-            "This returns the path of the file"
+            "This returns the path of the file."
           ],
           "returns": {
             "type": "String",
@@ -781,7 +781,7 @@
           "name": "getSubFiles",
           "is_arbitrary": false,
           "desc": [
-            "This returns a list of all the sub files in the directory"
+            "This returns a list of all the sub files in the directory."
           ],
           "returns": {
             "type": "List",
@@ -795,7 +795,7 @@
           "name": "open",
           "is_arbitrary": false,
           "desc": [
-            "This opens the file (as in opens it on your os)"
+            "This opens the file (as in opens it on your os)."
           ],
           "examples": [
             "file.open();"
@@ -805,7 +805,7 @@
           "name": "read",
           "is_arbitrary": false,
           "desc": [
-            "This reads the file and returns the contents as a string"
+            "This reads the file and returns the contents as a string."
           ],
           "returns": {
             "type": "String",
@@ -819,7 +819,7 @@
           "name": "resolve",
           "is_arbitrary": false,
           "desc": [
-            "This gets a resolves file object from the current one"
+            "This gets a resolves file object from the current one."
           ],
           "params": [
             {
@@ -840,7 +840,7 @@
           "name": "write",
           "is_arbitrary": false,
           "desc": [
-            "This writes a string to a file"
+            "This writes a string to a file."
           ],
           "params": [
             {
@@ -859,7 +859,7 @@
           "name": "getDirectory",
           "is_arbitrary": false,
           "desc": [
-            "This returns the file of user directory"
+            "This returns the file of user directory."
           ],
           "returns": {
             "type": "File",
@@ -876,7 +876,7 @@
       "desc": [
         "This class is used for functions, and this is the only type that can be called.",
         "You are able to extend this class and implement an 'invoke' method to create",
-        "your own function types, this class cannot be instantiated directly"
+        "your own function types, this class cannot be instantiated directly."
       ],
       "import_path": null,
       "superclass": "Object",
@@ -884,7 +884,7 @@
       "constructors": [
         {
           "desc": [
-            "This creates a function, this cannot be called directly, only from child classes"
+            "This creates a function, this cannot be called directly, only from child classes."
           ],
           "examples": [
             "class ChildFunction: Function {\n    ChildFunction(): super();\n}"
@@ -911,7 +911,7 @@
           "is_arbitrary": false,
           "desc": [
             "This blocks the current thread until the future has",
-            "been completed and then returns the value of the future"
+            "been completed and then returns the value of the future."
           ],
           "returns": {
             "type": "Object",
@@ -925,7 +925,7 @@
           "name": "isComplete",
           "is_arbitrary": false,
           "desc": [
-            "This returns whether the future has been completed"
+            "This returns whether the future has been completed."
           ],
           "returns": {
             "type": "Boolean",
@@ -965,7 +965,7 @@
       "desc": [
         "This class represents an object that can be iterated over.",
         "This class is used internally to denote whether an object can be",
-        "iterated over inside a foreach loop"
+        "iterated over inside a foreach loop."
       ],
       "import_path": null,
       "superclass": "Object",
@@ -973,7 +973,7 @@
       "constructors": [
         {
           "desc": [
-            "This creates an iterable, this cannot be called directly, only from child classes"
+            "This creates an iterable, this cannot be called directly, only from child classes."
           ],
           "examples": [
             "class IterableImpl: Iterable {\n    IterableImpl(): super();\n    \n    fun iterator() {\n        // Example\n        return [].iterator();\n    }\n}"
@@ -985,7 +985,7 @@
           "name": "iterator",
           "is_arbitrary": false,
           "desc": [
-            "This gets the generated iterator"
+            "This gets the generated iterator."
           ],
           "returns": {
             "type": "Iterator",
@@ -1004,7 +1004,7 @@
         "This class represents an object that iterates.",
         "This is what is used internally to iterate in a",
         "foreach loop and you can create your own iterators",
-        "to use be able to use them inside a foreach"
+        "to use be able to use them inside a foreach."
       ],
       "import_path": null,
       "superclass": "Object",
@@ -1012,7 +1012,7 @@
       "constructors": [
         {
           "desc": [
-            "This creates an iterator, this cannot be called directly, only from child classes"
+            "This creates an iterator, this cannot be called directly, only from child classes."
           ],
           "examples": [
             "class IteratorImpl: Iterator {\n    IteratorImpl(): super();\n    \n    fun hasNext() {\n        return false;\n    }\n    \n    fun next() {\n        throw new Error(\"Nothing next\");\n    }\n}"
@@ -1024,7 +1024,7 @@
           "name": "hasNext",
           "is_arbitrary": false,
           "desc": [
-            "Checks whether the iterator has a next item to iterate"
+            "Checks whether the iterator has a next item to iterate."
           ],
           "returns": {
             "type": "Boolean",
@@ -1038,7 +1038,7 @@
           "name": "next",
           "is_arbitrary": false,
           "desc": [
-            "Gets the next item in the iterator, may throw if there is no next item"
+            "Gets the next item in the iterator, may throw if there is no next item."
           ],
           "returns": {
             "type": "Object",
@@ -1082,9 +1082,9 @@
               "desc": "The name of the method."
             },
             {
-              "name": "parameters",
+              "name": "parameters...",
               "type": "Object",
-              "desc": "the parameters to call the method with"
+              "desc": "The parameters to call the method with."
             }
           ],
           "returns": {
@@ -1103,7 +1103,7 @@
           ],
           "desc": [
             "This returns the Java wrapped value of the specified field.",
-            "There is no reason for you to be using this method, it will be removed in future versions"
+            "There is no reason for you to be using this method, it will be removed in future versions."
           ],
           "params": [
             {
@@ -1162,7 +1162,7 @@
           ],
           "desc": [
             "This sets the specified field to the specified value",
-            "There is no reason for you to be using this method, it will be removed in future versions"
+            "There is no reason for you to be using this method, it will be removed in future versions."
           ],
           "params": [
             {
@@ -1186,7 +1186,7 @@
           "desc": [
             "This converts the Java value to an Arucas Value if possible, this may still",
             "be of a Java value if it cannot be converted. For example, Strings, Numbers, Lists",
-            "will be converted but "
+            "will be converted but ."
           ],
           "returns": {
             "type": "Object",
@@ -1203,11 +1203,11 @@
           "is_arbitrary": true,
           "desc": [
             "Creates a Java Object array with a given values, this will be the size of the array,",
-            "this cannot be used to create primitive arrays"
+            "this cannot be used to create primitive arrays."
           ],
           "params": [
             {
-              "name": "values",
+              "name": "values...",
               "type": "Object",
               "desc": "The values to add to the array."
             }
@@ -1225,7 +1225,7 @@
           "is_arbitrary": false,
           "desc": [
             "Creates a Java boolean array with a given size, the array is filled with false",
-            "by default and can be filled with only booleans"
+            "by default and can be filled with only booleans."
           ],
           "params": [
             {
@@ -1246,7 +1246,7 @@
           "name": "booleanOf",
           "is_arbitrary": false,
           "desc": [
-            "Creates a Java value boolean, to be used in Java"
+            "Creates a Java value boolean, to be used in Java."
           ],
           "params": [
             {
@@ -1268,7 +1268,7 @@
           "is_arbitrary": false,
           "desc": [
             "Creates a Java byte array with a given size, the array is filled with 0's",
-            "by default and can be filled with only bytes"
+            "by default and can be filled with only bytes."
           ],
           "params": [
             {
@@ -1289,7 +1289,7 @@
           "name": "byteOf",
           "is_arbitrary": false,
           "desc": [
-            "Creates a Java value byte, to be used in Java"
+            "Creates a Java value byte, to be used in Java."
           ],
           "params": [
             {
@@ -1315,7 +1315,7 @@
           "desc": [
             "Calls a static method of a Java class.",
             "This should be avoided and instead use 'classOf' to get the",
-            "instance of the class then call the static method on that"
+            "instance of the class then call the static method on that."
           ],
           "params": [
             {
@@ -1329,7 +1329,7 @@
               "desc": "The name of the method."
             },
             {
-              "name": "parameters",
+              "name": "parameters...",
               "type": "Object",
               "desc": "Any parameters to call the method with."
             }
@@ -1347,7 +1347,7 @@
           "is_arbitrary": false,
           "desc": [
             "Creates a Java char array with a given size, the array is filled with null characters's",
-            "by default and can be filled with only chars"
+            "by default and can be filled with only chars."
           ],
           "params": [
             {
@@ -1368,7 +1368,7 @@
           "name": "charOf",
           "is_arbitrary": false,
           "desc": [
-            "Creates a Java value char, to be used in Java"
+            "Creates a Java value char, to be used in Java."
           ],
           "params": [
             {
@@ -1392,7 +1392,7 @@
             "You should use 'Java.classOf(name)' instead"
           ],
           "desc": [
-            "Gets a Java class from the name of the class"
+            "Gets a Java class from the name of the class."
           ],
           "params": [
             {
@@ -1413,7 +1413,7 @@
           "name": "classOf",
           "is_arbitrary": false,
           "desc": [
-            "Gets a Java class from the name of the class"
+            "Gets a Java class from the name of the class."
           ],
           "params": [
             {
@@ -1439,7 +1439,7 @@
           "desc": [
             "This constructs a Java class with specified class name and parameters.",
             "This should be avoided and instead use 'classOf' to get the class",
-            "instance then call the constructor on that instance"
+            "instance then call the constructor on that instance."
           ],
           "params": [
             {
@@ -1448,7 +1448,7 @@
               "desc": "The name of the class."
             },
             {
-              "name": "parameters",
+              "name": "parameters...",
               "type": "Object",
               "desc": "Any parameters to pass to the constructor."
             }
@@ -1466,7 +1466,7 @@
           "is_arbitrary": false,
           "desc": [
             "Creates a Java Consumer object from a given function, it must have one",
-            "parameter and any return values will be ignored"
+            "parameter and any return values will be ignored."
           ],
           "params": [
             {
@@ -1488,7 +1488,7 @@
           "is_arbitrary": false,
           "desc": [
             "Creates a Java double array with a given size, the array is filled with 0's",
-            "by default and can be filled with only doubles"
+            "by default and can be filled with only doubles."
           ],
           "params": [
             {
@@ -1509,7 +1509,7 @@
           "name": "doubleOf",
           "is_arbitrary": false,
           "desc": [
-            "Creates a Java value double, to be used in Java"
+            "Creates a Java value double, to be used in Java."
           ],
           "params": [
             {
@@ -1531,7 +1531,7 @@
           "is_arbitrary": false,
           "desc": [
             "Creates a Java float array with a given size, the array is filled with 0's",
-            "by default and can be filled with only floats"
+            "by default and can be filled with only floats."
           ],
           "params": [
             {
@@ -1552,7 +1552,7 @@
           "name": "floatOf",
           "is_arbitrary": false,
           "desc": [
-            "Creates a Java value float, to be used in Java"
+            "Creates a Java value float, to be used in Java."
           ],
           "params": [
             {
@@ -1573,7 +1573,7 @@
           "name": "functionOf",
           "is_arbitrary": false,
           "desc": [
-            "Creates a Java Function object from a given function"
+            "Creates a Java Function object from a given function."
           ],
           "params": [
             {
@@ -1597,7 +1597,7 @@
             "You should use 'Java.classOf(name)' then access the static field"
           ],
           "desc": [
-            "Gets a static field Java value from a Java class"
+            "Gets a static field Java value from a Java class."
           ],
           "params": [
             {
@@ -1629,7 +1629,7 @@
             "Gets a static method delegate from a Java class, this should",
             "be avoided and instance use 'classOf' to get the class instance",
             "and then call the method on that class instance. The parameter count",
-            "parameter is no longer used internally but remains for backwards compatibility"
+            "parameter is no longer used internally but remains for backwards compatibility."
           ],
           "params": [
             {
@@ -1661,7 +1661,7 @@
           "is_arbitrary": false,
           "desc": [
             "Creates a Java int array with a given size, the array is filled with 0's",
-            "by default and can be filled with only ints"
+            "by default and can be filled with only ints."
           ],
           "params": [
             {
@@ -1682,7 +1682,7 @@
           "name": "intOf",
           "is_arbitrary": false,
           "desc": [
-            "Creates a Java value int, to be used in Java"
+            "Creates a Java value int, to be used in Java."
           ],
           "params": [
             {
@@ -1704,7 +1704,7 @@
           "is_arbitrary": false,
           "desc": [
             "Creates a Java long array with a given size, the array is filled with 0's",
-            "by default and can be filled with only longs"
+            "by default and can be filled with only longs."
           ],
           "params": [
             {
@@ -1725,7 +1725,7 @@
           "name": "longOf",
           "is_arbitrary": false,
           "desc": [
-            "Creates a Java value long, to be used in Java"
+            "Creates a Java value long, to be used in Java."
           ],
           "params": [
             {
@@ -1747,7 +1747,7 @@
           "is_arbitrary": false,
           "desc": [
             "Creates a Java Object array with a given size, the array is filled with null values",
-            "by default and can be filled with any Java values, this array cannot be expanded"
+            "by default and can be filled with any Java values, this array cannot be expanded."
           ],
           "params": [
             {
@@ -1768,7 +1768,7 @@
           "name": "predicateOf",
           "is_arbitrary": false,
           "desc": [
-            "Creates a Java Predicate object from a given function"
+            "Creates a Java Predicate object from a given function."
           ],
           "params": [
             {
@@ -1790,7 +1790,7 @@
           "is_arbitrary": false,
           "desc": [
             "Creates a Java Runnable object from a given function, this must",
-            "have no paramters and any return values will be ignored"
+            "have no paramters and any return values will be ignored."
           ],
           "params": [
             {
@@ -1814,7 +1814,7 @@
             "You should use 'Java.classOf(name)' then assign the static field"
           ],
           "desc": [
-            "Sets a static field in a Java class with a new value"
+            "Sets a static field in a Java class with a new value."
           ],
           "params": [
             {
@@ -1842,7 +1842,7 @@
           "is_arbitrary": false,
           "desc": [
             "Creates a Java short array with a given size, the array is filled with 0's",
-            "by default and can be filled with only shorts"
+            "by default and can be filled with only shorts."
           ],
           "params": [
             {
@@ -1863,7 +1863,7 @@
           "name": "shortOf",
           "is_arbitrary": false,
           "desc": [
-            "Creates a Java value short, to be used in Java"
+            "Creates a Java value short, to be used in Java."
           ],
           "params": [
             {
@@ -1884,7 +1884,7 @@
           "name": "supplierOf",
           "is_arbitrary": false,
           "desc": [
-            "Creates a Java Supplier object from a given function"
+            "Creates a Java Supplier object from a given function."
           ],
           "params": [
             {
@@ -1905,7 +1905,7 @@
           "name": "valueOf",
           "is_arbitrary": false,
           "desc": [
-            "Converts any Arucas value into a Java value then wraps it in the Java wrapper and returns it"
+            "Converts any Arucas value into a Java value then wraps it in the Java wrapper and returns it."
           ],
           "params": [
             {
@@ -1942,7 +1942,7 @@
       "name": "Json",
       "desc": [
         "This class allows you to create and manipulate JSON objects.",
-        "This class cannot be instantiated or extended"
+        "This class cannot be instantiated or extended."
       ],
       "import_path": "util.Json",
       "superclass": "Object",
@@ -1953,7 +1953,7 @@
           "name": "getValue",
           "is_arbitrary": false,
           "desc": [
-            "This converts the Json back into an object"
+            "This converts the Json back into an object."
           ],
           "returns": {
             "type": "Object",
@@ -1969,7 +1969,7 @@
           "desc": [
             "This writes the Json to a file",
             "if the file given is a directory or cannot be",
-            "written to, an error will be thrown"
+            "written to, an error will be thrown."
           ],
           "params": [
             {
@@ -1988,7 +1988,7 @@
           "name": "fromFile",
           "is_arbitrary": false,
           "desc": [
-            "This will read a file and parse it into a Json, this will throw an error if the file cannot be read"
+            "This will read a file and parse it into a Json, this will throw an error if the file cannot be read."
           ],
           "params": [
             {
@@ -2011,7 +2011,7 @@
           "desc": [
             "This converts a list into a Json, an important thing to note is that",
             "any values that are not Numbers, Booleans, Lists, Maps, or Null will use their",
-            "toString() member to convert them to a string"
+            "toString() member to convert them to a string."
           ],
           "params": [
             {
@@ -2034,7 +2034,7 @@
           "desc": [
             "This converts a map into a Json, an important thing to note is that",
             "any values that are not Numbers, Booleans, Lists, Maps, or Null will use their",
-            "toString() member to convert them to a string"
+            "toString() member to convert them to a string."
           ],
           "params": [
             {
@@ -2056,7 +2056,7 @@
           "is_arbitrary": false,
           "desc": [
             "This converts a string into a Json provided it is formatted correctly,",
-            "otherwise throwing an error"
+            "otherwise throwing an error."
           ],
           "params": [
             {
@@ -2078,7 +2078,7 @@
     "List": {
       "name": "List",
       "desc": [
-        "This class is used for collections of ordered elements"
+        "This class is used for collections of ordered elements."
       ],
       "import_path": null,
       "superclass": "Collection",
@@ -2086,7 +2086,7 @@
       "constructors": [
         {
           "desc": [
-            "This creates a list, this cannot be called directly, only from child classes"
+            "This creates a list, this cannot be called directly, only from child classes."
           ],
           "examples": [
             "class ChildList: List {\n    ChildList(): super();\n}"
@@ -2098,7 +2098,7 @@
           "name": "addAll",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to add all the values in another collection to the list"
+            "This allows you to add all the values in another collection to the list."
           ],
           "params": [
             {
@@ -2119,7 +2119,7 @@
           "name": "append",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to append a value to the end of the list"
+            "This allows you to append a value to the end of the list."
           ],
           "params": [
             {
@@ -2140,7 +2140,7 @@
           "name": "clear",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to clear the list"
+            "This allows you to clear the list."
           ],
           "examples": [
             "['object', 81, 96, 'case'].clear(); // []"
@@ -2150,7 +2150,7 @@
           "name": "contains",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to check if the list contains a specific value"
+            "This allows you to check if the list contains a specific value."
           ],
           "params": [
             {
@@ -2171,7 +2171,7 @@
           "name": "containsAll",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to check if the list contains all the values in another collection"
+            "This allows you to check if the list contains all the values in another collection."
           ],
           "params": [
             {
@@ -2194,7 +2194,7 @@
           "desc": [
             "This filters the list using the predicate, a function that either returns",
             "true or false, based on the element on whether it should be kept or not,",
-            "and returns a new list with the filtered elements"
+            "and returns a new list with the filtered elements."
           ],
           "params": [
             {
@@ -2217,7 +2217,7 @@
           "desc": [
             "If there are any objects in the list that are collections they will",
             "be expanded and added to the list. However collections inside those",
-            "collections will not be flattened, this is returned as a new list"
+            "collections will not be flattened, this is returned as a new list."
           ],
           "returns": {
             "type": "List",
@@ -2232,7 +2232,7 @@
           "is_arbitrary": false,
           "desc": [
             "This allows you to get the value at a specific index, alternative to bracket accessor,",
-            "this will throw an error if the index given is out of bounds"
+            "this will throw an error if the index given is out of bounds."
           ],
           "params": [
             {
@@ -2253,7 +2253,7 @@
           "name": "indexOf",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to get the index of a specific value"
+            "This allows you to get the index of a specific value."
           ],
           "params": [
             {
@@ -2274,7 +2274,7 @@
           "name": "insert",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to insert a value at a specific index, this will throw an error if the index is out of bounds"
+            "This allows you to insert a value at a specific index, this will throw an error if the index is out of bounds."
           ],
           "params": [
             {
@@ -2300,7 +2300,7 @@
           "name": "lastIndexOf",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to get the last index of a specific value"
+            "This allows you to get the last index of a specific value."
           ],
           "params": [
             {
@@ -2322,7 +2322,7 @@
           "is_arbitrary": false,
           "desc": [
             "This maps the list using the mapper, a function that takes a value and",
-            "returns a new value, and returns a new list with the mapped elements"
+            "returns a new value, and returns a new list with the mapped elements."
           ],
           "params": [
             {
@@ -2343,7 +2343,7 @@
           "name": "prepend",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to prepend a value to the beginning of the list"
+            "This allows you to prepend a value to the beginning of the list."
           ],
           "params": [
             {
@@ -2365,7 +2365,7 @@
           "is_arbitrary": false,
           "desc": [
             "This reduces the list using the reducer, a function that takes an",
-            "accumulated value and a new value and returns the next accumulated value"
+            "accumulated value and a new value and returns the next accumulated value."
           ],
           "params": [
             {
@@ -2386,7 +2386,7 @@
           "name": "reduce",
           "is_arbitrary": false,
           "desc": [
-            "This reduces the list using the reducer starting with an identity"
+            "This reduces the list using the reducer starting with an identity."
           ],
           "params": [
             {
@@ -2413,7 +2413,7 @@
           "is_arbitrary": false,
           "desc": [
             "This allows you to remove the value at a specific index, alternative to bracket assignment.",
-            "This will throw an error if the index is out of bounds"
+            "This will throw an error if the index is out of bounds."
           ],
           "params": [
             {
@@ -2434,7 +2434,7 @@
           "name": "removeAll",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to remove all the values in another collection from the list"
+            "This allows you to remove all the values in another collection from the list."
           ],
           "params": [
             {
@@ -2455,7 +2455,7 @@
           "name": "retainAll",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to retain only the values that are in both lists"
+            "This allows you to retain only the values that are in both lists."
           ],
           "params": [
             {
@@ -2476,7 +2476,7 @@
           "name": "reverse",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to reverse the list"
+            "This allows you to reverse the list."
           ],
           "returns": {
             "type": "List",
@@ -2491,7 +2491,7 @@
           "is_arbitrary": false,
           "desc": [
             "This allows you to set the value at a specific index, alternative to bracket assignment,",
-            "this will throw an erroor if the index given is out of bounds"
+            "this will throw an erroor if the index given is out of bounds."
           ],
           "params": [
             {
@@ -2517,7 +2517,7 @@
           "name": "shuffle",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to shuffle the list"
+            "This allows you to shuffle the list."
           ],
           "returns": {
             "type": "List",
@@ -2531,7 +2531,7 @@
           "name": "sort",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to sort the list using the elements compare method"
+            "This allows you to sort the list using the elements compare method."
           ],
           "returns": {
             "type": "List",
@@ -2545,7 +2545,7 @@
           "name": "sort",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to sort the list using a comparator function"
+            "This allows you to sort the list using a comparator function."
           ],
           "params": [
             {
@@ -2814,7 +2814,7 @@
     "Math": {
       "name": "Math",
       "desc": [
-        "Provides many basic math functions. This is a utility class, and cannot be constructed"
+        "Provides many basic math functions. This is a utility class, and cannot be constructed."
       ],
       "import_path": null,
       "superclass": "Object",
@@ -2823,7 +2823,7 @@
           "name": "e",
           "assignable": false,
           "desc": [
-            "The value of e"
+            "The value of e."
           ],
           "type": "Number",
           "examples": [
@@ -2834,7 +2834,7 @@
           "name": "pi",
           "assignable": false,
           "desc": [
-            "The value of pi"
+            "The value of pi."
           ],
           "type": "Number",
           "examples": [
@@ -2845,7 +2845,7 @@
           "name": "root2",
           "assignable": false,
           "desc": [
-            "The value of root 2"
+            "The value of root 2."
           ],
           "type": "Number",
           "examples": [
@@ -2860,7 +2860,7 @@
           "name": "abs",
           "is_arbitrary": false,
           "desc": [
-            "Returns the absolute value of a number"
+            "Returns the absolute value of a number."
           ],
           "params": [
             {
@@ -2881,7 +2881,7 @@
           "name": "arccos",
           "is_arbitrary": false,
           "desc": [
-            "Returns the arc cosine of a number"
+            "Returns the arc cosine of a number."
           ],
           "params": [
             {
@@ -2902,7 +2902,7 @@
           "name": "arcsin",
           "is_arbitrary": false,
           "desc": [
-            "Returns the arc sine of a number"
+            "Returns the arc sine of a number."
           ],
           "params": [
             {
@@ -2923,7 +2923,7 @@
           "name": "arctan",
           "is_arbitrary": false,
           "desc": [
-            "Returns the arc tangent of a number"
+            "Returns the arc tangent of a number."
           ],
           "params": [
             {
@@ -2945,7 +2945,7 @@
           "is_arbitrary": false,
           "desc": [
             "Returns the angle theta of the polar coordinates (r, theta) that correspond to the rectangular",
-            "coordinates (x, y) by computing the arc tangent of the value y / x"
+            "coordinates (x, y) by computing the arc tangent of the value y / x."
           ],
           "params": [
             {
@@ -2971,7 +2971,7 @@
           "name": "ceil",
           "is_arbitrary": false,
           "desc": [
-            "Rounds a number up to the nearest integer"
+            "Rounds a number up to the nearest integer."
           ],
           "params": [
             {
@@ -2992,7 +2992,7 @@
           "name": "clamp",
           "is_arbitrary": false,
           "desc": [
-            "Clamps a value between a minimum and maximum"
+            "Clamps a value between a minimum and maximum."
           ],
           "params": [
             {
@@ -3023,7 +3023,7 @@
           "name": "cos",
           "is_arbitrary": false,
           "desc": [
-            "Returns the cosine of a number"
+            "Returns the cosine of a number."
           ],
           "params": [
             {
@@ -3044,7 +3044,7 @@
           "name": "cosec",
           "is_arbitrary": false,
           "desc": [
-            "Returns the cosecant of a number"
+            "Returns the cosecant of a number."
           ],
           "params": [
             {
@@ -3065,7 +3065,7 @@
           "name": "cosh",
           "is_arbitrary": false,
           "desc": [
-            "Returns the hyperbolic cosine of a number"
+            "Returns the hyperbolic cosine of a number."
           ],
           "params": [
             {
@@ -3086,7 +3086,7 @@
           "name": "cot",
           "is_arbitrary": false,
           "desc": [
-            "Returns the cotangent of a number"
+            "Returns the cotangent of a number."
           ],
           "params": [
             {
@@ -3107,7 +3107,7 @@
           "name": "floor",
           "is_arbitrary": false,
           "desc": [
-            "Rounds a number down to the nearest integer"
+            "Rounds a number down to the nearest integer."
           ],
           "params": [
             {
@@ -3128,7 +3128,7 @@
           "name": "lerp",
           "is_arbitrary": false,
           "desc": [
-            "Linear interpolation between two numbers"
+            "Linear interpolation between two numbers."
           ],
           "params": [
             {
@@ -3159,7 +3159,7 @@
           "name": "ln",
           "is_arbitrary": false,
           "desc": [
-            "Returns the natural logarithm of a number"
+            "Returns the natural logarithm of a number."
           ],
           "params": [
             {
@@ -3180,7 +3180,7 @@
           "name": "log",
           "is_arbitrary": false,
           "desc": [
-            "Returns the logarithm of a number with a specified base"
+            "Returns the logarithm of a number with a specified base."
           ],
           "params": [
             {
@@ -3206,7 +3206,7 @@
           "name": "log10",
           "is_arbitrary": false,
           "desc": [
-            "Returns the base 10 logarithm of a number"
+            "Returns the base 10 logarithm of a number."
           ],
           "params": [
             {
@@ -3227,7 +3227,7 @@
           "name": "max",
           "is_arbitrary": false,
           "desc": [
-            "Returns the largest number"
+            "Returns the largest number."
           ],
           "params": [
             {
@@ -3253,7 +3253,7 @@
           "name": "min",
           "is_arbitrary": false,
           "desc": [
-            "Returns the smallest number"
+            "Returns the smallest number."
           ],
           "params": [
             {
@@ -3279,7 +3279,7 @@
           "name": "mod",
           "is_arbitrary": false,
           "desc": [
-            "Returns the modulus of a division"
+            "Returns the modulus of a division."
           ],
           "params": [
             {
@@ -3305,7 +3305,7 @@
           "name": "rem",
           "is_arbitrary": false,
           "desc": [
-            "Returns the remainder of a division"
+            "Returns the remainder of a division."
           ],
           "params": [
             {
@@ -3331,7 +3331,7 @@
           "name": "round",
           "is_arbitrary": false,
           "desc": [
-            "Rounds a number to the nearest integer"
+            "Rounds a number to the nearest integer."
           ],
           "params": [
             {
@@ -3352,7 +3352,7 @@
           "name": "sec",
           "is_arbitrary": false,
           "desc": [
-            "Returns the secant of a number"
+            "Returns the secant of a number."
           ],
           "params": [
             {
@@ -3374,7 +3374,7 @@
           "is_arbitrary": false,
           "desc": [
             "Returns the sign of a number, 1 if the number is positive,",
-            "-1 if the number is negative, and 0 if the number is 0"
+            "-1 if the number is negative, and 0 if the number is 0."
           ],
           "params": [
             {
@@ -3395,7 +3395,7 @@
           "name": "sin",
           "is_arbitrary": false,
           "desc": [
-            "Returns the sine of a number"
+            "Returns the sine of a number."
           ],
           "params": [
             {
@@ -3416,7 +3416,7 @@
           "name": "sinh",
           "is_arbitrary": false,
           "desc": [
-            "Returns the hyperbolic sine of a number"
+            "Returns the hyperbolic sine of a number."
           ],
           "params": [
             {
@@ -3437,7 +3437,7 @@
           "name": "sqrt",
           "is_arbitrary": false,
           "desc": [
-            "Returns the square root of a number"
+            "Returns the square root of a number."
           ],
           "params": [
             {
@@ -3458,7 +3458,7 @@
           "name": "tan",
           "is_arbitrary": false,
           "desc": [
-            "Returns the tangent of a number"
+            "Returns the tangent of a number."
           ],
           "params": [
             {
@@ -3479,7 +3479,7 @@
           "name": "tanh",
           "is_arbitrary": false,
           "desc": [
-            "Returns the hyperbolic tangent of a number"
+            "Returns the hyperbolic tangent of a number."
           ],
           "params": [
             {
@@ -3500,7 +3500,7 @@
           "name": "toDegrees",
           "is_arbitrary": false,
           "desc": [
-            "Converts a number from radians to degrees"
+            "Converts a number from radians to degrees."
           ],
           "params": [
             {
@@ -3521,7 +3521,7 @@
           "name": "toRadians",
           "is_arbitrary": false,
           "desc": [
-            "Converts a number from degrees to radians"
+            "Converts a number from degrees to radians."
           ],
           "params": [
             {
@@ -3555,7 +3555,7 @@
           "name": "downloadFile",
           "is_arbitrary": false,
           "desc": [
-            "Downloads a file from an url to a file"
+            "Downloads a file from an url to a file."
           ],
           "params": [
             {
@@ -3581,7 +3581,7 @@
           "name": "openUrl",
           "is_arbitrary": false,
           "desc": [
-            "Opens an url in the default browser"
+            "Opens an url in the default browser."
           ],
           "params": [
             {
@@ -3598,7 +3598,7 @@
           "name": "requestUrl",
           "is_arbitrary": false,
           "desc": [
-            "Requests an url and returns the response"
+            "Requests an url and returns the response."
           ],
           "params": [
             {
@@ -3621,7 +3621,7 @@
       "name": "Null",
       "desc": [
         "This class is used for the null object,",
-        "this cannot be instantiated or extended"
+        "this cannot be instantiated or extended."
       ],
       "import_path": null,
       "superclass": "Object",
@@ -3645,7 +3645,7 @@
           "name": "ceil",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to round a number up to the nearest integer"
+            "This allows you to round a number up to the nearest integer."
           ],
           "returns": {
             "type": "Number",
@@ -3659,7 +3659,7 @@
           "name": "floor",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to round a number down to the nearest integer"
+            "This allows you to round a number down to the nearest integer."
           ],
           "returns": {
             "type": "Number",
@@ -3673,7 +3673,7 @@
           "name": "isInfinite",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to check if a number is infinite"
+            "This allows you to check if a number is infinite."
           ],
           "returns": {
             "type": "Boolean",
@@ -3687,7 +3687,7 @@
           "name": "isNaN",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to check if a number is not a number"
+            "This allows you to check if a number is not a number."
           ],
           "returns": {
             "type": "Boolean",
@@ -3701,7 +3701,7 @@
           "name": "round",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to round a number to the nearest integer"
+            "This allows you to round a number to the nearest integer."
           ],
           "returns": {
             "type": "Number",
@@ -3719,7 +3719,7 @@
       "desc": [
         "This is the base class for every other class in Arucas.",
         "This class cannot be instantiated from, you can extend it",
-        "however every class already extends this class by default"
+        "however every class already extends this class by default."
       ],
       "import_path": null,
       "superclass": "Object",
@@ -3734,7 +3734,7 @@
             "Some objects that are immutable, such as Strings and Numbers",
             "will not be copied, and will return the same instance.",
             "Any object that has not implemented the copy method will also",
-            "return the same instance"
+            "return the same instance."
           ],
           "returns": {
             "type": "Object",
@@ -3751,7 +3751,7 @@
             "This returns the hash code of the value, mainly used for maps and sets",
             "the hash code of an object must remain consistent for objects to be able",
             "to be used as keys in a map or set. If two objects are equal, they must",
-            "have the same hash code"
+            "have the same hash code."
           ],
           "returns": {
             "type": "Number",
@@ -3765,7 +3765,7 @@
           "name": "instanceOf",
           "is_arbitrary": false,
           "desc": [
-            "This returns true if the value is an instance of the given type"
+            "This returns true if the value is an instance of the given type."
           ],
           "params": [
             {
@@ -3786,7 +3786,7 @@
           "name": "toString",
           "is_arbitrary": false,
           "desc": [
-            "This returns the string representation of the value"
+            "This returns the string representation of the value."
           ],
           "returns": {
             "type": "String",
@@ -3800,7 +3800,7 @@
           "name": "uniqueHash",
           "is_arbitrary": false,
           "desc": [
-            "This returns the unique hash of the value, this is different for every instance of a value"
+            "This returns the unique hash of the value, this is different for every instance of a value."
           ],
           "returns": {
             "type": "Number",
@@ -3817,7 +3817,7 @@
       "name": "Set",
       "desc": [
         "Sets are collections of unique values. Similar to maps, without the values.",
-        "An instance of the class can be created by using `Set.of(values...)`"
+        "An instance of the class can be created by using `Set.of(values...)`."
       ],
       "import_path": null,
       "superclass": "Collection",
@@ -3825,7 +3825,7 @@
       "constructors": [
         {
           "desc": [
-            "This creates an empty set"
+            "This creates an empty set."
           ],
           "examples": [
             "new Set();"
@@ -3837,7 +3837,7 @@
           "name": "add",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to add a value to the set"
+            "This allows you to add a value to the set."
           ],
           "params": [
             {
@@ -3858,7 +3858,7 @@
           "name": "addAll",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to add all the values in a collection into the set"
+            "This allows you to add all the values in a collection into the set."
           ],
           "params": [
             {
@@ -3879,7 +3879,7 @@
           "name": "clear",
           "is_arbitrary": false,
           "desc": [
-            "This removes all values from inside the set"
+            "This removes all values from inside the set."
           ],
           "examples": [
             "Set.of('object').clear();"
@@ -3889,7 +3889,7 @@
           "name": "contains",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to check whether a value is in the set"
+            "This allows you to check whether a value is in the set."
           ],
           "params": [
             {
@@ -3910,7 +3910,7 @@
           "name": "containsAll",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to check whether a collection of values are all in the set"
+            "This allows you to check whether a collection of values are all in the set."
           ],
           "params": [
             {
@@ -3931,7 +3931,7 @@
           "name": "filter",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to filter the set"
+            "This allows you to filter the set."
           ],
           "params": [
             {
@@ -3955,7 +3955,7 @@
             "This allows you to get a value from in the set.",
             "The reason this might be useful is if you want to retrieve something",
             "from the set that will have the same hashcode but be in a different state",
-            "as the value you are passing in"
+            "as the value you are passing in."
           ],
           "params": [
             {
@@ -3976,7 +3976,7 @@
           "name": "map",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to map the set"
+            "This allows you to map the set."
           ],
           "params": [
             {
@@ -3997,7 +3997,7 @@
           "name": "reduce",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to reduce the set"
+            "This allows you to reduce the set."
           ],
           "params": [
             {
@@ -4018,7 +4018,7 @@
           "name": "reduce",
           "is_arbitrary": false,
           "desc": [
-            "This reduces the list using the reducer starting with an identity"
+            "This reduces the list using the reducer starting with an identity."
           ],
           "params": [
             {
@@ -4044,7 +4044,7 @@
           "name": "remove",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to remove a value from the set"
+            "This allows you to remove a value from the set."
           ],
           "params": [
             {
@@ -4065,7 +4065,7 @@
           "name": "removeAll",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to remove all values in a collection from the set"
+            "This allows you to remove all values in a collection from the set."
           ],
           "params": [
             {
@@ -4086,7 +4086,7 @@
           "name": "toList",
           "is_arbitrary": false,
           "desc": [
-            "This returns a list of all the values in the set"
+            "This returns a list of all the values in the set."
           ],
           "returns": {
             "type": "List",
@@ -4102,7 +4102,7 @@
           "name": "of",
           "is_arbitrary": false,
           "desc": [
-            "This allows you to create a set with an arbitrary number of values"
+            "This allows you to create a set with an arbitrary number of values."
           ],
           "params": [
             {
@@ -4123,7 +4123,7 @@
           "name": "unordered",
           "is_arbitrary": false,
           "desc": [
-            "This creates an unordered set"
+            "This creates an unordered set."
           ],
           "returns": {
             "type": "Set",
@@ -4149,7 +4149,7 @@
         {
           "desc": [
             "This creates a new string object, not from the string pool, with the given string.",
-            "This cannot be called directly, only from child classes"
+            "This cannot be called directly, only from child classes."
           ],
           "examples": [
             "class ChildString: String {\n    ChildString(): super(\"example\");\n}"
@@ -4161,7 +4161,7 @@
           "name": "capitalize",
           "is_arbitrary": false,
           "desc": [
-            "This returns the string in capitalized form"
+            "This returns the string in capitalized form."
           ],
           "returns": {
             "type": "String",
@@ -4175,7 +4175,7 @@
           "name": "chars",
           "is_arbitrary": false,
           "desc": [
-            "This makes a list of all the characters in the string"
+            "This makes a list of all the characters in the string."
           ],
           "returns": {
             "type": "List",
@@ -4189,7 +4189,7 @@
           "name": "contains",
           "is_arbitrary": false,
           "desc": [
-            "This returns whether the string contains the given string"
+            "This returns whether the string contains the given string."
           ],
           "params": [
             {
@@ -4210,7 +4210,7 @@
           "name": "endsWith",
           "is_arbitrary": false,
           "desc": [
-            "This returns whether the string ends with the given string"
+            "This returns whether the string ends with the given string."
           ],
           "params": [
             {
@@ -4232,7 +4232,7 @@
           "is_arbitrary": false,
           "desc": [
             "This finds all matches of the regex in the string,",
-            "this does not find groups, for that use `<String>.findGroups(regex)`"
+            "this does not find groups, for that use `<String>.findGroups(regex)`."
           ],
           "params": [
             {
@@ -4255,7 +4255,7 @@
           "desc": [
             "This finds all matches and groups of a regex in the matches in the string",
             "the first group of each match will be the complete match and following",
-            "will be the groups of the regex, a group may be empty if it doesn't exist"
+            "will be the groups of the regex, a group may be empty if it doesn't exist."
           ],
           "params": [
             {
@@ -4278,11 +4278,11 @@
           "desc": [
             "This formats the string using the given arguments.",
             "This internally uses the Java String.format() method.",
-            "For how to use see here: https://www.javatpoint.com/java-string-format"
+            "For how to use see here: https://www.javatpoint.com/java-string-format."
           ],
           "params": [
             {
-              "name": "objects",
+              "name": "objects...",
               "type": "Object",
               "desc": "The objects to insert."
             }
@@ -4299,7 +4299,7 @@
           "name": "length",
           "is_arbitrary": false,
           "desc": [
-            "This returns the length of the string"
+            "This returns the length of the string."
           ],
           "returns": {
             "type": "Number",
@@ -4313,7 +4313,7 @@
           "name": "lowercase",
           "is_arbitrary": false,
           "desc": [
-            "This returns the string in lowercase"
+            "This returns the string in lowercase."
           ],
           "returns": {
             "type": "String",
@@ -4327,7 +4327,7 @@
           "name": "matches",
           "is_arbitrary": false,
           "desc": [
-            "This returns whether the string matches the given regex"
+            "This returns whether the string matches the given regex."
           ],
           "params": [
             {
@@ -4348,7 +4348,7 @@
           "name": "replaceAll",
           "is_arbitrary": false,
           "desc": [
-            "This replaces all the instances of a regex with the replace string"
+            "This replaces all the instances of a regex with the replace string."
           ],
           "params": [
             {
@@ -4374,7 +4374,7 @@
           "name": "replaceFirst",
           "is_arbitrary": false,
           "desc": [
-            "This replaces the first instance of a regex with the replace string"
+            "This replaces the first instance of a regex with the replace string."
           ],
           "params": [
             {
@@ -4400,7 +4400,7 @@
           "name": "reverse",
           "is_arbitrary": false,
           "desc": [
-            "This returns the string in reverse"
+            "This returns the string in reverse."
           ],
           "returns": {
             "type": "String",
@@ -4414,7 +4414,7 @@
           "name": "split",
           "is_arbitrary": false,
           "desc": [
-            "This splits the string into a list of strings based on a regex"
+            "This splits the string into a list of strings based on a regex."
           ],
           "params": [
             {
@@ -4435,7 +4435,7 @@
           "name": "startsWith",
           "is_arbitrary": false,
           "desc": [
-            "This returns whether the string starts with the given string"
+            "This returns whether the string starts with the given string."
           ],
           "params": [
             {
@@ -4456,7 +4456,7 @@
           "name": "strip",
           "is_arbitrary": false,
           "desc": [
-            "This strips the whitespace from the string"
+            "This strips the whitespace from the string."
           ],
           "returns": {
             "type": "String",
@@ -4470,7 +4470,7 @@
           "name": "subString",
           "is_arbitrary": false,
           "desc": [
-            "This returns a substring of the string"
+            "This returns a substring of the string."
           ],
           "params": [
             {
@@ -4499,7 +4499,7 @@
             "Use '<String>.chars()' instead"
           ],
           "desc": [
-            "This makes a list of all the characters in the string"
+            "This makes a list of all the characters in the string."
           ],
           "returns": {
             "type": "List",
@@ -4515,7 +4515,7 @@
           "desc": [
             "This tries to convert the string to a number.",
             "This method can convert hex or denary into numbers.",
-            "If the string is not a number, it will throw an error"
+            "If the string is not a number, it will throw an error."
           ],
           "returns": {
             "type": "Number",
@@ -4529,7 +4529,7 @@
           "name": "uppercase",
           "is_arbitrary": false,
           "desc": [
-            "This returns the string in uppercase"
+            "This returns the string in uppercase."
           ],
           "returns": {
             "type": "String",
@@ -4555,7 +4555,7 @@
       "constructors": [
         {
           "desc": [
-            "This creates a new empty task"
+            "This creates a new empty task."
           ],
           "examples": [
             "task = new Task();"
@@ -4568,7 +4568,7 @@
           "is_arbitrary": false,
           "desc": [
             "This runs the task asynchronously and returns a future which can be awaited.",
-            "The last function in the task will be used as the return value for the future"
+            "The last function in the task will be used as the return value for the future."
           ],
           "returns": {
             "type": "Future",
@@ -4609,7 +4609,7 @@
       "desc": [
         "This class allows to to create threads for async executions.",
         "This class cannot be instantiated or extended. To create a new",
-        "thread use the static method 'Thread.runThreaded()'"
+        "thread use the static method 'Thread.runThreaded()'."
       ],
       "import_path": null,
       "superclass": "Object",
@@ -4631,7 +4631,7 @@
           "name": "getAge",
           "is_arbitrary": false,
           "desc": [
-            "This gets the age of the thread in milliseconds"
+            "This gets the age of the thread in milliseconds."
           ],
           "returns": {
             "type": "Number",
@@ -4645,7 +4645,7 @@
           "name": "getName",
           "is_arbitrary": false,
           "desc": [
-            "This gets the name of the thread"
+            "This gets the name of the thread."
           ],
           "returns": {
             "type": "String",
@@ -4659,7 +4659,7 @@
           "name": "isAlive",
           "is_arbitrary": false,
           "desc": [
-            "This checks if the thread is alive (still running)"
+            "This checks if the thread is alive (still running)."
           ],
           "returns": {
             "type": "Boolean",
@@ -4674,7 +4674,7 @@
           "is_arbitrary": false,
           "desc": [
             "This stops the thread from executing, anything that was running will be instantly stopped.",
-            "This method will fail if the thread is not alive"
+            "This method will fail if the thread is not alive."
           ],
           "examples": [
             "Thread.getCurrentThread().stop();"
@@ -4685,7 +4685,7 @@
           "is_arbitrary": false,
           "desc": [
             "This will thaw the thread from its frozen state, if the thread is not frozen then an",
-            "error will be thrown"
+            "error will be thrown."
           ],
           "examples": [
             "Thread.getCurrentThread().thaw();"
@@ -4698,7 +4698,7 @@
           "is_arbitrary": false,
           "desc": [
             "This freezes the current thread, stops anything else from executing on the thread.",
-            "This may fail if you try to freeze a non Arucas Thread in which case an error will be thrown"
+            "This may fail if you try to freeze a non Arucas Thread in which case an error will be thrown."
           ],
           "examples": [
             "Thread.freeze();"
@@ -4710,7 +4710,7 @@
           "desc": [
             "This gets the current thread that the code is running on,",
             "this may throw an error if the thread is not safe to get,",
-            "which happens when running outside of Arucas Threads"
+            "which happens when running outside of Arucas Threads."
           ],
           "returns": {
             "type": "Thread",
@@ -4726,7 +4726,7 @@
           "desc": [
             "This starts a new thread and runs a function on it, the thread will",
             "terminate when it finishes executing the function, threads will stop automatically",
-            "when the program stops, you are also able to stop threads by using the Thread object"
+            "when the program stops, you are also able to stop threads by using the Thread object."
           ],
           "params": [
             {
@@ -4747,7 +4747,7 @@
           "name": "runThreaded",
           "is_arbitrary": false,
           "desc": [
-            "This starts a new thread with a specific name and runs a function on it"
+            "This starts a new thread with a specific name and runs a function on it."
           ],
           "params": [
             {
@@ -4774,7 +4774,7 @@
     "Type": {
       "name": "Type",
       "desc": [
-        "This class lets you get the type of another class"
+        "This class lets you get the type of another class."
       ],
       "import_path": null,
       "superclass": "Object",
@@ -4785,7 +4785,7 @@
           "name": "getName",
           "is_arbitrary": false,
           "desc": [
-            "This gets the name of the type"
+            "This gets the name of the type."
           ],
           "returns": {
             "type": "String",
@@ -4799,7 +4799,7 @@
           "name": "inheritsFrom",
           "is_arbitrary": false,
           "desc": [
-            "This checks whether a type is a subtype of another type"
+            "This checks whether a type is a subtype of another type."
           ],
           "params": [
             {
@@ -4822,7 +4822,7 @@
           "name": "of",
           "is_arbitrary": false,
           "desc": [
-            "This gets the specific type of a value"
+            "This gets the specific type of a value."
           ],
           "params": [
             {
