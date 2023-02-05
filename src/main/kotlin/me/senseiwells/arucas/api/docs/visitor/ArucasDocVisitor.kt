@@ -1,6 +1,7 @@
 package me.senseiwells.arucas.api.docs.visitor
 
 import me.senseiwells.arucas.api.ArucasExtension
+import me.senseiwells.arucas.api.docs.visitor.impl.MarkdownDocVisitor
 import me.senseiwells.arucas.classes.PrimitiveDefinition
 
 /**
@@ -8,7 +9,7 @@ import me.senseiwells.arucas.classes.PrimitiveDefinition
  * aspects of the documentation for the [ArucasExtension]
  * and [PrimitiveDefinition], this is intended
  * for data generation such as converting the documentation
- * into a markdown format, see [].
+ * into a Markdown format, see [MarkdownDocVisitor].
  *
  * The order of which documentation is visited is
  * pre-defined, you can see [ArucasDocParser].

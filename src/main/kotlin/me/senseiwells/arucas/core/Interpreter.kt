@@ -650,7 +650,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
                 val content = this.api.getLibraryManager().getImport(importPath.split("."), local, this)
                 content ?: return@addLazy
                 val child: Interpreter = Child(content, importPath, true, this)
-                child.interpret()
+                child.execute()
                 this.localCache.mergeWith(child.localCache)
             }
         }
