@@ -287,7 +287,7 @@ class Resolver(
             this.resolve(forStatement.initial)
             this.resolve(forStatement.condition)
             this.resolve(forStatement.body)
-            this.resolve(forStatement.end)
+            this.resolve(forStatement.expression)
             this.popScope()
         }
     }
