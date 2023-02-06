@@ -739,7 +739,7 @@ by default and can be filled with any Java values, this array cannot be expanded
 - Returns - Java: The Java Object array.
 - Example:
 ```kotlin
-Java.arrayWithSize(10);
+Java.objectArray(10);
 ```
 
 ### `Java.predicateOf(function)`
@@ -806,6 +806,30 @@ Java.shortOf(1);
 Java.supplierOf(fun() {
     return 'supplier';
 });
+```
+
+### `Java.typedArray(type, size)`
+- Description: Creates a Java typed array with a given size, the array is filled with null values
+by default and can be filled with the given typed Java values, this array cannot be expanded.
+- Parameters:
+  - JavaClass (`type`): The type of the array.
+  - Number (`size`): The size of the array.
+- Returns - Java: The Java typed array.
+- Example:
+```kotlin
+Java.typedArray(Java.classOf('java.util.String'), 10);
+```
+
+### `Java.typedArrayOf(castType, values...)`
+- Description: Creates a Java array with a given type with given values. This will also
+be the size of the array. If any value does not match the given type an error will be thrown.
+- Parameters:
+  - JavaClass (`castType`): The type to cast the arrays to.
+  - Java (`values`): The values to add to the array.
+- Returns - Java: The typed object array.
+- Example:
+```kotlin
+Java.typedArrayOf(Java.classOf('java.lang.String'), 'foo', 'bar')
 ```
 
 ### `Java.valueOf(value)`

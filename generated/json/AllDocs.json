@@ -1761,7 +1761,7 @@
             "desc": "The Java Object array."
           },
           "examples": [
-            "Java.arrayWithSize(10);"
+            "Java.objectArray(10);"
           ]
         },
         {
@@ -1899,6 +1899,60 @@
           },
           "examples": [
             "Java.supplierOf(fun() {\n    return 'supplier';\n});"
+          ]
+        },
+        {
+          "name": "typedArray",
+          "is_arbitrary": false,
+          "desc": [
+            "Creates a Java typed array with a given size, the array is filled with null values",
+            "by default and can be filled with the given typed Java values, this array cannot be expanded."
+          ],
+          "params": [
+            {
+              "name": "type",
+              "type": "JavaClass",
+              "desc": "The type of the array."
+            },
+            {
+              "name": "size",
+              "type": "Number",
+              "desc": "The size of the array."
+            }
+          ],
+          "returns": {
+            "type": "Java",
+            "desc": "The Java typed array."
+          },
+          "examples": [
+            "Java.typedArray(Java.classOf('java.util.String'), 10);"
+          ]
+        },
+        {
+          "name": "typedArrayOf",
+          "is_arbitrary": true,
+          "desc": [
+            "Creates a Java array with a given type with given values. This will also",
+            "be the size of the array. If any value does not match the given type an error will be thrown."
+          ],
+          "params": [
+            {
+              "name": "castType",
+              "type": "JavaClass",
+              "desc": "The type to cast the arrays to."
+            },
+            {
+              "name": "values...",
+              "type": "Java",
+              "desc": "The values to add to the array."
+            }
+          ],
+          "returns": {
+            "type": "Java",
+            "desc": "The typed object array."
+          },
+          "examples": [
+            "Java.typedArrayOf(Java.classOf('java.lang.String'), 'foo', 'bar')"
           ]
         },
         {

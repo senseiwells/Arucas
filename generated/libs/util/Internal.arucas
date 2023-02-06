@@ -300,6 +300,24 @@ class Java {
     static fun supplierOf(function: Function): Java;
 
     /*
+     * Creates a Java typed array with a given size, the array is filled with null values
+     * by default and can be filled with the given typed Java values, this array cannot be expanded.
+     * Parameter - JavaClass (type): The type of the array.
+     * Parameter - Number (size): The size of the array.
+     * Returns - Java: The Java typed array.
+     */
+    static fun typedArray(type: JavaClass, size: Number): Java;
+
+    /*
+     * Creates a Java array with a given type with given values. This will also
+     * be the size of the array. If any value does not match the given type an error will be thrown.
+     * Parameter - JavaClass (castType): The type to cast the arrays to.
+     * Parameter - Java (values): The values to add to the array.
+     * Returns - Java: The typed object array.
+     */
+    static fun typedArrayOf(castType: JavaClass, values...: Java): Java;
+
+    /*
      * Converts any Arucas value into a Java value then wraps it in the Java wrapper and returns it.
      * Parameter - Object (value): Any value to get the Java value of.
      * Returns - Java: The Java wrapper value, null if argument was null.
