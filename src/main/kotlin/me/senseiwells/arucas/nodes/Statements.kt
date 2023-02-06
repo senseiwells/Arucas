@@ -73,9 +73,13 @@ class Statements(
  * This statement is used to evaluate a statement in a new scope.
  *
  *  @param statements The list of statement to evaluate.
+ *  @param end The start trace position.
+ *  @param end The end trace position.
  */
 class ScopeStatement(
-    val statements: Statement
+    val statements: Statement,
+    val start: LocatableTrace,
+    val end: LocatableTrace
 ): Statement() {
     override fun <T> visit(visitor: StatementVisitor<T>) = visitor.visitScope(this)
 }
@@ -112,22 +116,36 @@ class ExpressionStatement(
  * @param condition The conditional expression.
  * @param body The statement to execute if condition is met.
  * @param otherwise The statement to execute if condition is not met.
+ * @param start The start trace position.
+ * @param end The end trace position.
  */
 class IfStatement(
     val condition: Expression,
     val body: Statement,
     val otherwise: Statement,
-    val trace: LocatableTrace
+    val start: LocatableTrace,
+    val end: LocatableTrace
 ): Statement() {
     override fun <T> visit(visitor: StatementVisitor<T>) = visitor.visitIf(this)
 }
 
+/**
+ * This statement declares a switch statement.
+ *
+ * @param condition The condition to match.
+ * @param casesList The cases to match.
+ * @param caseStatements The statements for the cases.
+ * @param defaultStatement The default statement.
+ * @param start the start of the location - used for the stacktrace.
+ * @param end the end of the location.
+ */
 class SwitchStatement(
     val condition: Expression,
     val casesList: List<List<Expression>>,
     val caseStatements: List<Statement>,
     val defaultStatement: Statement?,
-    val trace: LocatableTrace
+    val start: LocatableTrace,
+    val end: LocatableTrace
 ): Statement() {
     override fun <T> visit(visitor: StatementVisitor<T>) = visitor.visitSwitch(this)
 }
@@ -141,7 +159,8 @@ class SwitchStatement(
  * @param arbitrary Whether the function is varargs.
  * @param returnTypes The return types of the function.
  * @param body The body of the function.
- * @param trace The trace position - for stack trace.
+ * @param start The trace position - for stack trace.
+ * @param end The end trace position.
 */
 class FunctionStatement(
     val name: String,
@@ -150,7 +169,8 @@ class FunctionStatement(
     val arbitrary: Boolean,
     val returnTypes: Array<String>?,
     val body: Statement,
-    val trace: LocatableTrace
+    val start: LocatableTrace,
+    val end: LocatableTrace
 ): Statement() {
     override fun <T> visit(visitor: StatementVisitor<T>) = visitor.visitFunction(this)
 }
@@ -173,12 +193,14 @@ class ReturnStatement(
  *
  * @param condition The conditional expression.
  * @param body The statement to execute if condition is true.
- * @param trace The trace position - if the condition is not a boolean.
+ * @param Start The trace position - if the condition is not a boolean.
+ * @param end The end trace position.
  */
 class WhileStatement(
     val condition: Expression,
     val body: Statement,
-    val trace: LocatableTrace
+    val Start: LocatableTrace,
+    val end: LocatableTrace
 ): Statement() {
     override fun <T> visit(visitor: StatementVisitor<T>) = visitor.visitWhile(this)
 }
@@ -188,16 +210,18 @@ class WhileStatement(
  *
  * @param initial The initializer statement.
  * @param condition The conditional expression.
- * @param end The end statement.
+ * @param expression The end statement.
  * @param body The statement to execute if condition is true.
- * @param trace The trace position - if the condition is not a boolean.
+ * @param start The trace position - if the condition is not a boolean.
+ * @param end The end trace position.
  */
 class ForStatement(
     val initial: Statement,
     val condition: Expression,
-    val end: Expression,
+    val expression: Expression,
     val body: Statement,
-    val trace: LocatableTrace
+    val start: LocatableTrace,
+    val end: LocatableTrace
 ): Statement() {
     override fun <T> visit(visitor: StatementVisitor<T>) = visitor.visitFor(this)
 }
@@ -208,13 +232,15 @@ class ForStatement(
  * @param name The name of the iterated variable.
  * @param iterable The expression to iterate over.
  * @param body The statement to execute for each iteration.
- * @param trace The trace position - if the iterable expression is not iterable.
+ * @param start The trace position - if the iterable expression is not iterable.
+ * @param end The end trace position.
  */
 class ForeachStatement(
     val name: String,
     val iterable: Expression,
     val body: Statement,
-    val trace: LocatableTrace
+    val start: LocatableTrace,
+    val end: LocatableTrace
 ): Statement() {
     override fun <T> visit(visitor: StatementVisitor<T>) = visitor.visitForeach(this)
 }
@@ -248,14 +274,15 @@ class BreakStatement(
  * @param catchBody The catch body.
  * @param catchParameter The catch parameter.
  * @param finally The finally body.
- * @param trace The trace position.
+ * @param start The trace position.
  */
 class TryStatement(
     val body: Statement,
     val catchBody: Statement,
     val catchParameter: Parameter?,
     val finally: Statement,
-    val trace: LocatableTrace
+    val start: LocatableTrace,
+    val end: LocatableTrace
 ): Statement() {
     override fun <T> visit(visitor: StatementVisitor<T>) = visitor.visitTry(this)
 }
@@ -280,14 +307,16 @@ class ThrowStatement(
  * @param arbitrary Whether the constructor is varargs.
  * @param init The referencing constructor (this(), or super()).
  * @param body The body of the constructor.
- * @param trace The trace position - if constructor is invalid.
+ * @param start The trace position - if constructor is invalid.
+ * @param end The end trace position.
  */
 class ConstructorStatement(
     val parameters: List<Parameter>,
     val arbitrary: Boolean,
     val init: ConstructorInit,
     val body: Statement,
-    val trace: LocatableTrace
+    val start: LocatableTrace,
+    val end: LocatableTrace
 ): Statement() {
     override fun <T> visit(visitor: StatementVisitor<T>) = visitor.visitConstructor(this)
 }
@@ -301,7 +330,8 @@ class ConstructorStatement(
  * @param methods The methods for the class.
  * @param staticMethods The static methods for the class.
  * @param operators The operators for the class.
- * @param trace The trace position - if class is invalid.
+ * @param start The trace position - if class is invalid.
+ * @param end The end trace position.
  */
 class ClassBodyStatement(
     val fields: Map<Parameter, Expression>,
@@ -311,7 +341,8 @@ class ClassBodyStatement(
     val methods: List<FunctionStatement>,
     val staticMethods: List<FunctionStatement>,
     val operators: List<Pair<FunctionStatement, Type>>,
-    val trace: LocatableTrace
+    val start: LocatableTrace,
+    val end: LocatableTrace
 ): Statement() {
     override fun <T> visit(visitor: StatementVisitor<T>) = visitor.visitClassBody(this)
 }
@@ -322,13 +353,15 @@ class ClassBodyStatement(
  * @param name The name of the class.
  * @param parents The parents of the class.
  * @param body The body of the class.
- * @param trace The trace position - if class name is taken.
+ * @param start The trace position - if class name is taken.
+ * @param end The end trace position.
  */
 class ClassStatement(
     val name: String,
     val parents: List<String>,
     val body: ClassBodyStatement,
-    val trace: LocatableTrace
+    val start: LocatableTrace,
+    val end: LocatableTrace
 ): Statement() {
     override fun <T> visit(visitor: StatementVisitor<T>) = visitor.visitClass(this)
 }
@@ -340,14 +373,16 @@ class ClassStatement(
  * @param parents The parents of the enum.
  * @param enums The enums of the enum.
  * @param body The body of the enum.
- * @param trace The trace position - if enum name is taken.
+ * @param start The trace position - if enum name is taken.
+ * @param end The end trace position.
  */
 class EnumStatement(
     val name: String,
     val parents: List<String>,
     val enums: LinkedHashMap<String, Pair<List<Expression>, LocatableTrace>>,
     val body: Statement,
-    val trace: LocatableTrace
+    val start: LocatableTrace,
+    val end: LocatableTrace
 ): Statement() {
     override fun <T> visit(visitor: StatementVisitor<T>) = visitor.visitEnum(this)
 }
@@ -357,12 +392,14 @@ class EnumStatement(
  *
  * @param name The name of the interface.
  * @param requiredMethods The required methods for the interface.
- * @param trace The trace position - if interface name is taken.
+ * @param start The trace position - if interface name is taken.
+ * @param end The end trace position.
  */
 class InterfaceStatement(
     val name: String,
     val requiredMethods: List<Pair<String, Int>>,
-    val trace: LocatableTrace
+    val start: LocatableTrace,
+    val end: LocatableTrace
 ): Statement() {
     override fun <T> visit(visitor: StatementVisitor<T>) = visitor.visitInterface(this)
 }

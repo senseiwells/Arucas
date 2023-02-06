@@ -261,9 +261,9 @@ class Resolver(
     override fun visitFunction(function: FunctionStatement) {
         if (!function.isClass) {
             val parameters = if (function.arbitrary) -1 else function.parameters.size
-            this.defineFunction(function.name, parameters, function.trace)
+            this.defineFunction(function.name, parameters, function.start)
         }
-        this.visitFunction(function.parameters, function.body, function.trace)
+        this.visitFunction(function.parameters, function.body, function.start)
     }
 
     override fun visitReturn(returnStatement: ReturnStatement) {
@@ -296,7 +296,7 @@ class Resolver(
         this.pushState(this::inLoop, true) {
             this.resolve(foreach.iterable)
             this.pushScope()
-            this.defineVar(foreach.name, foreach.trace)
+            this.defineVar(foreach.name, foreach.start)
             this.resolve(foreach.body)
             this.popScope()
         }
@@ -319,7 +319,7 @@ class Resolver(
     override fun visitTry(tryStatement: TryStatement) {
         this.resolve(tryStatement.body)
         this.pushScope()
-        tryStatement.catchParameter?.let { this.visitParameter(it, tryStatement.trace) }
+        tryStatement.catchParameter?.let { this.visitParameter(it, tryStatement.start) }
         this.resolve(tryStatement.catchBody)
         this.popScope()
         this.pushState(this::inFinally, true) {
@@ -335,7 +335,7 @@ class Resolver(
     }
 
     override fun visitConstructor(constructor: ConstructorStatement) {
-        this.visitFunction(constructor.parameters, constructor.body, constructor.trace) {
+        this.visitFunction(constructor.parameters, constructor.body, constructor.start) {
             this.resolveExpressions(constructor.init.arguments)
         }
     }
@@ -351,27 +351,27 @@ class Resolver(
     }
 
     override fun visitClass(classStatement: ClassStatement) {
-        this.defineClass(classStatement.name, classStatement.trace)
+        this.defineClass(classStatement.name, classStatement.start)
         this.pushState(this::currentClass, classStatement.name) {
             this.pushScope()
-            this.defineVar("this", classStatement.trace)
+            this.defineVar("this", classStatement.start)
             this.resolve(classStatement.body)
             this.popScope()
         }
     }
 
     override fun visitEnum(enumStatement: EnumStatement) {
-        this.defineClass(enumStatement.name, enumStatement.trace)
+        this.defineClass(enumStatement.name, enumStatement.start)
         this.pushState(this::currentClass, enumStatement.name) {
             this.pushScope()
-            this.defineVar("this", enumStatement.trace)
+            this.defineVar("this", enumStatement.start)
             this.resolve(enumStatement.body)
             this.popScope()
         }
     }
 
     override fun visitInterface(interfaceStatement: InterfaceStatement) {
-        this.defineClass(interfaceStatement.name, interfaceStatement.trace)
+        this.defineClass(interfaceStatement.name, interfaceStatement.start)
     }
 
     override fun visitImport(importStatement: ImportStatement) {
@@ -402,7 +402,7 @@ class Resolver(
     }
 
     override fun visitFunction(function: FunctionExpression) {
-        this.visitFunction(function.parameters, function.body, function.trace)
+        this.visitFunction(function.parameters, function.body, function.start)
     }
 
     override fun visitUnary(unary: UnaryExpression) {

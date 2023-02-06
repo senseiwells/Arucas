@@ -62,7 +62,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
         val returnTypes = this.getTypeHint()
         val body = this.statement()
 
-        return FunctionStatement(name.content, isClass, parameters, isArbitrary, returnTypes, body, name.trace)
+        return FunctionStatement(name.content, isClass, parameters, isArbitrary, returnTypes, body, name.trace, this.peek().trace)
     }
 
     private fun classDeclaration(): ClassStatement {
@@ -77,7 +77,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
         val type = if (superclasses.isEmpty()) "class" else "super class"
         this.check(LEFT_CURLY_BRACKET, "Expected '{' after $type name")
         val body = this.classBodyStatements(name.content)
-        return ClassStatement(name.content, superclasses, body, name.trace)
+        return ClassStatement(name.content, superclasses, body, name.trace, this.peek().trace)
     }
 
     private fun enumDeclaration(): Statement {
@@ -115,7 +115,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
         } else {
             this.classBodyStatements(enumName.content)
         }
-        return EnumStatement(enumName.content, superclasses, enums, body, enumName.trace)
+        return EnumStatement(enumName.content, superclasses, enums, body, enumName.trace, this.peek().trace)
     }
 
     private fun interfaceDeclaration(): Statement {
@@ -136,7 +136,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
             this.getTypeHint()
             this.check(SEMICOLON, "Expected ';' after function declaration")
         }
-        return InterfaceStatement(name.content, functions, name.trace)
+        return InterfaceStatement(name.content, functions, name.trace, this.peek().trace)
     }
 
     private fun classBodyStatements(className: String): ClassBodyStatement {
@@ -196,7 +196,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
                         ConstructorInit.initNone()
                     }
                     val body = this.statement()
-                    constructors.add(ConstructorStatement(parameters, isArbitrary, constructorInit, body, currentTrace))
+                    constructors.add(ConstructorStatement(parameters, isArbitrary, constructorInit, body, currentTrace, this.peek().trace))
                 }
                 this.peekType() == FUN -> {
                     val function = this.functionDeclaration(true, static)
@@ -223,7 +223,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
                     }
                     val returnTypes = this.getTypeHint()
                     val body = this.statement()
-                    val function = FunctionStatement("\$$typeAsString::$count", true, parameters, isArbitrary, returnTypes, body, token.trace)
+                    val function = FunctionStatement("\$$typeAsString::$count", true, parameters, isArbitrary, returnTypes, body, token.trace, this.peek().trace)
                     operators.add(function to token.type)
                 }
                 this.peekType() == LEFT_CURLY_BRACKET -> {
@@ -235,22 +235,26 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
                 else -> this.error("Unexpected token in class statement: '${this.peek()}'")
             }
         }
-        return ClassBodyStatement(fields, staticFields, staticInitializer, constructors, methods, staticMethods, operators, trace)
+        return ClassBodyStatement(fields, staticFields, staticInitializer, constructors, methods, staticMethods, operators, trace, this.peek().trace)
     }
 
     private fun scopedStatement(): Statement {
         return when (this.peekType()) {
             LEFT_CURLY_BRACKET -> this.scope()
-            else -> ScopeStatement(this.statement())
+            else -> {
+                val start = this.peek()
+                ScopeStatement(this.statement(), start.trace, this.peek().trace)
+            }
         }
     }
 
     private fun scope(): Statement {
+        val start = this.peek()
         val statements = this.statements()
         if (statements == VoidStatement.INSTANCE) {
             return statements
         }
-        return ScopeStatement(statements)
+        return ScopeStatement(statements, start.trace, this.peek().trace)
     }
 
     private fun statements(): Statement {
@@ -296,7 +300,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
         this.check(RIGHT_BRACKET, "Expected ')' after if condition")
         val body = this.scopedStatement()
         val otherwise = if (this.isMatch(ELSE)) scopedStatement() else VoidStatement.INSTANCE
-        return IfStatement(condition, body, otherwise, trace)
+        return IfStatement(condition, body, otherwise, trace, this.peek().trace)
     }
 
     private fun switchStatement(): Statement {
@@ -326,7 +330,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
             casesList.add(cases)
             caseStatements.add(statement)
         }
-        return SwitchStatement(condition, casesList, caseStatements, default, trace)
+        return SwitchStatement(condition, casesList, caseStatements, default, trace, this.peek().trace)
     }
 
     private fun whileStatement(): WhileStatement {
@@ -335,7 +339,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
         val condition = this.expression()
         this.check(RIGHT_BRACKET, "Expected ')' after while condition")
         val body = this.scopedStatement()
-        return WhileStatement(condition, body, trace)
+        return WhileStatement(condition, body, trace, this.peek().trace)
     }
 
     private fun forStatement(): ForStatement {
@@ -352,7 +356,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
         val end = if (this.peekType() == RIGHT_BRACKET) this.cachedNull else this.expression()
         this.check(RIGHT_BRACKET, "Expected ')' after for expressions")
         val body = this.statement()
-        return ForStatement(initial, condition, end, body, trace)
+        return ForStatement(initial, condition, end, body, trace, this.peek().trace)
     }
 
     private fun foreachStatement(): ForeachStatement {
@@ -364,7 +368,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
         val iteratorExpression = this.expression()
         this.check(RIGHT_BRACKET, "Expected ')' after iterator expression")
         val body = this.statement()
-        return ForeachStatement(name, iteratorExpression, body, trace)
+        return ForeachStatement(name, iteratorExpression, body, trace, this.peek().trace)
     }
 
     private fun tryStatement(): TryStatement {
@@ -386,7 +390,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
             catchBody = VoidStatement.INSTANCE
         }
         val finally = if (this.isMatch(FINALLY)) this.scopedStatement() else VoidStatement.INSTANCE
-        return TryStatement(body, catchBody, parameter, finally, trace)
+        return TryStatement(body, catchBody, parameter, finally, trace, this.peek().trace)
     }
 
     private fun throwStatement(): ThrowStatement {
@@ -733,7 +737,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
             ReturnStatement(this.expression(), trace)
         }
 
-        return FunctionExpression("${this.lambdaCount++}\$lambda", parameters, isArbitrary, returnTypes, body, trace)
+        return FunctionExpression("${this.lambdaCount++}\$lambda", parameters, isArbitrary, returnTypes, body, trace, this.peek().trace)
     }
 
     private fun expressions(): List<Expression> {

@@ -2,7 +2,7 @@ package me.senseiwells.arucas.core
 
 import me.senseiwells.arucas.api.ArucasAPI
 import me.senseiwells.arucas.api.ArucasErrorHandler
-import me.senseiwells.arucas.api.docs.parser.DocParser
+import me.senseiwells.arucas.api.docs.visitor.ArucasDocParser
 import me.senseiwells.arucas.builtin.*
 import me.senseiwells.arucas.classes.*
 import me.senseiwells.arucas.classes.instance.ClassInstance
@@ -52,7 +52,7 @@ import kotlin.reflect.KClass
  * documentation annotations.
  *
  * @see ArucasAPI
- * @see DocParser
+ * @see ArucasDocParser
  */
 @Suppress("UNUSED")
 sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstance>, ErrorSafe {
@@ -76,7 +76,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
          * @param api the api used by the interpreter.
          * @return the dummy interpreter.
          *
-         * @see DocParser
+         * @see ArucasDocParser
          */
         @JvmStatic
         fun dummy(api: ArucasAPI = ArucasAPI.Builder().addDefault().build()): Interpreter {
@@ -723,44 +723,44 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         definition.fields.value.putAll(body.fields)
 
         if (needsSuper && body.constructors.isEmpty()) {
-            runtimeError("Derived class constructor must initialise super constructor", body.trace)
+            runtimeError("Derived class constructor must initialise super constructor", body.start)
         }
         body.constructors.forEach { c ->
             if (needsSuper && c.init.type == ConstructorInit.InitType.NONE) {
-                runtimeError("Derived class constructor must initialise super constructor", c.trace)
+                runtimeError("Derived class constructor must initialise super constructor", c.start)
             }
-            val parameters = c.parameters.map { p -> p.toTyped(this.currentTable, c.trace) }
-            UserConstructorFunction.of(c.arbitrary, definition, c.init, parameters, c.body, this.currentTable, c.trace).let {
+            val parameters = c.parameters.map { p -> p.toTyped(this.currentTable, c.start) }
+            UserConstructorFunction.of(c.arbitrary, definition, c.init, parameters, c.body, this.currentTable, c.start).let {
                 definition.constructors.value.add(this.create(FunctionDef::class, it))
             }
         }
 
         body.methods.forEach { m ->
-            val parameters = m.parameters.map { p -> p.toTyped(this.currentTable, m.trace) }
-            val returnTypes = Parameter.namesToDefinitions(this.currentTable, m.returnTypes, m.trace)
-            UserDefinedClassFunction.of(m.arbitrary, m.name, parameters, m.body, this.currentTable, m.trace, returnTypes).let {
+            val parameters = m.parameters.map { p -> p.toTyped(this.currentTable, m.start) }
+            val returnTypes = Parameter.namesToDefinitions(this.currentTable, m.returnTypes, m.start)
+            UserDefinedClassFunction.of(m.arbitrary, m.name, parameters, m.body, this.currentTable, m.start, returnTypes).let {
                 definition.methods.value.add(this.create(FunctionDef::class, it))
             }
         }
 
         body.operators.forEach { (m, t) ->
-            val parameters = m.parameters.map { p -> p.toTyped(this.currentTable, m.trace) }
-            val returnTypes = Parameter.namesToDefinitions(this.currentTable, m.returnTypes, m.trace)
-            UserDefinedClassFunction.of(m.arbitrary, m.name, parameters, m.body, this.currentTable, m.trace, returnTypes).let {
+            val parameters = m.parameters.map { p -> p.toTyped(this.currentTable, m.start) }
+            val returnTypes = Parameter.namesToDefinitions(this.currentTable, m.returnTypes, m.start)
+            UserDefinedClassFunction.of(m.arbitrary, m.name, parameters, m.body, this.currentTable, m.start, returnTypes).let {
                 definition.operators.value.add(t, this.create(FunctionDef::class, it))
             }
         }
 
         body.staticMethods.forEach { m ->
-            val parameters = m.parameters.map { p -> p.toTyped(this.currentTable, m.trace) }
-            val returnTypes = Parameter.namesToDefinitions(this.currentTable, m.returnTypes, m.trace)
-            UserDefinedFunction.of(m.arbitrary, m.name, parameters, m.body, this.currentTable, m.trace, returnTypes).let {
+            val parameters = m.parameters.map { p -> p.toTyped(this.currentTable, m.start) }
+            val returnTypes = Parameter.namesToDefinitions(this.currentTable, m.returnTypes, m.start)
+            UserDefinedFunction.of(m.arbitrary, m.name, parameters, m.body, this.currentTable, m.start, returnTypes).let {
                 definition.staticMethods.value.add(this.create(FunctionDef::class, it))
             }
         }
 
         body.staticFields.forEach { (p, e) ->
-            val typedParameter = p.toTyped(this.currentTable, body.trace)
+            val typedParameter = p.toTyped(this.currentTable, body.start)
             val fieldName = "${definition.name}.${p.name}"
             HintedField(fieldName, typedParameter.types, true, this.evaluate(e)).let {
                 definition.staticFields.value[p.name] = it
@@ -771,7 +771,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
 
         for (interfaceDefinition in definition.interfaces()) {
             if (!interfaceDefinition.hasRequiredMethods(definition)) {
-                runtimeError("$type '${definition.name}' has not properly implemented '${interfaceDefinition.name}'", body.trace)
+                runtimeError("$type '${definition.name}' has not properly implemented '${interfaceDefinition.name}'", body.start)
             }
         }
     }
@@ -804,7 +804,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
 
     override fun visitIf(ifStatement: IfStatement) {
         val condition = this.evaluate(ifStatement.condition).getPrimitive(BooleanDef::class)
-        condition ?: runtimeError("Condition must result in a Boolean", ifStatement.trace)
+        condition ?: runtimeError("Condition must result in a Boolean", ifStatement.start)
         if (condition) {
             this.execute(ifStatement.body)
         } else {
@@ -817,7 +817,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         try {
             switch.casesList.forEachIndexed { i, cases ->
                 for (case in cases) {
-                    if (condition.equals(this, this.evaluate(case), switch.trace)) {
+                    if (condition.equals(this, this.evaluate(case), switch.start)) {
                         this.execute(switch.caseStatements[i])
                         return
                     }
@@ -828,9 +828,9 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
     }
 
     override fun visitFunction(function: FunctionStatement) {
-        val parameters = function.parameters.map { it.toTyped(this.currentTable, function.trace) }
-        val returnTypes = Parameter.namesToDefinitions(this.currentTable, function.returnTypes, function.trace)
-        UserDefinedFunction.of(function.arbitrary, function.name, parameters, function.body, this.currentTable, function.trace, returnTypes).let {
+        val parameters = function.parameters.map { it.toTyped(this.currentTable, function.start) }
+        val returnTypes = Parameter.namesToDefinitions(this.currentTable, function.returnTypes, function.start)
+        UserDefinedFunction.of(function.arbitrary, function.name, parameters, function.body, this.currentTable, function.start, returnTypes).let {
             if (!function.isClass) {
                 this.currentTable.defineFunction(this.create(FunctionDef::class, it))
             }
@@ -845,7 +845,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
     override fun visitWhile(whileStatement: WhileStatement) {
         while (this.canRun()) {
             val condition = this.evaluate(whileStatement.condition).getPrimitive(BooleanDef::class)
-            condition ?: runtimeError("Condition must result in Boolean", whileStatement.trace)
+            condition ?: runtimeError("Condition must result in Boolean", whileStatement.Start)
             if (!condition) {
                 break
             }
@@ -865,7 +865,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
             this.execute(forStatement.initial)
             while (this.canRun()) {
                 val condition = this.evaluate(forStatement.condition).getPrimitive(BooleanDef::class)
-                condition ?: runtimeError("Condition must result in Boolean", forStatement.trace)
+                condition ?: runtimeError("Condition must result in Boolean", forStatement.start)
                 if (!condition) {
                     break
                 }
@@ -876,7 +876,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
                     break
                 } catch (_: Propagator.Continue) { }
 
-                this.evaluate(forStatement.end)
+                this.evaluate(forStatement.expression)
             }
         }
     }
@@ -884,13 +884,13 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
     override fun visitForeach(foreach: ForeachStatement) {
         val iterable = this.evaluate(foreach.iterable)
         if (!iterable.isOf(IterableDef::class)) {
-            runtimeError("'foreach' loop must iterate over an Iterable value", foreach.trace)
+            runtimeError("'foreach' loop must iterate over an Iterable value", foreach.start)
         }
 
-        val iterator = iterable.callMember(this, "iterator", listOf(), IteratorDef::class, foreach.trace)
+        val iterator = iterable.callMember(this, "iterator", listOf(), IteratorDef::class, foreach.start)
 
-        val hasNext = { iterator.callMemberPrimitive(this, "hasNext", listOf(), BooleanDef::class, foreach.trace) }
-        val getNext = { iterator.callMember(this, "next", listOf(), ObjectDef::class, foreach.trace) }
+        val hasNext = { iterator.callMemberPrimitive(this, "hasNext", listOf(), BooleanDef::class, foreach.start) }
+        val getNext = { iterator.callMember(this, "next", listOf(), ObjectDef::class, foreach.start) }
         while (hasNext()) {
             this.canRun()
             val shouldBreak = this.jumpNextTable {
@@ -924,7 +924,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
             tryStatement.catchParameter ?: throw error
             this.jumpNextTable {
                 val instance = error.getInstance(this)
-                if (!this.isInstanceType(instance, tryStatement.catchParameter.typeNames, tryStatement.trace)) {
+                if (!this.isInstanceType(instance, tryStatement.catchParameter.typeNames, tryStatement.start)) {
                     throw instance.getPrimitive(ErrorDef::class)!!
                 }
                 this.logDebug("Error '$error' was caught")
@@ -956,21 +956,21 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         var superclass: ClassDefinition? = null
         var needsSuper = false
         for (parent in classStatement.parents) {
-            val parentClass = this.getClass(parent, classStatement.trace, classStatement)
+            val parentClass = this.getClass(parent, classStatement.start, classStatement)
             if (parentClass is InterfaceDefinition) {
                 interfaces.add(parentClass)
                 continue
             }
             if (superclass == null) {
                 if (!parentClass.canExtend() || !parentClass.constructors.isInitialized()) {
-                    runtimeError("Cannot extend class '${parentClass.name}'", classStatement.trace)
+                    runtimeError("Cannot extend class '${parentClass.name}'", classStatement.start)
                 }
                 val constructors = parentClass.constructors.value
                 needsSuper = !constructors.isEmpty() && !constructors.has("", 0)
                 superclass = parentClass
                 continue
             }
-            runtimeError("Classes can only extend one non-interface super class", classStatement.trace)
+            runtimeError("Classes can only extend one non-interface super class", classStatement.start)
         }
 
         this.jumpNextTable {
@@ -984,9 +984,9 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
     override fun visitEnum(enumStatement: EnumStatement) {
         val interfaces = HashSet<InterfaceDefinition>()
         for (parent in enumStatement.parents) {
-            val parentClass = this.getClass(parent, enumStatement.trace, enumStatement)
+            val parentClass = this.getClass(parent, enumStatement.start, enumStatement)
             if (parentClass !is InterfaceDefinition) {
-                runtimeError("Enums can only implement interfaces, cannot extend class '${parentClass.name}'", enumStatement.trace)
+                runtimeError("Enums can only implement interfaces, cannot extend class '${parentClass.name}'", enumStatement.start)
             }
             interfaces.add(parentClass)
         }
@@ -1059,9 +1059,9 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
     }
 
     override fun visitFunction(function: FunctionExpression): ClassInstance {
-        val arguments = function.parameters.map { it.toTyped(this.currentTable, function.trace) }
-        val returnTypes = Parameter.namesToDefinitions(this.currentTable, function.returnTypes, function.trace)
-        UserDefinedFunction.of(function.arbitrary, function.name, arguments, function.body, this.currentTable, function.trace, returnTypes).let {
+        val arguments = function.parameters.map { it.toTyped(this.currentTable, function.start) }
+        val returnTypes = Parameter.namesToDefinitions(this.currentTable, function.returnTypes, function.start)
+        UserDefinedFunction.of(function.arbitrary, function.name, arguments, function.body, this.currentTable, function.start, returnTypes).let {
             return this.create(FunctionDef::class, it)
         }
     }
