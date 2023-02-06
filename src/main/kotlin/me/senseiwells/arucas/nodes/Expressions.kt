@@ -44,7 +44,7 @@ interface ExpressionVisitor<T> {
  * The base expression class
  */
 abstract class Expression: Visitable {
-    internal abstract fun <T> visit(visitor: ExpressionVisitor<T>): T
+    abstract fun <T> visit(visitor: ExpressionVisitor<T>): T
 
     override fun toString(): String {
         return this::class.simpleName ?: "Expression"
