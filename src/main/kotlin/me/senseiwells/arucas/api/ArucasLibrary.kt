@@ -1,5 +1,6 @@
 package me.senseiwells.arucas.api
 
+import me.senseiwells.arucas.api.impl.ArucasDownloadableLibrary
 import me.senseiwells.arucas.core.Interpreter
 
 /**
