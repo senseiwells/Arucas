@@ -46,10 +46,11 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
     private fun localDeclaration(): Statement {
         this.check(LOCAL)
         val name = this.check(IDENTIFIER, "Expected a variable name")
+        val types = this.getTypeHint()
         this.check(ASSIGN_OPERATOR, "Expected '=' after variable name")
         val expression = this.expression()
         this.check(SEMICOLON, "Expected ';' after local variable declaration")
-        return LocalVarStatement(name.content, expression, name.trace)
+        return LocalVarStatement(name.content, expression, types, name.trace)
     }
 
     private fun functionDeclaration(isClass: Boolean, isStatic: Boolean = true): FunctionStatement {

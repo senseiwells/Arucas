@@ -94,6 +94,7 @@ class ScopeStatement(
 class LocalVarStatement(
     val name: String,
     val assignee: Expression,
+    val types: Array<String>?,
     val trace: LocatableTrace
 ): Statement() {
     override fun <T> visit(visitor: StatementVisitor<T>) = visitor.visitLocalVar(this)

@@ -232,9 +232,9 @@ class Resolver(
     }
 
     override fun visitLocalVar(local: LocalVarStatement) {
-        if (this.varScope.isEmpty()) {
-            compileError("Cannot declare local variable in the global scope", local.trace)
-        }
+        //if (this.varScope.isEmpty()) {
+        //    compileError("Cannot declare local variable in the global scope", local.trace)
+        //}
         this.resolve(local.assignee)
         this.defineVar(local.name, local.trace)
     }
