@@ -9,6 +9,7 @@ import me.senseiwells.arucas.classes.ClassDefinition
 import me.senseiwells.arucas.classes.CreatableDefinition
 import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.core.Interpreter
+import me.senseiwells.arucas.exceptions.RuntimeError
 import me.senseiwells.arucas.exceptions.runtimeError
 import me.senseiwells.arucas.utils.*
 import me.senseiwells.arucas.utils.Util.Types.JAVA
@@ -163,8 +164,10 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
             BuiltInFunction.of("charOf", 1, this::charOf),
             BuiltInFunction.of("booleanOf", 1, this::booleanOf),
             BuiltInFunction.arb("arrayOf", this::arrayOf),
+            BuiltInFunction.arb("typedArrayOf", this::typedArrayOf),
             BuiltInFunction.of("arrayWithSize", 1, this::objectArray, "Use 'Java.objectArray()' instead"),
             BuiltInFunction.of("objectArray", 1, this::objectArray),
+            BuiltInFunction.of("typedArray", 2, this::typedArray),
             BuiltInFunction.of("doubleArray", 1, this::doubleArray),
             BuiltInFunction.of("floatArray", 1, this::floatArray),
             BuiltInFunction.of("longArray", 1, this::longArray),
@@ -459,18 +462,67 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
 
     @FunctionDoc(
         isStatic = true,
+        name = "typedArrayOf",
+        desc = [
+            "Creates a Java array with a given type with given values. This will also",
+            "be the size of the array. If any value does not match the given type an error will be thrown."
+        ],
+        params = [
+            ParameterDoc(JavaClassDef::class, "castType", ["The type to cast the arrays to."]),
+            ParameterDoc(JavaDef::class, "values", ["The values to add to the array."], true)
+        ],
+        returns = ReturnDoc(JavaDef::class, ["The typed object array."]),
+        examples = ["Java.typedArrayOf(Java.classOf('java.lang.String'), 'foo', 'bar')"]
+    )
+    private fun typedArrayOf(arguments: Arguments): ClassInstance {
+        val javaClass = arguments.nextPrimitive(JavaClassDef::class)
+        val remaining = arguments.getRemaining()
+        @Suppress("UNCHECKED_CAST")
+        val array = java.lang.reflect.Array.newInstance(javaClass, remaining.size) as Array<Any?>
+        RuntimeError.wrap {
+            remaining.forEachIndexed { i, instance -> array[i] = instance.asJava() }
+        }
+        return this.create(array)
+    }
+
+    @FunctionDoc(
+        isStatic = true,
         name = "objectArray",
         desc = [
             "Creates a Java Object array with a given size, the array is filled with null values",
-            "by default and can be filled with any Java values, this array cannot be expanded"
+            "by default and can be filled with any Java values, this array cannot be expanded."
         ],
         params = [ParameterDoc(NumberDef::class, "size", ["The size of the array."])],
         returns = ReturnDoc(JavaDef::class, ["The Java Object array."]),
-        examples = ["Java.arrayWithSize(10);"]
+        examples = ["Java.objectArray(10);"]
     )
     private fun objectArray(arguments: Arguments): ClassInstance {
         val size = arguments.nextPrimitive(NumberDef::class).toInt()
         return if (size >= 0) this.create(arrayOfNulls<Any?>(size)) else runtimeError("Array size must be >= 0")
+    }
+
+    @FunctionDoc(
+        isStatic = true,
+        name = "typedArray",
+        desc = [
+            "Creates a Java typed array with a given size, the array is filled with null values",
+            "by default and can be filled with the given typed Java values, this array cannot be expanded."
+        ],
+        params = [
+            ParameterDoc(JavaClassDef::class, "type", ["The type of the array."]),
+            ParameterDoc(NumberDef::class, "size", ["The size of the array."])
+        ],
+        returns = ReturnDoc(JavaDef::class, ["The Java typed array."]),
+        examples = ["Java.typedArray(Java.classOf('java.util.String'), 10);"]
+    )
+    private fun typedArray(arguments: Arguments): ClassInstance {
+        val javaClass = arguments.nextPrimitive(JavaClassDef::class)
+        val size = arguments.nextPrimitive(NumberDef::class).toInt()
+        if (size >= 0) {
+            return this.create(java.lang.reflect.Array.newInstance(javaClass, size))
+        } else {
+            runtimeError("Array size must be >= 0")
+        }
     }
 
     @FunctionDoc(
