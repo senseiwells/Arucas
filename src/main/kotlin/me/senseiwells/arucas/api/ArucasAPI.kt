@@ -522,6 +522,8 @@ interface ArucasAPI {
             this.addConversion(ArucasThread::class) { a, i -> i.create(ThreadDef::class, a) }
             this.addConversion(Task::class) { t, i -> i.create(TaskDef::class, t) }
             this.addConversion(Future::class) { f, i -> i.create(FutureDef::class, f) }
+            this.addConversion(Class::class) { c, i -> i.create(JavaClassDef::class, c) }
+            this.addConversion(KClass::class) { k, i -> i.create(JavaClassDef::class, k.java) }
             return this
         }
 
