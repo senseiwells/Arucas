@@ -1,9 +1,14 @@
 package me.senseiwells.arucas.utils
 
 import me.senseiwells.arucas.api.ArucasObfuscator
+import me.senseiwells.arucas.builtin.StringDef
 import me.senseiwells.arucas.classes.instance.ClassInstance
+import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.exceptions.RuntimeError
 import me.senseiwells.arucas.exceptions.runtimeError
+import net.bytebuddy.implementation.bind.annotation.AllArguments
+import net.bytebuddy.implementation.bind.annotation.Origin
+import net.bytebuddy.implementation.bind.annotation.RuntimeType
 import java.lang.invoke.MethodHandle
 import java.lang.invoke.MethodHandles
 import java.lang.invoke.VarHandle
@@ -67,6 +72,10 @@ object ReflectionUtils {
         } catch (e: Exception) {
             runtimeError("Failed to get Java class", e)
         }
+    }
+
+    fun functionToInterceptor(interpreter: Interpreter, function: ClassInstance): Any {
+        return Interceptor(interpreter, function)
     }
 
     private fun getVarHandle(clazz: Class<*>, name: String, obfuscator: ArucasObfuscator): FieldWithHandle {
@@ -385,6 +394,19 @@ object ReflectionUtils {
 
         fun get(calling: Any?): Any? {
             return if (calling == null) handle.get() else handle.get(calling)
+        }
+    }
+
+    class Interceptor(interpreter: Interpreter, val function: ClassInstance) {
+        val interpreter = interpreter.branch()
+
+        @RuntimeType
+        fun intercept(@AllArguments allArguments: Array<Any?>, @Origin method: Method) {
+            val branch = this.interpreter.branch()
+            val arguments = ArrayList<ClassInstance>()
+            arguments.add(branch.create(StringDef::class, method.name))
+            arguments.add(branch.convertValue(allArguments))
+            branch.call(this.function, arguments)
         }
     }
 }

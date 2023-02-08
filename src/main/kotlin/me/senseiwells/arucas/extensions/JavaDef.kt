@@ -13,6 +13,9 @@ import me.senseiwells.arucas.exceptions.RuntimeError
 import me.senseiwells.arucas.exceptions.runtimeError
 import me.senseiwells.arucas.utils.*
 import me.senseiwells.arucas.utils.Util.Types.JAVA
+import net.bytebuddy.ByteBuddy
+import net.bytebuddy.implementation.MethodDelegation
+import java.util.*
 import java.util.function.Consumer
 import java.util.function.Function
 import java.util.function.Predicate
@@ -180,7 +183,8 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
             BuiltInFunction.of("consumerOf", 1, this::consumerOf),
             BuiltInFunction.of("supplierOf", 1, this::supplierOf),
             BuiltInFunction.of("functionOf", 1, this::functionOf),
-            BuiltInFunction.of("predicateOf", 1, this::predicateOf)
+            BuiltInFunction.of("predicateOf", 1, this::predicateOf),
+            BuiltInFunction.of("implementClass", 2, this::implementClass)
         )
     }
 
@@ -765,6 +769,52 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
             result.getPrimitive(BooleanDef::class) ?: runtimeError("Predicate must return a boolean")
         }
         return this.create(predicate)
+    }
+
+    @FunctionDoc(
+        isStatic = true,
+        name = "implementClass",
+        desc = ["Creates a new Java class definition extending/implementing the given classes."],
+        params = [
+            ParameterDoc(FunctionDef::class, "superclasses", ["The superclasses of the wanted definition. These should be JavaClass types, there can only be 1 (abstract) class, as many interfaces."]),
+            ParameterDoc(FunctionDef::class, "invokeHandler", ["This function will intercept all method calls, it will be passed the name of the method and any arguments"])
+        ],
+        returns = ReturnDoc(JavaDef::class, ["The Java Predicate object."]),
+        examples = [
+            """
+            Java.implementClass([Java.classOf("java.lang.Runnable")], fun(name, args) {
+                // ...
+            });
+            """
+        ]
+    )
+    private fun implementClass(arguments: Arguments): Class<*> {
+        arguments.interpreter.throwIfNotExperimental { "Implementing Java classes is experimental, enable with `experimental(true)`" }
+
+        val collection = arguments.nextPrimitive(CollectionDef::class)
+        val invokeHandler = arguments.nextFunction()
+
+        val interfaces = LinkedList<Class<*>>()
+        var superclass: Class<*> = Object::class.java
+        for (instance in collection) {
+            val clazz = instance.getPrimitive(JavaClassDef::class)
+            clazz ?: runtimeError("Required a list of JavaClass'")
+            if (clazz.isInterface) {
+                interfaces.add(clazz)
+            } else {
+                if (superclass != Object::class.java) {
+                    runtimeError("Cannot have multiple superclasses")
+                }
+                superclass = clazz
+            }
+        }
+        return ByteBuddy()
+            .subclass(superclass)
+            .implement(interfaces)
+            .intercept(MethodDelegation.to(ReflectionUtils.functionToInterceptor(arguments.interpreter, invokeHandler)))
+            .make()
+            .load(this::class.java.classLoader)
+            .loaded
     }
 
     override fun defineMethods(): List<MemberFunction> {

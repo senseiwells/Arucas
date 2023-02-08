@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "me.senseiwells"
-version = "2.0.3"
+version = "2.1.0"
 
 val shade: Configuration by configurations.creating
 
@@ -20,6 +20,7 @@ repositories {
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.7.10")?.let { shade(it) }
     implementation("com.google.code.gson:gson:2.9.0")?.let { shade(it) }
+    implementation("net.bytebuddy:byte-buddy:1.12.23")?.let { shade(it) }
 
     testImplementation(kotlin("test"))
     testImplementation("org.openjdk.jmh:jmh-core:1.35")

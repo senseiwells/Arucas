@@ -434,6 +434,18 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
     }
 
     /**
+     * Checks if the interpreter is in experimental mode. If
+     * it is not then an error will be thrown.
+     *
+     * @param message a lazy message.
+     */
+    fun throwIfNotExperimental(message: () -> String = { "Interpreter is not in experimental mode" }) {
+        if (!this.properties.isExperimental) {
+            runtimeError(message())
+        }
+    }
+
+    /**
      * Runs a function, and catches any [Exception]s.
      *
      * This mirrors the functionality of [ErrorSafe] however
