@@ -694,6 +694,19 @@ parameter is no longer used internally but remains for backwards compatibility.
 Java.getStaticMethodDelegate('java.lang.Integer', 'parseInt', 1);
 ```
 
+### `Java.implementClass(superclasses, invokeHandler)`
+- Description: Creates a new Java class definition extending/implementing the given classes.
+- Parameters:
+  - Function (`superclasses`): The superclasses of the wanted definition. These should be JavaClass types, there can only be 1 (abstract) class, as many interfaces.
+  - Function (`invokeHandler`): This function will intercept all method calls, it will be passed the name of the method and any arguments.
+- Returns - Java: The Java Predicate object.
+- Example:
+```kotlin
+Java.implementClass([Java.classOf("java.lang.Runnable")], fun(name, args) {
+    // ...
+});
+```
+
 ### `Java.intArray(size)`
 - Description: Creates a Java int array with a given size, the array is filled with 0's
 by default and can be filled with only ints.

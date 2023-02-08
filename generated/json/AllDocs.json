@@ -1657,6 +1657,32 @@
           ]
         },
         {
+          "name": "implementClass",
+          "is_arbitrary": false,
+          "desc": [
+            "Creates a new Java class definition extending/implementing the given classes."
+          ],
+          "params": [
+            {
+              "name": "superclasses",
+              "type": "Function",
+              "desc": "The superclasses of the wanted definition. These should be JavaClass types, there can only be 1 (abstract) class, as many interfaces."
+            },
+            {
+              "name": "invokeHandler",
+              "type": "Function",
+              "desc": "This function will intercept all method calls, it will be passed the name of the method and any arguments."
+            }
+          ],
+          "returns": {
+            "type": "Java",
+            "desc": "The Java Predicate object."
+          },
+          "examples": [
+            "Java.implementClass([Java.classOf(\"java.lang.Runnable\")], fun(name, args) {\n    // ...\n});"
+          ]
+        },
+        {
           "name": "intArray",
           "is_arbitrary": false,
           "desc": [
