@@ -779,12 +779,14 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
             ParameterDoc(FunctionDef::class, "superclasses", ["The superclasses of the wanted definition. These should be JavaClass types, there can only be 1 (abstract) class, as many interfaces."]),
             ParameterDoc(FunctionDef::class, "invokeHandler", ["This function will intercept all method calls, it will be passed the name of the method and any arguments"])
         ],
-        returns = ReturnDoc(JavaDef::class, ["The Java Predicate object."]),
+        returns = ReturnDoc(JavaClassDef::class, ["The newly defined Java class."]),
         examples = [
             """
-            Java.implementClass([Java.classOf("java.lang.Runnable")], fun(name, args) {
+            RunnableImpl = Java.implementClass([Java.classOf("java.lang.Runnable")], fun(name, args) {
                 // ...
             });
+            runnable = RunnableImpl();
+            runnable.run(); // Will invoke the invokeHandler with the method name and any arguments
             """
         ]
     )
