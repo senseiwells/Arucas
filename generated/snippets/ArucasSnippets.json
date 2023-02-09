@@ -459,80 +459,80 @@
     "body": "Java.getStaticMethodDelegate($className, $methodName, $parameters)",
     "description": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@3b94d659, me.senseiwells.arucas.api.docs.visitor.ParameterDoc@24b1d79b, me.senseiwells.arucas.api.docs.visitor.ParameterDoc@68ceda24](className, methodName, parameters)\nGets a static method delegate from a Java class, this should\nbe avoided and instance use 'classOf' to get the class instance\nand then call the method on that class instance. The parameter count\nparameter is no longer used internally but remains for backwards compatibility.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@3578436e (`className`): The name of the class.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@3578436e (`methodName`): The name of the method.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@6eceb130 (`parameters`): The number of parameters.\n"
   },
-  "Static Method Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@281e3708, me.senseiwells.arucas.api.docs.visitor.ParameterDoc@35a50a4c](superclasses, invokeHandler)": {
-    "prefix": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@281e3708, me.senseiwells.arucas.api.docs.visitor.ParameterDoc@35a50a4c](superclasses, invokeHandler)",
+  "Static Method Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@35a50a4c, me.senseiwells.arucas.api.docs.visitor.ParameterDoc@1f021e6c](superclasses, invokeHandler)": {
+    "prefix": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@35a50a4c, me.senseiwells.arucas.api.docs.visitor.ParameterDoc@1f021e6c](superclasses, invokeHandler)",
     "body": "Java.implementClass($superclasses, $invokeHandler)",
-    "description": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@281e3708, me.senseiwells.arucas.api.docs.visitor.ParameterDoc@35a50a4c](superclasses, invokeHandler)\nCreates a new Java class definition extending/implementing the given classes.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@17211155 (`superclasses`): The superclasses of the wanted definition. These should be JavaClass types, there can only be 1 (abstract) class, as many interfaces.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@17211155 (`invokeHandler`): This function will intercept all method calls, it will be passed the name of the method and any arguments.\n"
+    "description": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@35a50a4c, me.senseiwells.arucas.api.docs.visitor.ParameterDoc@1f021e6c](superclasses, invokeHandler)\nCreates a new Java class definition extending/implementing the given classes.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@281e3708 (`superclasses`): A list of the superclasses of the wanted definition. These should be JavaClass types, there can only be 1 (abstract) class, as many interfaces.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@17211155 (`invokeHandler`): This function will intercept all method calls, it will be passed the name of the method and any arguments.\n"
   },
-  "Static Method Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@1f021e6c](size)": {
-    "prefix": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@1f021e6c](size)",
+  "Static Method Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@103f852](size)": {
+    "prefix": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@103f852](size)",
     "body": "Java.intArray($size)",
-    "description": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@1f021e6c](size)\nCreates a Java int array with a given size, the array is filled with 0's\nby default and can be filled with only ints.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@6eceb130 (`size`): The size of the array.\n"
+    "description": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@103f852](size)\nCreates a Java int array with a given size, the array is filled with 0's\nby default and can be filled with only ints.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@6eceb130 (`size`): The size of the array.\n"
   },
-  "Static Method Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@103f852](num)": {
-    "prefix": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@103f852](num)",
+  "Static Method Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@587c290d](num)": {
+    "prefix": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@587c290d](num)",
     "body": "Java.intOf($num)",
-    "description": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@103f852](num)\nCreates a Java value int, to be used in Java.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@6eceb130 (`num`): The number to convert to a Java int.\n"
+    "description": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@587c290d](num)\nCreates a Java value int, to be used in Java.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@6eceb130 (`num`): The number to convert to a Java int.\n"
   },
-  "Static Method Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@587c290d](size)": {
-    "prefix": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@587c290d](size)",
+  "Static Method Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@4516af24](size)": {
+    "prefix": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@4516af24](size)",
     "body": "Java.longArray($size)",
-    "description": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@587c290d](size)\nCreates a Java long array with a given size, the array is filled with 0's\nby default and can be filled with only longs.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@6eceb130 (`size`): The size of the array.\n"
+    "description": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@4516af24](size)\nCreates a Java long array with a given size, the array is filled with 0's\nby default and can be filled with only longs.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@6eceb130 (`size`): The size of the array.\n"
   },
-  "Static Method Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@4516af24](num)": {
-    "prefix": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@4516af24](num)",
+  "Static Method Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@4ae82894](num)": {
+    "prefix": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@4ae82894](num)",
     "body": "Java.longOf($num)",
-    "description": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@4516af24](num)\nCreates a Java value long, to be used in Java.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@6eceb130 (`num`): The number to convert to a Java long.\n"
+    "description": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@4ae82894](num)\nCreates a Java value long, to be used in Java.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@6eceb130 (`num`): The number to convert to a Java long.\n"
   },
-  "Static Method Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@4ae82894](size)": {
-    "prefix": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@4ae82894](size)",
+  "Static Method Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@543788f3](size)": {
+    "prefix": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@543788f3](size)",
     "body": "Java.objectArray($size)",
-    "description": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@4ae82894](size)\nCreates a Java Object array with a given size, the array is filled with null values\nby default and can be filled with any Java values, this array cannot be expanded.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@6eceb130 (`size`): The size of the array.\n"
-  },
-  "Static Method Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@543788f3](function)": {
-    "prefix": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@543788f3](function)",
-    "body": "Java.predicateOf($function)",
-    "description": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@543788f3](function)\nCreates a Java Predicate object from a given function.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@17211155 (`function`): The function to be executed, this must have one parameter and must return a boolean.\n"
+    "description": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@543788f3](size)\nCreates a Java Object array with a given size, the array is filled with null values\nby default and can be filled with any Java values, this array cannot be expanded.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@6eceb130 (`size`): The size of the array.\n"
   },
   "Static Method Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@6d3af739](function)": {
     "prefix": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@6d3af739](function)",
+    "body": "Java.predicateOf($function)",
+    "description": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@6d3af739](function)\nCreates a Java Predicate object from a given function.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@17211155 (`function`): The function to be executed, this must have one parameter and must return a boolean.\n"
+  },
+  "Static Method Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@1da51a35](function)": {
+    "prefix": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@1da51a35](function)",
     "body": "Java.runnableOf($function)",
-    "description": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@6d3af739](function)\nCreates a Java Runnable object from a given function, this must\nhave no paramters and any return values will be ignored.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@17211155 (`function`): The function to be executed.\n"
+    "description": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@1da51a35](function)\nCreates a Java Runnable object from a given function, this must\nhave no paramters and any return values will be ignored.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@17211155 (`function`): The function to be executed.\n"
   },
-  "Static Method Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@1da51a35, me.senseiwells.arucas.api.docs.visitor.ParameterDoc@16022d9d, me.senseiwells.arucas.api.docs.visitor.ParameterDoc@7e9a5fbe](className, fieldName, newValue)": {
-    "prefix": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@1da51a35, me.senseiwells.arucas.api.docs.visitor.ParameterDoc@16022d9d, me.senseiwells.arucas.api.docs.visitor.ParameterDoc@7e9a5fbe](className, fieldName, newValue)",
+  "Static Method Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@16022d9d, me.senseiwells.arucas.api.docs.visitor.ParameterDoc@7e9a5fbe, me.senseiwells.arucas.api.docs.visitor.ParameterDoc@44a3ec6b](className, fieldName, newValue)": {
+    "prefix": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@16022d9d, me.senseiwells.arucas.api.docs.visitor.ParameterDoc@7e9a5fbe, me.senseiwells.arucas.api.docs.visitor.ParameterDoc@44a3ec6b](className, fieldName, newValue)",
     "body": "Java.setStaticField($className, $fieldName, $newValue)",
-    "description": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@1da51a35, me.senseiwells.arucas.api.docs.visitor.ParameterDoc@16022d9d, me.senseiwells.arucas.api.docs.visitor.ParameterDoc@7e9a5fbe](className, fieldName, newValue)\nSets a static field in a Java class with a new value.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@3578436e (`className`): The name of the class.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@3578436e (`fieldName`): The name of the field.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@706a04ae (`newValue`): The new value.\n"
+    "description": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@16022d9d, me.senseiwells.arucas.api.docs.visitor.ParameterDoc@7e9a5fbe, me.senseiwells.arucas.api.docs.visitor.ParameterDoc@44a3ec6b](className, fieldName, newValue)\nSets a static field in a Java class with a new value.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@3578436e (`className`): The name of the class.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@3578436e (`fieldName`): The name of the field.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@706a04ae (`newValue`): The new value.\n"
   },
-  "Static Method Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@44a3ec6b](size)": {
-    "prefix": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@44a3ec6b](size)",
+  "Static Method Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@71623278](size)": {
+    "prefix": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@71623278](size)",
     "body": "Java.shortArray($size)",
-    "description": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@44a3ec6b](size)\nCreates a Java short array with a given size, the array is filled with 0's\nby default and can be filled with only shorts.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@6eceb130 (`size`): The size of the array.\n"
+    "description": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@71623278](size)\nCreates a Java short array with a given size, the array is filled with 0's\nby default and can be filled with only shorts.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@6eceb130 (`size`): The size of the array.\n"
   },
-  "Static Method Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@71623278](num)": {
-    "prefix": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@71623278](num)",
+  "Static Method Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@768b970c](num)": {
+    "prefix": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@768b970c](num)",
     "body": "Java.shortOf($num)",
-    "description": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@71623278](num)\nCreates a Java value short, to be used in Java.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@6eceb130 (`num`): The number to convert to a Java short.\n"
+    "description": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@768b970c](num)\nCreates a Java value short, to be used in Java.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@6eceb130 (`num`): The number to convert to a Java short.\n"
   },
-  "Static Method Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@768b970c](function)": {
-    "prefix": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@768b970c](function)",
+  "Static Method Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@5a4041cc](function)": {
+    "prefix": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@5a4041cc](function)",
     "body": "Java.supplierOf($function)",
-    "description": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@768b970c](function)\nCreates a Java Supplier object from a given function.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@17211155 (`function`): The function to be executed, this must have no parameters and must return (supply) a value.\n"
+    "description": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@5a4041cc](function)\nCreates a Java Supplier object from a given function.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@17211155 (`function`): The function to be executed, this must have no parameters and must return (supply) a value.\n"
   },
-  "Static Method Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@15b3e5b, me.senseiwells.arucas.api.docs.visitor.ParameterDoc@61ca2dfa](type, size)": {
-    "prefix": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@15b3e5b, me.senseiwells.arucas.api.docs.visitor.ParameterDoc@61ca2dfa](type, size)",
+  "Static Method Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@61ca2dfa, me.senseiwells.arucas.api.docs.visitor.ParameterDoc@4b53f538](type, size)": {
+    "prefix": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@61ca2dfa, me.senseiwells.arucas.api.docs.visitor.ParameterDoc@4b53f538](type, size)",
     "body": "Java.typedArray($type, $size)",
-    "description": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@15b3e5b, me.senseiwells.arucas.api.docs.visitor.ParameterDoc@61ca2dfa](type, size)\nCreates a Java typed array with a given size, the array is filled with null values\nby default and can be filled with the given typed Java values, this array cannot be expanded.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@5a4041cc (`type`): The type of the array.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@6eceb130 (`size`): The size of the array.\n"
+    "description": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@61ca2dfa, me.senseiwells.arucas.api.docs.visitor.ParameterDoc@4b53f538](type, size)\nCreates a Java typed array with a given size, the array is filled with null values\nby default and can be filled with the given typed Java values, this array cannot be expanded.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@15b3e5b (`type`): The type of the array.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@6eceb130 (`size`): The size of the array.\n"
   },
-  "Static Method Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@134593bf, me.senseiwells.arucas.api.docs.visitor.ParameterDoc@4bb4de6a](castType, values)": {
-    "prefix": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@134593bf, me.senseiwells.arucas.api.docs.visitor.ParameterDoc@4bb4de6a](castType, values)",
+  "Static Method Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@4bb4de6a, me.senseiwells.arucas.api.docs.visitor.ParameterDoc@7ba18f1b](castType, values)": {
+    "prefix": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@4bb4de6a, me.senseiwells.arucas.api.docs.visitor.ParameterDoc@7ba18f1b](castType, values)",
     "body": "Java.typedArrayOf($castType, $values)",
-    "description": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@134593bf, me.senseiwells.arucas.api.docs.visitor.ParameterDoc@4bb4de6a](castType, values)\nCreates a Java array with a given type with given values. This will also\nbe the size of the array. If any value does not match the given type an error will be thrown.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@5a4041cc (`castType`): The type to cast the arrays to.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@4b53f538 (`values...`): The values to add to the array.\n"
+    "description": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@4bb4de6a, me.senseiwells.arucas.api.docs.visitor.ParameterDoc@7ba18f1b](castType, values)\nCreates a Java array with a given type with given values. This will also\nbe the size of the array. If any value does not match the given type an error will be thrown.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@15b3e5b (`castType`): The type to cast the arrays to.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@134593bf (`values...`): The values to add to the array.\n"
   },
-  "Static Method Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@7ba18f1b](value)": {
-    "prefix": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@7ba18f1b](value)",
+  "Static Method Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@2f8f5f62](value)": {
+    "prefix": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@2f8f5f62](value)",
     "body": "Java.valueOf($value)",
-    "description": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@7ba18f1b](value)\nConverts any Arucas value into a Java value then wraps it in the Java wrapper and returns it.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@706a04ae (`value`): Any value to get the Java value of.\n"
+    "description": "Java.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@2f8f5f62](value)\nConverts any Arucas value into a Java value then wraps it in the Java wrapper and returns it.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@706a04ae (`value`): Any value to get the Java value of.\n"
   },
   "JavaClass Class": {
     "prefix": "JavaClass",
@@ -552,17 +552,17 @@
   "Method <Json>.writeToFile(file)": {
     "prefix": ".writeToFile($file)",
     "body": ".writeToFile($file)",
-    "description": "<Json>.writeToFile(file)\nThis writes the Json to a file\nif the file given is a directory or cannot be\nwritten to, an error will be thrown.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@382db087 (`file`): The file that you want to write to.\n"
+    "description": "<Json>.writeToFile(file)\nThis writes the Json to a file\nif the file given is a directory or cannot be\nwritten to, an error will be thrown.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@73d4cc9e (`file`): The file that you want to write to.\n"
   },
-  "Static Method Json.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@73d4cc9e](file)": {
-    "prefix": "Json.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@73d4cc9e](file)",
+  "Static Method Json.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@80169cf](file)": {
+    "prefix": "Json.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@80169cf](file)",
     "body": "Json.fromFile($file)",
-    "description": "Json.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@73d4cc9e](file)\nThis will read a file and parse it into a Json, this will throw an error if the file cannot be read.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@382db087 (`file`): The file that you want to parse into a Json.\n"
+    "description": "Json.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@80169cf](file)\nThis will read a file and parse it into a Json, this will throw an error if the file cannot be read.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@73d4cc9e (`file`): The file that you want to parse into a Json.\n"
   },
   "Static Method Json.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@5427c60c](list)": {
     "prefix": "Json.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@5427c60c](list)",
     "body": "Json.fromList($list)",
-    "description": "Json.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@5427c60c](list)\nThis converts a list into a Json, an important thing to note is that\nany values that are not Numbers, Booleans, Lists, Maps, or Null will use their\ntoString() member to convert them to a string.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@80169cf (`list`): The list that you want to parse into a Json.\n"
+    "description": "Json.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@5427c60c](list)\nThis converts a list into a Json, an important thing to note is that\nany values that are not Numbers, Booleans, Lists, Maps, or Null will use their\ntoString() member to convert them to a string.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@281e3708 (`list`): The list that you want to parse into a Json.\n"
   },
   "Static Method Json.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@543e710e](map)": {
     "prefix": "Json.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@543e710e](map)",
@@ -672,7 +672,7 @@
   "Method <List>.retainAll(list)": {
     "prefix": ".retainAll($list)",
     "body": ".retainAll($list)",
-    "description": "<List>.retainAll(list)\nThis allows you to retain only the values that are in both lists.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@80169cf (`list`): The list you want to retain values from.\n"
+    "description": "<List>.retainAll(list)\nThis allows you to retain only the values that are in both lists.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@281e3708 (`list`): The list you want to retain values from.\n"
   },
   "Method <List>.reverse()": {
     "prefix": ".reverse()",
@@ -947,7 +947,7 @@
   "Static Method Network.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@101df177, me.senseiwells.arucas.api.docs.visitor.ParameterDoc@166fa74d](url, file)": {
     "prefix": "Network.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@101df177, me.senseiwells.arucas.api.docs.visitor.ParameterDoc@166fa74d](url, file)",
     "body": "Network.downloadFile($url, $file)",
-    "description": "Network.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@101df177, me.senseiwells.arucas.api.docs.visitor.ParameterDoc@166fa74d](url, file)\nDownloads a file from an url to a file.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@3578436e (`url`): The url to download from.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@382db087 (`file`): The file to download to.\n"
+    "description": "Network.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@101df177, me.senseiwells.arucas.api.docs.visitor.ParameterDoc@166fa74d](url, file)\nDownloads a file from an url to a file.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@3578436e (`url`): The url to download from.\n- Parameter - me.senseiwells.arucas.api.docs.visitor.ClassDoc@73d4cc9e (`file`): The file to download to.\n"
   },
   "Static Method Network.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@40f08448](url)": {
     "prefix": "Network.[me.senseiwells.arucas.api.docs.visitor.ParameterDoc@40f08448](url)",

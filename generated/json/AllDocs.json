@@ -1665,8 +1665,8 @@
           "params": [
             {
               "name": "superclasses",
-              "type": "Function",
-              "desc": "The superclasses of the wanted definition. These should be JavaClass types, there can only be 1 (abstract) class, as many interfaces."
+              "type": "List",
+              "desc": "A list of the superclasses of the wanted definition. These should be JavaClass types, there can only be 1 (abstract) class, as many interfaces."
             },
             {
               "name": "invokeHandler",

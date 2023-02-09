@@ -697,7 +697,7 @@ Java.getStaticMethodDelegate('java.lang.Integer', 'parseInt', 1);
 ### `Java.implementClass(superclasses, invokeHandler)`
 - Description: Creates a new Java class definition extending/implementing the given classes.
 - Parameters:
-  - Function (`superclasses`): The superclasses of the wanted definition. These should be JavaClass types, there can only be 1 (abstract) class, as many interfaces.
+  - List (`superclasses`): A list of the superclasses of the wanted definition. These should be JavaClass types, there can only be 1 (abstract) class, as many interfaces.
   - Function (`invokeHandler`): This function will intercept all method calls, it will be passed the name of the method and any arguments.
 - Returns - JavaClass: The newly defined Java class.
 - Example:
