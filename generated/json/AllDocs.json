@@ -1675,11 +1675,11 @@
             }
           ],
           "returns": {
-            "type": "Java",
-            "desc": "The Java Predicate object."
+            "type": "JavaClass",
+            "desc": "The newly defined Java class."
           },
           "examples": [
-            "Java.implementClass([Java.classOf(\"java.lang.Runnable\")], fun(name, args) {\n    // ...\n});"
+            "RunnableImpl = Java.implementClass([Java.classOf(\"java.lang.Runnable\")], fun(name, args) {\n    // ...\n});\nrunnable = RunnableImpl();\nrunnable.run(); // Will invoke the invokeHandler with the method name and any arguments"
           ]
         },
         {

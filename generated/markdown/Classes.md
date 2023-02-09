@@ -699,12 +699,14 @@ Java.getStaticMethodDelegate('java.lang.Integer', 'parseInt', 1);
 - Parameters:
   - Function (`superclasses`): The superclasses of the wanted definition. These should be JavaClass types, there can only be 1 (abstract) class, as many interfaces.
   - Function (`invokeHandler`): This function will intercept all method calls, it will be passed the name of the method and any arguments.
-- Returns - Java: The Java Predicate object.
+- Returns - JavaClass: The newly defined Java class.
 - Example:
 ```kotlin
-Java.implementClass([Java.classOf("java.lang.Runnable")], fun(name, args) {
+RunnableImpl = Java.implementClass([Java.classOf("java.lang.Runnable")], fun(name, args) {
     // ...
 });
+runnable = RunnableImpl();
+runnable.run(); // Will invoke the invokeHandler with the method name and any arguments
 ```
 
 ### `Java.intArray(size)`
