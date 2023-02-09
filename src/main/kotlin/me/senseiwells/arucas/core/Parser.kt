@@ -63,7 +63,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
         val returnTypes = this.getTypeHint()
         val body = this.statement()
 
-        return FunctionStatement(name.content, isClass, parameters, isArbitrary, returnTypes, body, name.trace, this.peek().trace)
+        return FunctionStatement(name.content, isClass, parameters, isArbitrary, returnTypes, body, name.trace, this.lastTrace())
     }
 
     private fun classDeclaration(): ClassStatement {
@@ -78,7 +78,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
         val type = if (superclasses.isEmpty()) "class" else "super class"
         this.check(LEFT_CURLY_BRACKET, "Expected '{' after $type name")
         val body = this.classBodyStatements(name.content)
-        return ClassStatement(name.content, superclasses, body, name.trace, this.peek().trace)
+        return ClassStatement(name.content, superclasses, body, name.trace, this.lastTrace())
     }
 
     private fun enumDeclaration(): Statement {
@@ -116,7 +116,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
         } else {
             this.classBodyStatements(enumName.content)
         }
-        return EnumStatement(enumName.content, superclasses, enums, body, enumName.trace, this.peek().trace)
+        return EnumStatement(enumName.content, superclasses, enums, body, enumName.trace, this.lastTrace())
     }
 
     private fun interfaceDeclaration(): Statement {
@@ -137,7 +137,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
             this.getTypeHint()
             this.check(SEMICOLON, "Expected ';' after function declaration")
         }
-        return InterfaceStatement(name.content, functions, name.trace, this.peek().trace)
+        return InterfaceStatement(name.content, functions, name.trace, this.lastTrace())
     }
 
     private fun classBodyStatements(className: String): ClassBodyStatement {
@@ -197,7 +197,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
                         ConstructorInit.initNone()
                     }
                     val body = this.statement()
-                    constructors.add(ConstructorStatement(parameters, isArbitrary, constructorInit, body, currentTrace, this.peek().trace))
+                    constructors.add(ConstructorStatement(parameters, isArbitrary, constructorInit, body, currentTrace, this.lastTrace()))
                 }
                 this.peekType() == FUN -> {
                     val function = this.functionDeclaration(true, static)
@@ -224,7 +224,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
                     }
                     val returnTypes = this.getTypeHint()
                     val body = this.statement()
-                    val function = FunctionStatement("\$$typeAsString::$count", true, parameters, isArbitrary, returnTypes, body, token.trace, this.peek().trace)
+                    val function = FunctionStatement("\$$typeAsString::$count", true, parameters, isArbitrary, returnTypes, body, token.trace, this.lastTrace())
                     operators.add(function to token.type)
                 }
                 this.peekType() == LEFT_CURLY_BRACKET -> {
@@ -236,7 +236,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
                 else -> this.error("Unexpected token in class statement: '${this.peek()}'")
             }
         }
-        return ClassBodyStatement(fields, staticFields, staticInitializer, constructors, methods, staticMethods, operators, trace, this.peek().trace)
+        return ClassBodyStatement(fields, staticFields, staticInitializer, constructors, methods, staticMethods, operators, trace, this.lastTrace())
     }
 
     private fun scopedStatement(): Statement {
@@ -244,7 +244,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
             LEFT_CURLY_BRACKET -> this.scope()
             else -> {
                 val start = this.peek()
-                ScopeStatement(this.statement(), start.trace, this.peek().trace)
+                ScopeStatement(this.statement(), start.trace, this.peek(-1).trace)
             }
         }
     }
@@ -255,7 +255,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
         if (statements == VoidStatement.INSTANCE) {
             return statements
         }
-        return ScopeStatement(statements, start.trace, this.peek().trace)
+        return ScopeStatement(statements, start.trace, this.peek(-1).trace)
     }
 
     private fun statements(): Statement {
@@ -301,7 +301,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
         this.check(RIGHT_BRACKET, "Expected ')' after if condition")
         val body = this.scopedStatement()
         val otherwise = if (this.isMatch(ELSE)) scopedStatement() else VoidStatement.INSTANCE
-        return IfStatement(condition, body, otherwise, trace, this.peek().trace)
+        return IfStatement(condition, body, otherwise, trace, this.lastTrace())
     }
 
     private fun switchStatement(): Statement {
@@ -331,7 +331,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
             casesList.add(cases)
             caseStatements.add(statement)
         }
-        return SwitchStatement(condition, casesList, caseStatements, default, trace, this.peek().trace)
+        return SwitchStatement(condition, casesList, caseStatements, default, trace, this.lastTrace())
     }
 
     private fun whileStatement(): WhileStatement {
@@ -340,7 +340,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
         val condition = this.expression()
         this.check(RIGHT_BRACKET, "Expected ')' after while condition")
         val body = this.scopedStatement()
-        return WhileStatement(condition, body, trace, this.peek().trace)
+        return WhileStatement(condition, body, trace, this.lastTrace())
     }
 
     private fun forStatement(): ForStatement {
@@ -357,7 +357,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
         val end = if (this.peekType() == RIGHT_BRACKET) this.cachedNull else this.expression()
         this.check(RIGHT_BRACKET, "Expected ')' after for expressions")
         val body = this.statement()
-        return ForStatement(initial, condition, end, body, trace, this.peek().trace)
+        return ForStatement(initial, condition, end, body, trace, this.lastTrace())
     }
 
     private fun foreachStatement(): ForeachStatement {
@@ -369,7 +369,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
         val iteratorExpression = this.expression()
         this.check(RIGHT_BRACKET, "Expected ')' after iterator expression")
         val body = this.statement()
-        return ForeachStatement(name, iteratorExpression, body, trace, this.peek().trace)
+        return ForeachStatement(name, iteratorExpression, body, trace, this.lastTrace())
     }
 
     private fun tryStatement(): TryStatement {
@@ -391,7 +391,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
             catchBody = VoidStatement.INSTANCE
         }
         val finally = if (this.isMatch(FINALLY)) this.scopedStatement() else VoidStatement.INSTANCE
-        return TryStatement(body, catchBody, parameter, finally, trace, this.peek().trace)
+        return TryStatement(body, catchBody, parameter, finally, trace, this.lastTrace())
     }
 
     private fun throwStatement(): ThrowStatement {
@@ -635,7 +635,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
         while (true) {
             when {
                 this.isMatch(LEFT_BRACKET) -> {
-                    val trace = this.peek(-1).trace
+                    val trace = this.lastTrace()
                     val arguments: List<Expression>
                     if (!this.isMatch(RIGHT_BRACKET)) {
                         arguments = this.expressions()
@@ -646,7 +646,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
                     expression = if (expression is Callable) expression.toCallable(arguments) else CallExpression(expression, arguments, trace)
                 }
                 this.isMatch(LEFT_SQUARE_BRACKET) -> {
-                    val trace = this.peek().trace
+                    val trace = this.lastTrace()
                     val index = this.expression()
                     this.check(RIGHT_SQUARE_BRACKET, "Expected ']' after index")
                     expression = BracketAccessExpression(expression, index, trace)
@@ -698,7 +698,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
         if (expression !is Assignable) {
             this.error("Cannot modify a non assignable expression")
         }
-        return expression.toAssignable(BinaryExpression(expression, type, other, this.peek().trace))
+        return expression.toAssignable(BinaryExpression(expression, type, other, this.lastTrace()))
     }
 
     private fun listLiteral(): ListExpression {
@@ -738,7 +738,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
             ReturnStatement(this.expression(), trace)
         }
 
-        return FunctionExpression("${this.lambdaCount++}\$lambda", parameters, isArbitrary, returnTypes, body, trace, this.peek().trace)
+        return FunctionExpression("${this.lambdaCount++}\$lambda", parameters, isArbitrary, returnTypes, body, trace, this.lastTrace())
     }
 
     private fun expressions(): List<Expression> {
@@ -797,7 +797,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
     private fun check(type: Type, message: String = "Unexpected token '${this.peek()}', expected type '$type'"): Token {
         val current = this.peek()
         if (current.type != type) {
-            val trace = if (type == SEMICOLON) this.peek(-1).trace else current.trace
+            val trace = if (type == SEMICOLON) this.lastTrace() else current.trace
             this.error(message, trace)
         }
         this.advance()
@@ -808,8 +808,12 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
         return this.check(IDENTIFIER, message).content
     }
 
-    private fun error(message: String = "Unexpected token '${this.peek()}'", trace: LocatableTrace = this.peek().trace): Nothing {
+    private fun error(message: String = "Unexpected token '${this.peek()}'", trace: LocatableTrace = this.lastTrace()): Nothing {
         compileError(message, trace)
+    }
+
+    private fun lastTrace(): LocatableTrace {
+        return this.peek(-1).trace
     }
 
     private fun <T, R> pushState(property: KMutableProperty0<T>, value: T, function: () -> R): R {
