@@ -243,7 +243,7 @@ class StringDef(interpreter: Interpreter): CreatableDefinition<String>(STRING, i
     private fun format(arguments: Arguments): String {
         val string = arguments.nextPrimitive(this)
         try {
-            return string.format(*arguments.getRemaining().map { it.toString(arguments.interpreter) }.toTypedArray())
+            return string.format(arguments.getRemaining().map { it.asJava() })
         } catch (e: IllegalFormatException) {
             runtimeError("Couldn't format string: '$string'", e)
         }
