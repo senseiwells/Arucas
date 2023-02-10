@@ -359,8 +359,8 @@ object ReflectionUtils {
     private data class MethodWithHandle(val method: Executable, val handle: MethodHandle) {
         private val casts by lazy {
             val casts = HashMap<Int, (Any?) -> Any?>()
-            method.parameterTypes.forEachIndexed { index, clazz ->
-                if (method.isVarArgs && index == method.parameterCount - 1) {
+            this.method.parameterTypes.forEachIndexed { index, clazz ->
+                if (this.method.isVarArgs && index == this.method.parameterCount - 1) {
                     val wrapped = wrapClass(clazz.componentType)
                     if (Number::class.java.isAssignableFrom(wrapped)) {
                         casts[index] = { castToNumber(it, wrapped) }
@@ -377,7 +377,7 @@ object ReflectionUtils {
 
         fun invoke(arguments: List<Any?>): Any? {
             val mapped = arguments.mapIndexed { index, any ->
-                casts[index.coerceAtMost(method.parameterCount - 1)]?.invoke(any) ?: any
+                this.casts[index.coerceAtMost(this.method.parameterCount - 1)]?.invoke(any) ?: any
             }
             return handle.invokeWithArguments(mapped)
         }
@@ -388,12 +388,12 @@ object ReflectionUtils {
         private val shouldTryToCast = Number::class.java.isAssignableFrom(fieldType)
 
         fun set(calling: Any?, value: Any?) {
-            val castedValue = if (shouldTryToCast) castToNumber(value, fieldType) else value
-            if (calling == null) handle.set(castedValue) else handle.set(calling, castedValue)
+            val castedValue = if (this.shouldTryToCast) castToNumber(value, this.fieldType) else value
+            if (calling == null) this.handle.set(castedValue) else this.handle.set(calling, castedValue)
         }
 
         fun get(calling: Any?): Any? {
-            return if (calling == null) handle.get() else handle.get(calling)
+            return if (calling == null) this.handle.get() else this.handle.get(calling)
         }
     }
 
