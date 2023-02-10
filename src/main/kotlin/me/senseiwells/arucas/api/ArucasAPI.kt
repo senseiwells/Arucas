@@ -61,7 +61,7 @@ interface ArucasAPI {
      *
      * @return the list of extensions.
      */
-    fun getBuiltInExtensions(): List<ArucasExtension>? = null
+    fun getBuiltInExtensions(): List<ArucasExtension> = listOf()
 
     /**
      * This method should return any built-in definitions.
@@ -70,7 +70,7 @@ interface ArucasAPI {
      *
      * @return the list of primitive generators.
      */
-    fun getBuiltInDefinitions(): List<(Interpreter) -> PrimitiveDefinition<*>>? = null
+    fun getBuiltInDefinitions(): List<(Interpreter) -> PrimitiveDefinition<*>> = listOf()
 
     /**
      * This method should return any class definitions.
@@ -80,7 +80,7 @@ interface ArucasAPI {
      * @return a map of list of primitive generators. The key of the map will be the
      * import path and the values are the generators for that given path.
      */
-    fun getClassDefinitions(): Map<String, List<(Interpreter) -> PrimitiveDefinition<*>>>? = null
+    fun getClassDefinitions(): Map<String, List<(Interpreter) -> PrimitiveDefinition<*>>> = mapOf()
 
     /**
      * This method should return the interpreter's input handler.
@@ -132,6 +132,19 @@ interface ArucasAPI {
      * @see ArucasLibrary
      */
     fun getLibraryManager(): ArucasLibrary
+
+    /**
+     * This method should return the main
+     * Arucas Executor which will be used to
+     * start the execution of scripts.
+     *
+     * If no executor is provided then the default
+     * async executor is used instead.
+     *
+     * @return the arucas executor.
+     * @see ArucasExecutor
+     */
+    fun getMainExecutor(): ArucasExecutor?
 
     /**
      * This method should return the properties
@@ -221,16 +234,23 @@ interface ArucasAPI {
             private set
 
         /**
+         * The main executor.
+         *
+         * @see ArucasExecutor
+         */
+        var executor: ArucasExecutor? = null
+            private set
+
+        /**
          * The property Generator.
          */
         var properties = { Properties() }
             private set
 
         init {
-            DefaultArucasIO().let {
-                this.input = it
-                this.output = it
-            }
+            val io = DefaultArucasIO()
+            this.input = io
+            this.output = io
         }
 
         /**
@@ -340,6 +360,17 @@ interface ArucasAPI {
          */
         fun setLibraryManager(library: ArucasLibrary): Builder {
             this.library = library
+            return this
+        }
+
+        /**
+         * This sets the main executor used for running scripts.
+         *
+         * @param executor the new executor.
+         * @return the builder.
+         */
+        fun setMainExecutor(executor: ArucasExecutor): Builder {
+            this.executor = executor
             return this
         }
 
@@ -554,6 +585,8 @@ interface ArucasAPI {
                 override fun getConverter() = this@Builder.converter
 
                 override fun getLibraryManager() = this@Builder.library
+
+                override fun getMainExecutor() = this@Builder.executor
 
                 override fun getProperties() = this@Builder.properties
             }

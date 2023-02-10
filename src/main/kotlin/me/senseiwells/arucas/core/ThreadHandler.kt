@@ -4,14 +4,18 @@ import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.exceptions.ArucasError
 import me.senseiwells.arucas.exceptions.FatalError
 import me.senseiwells.arucas.exceptions.Propagator
+import me.senseiwells.arucas.utils.ArucasExecutor
 import me.senseiwells.arucas.utils.InternalTrace
 import me.senseiwells.arucas.utils.impl.ArucasThread
-import java.util.concurrent.*
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.Future
+import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.ScheduledThreadPoolExecutor
 
 class ThreadHandler(val interpreter: Interpreter) {
     private val shutdown = ArrayList<Runnable>()
     private val threadGroup = ThreadGroup("Arucas Thread Group")
-    private val executor = this.createExecutor()
+    private val async = ArucasExecutor.wrap(this.createExecutor())
 
     private var errored = false
     var running: Boolean = false
@@ -34,19 +38,27 @@ class ThreadHandler(val interpreter: Interpreter) {
     }
 
     internal fun <T> async(interpreter: Interpreter, function: () -> T): Future<T?> {
-        return this.executor.submit(Callable {
+       return this.async(interpreter, null, function)
+    }
+
+    internal fun <T> async(interpreter: Interpreter, executor: ArucasExecutor?, function: () -> T): Future<T?> {
+        return (executor ?: this.async).submit {
             try {
                 function()
             } catch (throwable: Throwable) {
                 this@ThreadHandler.handleError(throwable, interpreter)
                 null
             }
-        })
+        }
     }
 
     internal fun <T> blocking(interpreter: Interpreter, function: () -> T): T {
+        return this.blocking(interpreter, null, function)
+    }
+
+    internal fun <T> blocking(interpreter: Interpreter, executor: ArucasExecutor?, function: () -> T): T {
         val throwableFuture = CompletableFuture<Throwable?>()
-        val future = this.executor.submit(Callable {
+        val future = (executor ?: this.async).submit {
             try {
                 function().also {
                     throwableFuture.complete(null)
@@ -56,7 +68,7 @@ class ThreadHandler(val interpreter: Interpreter) {
                 throwableFuture.complete(throwable)
                 null
             }
-        })
+        }
         val throwable = throwableFuture.get()
         if (throwable != null) {
             throw throwable
@@ -79,7 +91,7 @@ class ThreadHandler(val interpreter: Interpreter) {
     @Synchronized
     internal fun stop() {
         if (this.running) {
-            var i = 0;
+            var i = 0
             while (i < this.shutdown.size) {
                 this.shutdown[i++].run()
             }

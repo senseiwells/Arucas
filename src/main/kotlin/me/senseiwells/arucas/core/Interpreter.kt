@@ -187,7 +187,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
      * @see Interpreter
      */
     fun executeAsync(): Future<ClassInstance?> {
-        return this.runAsync(this::execute)
+        return this.threadHandler.async(this, this.api.getMainExecutor(), this::execute)
     }
 
     /**
@@ -200,7 +200,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
      * @see Interpreter
      */
     fun executeBlocking(): ClassInstance {
-        return this.threadHandler.blocking(this, this::execute)
+        return this.threadHandler.blocking(this, this.api.getMainExecutor(), this::execute)
     }
 
     /**
@@ -1283,18 +1283,18 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         }
 
         override fun loadApi() {
-            this.api.getBuiltInDefinitions()?.forEach { p ->
+            this.api.getBuiltInDefinitions().forEach { p ->
                 val primitive = p(this)
                 this.primitives.add(primitive)
                 this.modules.addBuiltIn(primitive)
             }
             this.primitives.forEach { it.merge() }
-            this.api.getBuiltInExtensions()?.forEach { e ->
+            this.api.getBuiltInExtensions().forEach { e ->
                 e.getBuiltInFunctions().forEach {
                     this.functions.add(this.create(FunctionDef::class, it))
                 }
             }
-            this.api.getClassDefinitions()?.forEach { (importPath, definitions) ->
+            this.api.getClassDefinitions().forEach { (importPath, definitions) ->
                 for (factory in definitions) {
                     val primitive = factory(this)
                     this.primitives.add(primitive)
