@@ -1,10 +1,10 @@
 package me.senseiwells.arucas.core
 
+import me.senseiwells.arucas.api.ArucasExecutor
 import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.exceptions.ArucasError
 import me.senseiwells.arucas.exceptions.FatalError
 import me.senseiwells.arucas.exceptions.Propagator
-import me.senseiwells.arucas.utils.ArucasExecutor
 import me.senseiwells.arucas.utils.InternalTrace
 import me.senseiwells.arucas.utils.impl.ArucasThread
 import java.util.concurrent.CompletableFuture

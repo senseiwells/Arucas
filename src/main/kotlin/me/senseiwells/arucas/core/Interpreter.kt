@@ -559,7 +559,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
      * @return the [ClassInstance] returned by the instance call.
      */
     /* internal */ fun call(instance: ClassInstance, args: List<ClassInstance>, trace: CallTrace = Trace.INTERNAL): ClassInstance {
-        this.canRun()
+        this.poll()
         try {
             this.stackTrace.push(trace)
             @Suppress("DEPRECATION")
@@ -622,7 +622,11 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
      *
      * @return whether the interpreter can still run.
      */
-    private fun canRun(): Boolean {
+    private fun poll(): Boolean {
+        if (!this.api.getPoller().poll(this)) {
+            throw Propagator.Stop.INSTANCE
+        }
+
         val thread = Thread.currentThread()
         if (thread.isInterrupted) {
             throw Propagator.Stop.INSTANCE
@@ -855,7 +859,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
     }
 
     override fun visitWhile(whileStatement: WhileStatement) {
-        while (this.canRun()) {
+        while (this.poll()) {
             val condition = this.evaluate(whileStatement.condition).getPrimitive(BooleanDef::class)
             condition ?: runtimeError("Condition must result in Boolean", whileStatement.Start)
             if (!condition) {
@@ -875,7 +879,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
     override fun visitFor(forStatement: ForStatement) {
         this.jumpNextTable {
             this.execute(forStatement.initial)
-            while (this.canRun()) {
+            while (this.poll()) {
                 val condition = this.evaluate(forStatement.condition).getPrimitive(BooleanDef::class)
                 condition ?: runtimeError("Condition must result in Boolean", forStatement.start)
                 if (!condition) {
@@ -904,7 +908,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         val hasNext = { iterator.callMemberPrimitive(this, "hasNext", listOf(), BooleanDef::class, foreach.start) }
         val getNext = { iterator.callMember(this, "next", listOf(), ObjectDef::class, foreach.start) }
         while (hasNext()) {
-            this.canRun()
+            this.poll()
             val shouldBreak = this.jumpNextTable {
                 this.currentTable.defineVar(foreach.name, getNext())
                 try {
@@ -1233,7 +1237,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
     }
 
     override fun visitNewCall(call: NewCallExpression): ClassInstance {
-        this.canRun()
+        this.poll()
         val classDefinition = this.getClass(call.name, call.trace, call)
         val arguments = ArrayList<ClassInstance>()
         for (expression in call.arguments) {

@@ -7,6 +7,7 @@ import me.senseiwells.arucas.api.docs.visitor.impl.CodeDocVisitor
 import me.senseiwells.arucas.api.impl.DefaultArucasIO
 import me.senseiwells.arucas.api.impl.GitHubArucasLibrary
 import me.senseiwells.arucas.api.impl.MultiArucasLibrary
+import me.senseiwells.arucas.api.impl.MultiArucasPoller
 import me.senseiwells.arucas.builtin.*
 import me.senseiwells.arucas.classes.ClassDefinition
 import me.senseiwells.arucas.classes.PrimitiveDefinition
@@ -147,6 +148,14 @@ interface ArucasAPI {
     fun getMainExecutor(): ArucasExecutor?
 
     /**
+     * This method should return a poller used during the interpreter's execution.
+     *
+     * @return the poller.
+     * @see ArucasPoller
+     */
+    fun getPoller(): ArucasPoller
+
+    /**
      * This method should return the properties
      * you want for the interpreter.
      *
@@ -239,6 +248,13 @@ interface ArucasAPI {
          * @see ArucasExecutor
          */
         var executor: ArucasExecutor? = null
+            private set
+
+        /**
+         * The poller for the interpreter.
+         * @see ArucasPoller
+         */
+        var poller = MultiArucasPoller()
             private set
 
         /**
@@ -371,6 +387,17 @@ interface ArucasAPI {
          */
         fun setMainExecutor(executor: ArucasExecutor): Builder {
             this.executor = executor
+            return this
+        }
+
+        /**
+         * This adds a poller for the interpreter.
+         *
+         * @param poller the poller to add.
+         * @return the builder.
+         */
+        fun addPoller(poller: ArucasPoller): Builder {
+            this.poller.addPoller(poller)
             return this
         }
 
@@ -587,6 +614,10 @@ interface ArucasAPI {
                 override fun getLibraryManager() = this@Builder.library
 
                 override fun getMainExecutor() = this@Builder.executor
+
+                override fun getPoller(): ArucasPoller {
+                    TODO("Not yet implemented")
+                }
 
                 override fun getProperties() = this@Builder.properties
             }
