@@ -2,6 +2,8 @@ package me.senseiwells.arucas.api.docs.visitor
 
 import me.senseiwells.arucas.api.ArucasAPI
 import me.senseiwells.arucas.api.ArucasExtension
+import me.senseiwells.arucas.api.docs.annotations.ReturnDoc
+import me.senseiwells.arucas.builtin.NullDef
 import me.senseiwells.arucas.builtin.ObjectDef
 import me.senseiwells.arucas.classes.ClassDefinition
 import me.senseiwells.arucas.classes.PrimitiveDefinition
@@ -115,6 +117,7 @@ class ArucasDocParser(private val api: ArucasAPI) {
     /**
      * This parses only the built-in definitions in alphabetical order.
      */
+    @Suppress("UNUSED")
     fun parseBuiltIn() {
         this.visitors.forEach { it.startClasses() }
         for (definition in this.builtin) {
@@ -126,6 +129,7 @@ class ArucasDocParser(private val api: ArucasAPI) {
     /**
      * This parses only the module definitions in alphabetical order.
      */
+    @Suppress("UNUSED")
     fun parseModules() {
         this.visitors.forEach { it.startClasses() }
         for (definitions in this.modules.values) {
@@ -280,6 +284,9 @@ class ArucasDocParser(private val api: ArucasAPI) {
     }
 
     private fun convertReturns(returns: Array<String>): ReturnDocAnnotation {
+        if (returns.isEmpty()) {
+            return ReturnDoc(NullDef::class, arrayOf())
+        }
         if (returns.size != 2) {
             throw IllegalStateException("Incorrect returns: ${returns.contentToString()}")
         }
@@ -315,9 +322,7 @@ class ArucasDocParser(private val api: ArucasAPI) {
         }
 
         val extensions = this.api.getBuiltInExtensions()
-        if (extensions != null) {
-            this.extensions.addAll(extensions)
-        }
+        this.extensions.addAll(extensions)
         this.extensions.sortWith { a, b -> a.getName().compareTo(b.getName()) }
     }
 }
