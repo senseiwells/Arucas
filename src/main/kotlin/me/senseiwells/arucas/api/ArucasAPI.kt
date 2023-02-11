@@ -615,9 +615,7 @@ interface ArucasAPI {
 
                 override fun getMainExecutor() = this@Builder.executor
 
-                override fun getPoller(): ArucasPoller {
-                    TODO("Not yet implemented")
-                }
+                override fun getPoller() = this@Builder.poller
 
                 override fun getProperties() = this@Builder.properties
             }
