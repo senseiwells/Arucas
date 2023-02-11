@@ -9,8 +9,7 @@ import me.senseiwells.arucas.core.Interpreter
  * is no guarantee between intervals.
  *
  * The purpose for this is to be able to execute other
- * things during the [Interpreter]'s execution and provide
- * whether the interpreter should keep running.
+ * things during the [Interpreter]'s execution.
  */
 interface ArucasPoller {
     /**
@@ -19,7 +18,6 @@ interface ArucasPoller {
      * interpreter can keep running.
      *
      * @param interpreter the interpreter that is being polled.
-     * @return `true` if the interpreter should keep running.
      */
-    fun poll(interpreter: Interpreter): Boolean
+    fun poll(interpreter: Interpreter)
 }

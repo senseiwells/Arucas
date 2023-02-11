@@ -623,14 +623,14 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
      * @return whether the interpreter can still run.
      */
     private fun poll(): Boolean {
-        if (!this.api.getPoller().poll(this)) {
+        this.api.getPoller().poll(this)
+
+        if (!this.isRunning()) {
             throw Propagator.Stop.INSTANCE
         }
 
         val thread = Thread.currentThread()
-        if (thread.isInterrupted) {
-            throw Propagator.Stop.INSTANCE
-        } else if (thread is ArucasThread && thread.isFrozen) {
+        if (thread is ArucasThread && thread.isFrozen) {
             thread.freeze()
         }
         return true
