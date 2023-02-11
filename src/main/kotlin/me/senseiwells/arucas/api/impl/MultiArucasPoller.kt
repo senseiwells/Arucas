@@ -32,12 +32,9 @@ class MultiArucasPoller: ArucasPoller {
      * @return whether the interpreter should keep running.
      * @see [ArucasPoller.poll]
      */
-    override fun poll(interpreter: Interpreter): Boolean {
+    override fun poll(interpreter: Interpreter) {
         for (poller in this.pollers) {
-            if (!poller.poll(interpreter)) {
-                return false
-            }
+            poller.poll(interpreter)
         }
-        return true
     }
 }
