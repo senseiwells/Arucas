@@ -103,6 +103,10 @@ class Lexer(private val text: String, private val fileName: String) {
             .addRule(Type.IMPORT)
             .addRule(Type.FROM)
             .addRule(Type.LOCAL)
+            .addRule(Type.READONLY)
+            .addRule(Type.LAUNCH)
+
+            //
             .addRule(Type.ARBITRARY)
             .addRule(Type.DOT)
             .addRule(Type.POINTER)
