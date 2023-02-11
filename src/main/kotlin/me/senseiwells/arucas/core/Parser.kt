@@ -808,7 +808,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
         return this.check(IDENTIFIER, message).content
     }
 
-    private fun error(message: String = "Unexpected token '${this.peek()}'", trace: LocatableTrace = this.lastTrace()): Nothing {
+    private fun error(message: String = "Unexpected token '${this.peek()}'", trace: LocatableTrace = this.peek().trace): Nothing {
         compileError(message, trace)
     }
 
