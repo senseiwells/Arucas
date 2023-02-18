@@ -84,7 +84,7 @@ class VSCSnippetDocVisitor: ArucasDocVisitor() {
         val description = StringBuilder("\n")
         for (param in params) {
             paramNames.add(param.getName())
-            val parameter = "- Parameter - ${param.getAllTypes().joinToString(" | ")} (`${param.getName()}"
+            val parameter = "- Parameter - ${param.getAllTypes().joinToString(" | ") { it.getName() }} (`${param.getName()}"
             description.append("$parameter${if (param.isVarargs()) "..." else ""}`): ${param.getFormattedDescription()}\n")
         }
         return paramNames to description.toString()
