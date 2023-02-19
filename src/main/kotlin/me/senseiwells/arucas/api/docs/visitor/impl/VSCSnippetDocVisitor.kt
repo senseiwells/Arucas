@@ -71,7 +71,7 @@ class VSCSnippetDocVisitor: ArucasDocVisitor() {
     override fun visitStaticMethod(classDoc: ClassDoc, functionDoc: FunctionDoc) {
         val methodJson = JsonObject()
         val (params, paramDesc) = this.joinParameters(functionDoc.getParameters())
-        val id = "${classDoc.getName()}.${functionDoc.getParameters()}(${params.joinToString(", ")})"
+        val id = "${classDoc.getName()}.${functionDoc.getName()}(${params.joinToString(", ")})"
         val body = "${classDoc.getName()}.${functionDoc.getName()}(${params.joinToString(", ") { "\$$it" }})"
         methodJson.addProperty("prefix", id)
         methodJson.addProperty("body", body)
