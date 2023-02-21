@@ -26,5 +26,5 @@ data class Properties(
     /**
      * The unique id of the interpreter, this is shared with its children.
      */
-    var id: UUID = UUID.randomUUID()
+    val id: UUID = UUID.randomUUID()
 )

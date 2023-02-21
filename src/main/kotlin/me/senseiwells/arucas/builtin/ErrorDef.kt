@@ -19,7 +19,7 @@ import me.senseiwells.arucas.utils.Util.Types.ERROR
 )
 class ErrorDef(interpreter: Interpreter): PrimitiveDefinition<RuntimeError.Arucas>(ERROR, interpreter) {
     fun create(details: String, value: ClassInstance): ClassInstance {
-        val instance = this.construct()
+        val instance = ClassInstance(this)
         val error = RuntimeError.Arucas(instance, value, details)
         instance.setPrimitive(this, error)
         return instance
