@@ -2564,7 +2564,11 @@ class Child: Parent, A, B {
 
 ## Enums
 
-Enums provide a nice way to program constants. This is done by using an enum class which can be declared using the `enum` keyword, much like a regular class enums can have defined methods and fields.
+Enums provide a nice way to program constants. 
+This is done by using an enum class which can be declared using the `enum` keyword, 
+much like a regular class enums can have defined methods and fields.
+Enums only provide the constants that you specify and the user cannot
+construct more instances of the enum class later.
 
 ### Syntax
 
@@ -2585,7 +2589,64 @@ Direction.SOUTH;
 Direction.WEST;
 ```
 
-### Constructors
+### Constructors, Fields, and Methods
+
+Much like when constructing a class instance, you can pass in parameters to an
+enum constructor. This is called when the enums are initialised and cannot be
+called later at runtime.
+
+```kotlin
+enum Direction {
+    NORTH, EAST, SOUTH, WEST;
+    
+    Direction() {
+        print(this.getName());
+    }
+}
+
+// NORTH, EAST, SOUTH, WEST would be printed
+```
+
+The enum values can also be constructed with parameters:
+
+```kotlin
+enum Direction {
+    NORTH("North"), 
+    EAST("East"), 
+    SOUTH("South"), 
+    WEST("West");
+    
+    var pretty;
+    
+    Direction(pretty: String) {
+        this.pretty = pretty;
+    }
+}
+```
+
+As you can see in the example above enum values can also have fields.
+These can help you have multiple objects in a single constant and allow you
+add properties to your constant.
+
+Much like this your enum values can have methods:
+
+```kotlin
+enum Direction {
+    NORTH, EAST, SOUTH, WEST;
+    
+    fun opposite() {
+        switch (this) {
+            case NORTH -> return SOUTH;
+            case SOUTH -> return NORTH;
+            case EAST -> return WEST;
+            case WEST -> return EAST;
+        }
+    }
+}
+
+Direction.NORTH.opposite(); // -> Direction.SOUTH
+```
+
 
 ## Threads
 
