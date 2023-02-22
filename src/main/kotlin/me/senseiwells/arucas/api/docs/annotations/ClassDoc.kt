@@ -37,6 +37,7 @@ import kotlin.reflect.KClass
 annotation class ClassDoc(
     /**
      * The name of the class.
+     * This should follow Pascal casing.
      */
     val name: String,
     /**

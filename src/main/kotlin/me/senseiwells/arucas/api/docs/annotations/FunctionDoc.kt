@@ -50,6 +50,7 @@ annotation class FunctionDoc(
     val deprecated: Array<String> = [],
     /**
      * The name of the function.
+     * This should follow Pascal casing.
      */
     val name: String,
     /**

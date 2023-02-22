@@ -28,6 +28,7 @@ import me.senseiwells.arucas.utils.Util
 annotation class ExtensionDoc(
     /**
      * The name of the extension.
+     * This should follow Pascal casing.
      */
     val name: String,
     /**

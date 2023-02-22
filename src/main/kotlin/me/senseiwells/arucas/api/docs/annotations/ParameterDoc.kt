@@ -25,6 +25,7 @@ annotation class ParameterDoc(
     val type: KClass<out PrimitiveDefinition<*>>,
     /**
      * The name of the parameter.
+     * This should follow Pascal casing.
      */
     val name: String,
     /**

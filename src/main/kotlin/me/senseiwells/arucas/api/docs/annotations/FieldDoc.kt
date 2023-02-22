@@ -43,6 +43,7 @@ annotation class FieldDoc(
     val isStatic: Boolean = true,
     /**
      * The name of the field.
+     * This should follow either Pascal or macro casing.
      */
     val name: String,
     /**
