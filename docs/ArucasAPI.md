@@ -138,7 +138,6 @@ Implementing one is quite simple, you must create a new class that implements `A
 Kotlin:
 ```kotlin
 import me.senseiwells.arucas.api.ArucasExtension
-import me.senseiwells.arucas.utils.BuiltInFunction
 
 class MyCustomExtension: ArucasExtension {
     override fun getName() = "MyCustomExtension"
@@ -153,7 +152,6 @@ Java:
 ```java
 ```kotlin
 import me.senseiwells.arucas.api.ArucasExtension
-import me.senseiwells.arucas.utils.BuiltInFunction
 
 import java.util.List;
 
@@ -178,7 +176,6 @@ To create a `BuiltInFunction` you can use the helper methods in the class. You a
 
 Kotlin:
 ```kotlin
-import me.senseiwells.arucas.utils.BuiltInFunction
 
 // ...
 // 0 parameters
@@ -197,8 +194,7 @@ BuiltInFunction.arb("something", { arguments ->
 ```
 
 Java:
-```java
-import me.senseiwells.arucas.utils.BuiltInFunction;
+```java;
 
 // ...
 // 0 parameters
@@ -225,7 +221,6 @@ The `Arguments` object is flexible in how you can access the arguments, you have
 Kotlin:
 ```kotlin
 import me.senseiwells.arucas.builtin.StringDef
-import me.senseiwells.arucas.utils.BuiltInFunction
 
 // ...
 BuiltInFunction.of("bar", 3, { arguments ->
@@ -255,8 +250,7 @@ BuiltInFunction.of("bar", 3, { arguments ->
 
 Java:
 ```java
-import me.senseiwells.arucas.builtin.StringDef;
-import me.senseiwells.arucas.utils.BuiltInFunction;
+import me.senseiwells.arucas.builtin.StringDef;;
 
 // ...
 BuiltInFunction.of("bar", 3, arguments -> {
@@ -298,7 +292,6 @@ import me.senseiwells.arucas.api.ArucasExtension
 import me.senseiwells.arucas.builtin.NumberDef
 import me.senseiwells.arucas.builtin.StringDef
 import me.senseiwells.arucas.utils.Arguments  
-import me.senseiwells.arucas.utils.BuiltInFunction
 
 class BuiltInExtension: ArucasExtension {
     override fun getName() = "BuiltInExtension"
@@ -329,8 +322,7 @@ Java:
 import me.senseiwells.arucas.api.ArucasExtension;
 import me.senseiwells.arucas.builtin.NumberDef;
 import me.senseiwells.arucas.builtin.StringDef;
-import me.senseiwells.arucas.utils.Arguments;
-import me.senseiwells.arucas.utils.BuiltInFunction;
+import me.senseiwells.arucas.utils.Arguments;;
 
 import java.util.List;
 
@@ -434,8 +426,7 @@ Kotlin:
 import me.senseiwells.arucas.builtin.StringDef
 import me.senseiwells.arucas.classes.CreatableDefinition
 import me.senseiwells.arucas.core.Interpreter  
-import me.senseiwells.arucas.utils.Arguments  
-import me.senseiwells.arucas.utils.ConstructorFunction  
+import me.senseiwells.arucas.utils.Arguments    
 
 import java.io.File
 
@@ -461,8 +452,7 @@ import me.senseiwells.arucas.builtin.StringDef;
 import me.senseiwells.arucas.classes.ClassInstance;
 import me.senseiwells.arucas.classes.CreatableDefinition;
 import me.senseiwells.arucas.core.Interpreter;
-import me.senseiwells.arucas.utils.Arguments;
-import me.senseiwells.arucas.utils.ConstructorFunction;
+import me.senseiwells.arucas.utils.Arguments;;
 
 import java.io.File;
 import java.util.List;
@@ -500,8 +490,7 @@ import me.senseiwells.arucas.builtin.StringDef
 import me.senseiwells.arucas.classes.CreatableDefinition
 import me.senseiwells.arucas.core.Interpreter    
 import me.senseiwells.arucas.exceptions.runtimeError
-import me.senseiwells.arucas.utils.Arguments  
-import me.senseiwells.arucas.utils.MemberFunction  
+import me.senseiwells.arucas.utils.Arguments    
 
 import java.io.File  
 import java.io.IOException
@@ -537,8 +526,7 @@ import me.senseiwells.arucas.builtin.StringDef;
 import me.senseiwells.arucas.classes.CreatableDefinition;
 import me.senseiwells.arucas.core.Interpreter;
 import me.senseiwells.arucas.exceptions.RuntimeError;
-import me.senseiwells.arucas.utils.Arguments;
-import me.senseiwells.arucas.utils.MemberFunction; 
+import me.senseiwells.arucas.utils.Arguments;; 
 
 import java.io.File;  
 import java.io.IOException;  

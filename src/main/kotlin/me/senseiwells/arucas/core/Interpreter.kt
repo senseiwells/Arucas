@@ -10,6 +10,10 @@ import me.senseiwells.arucas.classes.instance.HintedField
 import me.senseiwells.arucas.core.Interpreter.Companion.dummy
 import me.senseiwells.arucas.core.Interpreter.Companion.of
 import me.senseiwells.arucas.exceptions.*
+import me.senseiwells.arucas.functions.builtin.BuiltInFunction
+import me.senseiwells.arucas.functions.user.UserConstructorFunction
+import me.senseiwells.arucas.functions.user.UserDefinedClassFunction
+import me.senseiwells.arucas.functions.user.UserDefinedFunction
 import me.senseiwells.arucas.nodes.*
 import me.senseiwells.arucas.utils.*
 import me.senseiwells.arucas.utils.Properties

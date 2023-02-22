@@ -8,9 +8,9 @@ import me.senseiwells.arucas.classes.CreatableDefinition
 import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.exceptions.runtimeError
+import me.senseiwells.arucas.functions.builtin.BuiltInFunction
+import me.senseiwells.arucas.functions.builtin.MemberFunction
 import me.senseiwells.arucas.utils.Arguments
-import me.senseiwells.arucas.utils.BuiltInFunction
-import me.senseiwells.arucas.utils.MemberFunction
 import me.senseiwells.arucas.utils.Util.Types.THREAD
 import me.senseiwells.arucas.utils.impl.ArucasThread
 

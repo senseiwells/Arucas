@@ -7,9 +7,9 @@ import me.senseiwells.arucas.classes.CreatableDefinition
 import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.core.Type
+import me.senseiwells.arucas.functions.builtin.MemberFunction
 import me.senseiwells.arucas.utils.Arguments
 import me.senseiwells.arucas.utils.LocatableTrace
-import me.senseiwells.arucas.utils.MemberFunction
 import me.senseiwells.arucas.utils.StringUtils
 import me.senseiwells.arucas.utils.Util.Types.NUMBER
 import java.text.DecimalFormat

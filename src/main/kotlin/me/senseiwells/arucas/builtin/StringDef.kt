@@ -7,6 +7,8 @@ import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.core.Type
 import me.senseiwells.arucas.exceptions.RuntimeError
 import me.senseiwells.arucas.exceptions.runtimeError
+import me.senseiwells.arucas.functions.builtin.ConstructorFunction
+import me.senseiwells.arucas.functions.builtin.MemberFunction
 import me.senseiwells.arucas.utils.*
 import me.senseiwells.arucas.utils.Util.Types.STRING
 import me.senseiwells.arucas.utils.impl.ArucasList

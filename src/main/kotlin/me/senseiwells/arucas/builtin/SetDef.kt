@@ -5,6 +5,9 @@ import me.senseiwells.arucas.classes.CreatableDefinition
 import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.exceptions.runtimeError
+import me.senseiwells.arucas.functions.builtin.BuiltInFunction
+import me.senseiwells.arucas.functions.builtin.ConstructorFunction
+import me.senseiwells.arucas.functions.builtin.MemberFunction
 import me.senseiwells.arucas.utils.*
 import me.senseiwells.arucas.utils.Util.Types.SET
 import me.senseiwells.arucas.utils.impl.ArucasList
@@ -92,7 +95,8 @@ class SetDef(interpreter: Interpreter): CreatableDefinition<ArucasSet>(SET, inte
             MemberFunction.of("toList", this::toList),
             MemberFunction.of("filter", 1, this::filter),
             MemberFunction.of("map", 1, this::map),
-            MemberFunction.of("reduce", 1, this::reduce)
+            MemberFunction.of("reduce", 1, this::reduce),
+            MemberFunction.of("reduce", 2, this::reduce2)
         )
     }
 

@@ -10,6 +10,7 @@ import me.senseiwells.arucas.core.Type
 import me.senseiwells.arucas.core.Type.*
 import me.senseiwells.arucas.exceptions.runtimeError
 import me.senseiwells.arucas.extensions.JavaDef
+import me.senseiwells.arucas.functions.builtin.BuiltInFunction
 import me.senseiwells.arucas.utils.*
 import kotlin.reflect.KClass
 
@@ -709,7 +710,7 @@ abstract class ClassDefinition(
                 })
                 return interpreter.create(FunctionDef::class, delegate)
             }
-            return@run null
+            null
         } ?: runtimeError("No such field '$name' exists for class '${instance.definition.name}'", trace)
     }
 

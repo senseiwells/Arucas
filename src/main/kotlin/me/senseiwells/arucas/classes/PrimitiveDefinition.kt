@@ -7,6 +7,9 @@ import me.senseiwells.arucas.classes.instance.HintedField
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.core.Type
 import me.senseiwells.arucas.extensions.JavaDef
+import me.senseiwells.arucas.functions.builtin.BuiltInFunction
+import me.senseiwells.arucas.functions.builtin.ConstructorFunction
+import me.senseiwells.arucas.functions.builtin.MemberFunction
 import me.senseiwells.arucas.utils.*
 
 /**

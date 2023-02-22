@@ -4,7 +4,7 @@ import me.senseiwells.arucas.core.Interpreter
 
 abstract class Trace(val fileName: String) {
     companion object {
-        @JvmStatic
+        @JvmField
         val INTERNAL = InternalTrace(null)
     }
 

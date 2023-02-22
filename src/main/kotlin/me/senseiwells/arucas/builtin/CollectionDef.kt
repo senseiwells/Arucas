@@ -8,10 +8,10 @@ import me.senseiwells.arucas.classes.PrimitiveDefinition
 import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.exceptions.runtimeError
+import me.senseiwells.arucas.functions.builtin.ConstructorFunction
+import me.senseiwells.arucas.functions.builtin.MemberFunction
 import me.senseiwells.arucas.utils.Arguments
-import me.senseiwells.arucas.utils.ConstructorFunction
 import me.senseiwells.arucas.utils.LocatableTrace
-import me.senseiwells.arucas.utils.MemberFunction
 import me.senseiwells.arucas.utils.Util.Types.COLLECTION
 import me.senseiwells.arucas.utils.impl.ArucasCollection
 

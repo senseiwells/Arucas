@@ -11,6 +11,8 @@ import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.exceptions.RuntimeError
 import me.senseiwells.arucas.exceptions.runtimeError
+import me.senseiwells.arucas.functions.builtin.BuiltInFunction
+import me.senseiwells.arucas.functions.builtin.MemberFunction
 import me.senseiwells.arucas.utils.*
 import me.senseiwells.arucas.utils.Util.Types.JAVA
 import net.bytebuddy.ByteBuddy

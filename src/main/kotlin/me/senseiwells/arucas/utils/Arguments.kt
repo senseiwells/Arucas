@@ -8,8 +8,45 @@ import me.senseiwells.arucas.classes.PrimitiveDefinition
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.exceptions.runtimeError
 import me.senseiwells.arucas.extensions.JavaDef
+import me.senseiwells.arucas.functions.builtin.BuiltInFunction
 import kotlin.reflect.KClass
 
+/**
+ * This class provides all the context for [BuiltInFunction]
+ * calls. it provides the arguments passed into the function,
+ * the interpreter that it was called from, and the [BuiltInFunction]
+ * that was actually called.
+ *
+ * This class also holds methods that are helpful in collecting the
+ * arguments that you need for your function, you can use the
+ * indexes of the arguments however it is advised that you
+ * 'pop' each argument one by one.
+ *
+ * This can be done through the `next` methods:
+ *
+ * ```kotlin
+ * val arguments = /* get arguments */
+ *
+ * // Gets the next argument as a regular ClassInstance
+ * arguments.next() // -> ClassInstance
+ *
+ * // Gets the next argument as a ClassInstance only if
+ * // it is of the given type, otherwise an error is thrown
+ * arguments.next(StringDef::class) // -> ClassInstance (That is of StringDef)
+ *
+ * // Gets the next argument as its primitive value only
+ * // if it is of the given type, otherwise an error is thrown
+ * arguments.nextPrimitive(StringDef::class) // -> String
+ *
+ * // Checks whether the next argument to be popped
+ * // is of a given type, true if yes, false otherwise
+ * arguments.isNext(StringDef::class) // -> Boolean
+ *
+ * // Checks whether the next argument is either an enum
+ * // or a string, then returns the string constant, otherwise throws
+ * arguments.nextConstant() // -> String
+ * ```
+ */
 @Suppress("UNUSED")
 open class Arguments(
     val arguments: List<ClassInstance>,
@@ -271,6 +308,20 @@ open class Arguments(
         return this.index < this.size() && this.get(this.index).isOf(this.interpreter.getPrimitive(clazz))
     }
 
+    /**
+     * This gets the next constant, either an Arucas String or an Enum
+     * and returns it as a [String], otherwise throws an error.
+     *
+     * @return the next constant.
+     */
+    fun nextConstant(): String {
+        val index = this.index
+        val instance = this.next()
+        instance.getPrimitive(StringDef::class)?.let { return it }
+        instance.getPrimitive(EnumDef::class)?.let { return it.name }
+        runtimeError("Must pass a String or Enum into parameter ${this.displayedIndex(index)} for '${this.getFunctionName()}'")
+    }
+
     // Some functions to retrieve the basic built in types.
 
     fun nextString(): ClassInstance {
@@ -319,14 +370,6 @@ open class Arguments(
 
     fun nextType(): ClassInstance {
         return this.next(TypeDef::class)
-    }
-
-    fun nextConstant(): String {
-        val index = this.index
-        val instance = this.next()
-        instance.getPrimitive(StringDef::class)?.let { return it }
-        instance.getPrimitive(EnumDef::class)?.let { return it.name }
-        runtimeError("Must pass a String or Enum into parameter ${this.displayedIndex(index)} for '${this.getFunctionName()}'")
     }
 
     protected open fun displayedIndex(index: Int) = index + 1

@@ -10,8 +10,8 @@ import me.senseiwells.arucas.builtin.StringDef
 import me.senseiwells.arucas.classes.PrimitiveDefinition
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.exceptions.runtimeError
+import me.senseiwells.arucas.functions.builtin.BuiltInFunction
 import me.senseiwells.arucas.utils.Arguments
-import me.senseiwells.arucas.utils.BuiltInFunction
 import me.senseiwells.arucas.utils.Util
 import me.senseiwells.arucas.utils.Util.Types.NETWORK
 import java.awt.Desktop

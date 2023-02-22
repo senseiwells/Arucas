@@ -3,8 +3,8 @@ package me.senseiwells.arucas.core
 import me.senseiwells.arucas.classes.ClassDefinition
 import me.senseiwells.arucas.classes.PrimitiveDefinition
 import me.senseiwells.arucas.exceptions.compileError
+import me.senseiwells.arucas.functions.ArucasFunction
 import me.senseiwells.arucas.nodes.*
-import me.senseiwells.arucas.utils.ArucasFunction
 import me.senseiwells.arucas.utils.LocalCache
 import me.senseiwells.arucas.utils.LocatableTrace
 import me.senseiwells.arucas.utils.Parameter

@@ -7,9 +7,9 @@ import me.senseiwells.arucas.api.docs.annotations.ReturnDoc
 import me.senseiwells.arucas.classes.CreatableDefinition
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.exceptions.runtimeError
+import me.senseiwells.arucas.functions.builtin.ConstructorFunction
+import me.senseiwells.arucas.functions.builtin.MemberFunction
 import me.senseiwells.arucas.utils.Arguments
-import me.senseiwells.arucas.utils.ConstructorFunction
-import me.senseiwells.arucas.utils.MemberFunction
 import me.senseiwells.arucas.utils.Util.Types.ITERABLE
 import me.senseiwells.arucas.utils.impl.ArucasIterable
 import me.senseiwells.arucas.utils.impl.ArucasIterator

@@ -1,7 +1,7 @@
 package me.senseiwells.arucas.api
 
 import me.senseiwells.arucas.api.docs.annotations.ExtensionDoc
-import me.senseiwells.arucas.utils.BuiltInFunction
+import me.senseiwells.arucas.functions.builtin.BuiltInFunction
 
 /**
  * This interface is used for extensions.

@@ -9,8 +9,8 @@ import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.core.Arucas
 import me.senseiwells.arucas.exceptions.Propagator
 import me.senseiwells.arucas.exceptions.runtimeError
+import me.senseiwells.arucas.functions.builtin.BuiltInFunction
 import me.senseiwells.arucas.utils.Arguments
-import me.senseiwells.arucas.utils.BuiltInFunction
 import me.senseiwells.arucas.utils.Util
 import me.senseiwells.arucas.utils.impl.ArucasIterable
 import me.senseiwells.arucas.utils.impl.ArucasThread

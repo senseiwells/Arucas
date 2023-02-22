@@ -11,9 +11,9 @@ import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.core.Type
 import me.senseiwells.arucas.core.Type.*
 import me.senseiwells.arucas.exceptions.runtimeError
+import me.senseiwells.arucas.functions.builtin.MemberFunction
 import me.senseiwells.arucas.utils.Arguments
 import me.senseiwells.arucas.utils.LocatableTrace
-import me.senseiwells.arucas.utils.MemberFunction
 import me.senseiwells.arucas.utils.Trace
 import me.senseiwells.arucas.utils.Util.Types.OBJECT
 

@@ -5,6 +5,9 @@ import me.senseiwells.arucas.api.docs.annotations.ConstructorDoc
 import me.senseiwells.arucas.classes.CreatableDefinition
 import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.core.Interpreter
+import me.senseiwells.arucas.functions.ArucasFunction
+import me.senseiwells.arucas.functions.builtin.BuiltInFunction
+import me.senseiwells.arucas.functions.builtin.ConstructorFunction
 import me.senseiwells.arucas.utils.*
 import me.senseiwells.arucas.utils.Util.Types.FUNCTION
 

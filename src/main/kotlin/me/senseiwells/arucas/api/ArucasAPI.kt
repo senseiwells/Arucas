@@ -18,6 +18,7 @@ import me.senseiwells.arucas.extensions.JavaClassDef
 import me.senseiwells.arucas.extensions.JavaDef
 import me.senseiwells.arucas.extensions.JsonDef
 import me.senseiwells.arucas.extensions.NetworkDef
+import me.senseiwells.arucas.functions.ArucasFunction
 import me.senseiwells.arucas.utils.*
 import me.senseiwells.arucas.utils.Util.File.ensureParentExists
 import me.senseiwells.arucas.utils.impl.*

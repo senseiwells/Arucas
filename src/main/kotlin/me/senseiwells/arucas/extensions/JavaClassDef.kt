@@ -6,7 +6,7 @@ import me.senseiwells.arucas.classes.ClassDefinition
 import me.senseiwells.arucas.classes.CreatableDefinition
 import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.core.Interpreter
-import me.senseiwells.arucas.utils.BuiltInFunction
+import me.senseiwells.arucas.functions.builtin.BuiltInFunction
 import me.senseiwells.arucas.utils.LocatableTrace
 import me.senseiwells.arucas.utils.ReflectionUtils
 import me.senseiwells.arucas.utils.Trace

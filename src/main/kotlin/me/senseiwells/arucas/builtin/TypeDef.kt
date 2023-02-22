@@ -8,9 +8,9 @@ import me.senseiwells.arucas.classes.ClassDefinition
 import me.senseiwells.arucas.classes.CreatableDefinition
 import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.core.Interpreter
+import me.senseiwells.arucas.functions.builtin.BuiltInFunction
+import me.senseiwells.arucas.functions.builtin.MemberFunction
 import me.senseiwells.arucas.utils.Arguments
-import me.senseiwells.arucas.utils.BuiltInFunction
-import me.senseiwells.arucas.utils.MemberFunction
 import me.senseiwells.arucas.utils.Util.Types.TYPE
 
 @ClassDoc(name = TYPE, desc = ["This class lets you get the type of another class"])
