@@ -961,7 +961,7 @@ false && false; // -> false
 
 The and operator takes two boolean values and will only return `true` if both boolean values are `true` otherwise it will return `false`.
 
-An important feature of this and operator is that it short circuits. Now to explain this you need to understand that the expressions are evaluated one at a time, and it goes from left to right. If the left expression of the and operator is `false` then it knows that no matter whether the right-hand side is `true` or fast it will always return `false` so it skips evaluating the right-hand side.
+An important feature of this and operator is that it short circuits. Now to explain this you need to understand that the expressions are evaluated one at a time, and it goes from left to right. If the left expression of the and operator is `false` then it knows that no matter whether the right-hand side is `true` or `false` it will always return `false` so it skips evaluating the right-hand side.
 
 If you want to use an and operator that evaluates both sides you can use the bitwise and operator `&`, we will go over this later.
 
@@ -1072,7 +1072,10 @@ These are the bit shifting operators, these by default only work on numbers, the
 
 ## Scopes
 
-Scopes are sections in your program that you define your code, scopes determine what variables, functions, and classes are accessible, by default the program runs in the global scope where everything is accessible to the rest of the program.
+Scopes are sections in your program that you define your code, 
+scopes determine what variables, functions, and classes are accessible, 
+by default the program runs in the global scope where everything is 
+accessible to the rest of the program.
 
 You are able to define scopes by using the `{` and `}`. For example:
 ```kotlin
@@ -1082,7 +1085,8 @@ You are able to define scopes by using the `{` and `}`. For example:
 }
 ```
 
-Anything that is defined in a scope is only accessible to that scope and any scopes inside that scope:
+Anything that is defined in a scope is only accessible to that scope and any 
+scopes inside that scope:
 ```kotlin
 // Global scope
 // Anything here is accessible ANYWHERE in the program
@@ -1108,7 +1112,9 @@ print(j);
 print(i); // -> 10
 ```
 
-Assigning variables in scope also works similarly, if a variable is defined in the global scope, and you reassign that variable in a scope than the variables in the global scope will be modified.
+Assigning variables in scope also works similarly, if a variable is defined 
+in the global scope, and you reassign that variable in a scope then the variables 
+in the global scope will be modified.
 ```kotlin
 i = 0;
 {
