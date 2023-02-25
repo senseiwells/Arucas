@@ -8,7 +8,7 @@ import me.senseiwells.arucas.classes.instance.HintedField
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.core.Type
 import me.senseiwells.arucas.exceptions.runtimeError
-import me.senseiwells.arucas.nodes.Expression
+import me.senseiwells.arucas.nodes.expressions.Expression
 import me.senseiwells.arucas.utils.*
 
 open class ArucasClassDefinition(

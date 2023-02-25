@@ -4,7 +4,7 @@ import me.senseiwells.arucas.builtin.ListDef
 import me.senseiwells.arucas.classes.ClassDefinition
 import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.core.Interpreter
-import me.senseiwells.arucas.nodes.Statement
+import me.senseiwells.arucas.nodes.statements.Statement
 import me.senseiwells.arucas.utils.LocatableTrace
 import me.senseiwells.arucas.utils.ParameterTyped
 import me.senseiwells.arucas.utils.StackTable

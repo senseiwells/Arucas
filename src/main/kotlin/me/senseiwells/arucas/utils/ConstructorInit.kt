@@ -1,6 +1,6 @@
 package me.senseiwells.arucas.utils
 
-import me.senseiwells.arucas.nodes.Expression
+import me.senseiwells.arucas.nodes.expressions.Expression
 
 class ConstructorInit private constructor(val type: InitType, val arguments: List<Expression>) {
     companion object {

@@ -15,6 +15,8 @@ import me.senseiwells.arucas.functions.user.UserConstructorFunction
 import me.senseiwells.arucas.functions.user.UserDefinedClassFunction
 import me.senseiwells.arucas.functions.user.UserDefinedFunction
 import me.senseiwells.arucas.nodes.*
+import me.senseiwells.arucas.nodes.expressions.*
+import me.senseiwells.arucas.nodes.statements.*
 import me.senseiwells.arucas.utils.*
 import me.senseiwells.arucas.utils.Properties
 import me.senseiwells.arucas.utils.impl.ArucasList
@@ -952,6 +954,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
                 this.execute(tryStatement.catchBody)
             }
         } finally {
+            // Executed even if the error is not a RuntimeError
             this.execute(tryStatement.finally)
         }
     }

@@ -4,7 +4,7 @@ import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.exceptions.runtimeError
 import me.senseiwells.arucas.functions.ArucasFunction
-import me.senseiwells.arucas.nodes.Statement
+import me.senseiwells.arucas.nodes.statements.Statement
 import me.senseiwells.arucas.utils.LocatableTrace
 import me.senseiwells.arucas.utils.ParameterTyped
 import me.senseiwells.arucas.utils.StackTable

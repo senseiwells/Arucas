@@ -1,6 +1,6 @@
 package me.senseiwells.arucas.utils
 
-import me.senseiwells.arucas.nodes.SuperExpression
+import me.senseiwells.arucas.nodes.expressions.SuperExpression
 import me.senseiwells.arucas.nodes.Visitable
 
 /**

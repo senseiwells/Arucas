@@ -1,6 +1,7 @@
 package me.senseiwells.arucas.api
 
 import me.senseiwells.arucas.api.ArucasExecutor.Companion.wrap
+import me.senseiwells.arucas.core.ThreadHandler
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Future

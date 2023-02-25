@@ -5,12 +5,33 @@ import me.senseiwells.arucas.classes.PrimitiveDefinition
 import me.senseiwells.arucas.exceptions.compileError
 import me.senseiwells.arucas.functions.ArucasFunction
 import me.senseiwells.arucas.nodes.*
+import me.senseiwells.arucas.nodes.expressions.*
+import me.senseiwells.arucas.nodes.statements.*
 import me.senseiwells.arucas.utils.LocalCache
 import me.senseiwells.arucas.utils.LocatableTrace
 import me.senseiwells.arucas.utils.Parameter
+import me.senseiwells.arucas.utils.StackTable
 import java.util.*
 import kotlin.reflect.KMutableProperty0
 
+/**
+ * This class implements [StatementVisitor] and [ExpressionVisitor]
+ * to check the AST before the [Interpreter] runs it.
+ *
+ * This creates a [LocalCache] of all the data to be able to
+ * jump between [StackTable]s at runtime instead of having to search.
+ *
+ * This also does numerous other checks for compilation errors, such
+ * as checking whether `this`/`super` is being used outside of classes.
+ * It stops the user from returning or throwing in `finally` and stops
+ * the user from using `continue` and `break` outside of loops.
+ *
+ * @param statements the list of statements from the [Parser].
+ * @param classes the existing built-in classes.
+ * @param functions the existing built-in functions.
+ * @see LocalCache
+ * @see Interpreter
+ */
 class Resolver(
     private val statements: List<Statement>,
     classes: Iterable<ClassDefinition>,
@@ -118,7 +139,9 @@ class Resolver(
      * This is used to cache the scope of a variable.
      * This is needed when accessing and assigning.
      *
-     * Returns whether the variable existed.
+     * @param visitable the visitable to cache.
+     * @param name the name of the variable.
+     * @return whether the variable existed.
      */
     private fun cacheVar(visitable: Visitable, name: String): Boolean {
         val scopeSize = this.varScope.size - 1

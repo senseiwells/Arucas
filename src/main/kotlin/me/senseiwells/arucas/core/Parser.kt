@@ -7,6 +7,8 @@ import me.senseiwells.arucas.builtin.StringDef
 import me.senseiwells.arucas.core.Type.*
 import me.senseiwells.arucas.exceptions.compileError
 import me.senseiwells.arucas.nodes.*
+import me.senseiwells.arucas.nodes.expressions.*
+import me.senseiwells.arucas.nodes.statements.*
 import me.senseiwells.arucas.utils.ConstructorInit
 import me.senseiwells.arucas.utils.LocatableTrace
 import me.senseiwells.arucas.utils.Parameter

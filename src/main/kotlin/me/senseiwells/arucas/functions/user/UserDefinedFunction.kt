@@ -7,7 +7,7 @@ import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.exceptions.Propagator
 import me.senseiwells.arucas.exceptions.runtimeError
 import me.senseiwells.arucas.functions.ArucasFunction
-import me.senseiwells.arucas.nodes.Statement
+import me.senseiwells.arucas.nodes.statements.Statement
 import me.senseiwells.arucas.utils.*
 import me.senseiwells.arucas.utils.impl.ArucasList
 
