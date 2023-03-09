@@ -37,7 +37,7 @@ class ClassInstance internal constructor(
     fun callMember(interpreter: Interpreter, name: String, args: List<ClassInstance>, trace: LocatableTrace, functionName: String = "<${this.definition.name}>.$name::${args.size}"): ClassInstance {
         val callTrace = CallTrace(trace, functionName)
         val arguments = ArrayList(args)
-        val function = this.definition.memberFunctionAccess(this, name, arguments, trace)
+        val function = this.definition.memberFunctionAccess(this, interpreter, name, arguments, trace)
         return interpreter.call(function, arguments, callTrace)
     }
 

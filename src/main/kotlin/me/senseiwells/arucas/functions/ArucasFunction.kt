@@ -39,4 +39,14 @@ abstract class ArucasFunction(
      * @return the [ClassInstance] that the function is returning.
      */
     abstract override fun invoke(interpreter: Interpreter, arguments: List<ClassInstance>): ClassInstance
+
+    /**
+     * Checks whether the function is accessible - this is used for private functions.
+     *
+     * @param interpreter the interpreter wanting to access the function.
+     * @return whether the function is accessible.
+     */
+    open fun accessible(interpreter: Interpreter): Boolean {
+        return true
+    }
 }

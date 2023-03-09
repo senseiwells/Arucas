@@ -89,6 +89,10 @@ abstract class ClassDefinition(
             val constructorInstance = this.constructors.value.get("", args.size + 1)
             constructorInstance ?: runtimeError("No such constructor with ${args.size} parameters exists for ${this.name}", trace)
 
+            if (!constructorInstance.asPrimitive(FunctionDef::class).accessible(interpreter)) {
+                runtimeError("The constructor for '$name' with ${args.size} parameters is inaccessible", trace)
+            }
+
             args.add(0, instance)
             interpreter.call(constructorInstance, args, trace)
         }
@@ -652,14 +656,17 @@ abstract class ClassDefinition(
         return this.superclass().call(instance, interpreter, args)
     }
 
-    internal open fun memberFunctionAccess(instance: ClassInstance, name: String, args: MutableList<ClassInstance>, trace: Trace, origin: ClassDefinition = this): ClassInstance {
+    internal open fun memberFunctionAccess(instance: ClassInstance, interpreter: Interpreter, name: String, args: MutableList<ClassInstance>, trace: Trace, origin: ClassDefinition = this): ClassInstance {
         if (this.methods.isInitialized()) {
             this.methods.value.get(name, args.size + 1)?.let {
+                if (!it.asPrimitive(FunctionDef::class).accessible(interpreter)) {
+                    runtimeError("The method '$name' with ${args.size} parameters is inaccessible", trace)
+                }
                 args.add(0, instance)
                 return it
             }
         }
-        return this.superclass().memberFunctionAccess(instance, name, args, trace, origin)
+        return this.superclass().memberFunctionAccess(instance, interpreter, name, args, trace, origin)
     }
 
     internal open fun hasMemberFunction(name: String): Boolean {
@@ -678,17 +685,22 @@ abstract class ClassDefinition(
 
     internal fun staticFunctionCall(interpreter: Interpreter, name: String, arguments: List<ClassInstance>, trace: LocatableTrace): ClassInstance {
         val callTrace = CallTrace(trace, "${this.name}.$name::${arguments.size}")
-        val function = this.staticFunctionAccess(name, arguments.size, trace)
+        val function = this.staticFunctionAccess(interpreter, name, arguments.size, trace)
         return interpreter.call(function, arguments, callTrace)
     }
 
-    internal open fun staticFunctionAccess(name: String, parameters: Int, trace: Trace): ClassInstance {
+    internal open fun staticFunctionAccess(interpreter: Interpreter, name: String, parameters: Int, trace: Trace): ClassInstance {
         if (this.staticMethods.isInitialized()) {
-            this.staticMethods.value.get(name, parameters)?.let { return it }
+            this.staticMethods.value.get(name, parameters)?.let {
+                if (!it.asPrimitive(FunctionDef::class).accessible(interpreter)) {
+                    runtimeError("The static method '$name' with $parameters parameters is inaccessible", trace)
+                }
+                return it
+            }
         }
         if (this.staticFields.isInitialized()) {
             this.staticFields.value[name]?.let {
-                val field = it.get(false, trace)
+                val field = it.get(this.isInClass(interpreter), trace)
                 if (field.definition.inheritsFrom(FunctionDef::class)) {
                     return field
                 }

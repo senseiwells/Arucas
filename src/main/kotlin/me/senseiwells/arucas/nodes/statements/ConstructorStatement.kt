@@ -10,6 +10,7 @@ import me.senseiwells.arucas.typed.HintedParameter
  *
  * @param parameters The parameters for the constructor.
  * @param arbitrary Whether the constructor is varargs.
+ * @param private Whether the constructor is private.
  * @param init The referencing constructor (this(), or super()).
  * @param body The body of the constructor.
  * @param start The trace position - if constructor is invalid.
@@ -18,6 +19,7 @@ import me.senseiwells.arucas.typed.HintedParameter
 class ConstructorStatement(
     val parameters: List<HintedParameter>,
     val arbitrary: Boolean,
+    val private: Boolean,
     val init: ConstructorInit,
     val body: Statement,
     val start: LocatableTrace,

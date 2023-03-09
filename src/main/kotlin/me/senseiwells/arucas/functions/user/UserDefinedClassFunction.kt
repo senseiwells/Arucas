@@ -16,16 +16,18 @@ open class UserDefinedClassFunction(
     body: Statement,
     localTable: StackTable,
     trace: LocatableTrace,
+    private: Boolean,
     returnTypes: LazyDefinitions
-): UserDefinedFunction(name, parameters, body, localTable, trace, returnTypes) {
+): UserDefinedFunction(name, parameters, body, localTable, trace, private, returnTypes) {
     private class Varargs(
         name: String,
         parameters: List<ArucasParameter>,
         body: Statement,
         localTable: StackTable,
         trace: LocatableTrace,
-        returnTypes: LazyDefinitions,
-    ): UserDefinedClassFunction(name, parameters,  body, localTable, trace, returnTypes) {
+        private: Boolean,
+        returnTypes: LazyDefinitions
+    ): UserDefinedClassFunction(name, parameters,  body, localTable, trace, private, returnTypes) {
         override val count: Int
             get() = -1
 
@@ -48,12 +50,13 @@ open class UserDefinedClassFunction(
             body: Statement,
             table: StackTable,
             trace: LocatableTrace,
-            returnTypes: LazyDefinitions
+            returnTypes: LazyDefinitions,
+            private: Boolean
         ): UserDefinedClassFunction {
             if (arbitrary) {
-                return Varargs(name, parameters, body, table, trace, returnTypes)
+                return Varargs(name, parameters, body, table, trace, private, returnTypes)
             }
-            return UserDefinedClassFunction(name, parameters, body, table, trace, returnTypes)
+            return UserDefinedClassFunction(name, parameters, body, table, trace, private, returnTypes)
         }
     }
 }

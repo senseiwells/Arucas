@@ -18,8 +18,9 @@ open class UserDefinedFunction(
     body: Statement,
     localTable: StackTable,
     trace: LocatableTrace,
+    private: Boolean,
     private val returnTypes: LazyDefinitions
-): UserFunction(name, parameters, body, localTable, trace) {
+): UserFunction(name, parameters, body, localTable, trace, private) {
     /**
      * The method that is invoked when the [ArucasFunction] is called.
      * This pushes the interpreter's current stack table to the captured
@@ -54,8 +55,9 @@ open class UserDefinedFunction(
         body: Statement,
         localTable: StackTable,
         trace: LocatableTrace,
-        returnTypes: LazyDefinitions,
-    ): UserDefinedFunction(name, parameters, body, localTable, trace, returnTypes) {
+        private: Boolean,
+        returnTypes: LazyDefinitions
+    ): UserDefinedFunction(name, parameters, body, localTable, trace, private, returnTypes) {
         override val count: Int
             get() = -1
 
@@ -73,12 +75,13 @@ open class UserDefinedFunction(
             body: Statement,
             table: StackTable,
             trace: LocatableTrace,
-            returnTypes: LazyDefinitions
+            returnTypes: LazyDefinitions,
+            private: Boolean = false
         ): UserDefinedFunction {
             if (arbitrary) {
-                return Varargs(name, parameters, body, table, trace, returnTypes)
+                return Varargs(name, parameters, body, table, trace, private, returnTypes)
             }
-            return UserDefinedFunction(name, parameters, body, table, trace, returnTypes)
+            return UserDefinedFunction(name, parameters, body, table, trace, private, returnTypes)
         }
     }
 }

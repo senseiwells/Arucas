@@ -38,7 +38,7 @@ class ObjectDef(interpreter: Interpreter): PrimitiveDefinition<Any>(OBJECT, inte
         runtimeError("Cannot call '${instance.definition.name}'")
     }
 
-    override fun memberFunctionAccess(instance: ClassInstance, name: String, args: MutableList<ClassInstance>, trace: Trace, origin: ClassDefinition): ClassInstance {
+    override fun memberFunctionAccess(instance: ClassInstance, interpreter: Interpreter, name: String, args: MutableList<ClassInstance>, trace: Trace, origin: ClassDefinition): ClassInstance {
         this.methods.value.get(name, args.size + 1)?.let {
             args.add(0, instance)
             return it

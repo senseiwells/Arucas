@@ -30,6 +30,7 @@ import me.senseiwells.arucas.utils.StackTable
  * @param body the body of the function which will be executed when invoked.
  * @param localTable the local [StackTable] from where the function was defined.
  * @param trace the trace location at which the function was defined at.
+ * @param private whether the function is private.
  */
 abstract class UserFunction(
     name: String,
@@ -48,7 +49,11 @@ abstract class UserFunction(
     /**
      * The trace location at which the function was defined at.
      */
-    val trace: LocatableTrace
+    val trace: LocatableTrace,
+    /**
+     * Whether the function is private.
+     */
+    val private: Boolean
 ): ArucasFunction(name, parameters.size) {
     /**
      * This should be invoked in [invoke] method to check the number of
@@ -90,6 +95,16 @@ abstract class UserFunction(
      * @return the [ClassInstance] that the function is returning.
      */
     abstract override fun invoke(interpreter: Interpreter, arguments: List<ClassInstance>): ClassInstance
+
+    /**
+     * Checks whether the function is accessible - this is used for private functions.
+     *
+     * @param interpreter the interpreter wanting to access the function.
+     * @return whether the function is accessible.
+     */
+    override fun accessible(interpreter: Interpreter): Boolean {
+        return !this.private || interpreter.isWithinStack(this.localTable)
+    }
 
     /**
      * Function that creates a string for an incorrect type error.

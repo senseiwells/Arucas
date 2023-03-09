@@ -45,12 +45,12 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
         return if (value != Null) value else null
     }
 
-    override fun memberFunctionAccess(instance: ClassInstance, name: String, args: MutableList<ClassInstance>, trace: Trace, origin: ClassDefinition): ClassInstance {
+    override fun memberFunctionAccess(instance: ClassInstance, interpreter: Interpreter, name: String, args: MutableList<ClassInstance>, trace: Trace, origin: ClassDefinition): ClassInstance {
         if (!this.hasMemberFunction(name, args.size)) {
             val java = this.asJavaNotNull(instance, trace)
-            return this.interpreter.create(FunctionDef::class, BuiltInFunction.java(java::class.java, java, name))
+            return interpreter.create(FunctionDef::class, BuiltInFunction.java(java::class.java, java, name))
         }
-        return super.memberFunctionAccess(instance, name, args, trace, origin)
+        return super.memberFunctionAccess(instance, interpreter, name, args, trace, origin)
     }
 
     override fun memberAccess(instance: ClassInstance, interpreter: Interpreter, name: String, trace: LocatableTrace): ClassInstance {

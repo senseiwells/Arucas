@@ -11,6 +11,7 @@ import me.senseiwells.arucas.typed.HintedParameter
  * @param isClass Whether the function is a method.
  * @param parameters The array of arguments with types.
  * @param arbitrary Whether the function is varargs.
+ * @param private Whether the function is private.
  * @param returnTypes The return types of the function.
  * @param body The body of the function.
  * @param start The trace position - for stack trace.
@@ -19,6 +20,7 @@ import me.senseiwells.arucas.typed.HintedParameter
 class FunctionStatement(
     val name: String,
     val isClass: Boolean,
+    val private: Boolean,
     val parameters: List<HintedParameter>,
     val arbitrary: Boolean,
     val returnTypes: Array<String>?,

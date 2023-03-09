@@ -56,7 +56,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
         return LocalVarStatement(name.content, expression, types, name.trace)
     }
 
-    private fun functionDeclaration(isClass: Boolean, isStatic: Boolean = true): FunctionStatement {
+    private fun functionDeclaration(isClass: Boolean, isStatic: Boolean = true, isPrivate: Boolean = false): FunctionStatement {
         this.check(FUN)
         val name = this.check(IDENTIFIER, "Expected function name")
         this.check(LEFT_BRACKET, "Expected '(' after function name")
@@ -66,7 +66,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
         val returnTypes = this.getTypeHint()
         val body = this.statement()
 
-        return FunctionStatement(name.content, isClass, parameters, isArbitrary, returnTypes, body, name.trace, this.lastTrace())
+        return FunctionStatement(name.content, isClass, isPrivate, parameters, isArbitrary, returnTypes, body, name.trace, this.lastTrace())
     }
 
     private fun classDeclaration(): ClassStatement {
@@ -204,10 +204,10 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
                         ConstructorInit.initNone()
                     }
                     val body = this.statement()
-                    constructors.add(ConstructorStatement(parameters, isArbitrary, constructorInit, body, currentTrace, this.lastTrace()))
+                    constructors.add(ConstructorStatement(parameters, isArbitrary, private, constructorInit, body, currentTrace, this.lastTrace()))
                 }
                 this.peekType() == FUN -> {
-                    val function = this.functionDeclaration(true, static)
+                    val function = this.functionDeclaration(true, static, private)
                     (if (static) staticMethods else methods).add(function)
                 }
                 this.isMatch(OPERATOR) -> {
@@ -217,9 +217,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
                     if (readonly) {
                         this.error("Operator method cannot be readonly")
                     }
-                    if (private) {
-                        this.error("Operator method cannot be private")
-                    }
+
                     val token = this.peek().also { this.advance() }
                     val typeAsString = if (token.type == LEFT_SQUARE_BRACKET) {
                         this.check(RIGHT_SQUARE_BRACKET, "Expected closing ']'")
@@ -237,7 +235,12 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
                     }
                     val returnTypes = this.getTypeHint()
                     val body = this.statement()
-                    val function = FunctionStatement("\$$typeAsString::$count", true, parameters, isArbitrary, returnTypes, body, token.trace, this.lastTrace())
+                    val function = FunctionStatement("\$$typeAsString::$count", true, private, parameters, isArbitrary, returnTypes, body, token.trace, this.lastTrace())
+
+                    // We do this after so IntelliJ stops bad...
+                    if (private) {
+                        this.error("Operator method cannot be private")
+                    }
                     operators.add(function to token.type)
                 }
                 this.peekType() == LEFT_CURLY_BRACKET -> {

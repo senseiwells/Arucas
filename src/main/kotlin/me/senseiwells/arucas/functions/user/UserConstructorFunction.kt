@@ -16,8 +16,9 @@ open class UserConstructorFunction(
     parameters: List<ArucasParameter>,
     body: Statement,
     localTable: StackTable,
-    trace: LocatableTrace
-): UserFunction("", parameters, body, localTable, trace) {
+    trace: LocatableTrace,
+    private: Boolean
+): UserFunction("", parameters, body, localTable, trace, private) {
     /**
      * The constructor that is invoked when the [ArucasFunction] is called.
      * This pushes the interpreter's current stack table to the captured
@@ -58,8 +59,9 @@ open class UserConstructorFunction(
         parameters: List<ArucasParameter>,
         body: Statement,
         localTable: StackTable,
-        trace: LocatableTrace
-    ): UserConstructorFunction(definition, constructorInit, parameters, body, localTable, trace) {
+        trace: LocatableTrace,
+        private: Boolean
+    ): UserConstructorFunction(definition, constructorInit, parameters, body, localTable, trace, private) {
         override val count: Int
             get() = -1
 
@@ -82,12 +84,13 @@ open class UserConstructorFunction(
             parameters: List<ArucasParameter>,
             body: Statement,
             table: StackTable,
-            trace: LocatableTrace
+            trace: LocatableTrace,
+            private: Boolean
         ): UserConstructorFunction {
             if (arbitrary) {
-                return Varargs(definition, constructorInit, parameters, body, table, trace)
+                return Varargs(definition, constructorInit, parameters, body, table, trace, private)
             }
-            return UserConstructorFunction(definition, constructorInit, parameters, body, table, trace)
+            return UserConstructorFunction(definition, constructorInit, parameters, body, table, trace, private)
         }
     }
 }

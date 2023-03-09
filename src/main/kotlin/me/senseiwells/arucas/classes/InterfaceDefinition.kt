@@ -41,7 +41,7 @@ class InterfaceDefinition(
         runtimeError("Cannot construct an interface class", trace)
     }
 
-    override fun memberFunctionAccess(instance: ClassInstance, name: String, args: MutableList<ClassInstance>, trace: Trace, origin: ClassDefinition): ClassInstance {
+    override fun memberFunctionAccess(instance: ClassInstance, interpreter: Interpreter, name: String, args: MutableList<ClassInstance>, trace: Trace, origin: ClassDefinition): ClassInstance {
         throw IllegalStateException("Tried to access method in an interface class, this is a bug!")
     }
 

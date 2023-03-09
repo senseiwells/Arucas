@@ -1,14 +1,21 @@
 // ./src/test/resources/code/test.arucas
 
-class X {
-    private var A = 10;
+class Employee {
+    private fun salary() {
+        return 30000;
+    }
 
-    fun sA() {
-        this.A = 11;
-        print(this.A);
+    fun bypass() {
+        return this.salary();
     }
 }
 
-x = new X();
-x.sA();
-print(x.A);
+class Boss: Employee {
+    private Boss(): super() {
+        print(this.salary());
+    }
+}
+
+
+e = new Boss();
+print(e.bypass());

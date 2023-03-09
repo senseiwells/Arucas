@@ -761,7 +761,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
                 runtimeError("Derived class constructor must initialise super constructor", c.start)
             }
             val parameters = c.parameters.map { it.create(this.currentTable, c.start) }
-            UserConstructorFunction.of(c.arbitrary, definition, c.init, parameters, c.body, this.currentTable, c.start).let {
+            UserConstructorFunction.of(c.arbitrary, definition, c.init, parameters, c.body, this.currentTable, c.start, c.private).let {
                 definition.constructors.value.add(this.create(FunctionDef::class, it))
             }
         }
@@ -769,7 +769,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         body.methods.forEach { m ->
             val parameters = m.parameters.map { it.create(this.currentTable, m.start) }
             val returns = LazyDefinitions.of(m.returnTypes, this.currentTable, m.start)
-            UserDefinedClassFunction.of(m.arbitrary, m.name, parameters, m.body, this.currentTable, m.start, returns).let {
+            UserDefinedClassFunction.of(m.arbitrary, m.name, parameters, m.body, this.currentTable, m.start, returns, m.private).let {
                 definition.methods.value.add(this.create(FunctionDef::class, it))
             }
         }
@@ -777,7 +777,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         body.operators.forEach { (m, t) ->
             val parameters = m.parameters.map { it.create(this.currentTable, m.start) }
             val returns = LazyDefinitions.of(m.returnTypes, this.currentTable, m.start)
-            UserDefinedClassFunction.of(m.arbitrary, m.name, parameters, m.body, this.currentTable, m.start, returns).let {
+            UserDefinedClassFunction.of(m.arbitrary, m.name, parameters, m.body, this.currentTable, m.start, returns, m.private).let {
                 definition.operators.value.add(t, this.create(FunctionDef::class, it))
             }
         }
@@ -785,7 +785,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         body.staticMethods.forEach { m ->
             val parameters = m.parameters.map { it.create(this.currentTable, m.start) }
             val returns = LazyDefinitions.of(m.returnTypes, this.currentTable, m.start)
-            UserDefinedFunction.of(m.arbitrary, m.name, parameters, m.body, this.currentTable, m.start, returns).let {
+            UserDefinedFunction.of(m.arbitrary, m.name, parameters, m.body, this.currentTable, m.start, returns, m.private).let {
                 definition.staticMethods.value.add(this.create(FunctionDef::class, it))
             }
         }
@@ -1233,7 +1233,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
             }
             is SuperExpression -> {
                 this.visitSuper(expression, expression.trace).let { (i, d) ->
-                    val function = d.memberFunctionAccess(i, call.name , arguments, call.trace, d)
+                    val function = d.memberFunctionAccess(i, this, call.name , arguments, call.trace, d)
                     val callTrace = CallTrace(call.trace, "<${d.name}>.super.${call.name}::${arguments.size - 1}")
                     return this.call(function, arguments, callTrace)
                 }
