@@ -223,15 +223,16 @@ object ReflectionUtils {
     }
 
     private fun methodWithHandle(method: Method): MethodWithHandle {
-        return MethodWithHandle(method, MethodHandles.publicLookup().unreflect(method))
+        MethodHandles.lookup()
+        return MethodWithHandle(method, MethodHandles.lookup().unreflect(method))
     }
 
     private fun methodWithHandle(constructor: Constructor<*>): MethodWithHandle {
-        return MethodWithHandle(constructor, MethodHandles.publicLookup().unreflectConstructor(constructor))
+        return MethodWithHandle(constructor, MethodHandles.lookup().unreflectConstructor(constructor))
     }
 
     private fun getVarHandle(field: Field): FieldWithHandle {
-        return FieldWithHandle(field, MethodHandles.publicLookup().unreflectVarHandle(field))
+        return FieldWithHandle(field, MethodHandles.lookup().unreflectVarHandle(field))
     }
 
     private fun invokeHandle(methodHandle: MethodWithHandle, args: List<Any?>): Any? {
