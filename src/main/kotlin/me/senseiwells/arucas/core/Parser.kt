@@ -208,6 +208,9 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
                     constructors.add(ConstructorStatement(parameters, isArbitrary, private, constructorInit, body, currentTrace, this.lastTrace()))
                 }
                 this.peekType() == FUN -> {
+                    if (readonly) {
+                        this.error("Class function cannot be readonly")
+                    }
                     val function = this.functionDeclaration(true, static, private)
                     (if (static) staticMethods else methods).add(function)
                 }

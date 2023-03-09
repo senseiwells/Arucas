@@ -650,6 +650,10 @@ abstract class ClassDefinition(
 
         val thisInstance = ClassInstance(this)
         this.init(interpreter, thisInstance, args, trace)
+
+        for (field in thisInstance.getInstanceFields()) {
+            field.finalise(trace)
+        }
         return thisInstance
     }
 
@@ -712,7 +716,7 @@ abstract class ClassDefinition(
         }
         if (this.staticFields.isInitialized()) {
             this.staticFields.value[name]?.let {
-                val field = it.get(this.isInClass(interpreter), trace)
+                val field = it.get(interpreter, trace)
                 if (field.definition.inheritsFrom(FunctionDef::class)) {
                     return field
                 }
@@ -725,7 +729,7 @@ abstract class ClassDefinition(
     internal open fun memberAccess(instance: ClassInstance, interpreter: Interpreter, name: String, trace: LocatableTrace): ClassInstance {
         val instanceField = instance.getInstanceField(name)
 
-        return instanceField?.get(this.isInClass(interpreter), trace) ?: kotlin.run {
+        return instanceField?.get(interpreter, trace) ?: kotlin.run {
             if (instance.definition.hasMemberFunction(instance, name)) {
                 // We need to create a branch because we cannot guarantee
                 // that this function will be run on the same thread
@@ -745,7 +749,7 @@ abstract class ClassDefinition(
     internal open fun memberAssign(instance: ClassInstance, interpreter: Interpreter, name: String, assignee: ClassInstance, trace: Trace): ClassInstance {
         val instanceField = instance.getInstanceField(name)
         instanceField ?: runtimeError("No such field '$name' exists for class '${instance.definition.name}'", trace)
-        instanceField.set(assignee, this.isInClass(interpreter), trace)
+        instanceField.set(assignee, interpreter, trace)
         return assignee
     }
 
@@ -755,7 +759,7 @@ abstract class ClassDefinition(
         }
 
         if (this.staticFields.isInitialized()) {
-            this.staticFields.value[name]?.let { return it.get(this.isInClass(interpreter), trace) }
+            this.staticFields.value[name]?.let { return it.get(interpreter, trace) }
         }
         if (this.staticMethods.isInitialized() && this.staticMethods.value.has(name)) {
             val child = interpreter.branch()
@@ -770,15 +774,11 @@ abstract class ClassDefinition(
     internal open fun staticMemberAssign(interpreter: Interpreter, name: String, newValue: ClassInstance, trace: LocatableTrace) {
         if (this.staticFields.isInitialized()) {
             this.staticFields.value[name]?.let {
-                it.set(newValue, this.isInClass(interpreter), trace)
+                it.set(newValue, interpreter, trace)
                 return
             }
         }
         runtimeError("No such static field '$name' exists for class '${this.name}'", trace)
-    }
-
-    internal open fun isInClass(interpreter: Interpreter): Boolean {
-        return false
     }
 
     internal open fun unary(instance: ClassInstance, interpreter: Interpreter, type: Type, trace: LocatableTrace): ClassInstance {

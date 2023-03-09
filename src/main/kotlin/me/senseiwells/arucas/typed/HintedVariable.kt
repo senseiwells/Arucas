@@ -20,7 +20,7 @@ class HintedVariable(
             interpreter.evaluate(local, this.expression),
             this.prefix,
             this.readonly,
-            this.private,
+            if (this.private) local else null,
             LazyDefinitions.of(this.hints, local, trace)
         )
     }

@@ -35,10 +35,6 @@ open class ArucasClassDefinition(
         }
 
         super.init(interpreter, instance, args, trace)
-
-        for (field in instance.getInstanceFields()) {
-            field.finalise(trace)
-        }
     }
 
     override fun canConstructDirectly(): Boolean {
@@ -55,10 +51,6 @@ open class ArucasClassDefinition(
 
     override fun asJavaValue(instance: ClassInstance): ClassInstance {
         return instance
-    }
-
-    override fun isInClass(interpreter: Interpreter): Boolean {
-        return interpreter.isWithinStack(this.localTable)
     }
 
     override fun hasMemberFunction(instance: ClassInstance, name: String, parameters: Int): Boolean {

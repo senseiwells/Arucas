@@ -65,6 +65,31 @@ class VisibilityTests {
             new X().foo;
             """
         )
+        throwsRuntime(
+            """
+            class A { private var x; }
+            class B: A { B(): super() { this.x; } }
+            new B();
+            """
+        )
+        assertEquals("bar",
+            """
+            class X {
+                private var foo;
+                
+                fun setFoo(v) {
+                    this.foo = v;
+                }
+                
+                fun getFoo() {
+                    return this.foo;
+                }
+            }
+            x = new X();
+            x.setFoo("bar");
+            return x.getFoo();
+            """
+        )
     }
 
     @Test
@@ -73,13 +98,13 @@ class VisibilityTests {
         throwsRuntime(
             """
             class A { fun foo(); }
-            class B: A { private fun foo(); }
+            class B: A { B(): super(); private fun foo(); }
             """
         )
         throwsRuntime(
             """
             interface A { fun foo(); }
-            class B: A { private fun foo(); }
+            class B: A { B(): super(); private fun foo(); }
             """
         )
         throwsRuntime(
@@ -92,6 +117,13 @@ class VisibilityTests {
             """
             class X { private static fun foo(); }
             X.foo();
+            """
+        )
+        throwsRuntime(
+            """
+            class A { private fun x(); }
+            class B: A { B(): super() { this.x(); } }
+            new B();
             """
         )
         assertEquals(5,
@@ -134,5 +166,54 @@ class VisibilityTests {
             return X.del()();
             """
         )
+    }
+
+    @Test
+    fun testReadonlyFields() {
+        throwsRuntime(
+            """
+            class X {
+                readonly var a;
+                X(a) { this.a = a; }
+            }
+            new X(0).a = 10;
+            """
+        )
+        assertEquals(10,
+            """
+            class X {
+                readonly var a;
+                X(a) { this.a = a; }
+            }
+            return new X(10).a;
+            """
+        )
+        assertEquals("foo",
+            """
+            class X {
+                readonly var a;
+                X() { this.defaults(); }
+                fun defaults() { this.a = "foo"; }
+            }
+            return new X().a;
+            """
+        )
+        assertEquals("bar",
+            """
+            class A { readonly var a; }
+            class B: A {
+                B(): super() {
+                    this.a = "bar";
+                }
+            }
+            new B();
+            return new B().a;
+            """
+        )
+    }
+
+    @Test
+    fun testPrivateReadonlyFields() {
+
     }
 }

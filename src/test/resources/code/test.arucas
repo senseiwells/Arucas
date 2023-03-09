@@ -1,17 +1,21 @@
 // ./src/test/resources/code/test.arucas
 
-class Person {
-    readonly var name: String;
+class A {
+    private var x = 10;
 
-    Person(name: String) {
-        this.name = name;
-    }
-
-    fun setName(name: String) {
-        this.name = name;
+    fun getX() {
+        return this.x;
     }
 }
 
-j = new Person("Jeff");
-print(j.name);
-j.name = "Jim";
+class B: A {
+    B(): super() {
+
+    }
+
+    fun bruh() {
+        print(this.getX());
+    }
+}
+
+new B().bruh();

@@ -1,7 +1,9 @@
 package me.senseiwells.arucas.typed
 
 import me.senseiwells.arucas.classes.instance.ClassInstance
+import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.exceptions.runtimeError
+import me.senseiwells.arucas.utils.StackTable
 import me.senseiwells.arucas.utils.Trace
 
 class ArucasVariable constructor(
@@ -9,16 +11,16 @@ class ArucasVariable constructor(
     private var instance: ClassInstance,
     private val prefix: String,
     private val readonly: Boolean,
-    private val private: Boolean,
+    private val local: StackTable? = null,
     private val definitions: LazyDefinitions = LazyDefinitions.of()
 ) {
     private var locked = false
 
-    fun set(instance: ClassInstance, private: Boolean, trace: Trace) {
+    fun set(instance: ClassInstance, interpreter: Interpreter, trace: Trace) {
         if (this.readonly && this.locked) {
             runtimeError("Cannot reassign '$this'", trace)
         }
-        if (this.private && !private) {
+        if (this.local != null && !interpreter.isWithinStack(this.local)) {
             runtimeError("Cannot assign private field '$this'", trace)
         }
 
@@ -28,8 +30,8 @@ class ArucasVariable constructor(
         this.instance = instance
     }
 
-    fun get(private: Boolean, trace: Trace): ClassInstance {
-        if (this.private && !private) {
+    fun get(interpreter: Interpreter, trace: Trace): ClassInstance {
+        if (this.local != null && !interpreter.isWithinStack(this.local)) {
             runtimeError("Cannot access private field '$this'", trace)
         }
         return this.instance

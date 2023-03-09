@@ -996,8 +996,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
                 if (!parentClass.canExtend() || !parentClass.constructors.isInitialized()) {
                     runtimeError("Cannot extend class '${parentClass.name}'", classStatement.start)
                 }
-                val constructors = parentClass.constructors.value
-                needsSuper = !constructors.isEmpty() && !constructors.has("", 0)
+                needsSuper = true
                 superclass = parentClass
                 continue
             }
