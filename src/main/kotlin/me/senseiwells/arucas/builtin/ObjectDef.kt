@@ -55,11 +55,15 @@ class ObjectDef(interpreter: Interpreter): PrimitiveDefinition<Any>(OBJECT, inte
         runtimeError("Method '<${origin.name}>.$name'$error is not defined", trace)
     }
 
-    override fun hasMemberFunction(name: String): Boolean {
+    override fun hasMemberFunction(instance: ClassInstance, name: String): Boolean {
         return this.methods.value.has(name)
     }
 
-    override fun hasMemberFunction(name: String, parameters: Int): Boolean {
+    override fun hasMemberFunction(instance: ClassInstance, name: String, parameters: Int): Boolean {
+        return this.methods.value.has(name, parameters)
+    }
+
+    override fun canOverride(name: String, parameters: Int): Boolean {
         return this.methods.value.has(name, parameters)
     }
 

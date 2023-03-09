@@ -167,6 +167,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
                     if (static && name.content == "type") {
                         this.error("Class cannot defined static field 'type'", name.trace)
                     }
+                    val types = this.getTypeHint()
                     val expression = when {
                         this.isMatch(ASSIGN_OPERATOR) -> {
                             val expression = this.expression()
@@ -176,7 +177,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
                         this.isMatch(SEMICOLON) -> this.cachedNull
                         else -> this.error("Expected ';' or assignment after field declaration")
                     }
-                    correctFields[name.content] = HintedVariable(name.content, if (static) className else "<$className>", readonly, private, expression, this.getTypeHint())
+                    correctFields[name.content] = HintedVariable(name.content, if (static) className else "<$className>", readonly, private, expression, types)
                 }
                 this.isMatch(IDENTIFIER) -> {
                     if (static) {

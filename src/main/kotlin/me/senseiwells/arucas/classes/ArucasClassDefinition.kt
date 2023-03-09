@@ -37,7 +37,7 @@ open class ArucasClassDefinition(
         super.init(interpreter, instance, args, trace)
 
         for (field in instance.getInstanceFields()) {
-            field.checkInstanceType(trace)
+            field.finalise(trace)
         }
     }
 
@@ -61,7 +61,7 @@ open class ArucasClassDefinition(
         return interpreter.isWithinStack(this.localTable)
     }
 
-    override fun hasMemberFunction(name: String, parameters: Int): Boolean {
+    override fun hasMemberFunction(instance: ClassInstance, name: String, parameters: Int): Boolean {
         return this.methods.isInitialized() && this.methods.value.has(name, parameters)
     }
 
@@ -111,7 +111,7 @@ open class ArucasClassDefinition(
     }
 
     override fun copy(instance: ClassInstance, interpreter: Interpreter, trace: LocatableTrace): ClassInstance {
-        if (instance.definition.hasMemberFunction("copy", 1)) {
+        if (instance.definition.hasMemberFunction(instance, "copy", 1)) {
             return instance.callMember(interpreter, "copy", listOf(), instance.definition, trace)
         }
         return super.copy(instance, interpreter, trace)
@@ -129,14 +129,14 @@ open class ArucasClassDefinition(
     }
 
     override fun hashCode(instance: ClassInstance, interpreter: Interpreter, trace: LocatableTrace): Int {
-        if (this.hasMemberFunction("hashCode", 1)) {
+        if (this.hasMemberFunction(instance, "hashCode", 1)) {
             return instance.callMemberPrimitive(interpreter, "hashCode", listOf(), NumberDef::class, trace).toInt()
         }
         return super.hashCode(instance, interpreter, trace)
     }
 
     override fun toString(instance: ClassInstance, interpreter: Interpreter, trace: LocatableTrace): String {
-        if (this.hasMemberFunction("toString", 1)) {
+        if (this.hasMemberFunction(instance, "toString", 1)) {
             return instance.callMemberPrimitive(interpreter, "toString", listOf(), StringDef::class, trace)
         }
         return super.toString(instance, interpreter, trace)

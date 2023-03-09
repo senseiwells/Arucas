@@ -14,7 +14,8 @@ class InterfaceDefinition(
 ): ClassDefinition(name, interpreter) {
     fun hasRequiredMethods(classDefinition: ClassDefinition): Boolean {
         for ((name, parameters) in this.requiredMethods) {
-            if (!classDefinition.hasMemberFunction(name, parameters + 1)) {
+            // If we can override the method then it has been implemented in the class
+            if (!classDefinition.canOverride(name, parameters + 1)) {
                 return false
             }
         }
@@ -45,11 +46,11 @@ class InterfaceDefinition(
         throw IllegalStateException("Tried to access method in an interface class, this is a bug!")
     }
 
-    override fun hasMemberFunction(name: String): Boolean {
+    override fun hasMemberFunction(instance: ClassInstance, name: String): Boolean {
         throw IllegalStateException("Tried to check methods in an interface class, this is a bug!")
     }
 
-    override fun hasMemberFunction(name: String, parameters: Int): Boolean {
+    override fun hasMemberFunction(instance: ClassInstance, name: String, parameters: Int): Boolean {
         throw IllegalStateException("Tried to check methods in an interface class, this is a bug!")
     }
 

@@ -12,8 +12,10 @@ class ArucasVariable constructor(
     private val private: Boolean,
     private val definitions: LazyDefinitions = LazyDefinitions.of()
 ) {
+    private var locked = false
+
     fun set(instance: ClassInstance, private: Boolean, trace: Trace) {
-        if (this.readonly) {
+        if (this.readonly && this.locked) {
             runtimeError("Cannot reassign '$this'", trace)
         }
         if (this.private && !private) {
@@ -37,7 +39,8 @@ class ArucasVariable constructor(
         return this.definitions.get().joinToString(" | ")
     }
 
-    internal fun checkInstanceType(trace: Trace) {
+    internal fun finalise(trace: Trace) {
+        this.locked = true
         if (!this.canAssign(this.instance)) {
             runtimeError("Hinted type for '$this' was constructed with '${this.instance.definition.name}' but expected '${this.typesAsString()}'", trace)
         }

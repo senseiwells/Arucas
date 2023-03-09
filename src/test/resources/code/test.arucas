@@ -1,21 +1,17 @@
 // ./src/test/resources/code/test.arucas
 
-class Employee {
-    private fun salary() {
-        return 30000;
+class Person {
+    readonly var name: String;
+
+    Person(name: String) {
+        this.name = name;
     }
 
-    fun bypass() {
-        return this.salary();
-    }
-}
-
-class Boss: Employee {
-    private Boss(): super() {
-        print(this.salary());
+    fun setName(name: String) {
+        this.name = name;
     }
 }
 
-
-e = new Boss();
-print(e.bypass());
+j = new Person("Jeff");
+print(j.name);
+j.name = "Jim";

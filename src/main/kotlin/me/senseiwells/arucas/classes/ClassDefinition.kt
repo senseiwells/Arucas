@@ -10,6 +10,7 @@ import me.senseiwells.arucas.core.Type
 import me.senseiwells.arucas.core.Type.*
 import me.senseiwells.arucas.exceptions.runtimeError
 import me.senseiwells.arucas.extensions.JavaDef
+import me.senseiwells.arucas.functions.ArucasFunction
 import me.senseiwells.arucas.functions.builtin.BuiltInFunction
 import me.senseiwells.arucas.utils.*
 import kotlin.reflect.KClass
@@ -669,18 +670,29 @@ abstract class ClassDefinition(
         return this.superclass().memberFunctionAccess(instance, interpreter, name, args, trace, origin)
     }
 
-    internal open fun hasMemberFunction(name: String): Boolean {
+    internal open fun hasMemberFunction(instance: ClassInstance, name: String): Boolean {
         if (this.methods.isInitialized() && this.methods.value.has(name)) {
             return true
         }
-        return this.superclass().hasMemberFunction(name)
+        return this.superclass().hasMemberFunction(instance, name)
     }
 
-    internal open fun hasMemberFunction(name: String, parameters: Int): Boolean {
+    internal open fun hasMemberFunction(instance: ClassInstance, name: String, parameters: Int): Boolean {
         if (this.methods.isInitialized() && this.methods.value.has(name, parameters + 1)) {
             return true
         }
-        return this.superclass().hasMemberFunction(name, parameters)
+        return this.superclass().hasMemberFunction(instance, name, parameters)
+    }
+
+    // Returns true if the class has the function, and it is accessible, false otherwise
+    internal open fun canOverride(name: String, parameters: Int): Boolean {
+        if (this.methods.isInitialized()) {
+            val function = this.methods.value.get(name, parameters)
+            if (function !== null) {
+                return !function.asPrimitive(FunctionDef::class).private
+            }
+        }
+        return this.superclass().canOverride(name, parameters)
     }
 
     internal fun staticFunctionCall(interpreter: Interpreter, name: String, arguments: List<ClassInstance>, trace: LocatableTrace): ClassInstance {
@@ -714,7 +726,7 @@ abstract class ClassDefinition(
         val instanceField = instance.getInstanceField(name)
 
         return instanceField?.get(this.isInClass(interpreter), trace) ?: kotlin.run {
-            if (instance.definition.hasMemberFunction(name)) {
+            if (instance.definition.hasMemberFunction(instance, name)) {
                 // We need to create a branch because we cannot guarantee
                 // that this function will be run on the same thread
                 val child = interpreter.branch()

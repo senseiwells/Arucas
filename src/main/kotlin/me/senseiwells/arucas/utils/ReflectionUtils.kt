@@ -78,6 +78,30 @@ object ReflectionUtils {
         return Interceptor(interpreter, function)
     }
 
+    fun hasMethod(callingClass: Class<*>, callingObject: Any?, name: String, parameters: Int, obfuscator: ArucasObfuscator): Boolean {
+        val obfuscatedName = obfuscator.obfuscateMethodName(callingClass, name)
+        val isStatic = callingObject == null
+        for (method in callingClass.methods) {
+            val matchStatic = Modifier.isStatic(method.modifiers) == isStatic
+            if (matchStatic && method.parameterCount == parameters && method.name == obfuscatedName) {
+                return true
+            }
+        }
+        return false
+    }
+
+    fun hasMethod(callingClass: Class<*>, callingObject: Any?, name: String, obfuscator: ArucasObfuscator): Boolean {
+        val obfuscatedName = obfuscator.obfuscateMethodName(callingClass, name)
+        val isStatic = callingObject == null
+        for (method in callingClass.methods) {
+            val matchStatic = Modifier.isStatic(method.modifiers) == isStatic
+            if (matchStatic && method.name == obfuscatedName) {
+                return true
+            }
+        }
+        return false
+    }
+
     private fun getVarHandle(clazz: Class<*>, name: String, obfuscator: ArucasObfuscator): FieldWithHandle {
         val id = FieldId(clazz, name)
         var varHandle = this.fieldCache[id]

@@ -53,7 +53,7 @@ abstract class UserFunction(
     /**
      * Whether the function is private.
      */
-    val private: Boolean
+    override val private: Boolean
 ): ArucasFunction(name, parameters.size) {
     /**
      * This should be invoked in [invoke] method to check the number of
@@ -103,7 +103,7 @@ abstract class UserFunction(
      * @return whether the function is accessible.
      */
     override fun accessible(interpreter: Interpreter): Boolean {
-        return !this.private || interpreter.isWithinStack(this.localTable)
+        return super.accessible(interpreter) || interpreter.isWithinStack(this.localTable)
     }
 
     /**

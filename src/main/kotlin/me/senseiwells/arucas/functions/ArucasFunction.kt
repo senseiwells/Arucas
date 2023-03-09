@@ -32,6 +32,11 @@ abstract class ArucasFunction(
     open val count: Int
 ): (Interpreter, List<ClassInstance>) -> ClassInstance {
     /**
+     * Whether the function is private.
+     */
+    open val private: Boolean = false
+
+    /**
      * The method that is invoked when the [ArucasFunction] is called.
      *
      * @param interpreter the interpreter that called the function.
@@ -47,6 +52,6 @@ abstract class ArucasFunction(
      * @return whether the function is accessible.
      */
     open fun accessible(interpreter: Interpreter): Boolean {
-        return true
+        return !this.private
     }
 }

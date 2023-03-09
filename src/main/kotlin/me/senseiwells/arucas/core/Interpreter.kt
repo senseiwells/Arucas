@@ -6,7 +6,6 @@ import me.senseiwells.arucas.api.docs.visitor.ArucasDocParser
 import me.senseiwells.arucas.builtin.*
 import me.senseiwells.arucas.classes.*
 import me.senseiwells.arucas.classes.instance.ClassInstance
-import me.senseiwells.arucas.typed.ArucasVariable
 import me.senseiwells.arucas.core.Interpreter.Companion.dummy
 import me.senseiwells.arucas.core.Interpreter.Companion.of
 import me.senseiwells.arucas.exceptions.*
@@ -17,7 +16,6 @@ import me.senseiwells.arucas.functions.user.UserDefinedFunction
 import me.senseiwells.arucas.nodes.*
 import me.senseiwells.arucas.nodes.expressions.*
 import me.senseiwells.arucas.nodes.statements.*
-import me.senseiwells.arucas.typed.HintedParameter
 import me.senseiwells.arucas.typed.LazyDefinitions
 import me.senseiwells.arucas.utils.*
 import me.senseiwells.arucas.utils.Properties
@@ -767,6 +765,11 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         }
 
         body.methods.forEach { m ->
+            if (m.private) {
+                if (definition.canOverride(m.name, m.parameters.size)) {
+                    runtimeError("Cannot override the public method '${m.name}' with private implementation in class '${definition.name}'", m.start)
+                }
+            }
             val parameters = m.parameters.map { it.create(this.currentTable, m.start) }
             val returns = LazyDefinitions.of(m.returnTypes, this.currentTable, m.start)
             UserDefinedClassFunction.of(m.arbitrary, m.name, parameters, m.body, this.currentTable, m.start, returns, m.private).let {

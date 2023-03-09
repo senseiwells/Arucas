@@ -46,7 +46,7 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
     }
 
     override fun memberFunctionAccess(instance: ClassInstance, interpreter: Interpreter, name: String, args: MutableList<ClassInstance>, trace: Trace, origin: ClassDefinition): ClassInstance {
-        if (!this.hasMemberFunction(name, args.size)) {
+        if (!super.hasMemberFunction(instance, name, args.size)) {
             val java = this.asJavaNotNull(instance, trace)
             return interpreter.create(FunctionDef::class, BuiltInFunction.java(java::class.java, java, name))
         }
@@ -62,6 +62,16 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
         val java = this.asJavaNotNull(instance, trace)
         ReflectionUtils.setField(java::class.java, java, assignee, name, this.interpreter.api.getObfuscator())
         return assignee
+    }
+
+    override fun hasMemberFunction(instance: ClassInstance, name: String): Boolean {
+        val java = this.asJavaNotNull(instance, Trace.INTERNAL)
+        return ReflectionUtils.hasMethod(java::class.java, java, name, this.interpreter.api.getObfuscator())
+    }
+
+    override fun hasMemberFunction(instance: ClassInstance, name: String, parameters: Int): Boolean {
+        val java = this.asJavaNotNull(instance, Trace.INTERNAL)
+        return ReflectionUtils.hasMethod(java::class.java, java, name, parameters, this.interpreter.api.getObfuscator())
     }
 
     override fun not(instance: ClassInstance, interpreter: Interpreter, trace: LocatableTrace): Any? {

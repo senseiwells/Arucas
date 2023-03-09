@@ -6,6 +6,7 @@ import me.senseiwells.arucas.classes.ClassDefinition
 import me.senseiwells.arucas.classes.CreatableDefinition
 import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.core.Interpreter
+import me.senseiwells.arucas.functions.ArucasFunction
 import me.senseiwells.arucas.functions.builtin.BuiltInFunction
 import me.senseiwells.arucas.utils.LocatableTrace
 import me.senseiwells.arucas.utils.ReflectionUtils
@@ -29,10 +30,18 @@ class JavaClassDef(interpreter: Interpreter): CreatableDefinition<Class<*>>(JAVA
     }
 
     override fun memberFunctionAccess(instance: ClassInstance, interpreter: Interpreter, name: String, args: MutableList<ClassInstance>, trace: Trace, origin: ClassDefinition): ClassInstance {
-        if (!this.hasMemberFunction(name, args.size)) {
+        if (!super.hasMemberFunction(instance, name, args.size)) {
             return this.interpreter.create(FunctionDef::class, BuiltInFunction.java(instance.asPrimitive(this), null, name))
         }
         return super.memberFunctionAccess(instance, interpreter, name, args, trace, origin)
+    }
+
+    override fun hasMemberFunction(instance: ClassInstance, name: String): Boolean {
+        return ReflectionUtils.hasMethod(instance.asPrimitive(this), null, name, this.interpreter.api.getObfuscator())
+    }
+
+    override fun hasMemberFunction(instance: ClassInstance, name: String, parameters: Int): Boolean {
+        return ReflectionUtils.hasMethod(instance.asPrimitive(this), null, name, parameters, this.interpreter.api.getObfuscator())
     }
 
     override fun memberAccess(instance: ClassInstance, interpreter: Interpreter, name: String, trace: LocatableTrace): ClassInstance {
