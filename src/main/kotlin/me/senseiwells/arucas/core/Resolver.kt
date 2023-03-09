@@ -9,7 +9,7 @@ import me.senseiwells.arucas.nodes.expressions.*
 import me.senseiwells.arucas.nodes.statements.*
 import me.senseiwells.arucas.utils.LocalCache
 import me.senseiwells.arucas.utils.LocatableTrace
-import me.senseiwells.arucas.utils.Parameter
+import me.senseiwells.arucas.typed.HintedParameter
 import me.senseiwells.arucas.utils.StackTable
 import java.util.*
 import kotlin.reflect.KMutableProperty0
@@ -217,16 +217,16 @@ class Resolver(
         }
     }
 
-    private fun visitParameter(parameter: Parameter, trace: LocatableTrace) {
+    private fun visitParameter(parameter: HintedParameter, trace: LocatableTrace) {
         this.defineVar(parameter.name, trace)
         // Should cache classes here?
     }
 
-    private fun visitParameters(parameters: List<Parameter>, trace: LocatableTrace) {
+    private fun visitParameters(parameters: List<HintedParameter>, trace: LocatableTrace) {
         parameters.forEach { this.visitParameter(it, trace) }
     }
 
-    private fun visitFunction(params: List<Parameter>, body: Statement, trace: LocatableTrace, constructor: (() -> Unit)? = null) {
+    private fun visitFunction(params: List<HintedParameter>, body: Statement, trace: LocatableTrace, constructor: (() -> Unit)? = null) {
         this.pushState(this::inFinally, false) {
             this.pushState(this::inLoop, false) {
                 this.pushState(this::inConstructor, constructor != null) {
@@ -364,12 +364,12 @@ class Resolver(
     }
 
     override fun visitClassBody(classBody: ClassBodyStatement) {
-        this.resolveExpressions(classBody.fields.values)
+        classBody.fields.forEach { this.resolve(it.expression) }
         this.resolveStatements(classBody.constructors)
         this.resolveStatements(classBody.methods)
         this.resolveStatements(classBody.operators.map { it.first })
         this.resolveStatements(classBody.staticMethods)
-        this.resolveExpressions(classBody.staticFields.values)
+        classBody.staticFields.forEach { this.resolve(it.expression) }
         this.resolveStatements(classBody.staticInitializers)
     }
 

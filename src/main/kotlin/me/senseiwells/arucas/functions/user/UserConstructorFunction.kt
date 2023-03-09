@@ -6,13 +6,14 @@ import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.functions.ArucasFunction
 import me.senseiwells.arucas.nodes.statements.Statement
+import me.senseiwells.arucas.typed.ArucasParameter
 import me.senseiwells.arucas.utils.*
 import me.senseiwells.arucas.utils.impl.ArucasList
 
 open class UserConstructorFunction(
     val definition: ArucasClassDefinition,
     private val constructorInit: ConstructorInit,
-    parameters: List<ParameterTyped>,
+    parameters: List<ArucasParameter>,
     body: Statement,
     localTable: StackTable,
     trace: LocatableTrace
@@ -54,7 +55,7 @@ open class UserConstructorFunction(
     private class Varargs(
         definition: ArucasClassDefinition,
         constructorInit: ConstructorInit,
-        parameters: List<ParameterTyped>,
+        parameters: List<ArucasParameter>,
         body: Statement,
         localTable: StackTable,
         trace: LocatableTrace
@@ -78,7 +79,7 @@ open class UserConstructorFunction(
             arbitrary: Boolean,
             definition: ArucasClassDefinition,
             constructorInit: ConstructorInit,
-            parameters: List<ParameterTyped>,
+            parameters: List<ArucasParameter>,
             body: Statement,
             table: StackTable,
             trace: LocatableTrace

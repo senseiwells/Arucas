@@ -1,30 +1,30 @@
 package me.senseiwells.arucas.functions.user
 
 import me.senseiwells.arucas.builtin.ListDef
-import me.senseiwells.arucas.classes.ClassDefinition
 import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.nodes.statements.Statement
+import me.senseiwells.arucas.typed.ArucasParameter
+import me.senseiwells.arucas.typed.LazyDefinitions
 import me.senseiwells.arucas.utils.LocatableTrace
-import me.senseiwells.arucas.utils.ParameterTyped
 import me.senseiwells.arucas.utils.StackTable
 import me.senseiwells.arucas.utils.impl.ArucasList
 
 open class UserDefinedClassFunction(
     name: String,
-    parameters: List<ParameterTyped>,
+    parameters: List<ArucasParameter>,
     body: Statement,
     localTable: StackTable,
     trace: LocatableTrace,
-    returnTypes: Array<ClassDefinition>?
+    returnTypes: LazyDefinitions
 ): UserDefinedFunction(name, parameters, body, localTable, trace, returnTypes) {
     private class Varargs(
         name: String,
-        parameters: List<ParameterTyped>,
+        parameters: List<ArucasParameter>,
         body: Statement,
         localTable: StackTable,
         trace: LocatableTrace,
-        returnTypes: Array<ClassDefinition>?,
+        returnTypes: LazyDefinitions,
     ): UserDefinedClassFunction(name, parameters,  body, localTable, trace, returnTypes) {
         override val count: Int
             get() = -1
@@ -44,11 +44,11 @@ open class UserDefinedClassFunction(
         fun of(
             arbitrary: Boolean,
             name: String,
-            parameters: List<ParameterTyped>,
+            parameters: List<ArucasParameter>,
             body: Statement,
             table: StackTable,
             trace: LocatableTrace,
-            returnTypes: Array<ClassDefinition>?
+            returnTypes: LazyDefinitions
         ): UserDefinedClassFunction {
             if (arbitrary) {
                 return Varargs(name, parameters, body, table, trace, returnTypes)

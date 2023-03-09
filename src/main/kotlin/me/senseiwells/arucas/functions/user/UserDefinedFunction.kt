@@ -1,23 +1,24 @@
 package me.senseiwells.arucas.functions.user
 
 import me.senseiwells.arucas.builtin.ListDef
-import me.senseiwells.arucas.classes.ClassDefinition
 import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.exceptions.Propagator
 import me.senseiwells.arucas.exceptions.runtimeError
 import me.senseiwells.arucas.functions.ArucasFunction
 import me.senseiwells.arucas.nodes.statements.Statement
+import me.senseiwells.arucas.typed.ArucasParameter
+import me.senseiwells.arucas.typed.LazyDefinitions
 import me.senseiwells.arucas.utils.*
 import me.senseiwells.arucas.utils.impl.ArucasList
 
 open class UserDefinedFunction(
     name: String,
-    parameters: List<ParameterTyped>,
+    parameters: List<ArucasParameter>,
     body: Statement,
     localTable: StackTable,
     trace: LocatableTrace,
-    private val returnTypes: Array<ClassDefinition>?
+    private val returnTypes: LazyDefinitions
 ): UserFunction(name, parameters, body, localTable, trace) {
     /**
      * The method that is invoked when the [ArucasFunction] is called.
@@ -40,21 +41,20 @@ open class UserDefinedFunction(
         } catch (returnPropagator: Propagator.Return) {
             returnValue = returnPropagator.returnValue
         }
-        this.returnTypes?.let {
-            if (!returnValue.definition.inheritsFrom(it.toList())) {
-                runtimeError("Function ${this.name} got ${returnValue.definition.name} for return but expected ${Parameter.definitionsAsString(it)}", this.trace)
-            }
+        val types = this.returnTypes.get()
+        if (!returnValue.definition.inheritsFrom(types)) {
+            runtimeError("Function ${this.name} got ${returnValue.definition.name} for return but expected ${types.joinToString(" | ")}", this.trace)
         }
         return returnValue
     }
 
     private class Varargs(
         name: String,
-        parameters: List<ParameterTyped>,
+        parameters: List<ArucasParameter>,
         body: Statement,
         localTable: StackTable,
         trace: LocatableTrace,
-        returnTypes: Array<ClassDefinition>?,
+        returnTypes: LazyDefinitions,
     ): UserDefinedFunction(name, parameters, body, localTable, trace, returnTypes) {
         override val count: Int
             get() = -1
@@ -69,11 +69,11 @@ open class UserDefinedFunction(
         fun of(
             arbitrary: Boolean,
             name: String,
-            parameters: List<ParameterTyped>,
+            parameters: List<ArucasParameter>,
             body: Statement,
             table: StackTable,
             trace: LocatableTrace,
-            returnTypes: Array<ClassDefinition>?
+            returnTypes: LazyDefinitions
         ): UserDefinedFunction {
             if (arbitrary) {
                 return Varargs(name, parameters, body, table, trace, returnTypes)

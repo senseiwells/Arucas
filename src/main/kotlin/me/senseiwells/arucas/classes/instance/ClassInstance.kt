@@ -5,6 +5,7 @@ import me.senseiwells.arucas.classes.PrimitiveDefinition
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.core.Type
 import me.senseiwells.arucas.exceptions.runtimeError
+import me.senseiwells.arucas.typed.ArucasVariable
 import me.senseiwells.arucas.utils.CallTrace
 import me.senseiwells.arucas.utils.LocatableTrace
 import me.senseiwells.arucas.utils.Trace
@@ -26,7 +27,7 @@ class ClassInstance internal constructor(
      */
     val definition: ClassDefinition
 ) {
-    private val instanceFields by lazy { LinkedHashMap<String, HintedField>() }
+    private val instanceFields by lazy { LinkedHashMap<String, ArucasVariable>() }
     private var primitive: Any? = null
 
     @Deprecated("This method should not be called directly", ReplaceWith("interpreter.call(instance, args)"))
@@ -64,15 +65,15 @@ class ClassInstance internal constructor(
         return this.definition.bracketAssign(this, interpreter, index, assignee, trace)
     }
 
-    fun addInstanceField(name: String, field: HintedField): HintedField? {
+    fun addInstanceField(name: String, field: ArucasVariable): ArucasVariable? {
         return this.instanceFields.putIfAbsent(name, field)
     }
 
-    fun getInstanceField(name: String): HintedField? {
+    fun getInstanceField(name: String): ArucasVariable? {
         return this.instanceFields[name]
     }
 
-    fun getInstanceFields(): Iterable<HintedField> {
+    fun getInstanceFields(): Iterable<ArucasVariable> {
         return this.instanceFields.values
     }
 

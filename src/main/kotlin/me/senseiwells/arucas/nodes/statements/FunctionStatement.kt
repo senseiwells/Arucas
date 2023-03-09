@@ -2,7 +2,7 @@ package me.senseiwells.arucas.nodes.statements
 
 import me.senseiwells.arucas.nodes.StatementVisitor
 import me.senseiwells.arucas.utils.LocatableTrace
-import me.senseiwells.arucas.utils.Parameter
+import me.senseiwells.arucas.typed.HintedParameter
 
 /**
  * This statement declares a function.
@@ -19,7 +19,7 @@ import me.senseiwells.arucas.utils.Parameter
 class FunctionStatement(
     val name: String,
     val isClass: Boolean,
-    val parameters: List<Parameter>,
+    val parameters: List<HintedParameter>,
     val arbitrary: Boolean,
     val returnTypes: Array<String>?,
     val body: Statement,

@@ -6,7 +6,7 @@ import me.senseiwells.arucas.api.docs.visitor.ArucasDocParser
 import me.senseiwells.arucas.builtin.*
 import me.senseiwells.arucas.classes.*
 import me.senseiwells.arucas.classes.instance.ClassInstance
-import me.senseiwells.arucas.classes.instance.HintedField
+import me.senseiwells.arucas.typed.ArucasVariable
 import me.senseiwells.arucas.core.Interpreter.Companion.dummy
 import me.senseiwells.arucas.core.Interpreter.Companion.of
 import me.senseiwells.arucas.exceptions.*
@@ -17,6 +17,8 @@ import me.senseiwells.arucas.functions.user.UserDefinedFunction
 import me.senseiwells.arucas.nodes.*
 import me.senseiwells.arucas.nodes.expressions.*
 import me.senseiwells.arucas.nodes.statements.*
+import me.senseiwells.arucas.typed.HintedParameter
+import me.senseiwells.arucas.typed.LazyDefinitions
 import me.senseiwells.arucas.utils.*
 import me.senseiwells.arucas.utils.Properties
 import me.senseiwells.arucas.utils.impl.ArucasList
@@ -742,7 +744,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
     }
 
     private fun visitClassBody(definition: ArucasClassDefinition, body: ClassBodyStatement, needsSuper: Boolean, type: String) {
-        definition.fields.value.putAll(body.fields)
+        definition.fields.value.addAll(body.fields)
 
         if (needsSuper && body.constructors.isEmpty()) {
             runtimeError("Derived class constructor must initialise super constructor", body.start)
@@ -751,42 +753,38 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
             if (needsSuper && c.init.type == ConstructorInit.InitType.NONE) {
                 runtimeError("Derived class constructor must initialise super constructor", c.start)
             }
-            val parameters = c.parameters.map { p -> p.toTyped(this.currentTable, c.start) }
+            val parameters = c.parameters.map { it.create(this.currentTable, c.start) }
             UserConstructorFunction.of(c.arbitrary, definition, c.init, parameters, c.body, this.currentTable, c.start).let {
                 definition.constructors.value.add(this.create(FunctionDef::class, it))
             }
         }
 
         body.methods.forEach { m ->
-            val parameters = m.parameters.map { p -> p.toTyped(this.currentTable, m.start) }
-            val returnTypes = Parameter.namesToDefinitions(this.currentTable, m.returnTypes, m.start)
-            UserDefinedClassFunction.of(m.arbitrary, m.name, parameters, m.body, this.currentTable, m.start, returnTypes).let {
+            val parameters = m.parameters.map { it.create(this.currentTable, m.start) }
+            val returns = LazyDefinitions.of(m.returnTypes, this.currentTable, m.start)
+            UserDefinedClassFunction.of(m.arbitrary, m.name, parameters, m.body, this.currentTable, m.start, returns).let {
                 definition.methods.value.add(this.create(FunctionDef::class, it))
             }
         }
 
         body.operators.forEach { (m, t) ->
-            val parameters = m.parameters.map { p -> p.toTyped(this.currentTable, m.start) }
-            val returnTypes = Parameter.namesToDefinitions(this.currentTable, m.returnTypes, m.start)
-            UserDefinedClassFunction.of(m.arbitrary, m.name, parameters, m.body, this.currentTable, m.start, returnTypes).let {
+            val parameters = m.parameters.map { it.create(this.currentTable, m.start) }
+            val returns = LazyDefinitions.of(m.returnTypes, this.currentTable, m.start)
+            UserDefinedClassFunction.of(m.arbitrary, m.name, parameters, m.body, this.currentTable, m.start, returns).let {
                 definition.operators.value.add(t, this.create(FunctionDef::class, it))
             }
         }
 
         body.staticMethods.forEach { m ->
-            val parameters = m.parameters.map { p -> p.toTyped(this.currentTable, m.start) }
-            val returnTypes = Parameter.namesToDefinitions(this.currentTable, m.returnTypes, m.start)
-            UserDefinedFunction.of(m.arbitrary, m.name, parameters, m.body, this.currentTable, m.start, returnTypes).let {
+            val parameters = m.parameters.map { it.create(this.currentTable, m.start) }
+            val returns = LazyDefinitions.of(m.returnTypes, this.currentTable, m.start)
+            UserDefinedFunction.of(m.arbitrary, m.name, parameters, m.body, this.currentTable, m.start, returns).let {
                 definition.staticMethods.value.add(this.create(FunctionDef::class, it))
             }
         }
 
-        body.staticFields.forEach { (p, e) ->
-            val typedParameter = p.toTyped(this.currentTable, body.start)
-            val fieldName = "${definition.name}.${p.name}"
-            HintedField(fieldName, typedParameter.types, true, this.evaluate(e)).let {
-                definition.staticFields.value[p.name] = it
-            }
+        body.staticFields.forEach { v ->
+            definition.staticFields.value[v.name] = v.create(this, this.currentTable, body.start)
         }
 
         body.staticInitializers.forEach { this.execute(it) }
@@ -850,9 +848,9 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
     }
 
     override fun visitFunction(function: FunctionStatement) {
-        val parameters = function.parameters.map { it.toTyped(this.currentTable, function.start) }
-        val returnTypes = Parameter.namesToDefinitions(this.currentTable, function.returnTypes, function.start)
-        UserDefinedFunction.of(function.arbitrary, function.name, parameters, function.body, this.currentTable, function.start, returnTypes).let {
+        val parameters = function.parameters.map { it.create(this.currentTable, function.start) }
+        val returns = LazyDefinitions.of(function.returnTypes, this.currentTable, function.start)
+        UserDefinedFunction.of(function.arbitrary, function.name, parameters, function.body, this.currentTable, function.start, returns).let {
             if (!function.isClass) {
                 this.currentTable.defineFunction(this.create(FunctionDef::class, it))
             }
@@ -946,7 +944,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
             tryStatement.catchParameter ?: throw error
             this.jumpNextTable {
                 val instance = error.getInstance(this)
-                if (!this.isInstanceType(instance, tryStatement.catchParameter.typeNames, tryStatement.start)) {
+                if (!this.isInstanceType(instance, tryStatement.catchParameter.hints, tryStatement.start)) {
                     throw instance.getPrimitive(ErrorDef::class)!!
                 }
                 this.logDebug("Error '$error' was caught")
@@ -1082,9 +1080,9 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
     }
 
     override fun visitFunction(function: FunctionExpression): ClassInstance {
-        val arguments = function.parameters.map { it.toTyped(this.currentTable, function.start) }
-        val returnTypes = Parameter.namesToDefinitions(this.currentTable, function.returnTypes, function.start)
-        UserDefinedFunction.of(function.arbitrary, function.name, arguments, function.body, this.currentTable, function.start, returnTypes).let {
+        val parameters = function.parameters.map { it.create(this.currentTable, function.start) }
+        val returns = LazyDefinitions.of(function.returnTypes, this.currentTable, function.start)
+        UserDefinedFunction.of(function.arbitrary, function.name, parameters, function.body, this.currentTable, function.start, returns).let {
             return this.create(FunctionDef::class, it)
         }
     }

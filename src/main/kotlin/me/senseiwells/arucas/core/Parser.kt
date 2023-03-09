@@ -11,7 +11,8 @@ import me.senseiwells.arucas.nodes.expressions.*
 import me.senseiwells.arucas.nodes.statements.*
 import me.senseiwells.arucas.utils.ConstructorInit
 import me.senseiwells.arucas.utils.LocatableTrace
-import me.senseiwells.arucas.utils.Parameter
+import me.senseiwells.arucas.typed.HintedParameter
+import me.senseiwells.arucas.typed.HintedVariable
 import me.senseiwells.arucas.utils.Trace
 import kotlin.reflect.KMutableProperty0
 
@@ -144,8 +145,8 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
 
     private fun classBodyStatements(className: String): ClassBodyStatement {
         val trace = this.peek().trace
-        val fields = HashMap<Parameter, Expression>()
-        val staticFields = HashMap<Parameter, Expression>()
+        val fields = LinkedHashMap<String, HintedVariable>()
+        val staticFields = LinkedHashMap<String, HintedVariable>()
         val staticInitializer = ArrayList<Statement>()
         val constructors = ArrayList<ConstructorStatement>()
         val methods = ArrayList<FunctionStatement>()
@@ -154,12 +155,12 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
         while (!this.isMatch(RIGHT_CURLY_BRACKET)) {
             val currentTrace = this.peek().trace
             val static = this.isMatch(STATIC)
+            val readonly = this.isMatch(READONLY)
             when {
                 this.isMatch(VAR) -> {
                     val name = this.check(IDENTIFIER, "Expected field name after 'var'")
-                    val field = Parameter(name.content, this.getTypeHint())
                     val correctFields = if (static) staticFields else fields
-                    if (correctFields.containsKey(field)) {
+                    if (correctFields.containsKey(name.content)) {
                         this.error("Class cannot contain duplicate field name", name.trace)
                     }
                     if (static && name.content == "type") {
@@ -174,7 +175,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
                         this.isMatch(SEMICOLON) -> this.cachedNull
                         else -> this.error("Expected ';' or assignment after field declaration")
                     }
-                    correctFields[field] = expression
+                    correctFields[name.content] = HintedVariable(name.content, if (static) className else "<$className>", readonly, expression, this.getTypeHint())
                 }
                 this.isMatch(IDENTIFIER) -> {
                     if (static) {
@@ -238,7 +239,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
                 else -> this.error("Unexpected token in class statement: '${this.peek()}'")
             }
         }
-        return ClassBodyStatement(fields, staticFields, staticInitializer, constructors, methods, staticMethods, operators, trace, this.lastTrace())
+        return ClassBodyStatement(fields.values, staticFields.values, staticInitializer, constructors, methods, staticMethods, operators, trace, this.lastTrace())
     }
 
     private fun scopedStatement(): Statement {
@@ -377,14 +378,14 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
     private fun tryStatement(): TryStatement {
         this.check(TRY)
         val body = this.scopedStatement()
-        val parameter: Parameter?
+        val parameter: HintedParameter?
         val trace: Trace
         val catchBody: Statement
         if (this.isMatch(CATCH)) {
             this.check(LEFT_BRACKET, "Expected '(' after 'catch'")
-            parameter = Parameter(this.checkIdentifier("Expected catch variable name after '('"))
+            val name = this.checkIdentifier("Expected catch variable name after '('")
             trace = this.peek().trace
-            parameter.typeNames = this.getTypeHint()
+            parameter = HintedParameter(name, this.getTypeHint())
             this.check(RIGHT_BRACKET, "Expected ')' after catch parameter")
             catchBody = this.statement()
         } else {
@@ -753,27 +754,27 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
         }
     }
 
-    private fun getFunctionParameters(isClass: Boolean): Pair<List<Parameter>, Boolean> {
+    private fun getFunctionParameters(isClass: Boolean): Pair<List<HintedParameter>, Boolean> {
         return this.pushState(this::canUnpack, false) {
-            val arguments = ArrayList<Parameter>()
+            val arguments = ArrayList<HintedParameter>()
             if (isClass) {
-                arguments.add(Parameter("this"))
+                arguments.add(HintedParameter("this"))
             }
 
             var isFirst = true
             while (!this.isMatch(RIGHT_BRACKET) && (isFirst || this.isMatch(COMMA))) {
-                val parameter = Parameter(this.checkIdentifier("Expected argument name"))
-                arguments.add(parameter)
+                val name = this.checkIdentifier("Expected argument name")
 
                 if (this.isMatch(ARBITRARY)) {
                     if (!isFirst) {
                         this.error("Cannot have multiple arguments with arbitrary function")
                     }
                     this.check(RIGHT_BRACKET, "Expected ')' after arbitrary argument")
+                    arguments.add(HintedParameter(name))
                     return@pushState arguments to true
                 }
 
-                parameter.typeNames = this.getTypeHint()
+                arguments.add(HintedParameter(name, this.getTypeHint()))
                 isFirst = false
             }
             // this.check(RIGHT_BRACKET, "Expected ')' after arguments")

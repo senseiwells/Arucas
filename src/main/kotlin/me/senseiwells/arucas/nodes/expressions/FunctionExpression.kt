@@ -3,7 +3,7 @@ package me.senseiwells.arucas.nodes.expressions
 import me.senseiwells.arucas.nodes.ExpressionVisitor
 import me.senseiwells.arucas.nodes.statements.Statement
 import me.senseiwells.arucas.utils.LocatableTrace
-import me.senseiwells.arucas.utils.Parameter
+import me.senseiwells.arucas.typed.HintedParameter
 
 /**
  * This expression creates a function value.
@@ -17,7 +17,7 @@ import me.senseiwells.arucas.utils.Parameter
  */
 class FunctionExpression(
     val name: String,
-    val parameters: List<Parameter>,
+    val parameters: List<HintedParameter>,
     val arbitrary: Boolean,
     val returnTypes: Array<String>?,
     val body: Statement,

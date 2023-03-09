@@ -4,7 +4,8 @@ import me.senseiwells.arucas.core.Type
 import me.senseiwells.arucas.nodes.expressions.Expression
 import me.senseiwells.arucas.nodes.StatementVisitor
 import me.senseiwells.arucas.utils.LocatableTrace
-import me.senseiwells.arucas.utils.Parameter
+import me.senseiwells.arucas.typed.HintedParameter
+import me.senseiwells.arucas.typed.HintedVariable
 
 /**
  * This statement declares the body of a class.
@@ -19,8 +20,8 @@ import me.senseiwells.arucas.utils.Parameter
  * @param end The end trace position.
  */
 class ClassBodyStatement(
-    val fields: Map<Parameter, Expression>,
-    val staticFields: Map<Parameter, Expression>,
+    val fields: Collection<HintedVariable>,
+    val staticFields: Collection<HintedVariable>,
     val staticInitializers: List<Statement>,
     val constructors: List<ConstructorStatement>,
     val methods: List<FunctionStatement>,

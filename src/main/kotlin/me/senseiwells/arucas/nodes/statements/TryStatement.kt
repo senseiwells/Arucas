@@ -2,7 +2,7 @@ package me.senseiwells.arucas.nodes.statements
 
 import me.senseiwells.arucas.nodes.StatementVisitor
 import me.senseiwells.arucas.utils.LocatableTrace
-import me.senseiwells.arucas.utils.Parameter
+import me.senseiwells.arucas.typed.HintedParameter
 
 /**
  * This statement allows for try-catch-finally blocks.
@@ -16,7 +16,7 @@ import me.senseiwells.arucas.utils.Parameter
 class TryStatement(
     val body: Statement,
     val catchBody: Statement,
-    val catchParameter: Parameter?,
+    val catchParameter: HintedParameter?,
     val finally: Statement,
     val start: LocatableTrace,
     val end: LocatableTrace

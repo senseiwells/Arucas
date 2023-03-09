@@ -4,11 +4,12 @@ import me.senseiwells.arucas.builtin.BooleanDef
 import me.senseiwells.arucas.builtin.NumberDef
 import me.senseiwells.arucas.builtin.StringDef
 import me.senseiwells.arucas.classes.instance.ClassInstance
-import me.senseiwells.arucas.classes.instance.HintedField
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.core.Type
 import me.senseiwells.arucas.exceptions.runtimeError
 import me.senseiwells.arucas.nodes.expressions.Expression
+import me.senseiwells.arucas.typed.HintedParameter
+import me.senseiwells.arucas.typed.HintedVariable
 import me.senseiwells.arucas.utils.*
 
 open class ArucasClassDefinition(
@@ -18,7 +19,7 @@ open class ArucasClassDefinition(
     private val superclass: ClassDefinition?,
     private val interfaces: Set<InterfaceDefinition>?
 ): ClassDefinition(name, interpreter) {
-    val fields = lazy { HashMap<Parameter, Expression>() }
+    val fields = lazy { ArrayList<HintedVariable>() }
     val operators = lazy { OperatorMap() }
 
     init {
@@ -27,11 +28,9 @@ open class ArucasClassDefinition(
 
     override fun init(interpreter: Interpreter, instance: ClassInstance, args: MutableList<ClassInstance>, trace: CallTrace) {
         if (this.fields.isInitialized()) {
-            for ((argument, expression) in this.fields.value.entries) {
-                val fieldName = "<${this.name}>.${argument.name}"
-                val value = interpreter.evaluate(this.localTable, expression)
-                val field = HintedField(fieldName, argument.definitions(this.localTable, trace), true, value)
-                instance.addInstanceField(argument.name, field)
+            for (hinted in this.fields.value) {
+                val field = hinted.create(interpreter, this.localTable, trace)
+                instance.addInstanceField(hinted.name, field)
             }
         }
 

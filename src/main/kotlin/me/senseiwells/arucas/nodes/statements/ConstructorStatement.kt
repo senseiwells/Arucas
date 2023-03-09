@@ -3,7 +3,7 @@ package me.senseiwells.arucas.nodes.statements
 import me.senseiwells.arucas.nodes.StatementVisitor
 import me.senseiwells.arucas.utils.ConstructorInit
 import me.senseiwells.arucas.utils.LocatableTrace
-import me.senseiwells.arucas.utils.Parameter
+import me.senseiwells.arucas.typed.HintedParameter
 
 /**
  * This statement declares a class constructor.
@@ -16,7 +16,7 @@ import me.senseiwells.arucas.utils.Parameter
  * @param end The end trace position.
  */
 class ConstructorStatement(
-    val parameters: List<Parameter>,
+    val parameters: List<HintedParameter>,
     val arbitrary: Boolean,
     val init: ConstructorInit,
     val body: Statement,

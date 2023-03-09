@@ -5,8 +5,8 @@ import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.exceptions.runtimeError
 import me.senseiwells.arucas.functions.ArucasFunction
 import me.senseiwells.arucas.nodes.statements.Statement
+import me.senseiwells.arucas.typed.ArucasParameter
 import me.senseiwells.arucas.utils.LocatableTrace
-import me.senseiwells.arucas.utils.ParameterTyped
 import me.senseiwells.arucas.utils.StackTable
 
 /**
@@ -36,7 +36,7 @@ abstract class UserFunction(
     /**
      * The named and typed parameters of the function.
      */
-    val parameters: List<ParameterTyped>,
+    val parameters: List<ArucasParameter>,
     /**
      * The body of the function which will be executed when invoked.
      */
@@ -74,10 +74,8 @@ abstract class UserFunction(
             val parameter = this.parameters[i]
             val argument = arguments[i]
 
-            parameter.types?.let {
-                if (!argument.definition.inheritsFrom(it.toList())) {
-                    runtimeError(this.incorrectType(i, argument, parameter), this.trace)
-                }
+            if (!argument.definition.inheritsFrom(parameter.getTypes())) {
+                runtimeError(this.incorrectType(i, argument, parameter), this.trace)
             }
 
             table.defineVar(parameter.name, argument)
@@ -101,7 +99,7 @@ abstract class UserFunction(
      * @param expected the expected parameter.
      * @return the error string.
      */
-    private fun incorrectType(index: Int, got: ClassInstance, expected: ParameterTyped): String {
-        return "Function ${this.name} got '${got.definition.name}' for parameter ${index + 1} but expected ${expected.definitionsAsString()}"
+    private fun incorrectType(index: Int, got: ClassInstance, expected: ArucasParameter): String {
+        return "Function ${this.name} got '${got.definition.name}' for parameter ${index + 1} but expected ${expected.getTypes()}"
     }
 }

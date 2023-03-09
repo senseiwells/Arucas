@@ -3,7 +3,7 @@ package me.senseiwells.arucas.classes
 import me.senseiwells.arucas.builtin.FunctionDef
 import me.senseiwells.arucas.builtin.ObjectDef
 import me.senseiwells.arucas.classes.instance.ClassInstance
-import me.senseiwells.arucas.classes.instance.HintedField
+import me.senseiwells.arucas.typed.ArucasVariable
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.core.Type
 import me.senseiwells.arucas.extensions.JavaDef
@@ -472,7 +472,7 @@ abstract class PrimitiveDefinition<T: Any>(
         this.defineStaticFields()?.let {
             for ((name, value, assignable) in it) {
                 val instance = this.interpreter.convertValue(value)
-                this.staticFields.value[name] = HintedField.of("${this.name}.$name", instance, assignable)
+                this.staticFields.value[name] = ArucasVariable(instance, name, this.name, assignable)
             }
         }
     }

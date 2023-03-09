@@ -4,7 +4,7 @@ import me.senseiwells.arucas.builtin.FunctionDef
 import me.senseiwells.arucas.builtin.ObjectDef
 import me.senseiwells.arucas.builtin.TypeDef
 import me.senseiwells.arucas.classes.instance.ClassInstance
-import me.senseiwells.arucas.classes.instance.HintedField
+import me.senseiwells.arucas.typed.ArucasVariable
 import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.core.Type
 import me.senseiwells.arucas.core.Type.*
@@ -69,7 +69,7 @@ abstract class ClassDefinition(
     /**
      * The static fields that belong to the definition.
      */
-    internal val staticFields = lazy { HashMap<String, HintedField>() }
+    internal val staticFields = lazy { HashMap<String, ArucasVariable>() }
 
     /**
      * The static methods that belong to the definition.
@@ -170,12 +170,16 @@ abstract class ClassDefinition(
 
     /**
      * Checks whether the class inherits from all the classes in a list.
+     * If the list is empty then this will return true.
      *
      * @param classDefinitions a list of all the definitions.
      * @return whether the class inherits from all the definitions.
      * @see inheritsFrom
      */
     fun inheritsFrom(classDefinitions: List<ClassDefinition>): Boolean {
+        if (classDefinitions.isEmpty()) {
+            return true
+        }
         for (definition in classDefinitions) {
             if (this.inheritsFrom(definition)) {
                 return true
@@ -797,5 +801,9 @@ abstract class ClassDefinition(
 
     final override fun hashCode(): Int {
         return this.name.hashCode()
+    }
+
+    final override fun toString(): String {
+        return this.name
     }
 }
