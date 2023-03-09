@@ -142,6 +142,7 @@ enum class Type(private val asString: String? = null) {
     SUPER("super"),
     AS("as"),
     NEW("new"),
+    PRIVATE("private"),
     STATIC("static"),
     READONLY("readonly"),
     OPERATOR("operator"),

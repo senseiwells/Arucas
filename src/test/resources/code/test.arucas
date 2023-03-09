@@ -1,74 +1,14 @@
 // ./src/test/resources/code/test.arucas
 
-import Java from util.Internal;
+class X {
+    private var A = 10;
 
-BuiltInFunction = Java.classOf("me.senseiwells.arucas.functions.builtin.BuiltInFunction");
-Arrays = Java.classOf("java.util.Arrays");
-
-field_visitAccess_access = null;
-field_visitAccess_child = null;
-method_Interpreter_getFunction = null;
-
-fun init_access_child(delegate) {
-    fields = delegate.getClass().getDeclaredFields();
-    field_visitAccess_access = fields[0];
-    field_visitAccess_child = fields[1];
-    field_visitAccess_access.setAccessible(true);
-    field_visitAccess_child.setAccessible(true);
-}
-
-fun init_getFunction(context) {
-    methods = context.getClass().getSuperclass().getDeclaredMethods();
-    matcher = Java.predicateOf(fun(x) x.getName().equals(Java.valueOf("getFunction")).toArucas() && x.getParameterCount().toArucas() == 4);
-    method_Interpreter_getFunction = Arrays.stream(methods)
-        .filter(matcher)
-        .findAny()
-        .get();
-    method_Interpreter_getFunction.setAccessible(true);
-}
-
-class Introspection {
-    // Cursed
-    static fun unwrapDelegate(delegate: Function, parameters: Number): Function {
-        j_delegate = Java.valueOf(delegate).getFunction();
-        if (field_visitAccess_access == null || field_visitAccess_child == null) {
-            init_access_child(j_delegate);
-        }
-
-        context = field_visitAccess_child.get(j_delegate);
-        access = field_visitAccess_access.get(j_delegate);
-
-        if (method_Interpreter_getFunction == null) {
-            init_getFunction(context);
-        }
-
-        j_delegate = method_Interpreter_getFunction.invoke(context, access.getName(), Java.intOf(parameters), access.getTrace(), access);
-
-        return j_delegate.toArucas();
+    fun sA() {
+        this.A = 11;
+        print(this.A);
     }
 }
 
-
-experimental(true);
-
-fun runRoutine(function: Function) {
-    f = Introspection.unwrapDelegate(function, 0);
-    j_f = Java.valueOf(f);
-
-    ci = Java.implementClass(
-        [Java.classOf("me.senseiwells.arucas.core.Interpreter")],
-        fun (name, args) {
-
-        }
-    );
-
-    print(ci);
-
-    f();
-}
-
-fun exampleRoutine() {
-    print("Hello World");
-}
-
-runRoutine(exampleRoutine);
+x = new X();
+x.sA();
+print(x.A);

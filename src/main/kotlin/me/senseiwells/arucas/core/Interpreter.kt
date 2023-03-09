@@ -381,6 +381,13 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
     }
 
     /**
+     * Checks whether the interpreter
+     */
+    fun isWithinStack(stack: StackTable): Boolean {
+        return this.currentTable.hasAncestor(stack)
+    }
+
+    /**
      * Creates a [Branch]. This is needed for when going off thread
      * or when saving the interpreter's state for later use.
      *
@@ -1209,7 +1216,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         } else {
             this.evaluate(assign.expression)
         }
-        return instance.memberAssign(assign.name, assignee, assign.trace)
+        return instance.memberAssign(this, assign.name, assignee, assign.trace)
     }
 
     override fun visitMemberCall(call: MemberCallExpression): ClassInstance {

@@ -45,7 +45,7 @@ class ObjectDef(interpreter: Interpreter): PrimitiveDefinition<Any>(OBJECT, inte
         }
 
         instance.getInstanceField(name)?.let {
-            val field = it.instance
+            val field = it.get(false, trace)
             if (field.definition.inheritsFrom(FunctionDef::class)) {
                 return field
             }

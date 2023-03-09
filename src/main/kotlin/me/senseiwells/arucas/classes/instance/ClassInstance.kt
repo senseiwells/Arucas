@@ -53,8 +53,8 @@ class ClassInstance internal constructor(
         return this.definition.memberAccess(this, interpreter, name, trace)
     }
 
-    fun memberAssign(name: String, assignee: ClassInstance, trace: Trace): ClassInstance {
-        return this.definition.memberAssign(this, name, assignee, trace)
+    fun memberAssign(interpreter: Interpreter, name: String, assignee: ClassInstance, trace: Trace): ClassInstance {
+        return this.definition.memberAssign(this, interpreter, name, assignee, trace)
     }
 
     fun bracketAccess(index: ClassInstance, interpreter: Interpreter, trace: LocatableTrace = Trace.INTERNAL): ClassInstance {

@@ -154,6 +154,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
         val operators = ArrayList<Pair<FunctionStatement, Type>>()
         while (!this.isMatch(RIGHT_CURLY_BRACKET)) {
             val currentTrace = this.peek().trace
+            val private = this.isMatch(PRIVATE)
             val static = this.isMatch(STATIC)
             val readonly = this.isMatch(READONLY)
             when {
@@ -175,11 +176,14 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
                         this.isMatch(SEMICOLON) -> this.cachedNull
                         else -> this.error("Expected ';' or assignment after field declaration")
                     }
-                    correctFields[name.content] = HintedVariable(name.content, if (static) className else "<$className>", readonly, expression, this.getTypeHint())
+                    correctFields[name.content] = HintedVariable(name.content, if (static) className else "<$className>", readonly, private, expression, this.getTypeHint())
                 }
                 this.isMatch(IDENTIFIER) -> {
                     if (static) {
                         this.error("Class constructor cannot be static")
+                    }
+                    if (readonly) {
+                        this.error("Class constructor cannot be readonly")
                     }
                     if (this.peek(-1).content != className) {
                         this.error("Constructor must have the same name as the class")
@@ -210,6 +214,12 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
                     if (static) {
                         this.error("Operator method cannot be static")
                     }
+                    if (readonly) {
+                        this.error("Operator method cannot be readonly")
+                    }
+                    if (private) {
+                        this.error("Operator method cannot be private")
+                    }
                     val token = this.peek().also { this.advance() }
                     val typeAsString = if (token.type == LEFT_SQUARE_BRACKET) {
                         this.check(RIGHT_SQUARE_BRACKET, "Expected closing ']'")
@@ -233,6 +243,12 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
                 this.peekType() == LEFT_CURLY_BRACKET -> {
                     if (!static) {
                         this.error("Class initializer must be preceded by 'static'")
+                    }
+                    if (readonly) {
+                        this.error("Class initializer cannot be readonly")
+                    }
+                    if (private) {
+                        this.error("Class initializer cannot be private")
                     }
                     staticInitializer.add(this.scopedStatement())
                 }

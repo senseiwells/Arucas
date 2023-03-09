@@ -4,25 +4,33 @@ import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.exceptions.runtimeError
 import me.senseiwells.arucas.utils.Trace
 
-class ArucasVariable(
-    instance: ClassInstance,
+class ArucasVariable constructor(
     val name: String,
+    private var instance: ClassInstance,
     private val prefix: String,
     private val readonly: Boolean,
+    private val private: Boolean,
     private val definitions: LazyDefinitions = LazyDefinitions.of()
 ) {
-    var instance: ClassInstance = instance
-        private set
-
-    fun set(instance: ClassInstance, trace: Trace) {
+    fun set(instance: ClassInstance, private: Boolean, trace: Trace) {
         if (this.readonly) {
             runtimeError("Cannot reassign '$this'", trace)
+        }
+        if (this.private && !private) {
+            runtimeError("Cannot assign private field '$this'", trace)
         }
 
         if (!this.canAssign(instance)) {
             runtimeError("Hinted type for '$this' got '${instance.definition.name}' but expected '${this.typesAsString()}'", trace)
         }
         this.instance = instance
+    }
+
+    fun get(private: Boolean, trace: Trace): ClassInstance {
+        if (this.private && !private) {
+            runtimeError("Cannot access private field '$this'", trace)
+        }
+        return this.instance
     }
 
     fun typesAsString(): String {

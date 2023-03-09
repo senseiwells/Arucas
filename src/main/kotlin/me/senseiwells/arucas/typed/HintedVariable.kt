@@ -10,11 +10,19 @@ class HintedVariable(
     val name: String,
     private val prefix: String,
     private val readonly: Boolean,
+    private val private: Boolean,
     val expression: Expression,
     private val hints: Array<String>? = null
 ) {
     fun create(interpreter: Interpreter, local: StackTable, trace: Trace): ArucasVariable {
-        return ArucasVariable(interpreter.evaluate(local, this.expression), this.name, this.prefix, this.readonly, LazyDefinitions.of(this.hints, local, trace))
+        return ArucasVariable(
+            this.name,
+            interpreter.evaluate(local, this.expression),
+            this.prefix,
+            this.readonly,
+            this.private,
+            LazyDefinitions.of(this.hints, local, trace)
+        )
     }
 
     override fun equals(other: Any?): Boolean {

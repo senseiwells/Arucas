@@ -41,7 +41,7 @@ class JavaClassDef(interpreter: Interpreter): CreatableDefinition<Class<*>>(JAVA
         )
     }
 
-    override fun memberAssign(instance: ClassInstance, name: String, assignee: ClassInstance, trace: Trace): ClassInstance {
+    override fun memberAssign(instance: ClassInstance, interpreter: Interpreter, name: String, assignee: ClassInstance, trace: Trace): ClassInstance {
         ReflectionUtils.setField(instance.asPrimitive(this), null, assignee, name, this.interpreter.api.getObfuscator())
         return assignee
     }

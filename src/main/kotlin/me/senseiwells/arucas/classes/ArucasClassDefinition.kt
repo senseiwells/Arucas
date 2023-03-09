@@ -57,6 +57,10 @@ open class ArucasClassDefinition(
         return instance
     }
 
+    override fun isInClass(interpreter: Interpreter): Boolean {
+        return interpreter.isWithinStack(this.localTable)
+    }
+
     override fun hasMemberFunction(name: String, parameters: Int): Boolean {
         return this.methods.isInitialized() && this.methods.value.has(name, parameters)
     }

@@ -97,6 +97,7 @@ class Lexer(private val text: String, private val fileName: String) {
             .addRule(Type.SUPER)
             .addRule(Type.AS)
             .addRule(Type.NEW)
+            .addRule(Type.PRIVATE)
             .addRule(Type.STATIC)
             .addRule(Type.OPERATOR)
             .addRule(Type.THROW)

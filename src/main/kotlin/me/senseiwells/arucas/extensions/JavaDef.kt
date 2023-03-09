@@ -58,7 +58,7 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
         return this.createNullable(ReflectionUtils.getField(java::class.java, java, name, interpreter.api.getObfuscator()))
     }
 
-    override fun memberAssign(instance: ClassInstance, name: String, assignee: ClassInstance, trace: Trace): ClassInstance {
+    override fun memberAssign(instance: ClassInstance, interpreter: Interpreter, name: String, assignee: ClassInstance, trace: Trace): ClassInstance {
         val java = this.asJavaNotNull(instance, trace)
         ReflectionUtils.setField(java::class.java, java, assignee, name, this.interpreter.api.getObfuscator())
         return assignee

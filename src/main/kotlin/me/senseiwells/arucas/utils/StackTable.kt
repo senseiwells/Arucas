@@ -225,6 +225,19 @@ class StackTable internal constructor(
         return this.functions.has(name) || this.parent?.hasFunction(name) ?: false
     }
 
+    /**
+     * Checks whether the table has a given table as an ancestor.
+     *
+     * @param table the ancestor table to check.
+     * @return whether the table is an ancestor of the current table.
+     */
+    fun hasAncestor(table: StackTable): Boolean {
+        if (this === table) {
+            return true
+        }
+        return this.parent?.hasAncestor(table) ?: false
+    }
+
     private fun findAncestor(distance: Int): StackTable {
         var current = this
         for (i in 0 until distance) {

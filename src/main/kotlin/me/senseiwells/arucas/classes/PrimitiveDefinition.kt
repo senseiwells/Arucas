@@ -472,9 +472,13 @@ abstract class PrimitiveDefinition<T: Any>(
         this.defineStaticFields()?.let {
             for ((name, value, assignable) in it) {
                 val instance = this.interpreter.convertValue(value)
-                this.staticFields.value[name] = ArucasVariable(instance, name, this.name, assignable)
+                this.staticFields.value[name] = ArucasVariable(name, instance, this.name, assignable, false)
             }
         }
+    }
+
+    final override fun isInClass(interpreter: Interpreter): Boolean {
+        return false
     }
 
     /**
