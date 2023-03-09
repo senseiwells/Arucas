@@ -4,6 +4,7 @@ import me.senseiwells.arucas.api.ArucasAPI
 import me.senseiwells.arucas.api.docs.visitor.impl.ArucasDocVisitors
 import me.senseiwells.arucas.api.impl.DefaultArucasIO
 import me.senseiwells.arucas.core.Interpreter
+import me.senseiwells.arucas.exceptions.ArucasError
 import me.senseiwells.arucas.utils.ArgumentParser
 import me.senseiwells.arucas.utils.Properties
 import java.nio.file.Files
@@ -65,6 +66,8 @@ fun runFile(api: ArucasAPI, filePath: String): Boolean {
         val fileName = path.fileName?.toString() ?: filePath
         val content = Files.readString(path)
         Interpreter.of(content, fileName, api).executeBlocking()
+        true
+    } catch (e: ArucasError) {
         true
     } catch (e: Exception) {
         api.getOutput().printError("Could not read file '$filePath':\n${e.stackTraceToString()}")
