@@ -8,13 +8,13 @@ import me.senseiwells.arucas.typed.HintedParameter
 /**
  * This statement declares a class constructor.
  *
- * @param parameters The parameters for the constructor.
- * @param arbitrary Whether the constructor is varargs.
- * @param private Whether the constructor is private.
- * @param init The referencing constructor (this(), or super()).
- * @param body The body of the constructor.
- * @param start The trace position - if constructor is invalid.
- * @param end The end trace position.
+ * @param parameters the parameters for the constructor.
+ * @param arbitrary whether the constructor is varargs.
+ * @param private whether the constructor is private.
+ * @param init the referencing constructor (this(), or super()).
+ * @param body the body of the constructor.
+ * @param start the trace position - if constructor is invalid.
+ * @param end the end trace position.
  */
 class ConstructorStatement(
     val parameters: List<HintedParameter>,

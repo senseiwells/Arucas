@@ -8,8 +8,8 @@ import kotlin.reflect.KClass
 /**
  * This expression directly gets a value, these should be immutable.
  *
- * @param klass The primitive definition class.
- * @param supplier The supplier for the literal.
+ * @param klass the primitive definition class.
+ * @param supplier the supplier for the literal.
  */
 class LiteralExpression<T: PrimitiveDefinition<*>>(
     val klass: KClass<out T>,

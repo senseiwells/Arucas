@@ -7,9 +7,9 @@ import me.senseiwells.arucas.utils.LocatableTrace
 /**
  * This expression assigns an identifier in the scope.
  *
- * @param name The name of the identifier to assign to.
- * @param assignee The expression to assign to the identifier.
- * @param trace The trace position - if the assignment is invalid.
+ * @param name the name of the identifier to assign to.
+ * @param assignee the expression to assign to the identifier.
+ * @param trace the trace position - if the assignment is invalid.
  */
 class AssignExpression(
     val name: String,

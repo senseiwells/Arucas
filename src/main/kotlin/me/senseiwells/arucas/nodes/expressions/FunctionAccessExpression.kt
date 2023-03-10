@@ -6,9 +6,9 @@ import me.senseiwells.arucas.utils.LocatableTrace
 /**
  * This expression access a function in the scope.
  *
- * @param name The name of the function to access.
- * @param parameters The number of parameters being passed in.
- * @param trace The trace position - if the access in invalid.
+ * @param name the name of the function to access.
+ * @param parameters the number of parameters being passed in.
+ * @param trace the trace position - if the access in invalid.
  */
 class FunctionAccessExpression(
     val name: String,

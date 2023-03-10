@@ -5,7 +5,7 @@ import me.senseiwells.arucas.nodes.StatementVisitor
 /**
  * This statement is used to evaluate multiple statements without new scope.
  *
- * @param statements The list of statements to evaluate
+ * @param statements the list of statements to evaluate
  */
 class Statements(
     val statements: List<Statement>

@@ -115,6 +115,6 @@ abstract class UserFunction(
      * @return the error string.
      */
     private fun incorrectType(index: Int, got: ClassInstance, expected: ArucasParameter): String {
-        return "Function ${this.name} got '${got.definition.name}' for parameter ${index + 1} but expected ${expected.getTypes()}"
+        return "Function ${this.name} got '${got.definition.name}' for parameter ${index + 1} but expected ${expected.typesAsString()}"
     }
 }

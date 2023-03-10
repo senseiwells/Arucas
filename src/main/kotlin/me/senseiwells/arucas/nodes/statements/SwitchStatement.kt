@@ -7,10 +7,10 @@ import me.senseiwells.arucas.utils.LocatableTrace
 /**
  * This statement declares a switch statement.
  *
- * @param condition The condition to match.
- * @param casesList The cases to match.
- * @param caseStatements The statements for the cases.
- * @param defaultStatement The default statement.
+ * @param condition the condition to match.
+ * @param casesList the cases to match.
+ * @param caseStatements the statements for the cases.
+ * @param defaultStatement the default statement.
  * @param start the start of the location - used for the stacktrace.
  * @param end the end of the location.
  */

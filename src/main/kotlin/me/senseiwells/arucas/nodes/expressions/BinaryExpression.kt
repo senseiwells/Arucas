@@ -7,10 +7,10 @@ import me.senseiwells.arucas.utils.LocatableTrace
 /**
  * This expression applies a binary operator between two values.
  *
- * @param left The left hand side expression.
- * @param type The operator type.
- * @param right The right hand side expression.
- * @param trace The trace position - if the binary operation is invalid.
+ * @param left the left hand side expression.
+ * @param type the operator type.
+ * @param right the right hand side expression.
+ * @param trace the trace position - if the binary operation is invalid.
  */
 class BinaryExpression(
     val left: Expression,

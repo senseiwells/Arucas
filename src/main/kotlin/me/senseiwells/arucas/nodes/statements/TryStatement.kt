@@ -7,11 +7,11 @@ import me.senseiwells.arucas.typed.HintedParameter
 /**
  * This statement allows for try-catch-finally blocks.
  *
- * @param body The try body.
- * @param catchBody The catch body.
- * @param catchParameter The catch parameter.
- * @param finally The finally body.
- * @param start The trace position.
+ * @param body the try body.
+ * @param catchBody the catch body.
+ * @param catchParameter the catch parameter.
+ * @param finally the finally body.
+ * @param start the trace position.
  */
 class TryStatement(
     val body: Statement,

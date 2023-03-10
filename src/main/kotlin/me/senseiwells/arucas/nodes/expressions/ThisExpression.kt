@@ -6,7 +6,7 @@ import me.senseiwells.arucas.utils.LocatableTrace
 /**
  * This expression accesses the 'this' reference if available.
  *
- * @param trace The trace position - if the access is invalid.
+ * @param trace the trace position - if the access is invalid.
  */
 class ThisExpression(
     val trace: LocatableTrace

@@ -7,11 +7,11 @@ import me.senseiwells.arucas.utils.LocatableTrace
 /**
  * This statement allows for control flow.
  *
- * @param condition The conditional expression.
- * @param body The statement to execute if condition is met.
- * @param otherwise The statement to execute if condition is not met.
- * @param start The start trace position.
- * @param end The end trace position.
+ * @param condition the conditional expression.
+ * @param body the statement to execute if condition is met.
+ * @param otherwise the statement to execute if condition is not met.
+ * @param start the start trace position.
+ * @param end the end trace position.
  */
 class IfStatement(
     val condition: Expression,

@@ -7,12 +7,12 @@ import me.senseiwells.arucas.utils.LocatableTrace
 /**
  * This statement allows for for loops.
  *
- * @param initial The initializer statement.
- * @param condition The conditional expression.
- * @param expression The end statement.
- * @param body The statement to execute if condition is true.
- * @param start The trace position - if the condition is not a boolean.
- * @param end The end trace position.
+ * @param initial the initializer statement.
+ * @param condition the conditional expression.
+ * @param expression the end statement.
+ * @param body the statement to execute if condition is true.
+ * @param start the trace position - if the condition is not a boolean.
+ * @param end the end trace position.
  */
 class ForStatement(
     val initial: Statement,

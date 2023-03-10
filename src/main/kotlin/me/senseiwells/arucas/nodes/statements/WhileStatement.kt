@@ -7,10 +7,10 @@ import me.senseiwells.arucas.utils.LocatableTrace
 /**
  * This statement allows for while loops.
  *
- * @param condition The conditional expression.
- * @param body The statement to execute if condition is true.
- * @param Start The trace position - if the condition is not a boolean.
- * @param end The end trace position.
+ * @param condition the conditional expression.
+ * @param body the statement to execute if condition is true.
+ * @param Start the trace position - if the condition is not a boolean.
+ * @param end the end trace position.
  */
 class WhileStatement(
     val condition: Expression,

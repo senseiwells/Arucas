@@ -6,7 +6,7 @@ import me.senseiwells.arucas.nodes.ExpressionVisitor
 /**
  * This expression returns an exact class instance.
  *
- * @param instance The instance to get.
+ * @param instance the instance to get.
  */
 class ExactExpression(
     val instance: ClassInstance

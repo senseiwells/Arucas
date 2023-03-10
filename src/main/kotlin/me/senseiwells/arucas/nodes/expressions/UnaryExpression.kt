@@ -7,9 +7,9 @@ import me.senseiwells.arucas.utils.LocatableTrace
 /**
  * This expression applies a unary operator on a value.
  *
- * @param type The operator type.
- * @param expression The expression that will have the operator applied to.
- * @param trace The trace position - if the unary operation is invalid.
+ * @param type the operator type.
+ * @param expression the expression that will have the operator applied to.
+ * @param trace the trace position - if the unary operation is invalid.
  */
 class UnaryExpression(
     val type: Type,

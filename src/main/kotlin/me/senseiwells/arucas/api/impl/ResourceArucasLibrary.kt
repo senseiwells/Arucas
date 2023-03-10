@@ -26,7 +26,7 @@ open class ResourceArucasLibrary(
     /**
      * This method retrieves a library from the resources' directory.
      *
-     * @param import The import file, e.g. `["util", "StringUtils"]`.
+     * @param import the import file, e.g. `["util", "StringUtils"]`.
      * @param local whether to import locally only, this parameter has no significance in this call.
      * @param interpreter the interpreter that is importing the library.
      * @return The file contents, null if it could not be retrieved.

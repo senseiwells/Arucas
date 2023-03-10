@@ -5,7 +5,7 @@ import me.senseiwells.arucas.nodes.ExpressionVisitor
 /**
  * This expression evaluates the list literal.
  *
- * @param expressions The list to evaluate.
+ * @param expressions the list to evaluate.
  */
 class ListExpression(
     val expressions: List<Expression>

@@ -5,7 +5,7 @@ import me.senseiwells.arucas.nodes.ExpressionVisitor
 /**
  * This expression allows for changing order of operations.
  *
- * @param expression The expression to wrap.
+ * @param expression the expression to wrap.
  */
 class BracketExpression(
     val expression: Expression

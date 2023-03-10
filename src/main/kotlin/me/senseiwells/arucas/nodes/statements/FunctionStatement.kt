@@ -7,15 +7,15 @@ import me.senseiwells.arucas.typed.HintedParameter
 /**
  * This statement declares a function.
  *
- * @param name The name of the function.
- * @param isClass Whether the function is a method.
- * @param parameters The array of arguments with types.
- * @param arbitrary Whether the function is varargs.
- * @param private Whether the function is private.
- * @param returnTypes The return types of the function.
- * @param body The body of the function.
- * @param start The trace position - for stack trace.
- * @param end The end trace position.
+ * @param name the name of the function.
+ * @param isClass whether the function is a method.
+ * @param parameters the array of arguments with types.
+ * @param arbitrary whether the function is varargs.
+ * @param private whether the function is private.
+ * @param returnTypes the return types of the function.
+ * @param body the body of the function.
+ * @param start the trace position - for stack trace.
+ * @param end the end trace position.
 */
 class FunctionStatement(
     val name: String,

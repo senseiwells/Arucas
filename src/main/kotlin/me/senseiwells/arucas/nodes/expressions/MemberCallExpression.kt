@@ -6,10 +6,10 @@ import me.senseiwells.arucas.utils.LocatableTrace
 /**
  * This expression calls a member on a value.
  *
- * @param expression The expression to call on.
- * @param name The name of the member to call.
- * @param arguments The arguments to pass into the call.
- * @param trace The trace position - if the call is invalid.
+ * @param expression the expression to call on.
+ * @param name the name of the member to call.
+ * @param arguments the arguments to pass into the call.
+ * @param trace the trace position - if the call is invalid.
  */
 class MemberCallExpression(
     val expression: Expression,

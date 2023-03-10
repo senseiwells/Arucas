@@ -6,10 +6,10 @@ import me.senseiwells.arucas.utils.LocatableTrace
 /**
  * This statement allows for an interface definition.
  *
- * @param name The name of the interface.
- * @param requiredMethods The required methods for the interface.
- * @param start The trace position - if interface name is taken.
- * @param end The end trace position.
+ * @param name the name of the interface.
+ * @param requiredMethods the required methods for the interface.
+ * @param start the trace position - if interface name is taken.
+ * @param end the end trace position.
  */
 class InterfaceStatement(
     val name: String,

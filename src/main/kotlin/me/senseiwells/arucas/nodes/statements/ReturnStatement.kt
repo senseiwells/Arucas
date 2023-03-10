@@ -7,8 +7,8 @@ import me.senseiwells.arucas.utils.LocatableTrace
 /**
  * This statement allows for returning values in functions and top level.
  *
- * @param expression The expression to return.
- * @param trace The trace position - if used in an incorrect context.
+ * @param expression the expression to return.
+ * @param trace the trace position - if used in an incorrect context.
  */
 class ReturnStatement(
     val expression: Expression,

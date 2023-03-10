@@ -6,9 +6,9 @@ import me.senseiwells.arucas.utils.LocatableTrace
 /**
  * This statement is used to evaluate a statement in a new scope.
  *
- *  @param statements The list of statement to evaluate.
- *  @param end The start trace position.
- *  @param end The end trace position.
+ *  @param statements the list of statement to evaluate.
+ *  @param end the start trace position.
+ *  @param end the end trace position.
  */
 class ScopeStatement(
     val statements: Statement,

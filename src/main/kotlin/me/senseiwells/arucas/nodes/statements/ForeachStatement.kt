@@ -7,11 +7,11 @@ import me.senseiwells.arucas.utils.LocatableTrace
 /**
  * This statement allows for foreach loops.
  *
- * @param name The name of the iterated variable.
- * @param iterable The expression to iterate over.
- * @param body The statement to execute for each iteration.
- * @param start The trace position - if the iterable expression is not iterable.
- * @param end The end trace position.
+ * @param name the name of the iterated variable.
+ * @param iterable the expression to iterate over.
+ * @param body the statement to execute for each iteration.
+ * @param start the trace position - if the iterable expression is not iterable.
+ * @param end the end trace position.
  */
 class ForeachStatement(
     val name: String,

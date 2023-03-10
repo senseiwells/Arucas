@@ -10,14 +10,14 @@ import me.senseiwells.arucas.typed.HintedVariable
 /**
  * This statement declares the body of a class.
  *
- * @param fields The fields for the class.
- * @param staticFields The static fields for the class.
- * @param staticInitializers The static initializers for the class.
- * @param methods The methods for the class.
- * @param staticMethods The static methods for the class.
- * @param operators The operators for the class.
- * @param start The trace position - if class is invalid.
- * @param end The end trace position.
+ * @param fields the fields for the class.
+ * @param staticFields the static fields for the class.
+ * @param staticInitializers the static initializers for the class.
+ * @param methods the methods for the class.
+ * @param staticMethods the static methods for the class.
+ * @param operators the operators for the class.
+ * @param start the trace position - if class is invalid.
+ * @param end the end trace position.
  */
 class ClassBodyStatement(
     val fields: Collection<HintedVariable>,

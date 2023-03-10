@@ -8,12 +8,12 @@ import me.senseiwells.arucas.typed.HintedParameter
 /**
  * This expression creates a function value.
  *
- * @param parameters The array of arguments with types.
- * @param arbitrary Whether the function is varargs.
- * @param returnTypes The return types of the function.
- * @param body The body of the function.
- * @param start The start trace position - for stack trace.
- * @param end The end trace position.
+ * @param parameters the array of arguments with types.
+ * @param arbitrary whether the function is varargs.
+ * @param returnTypes the return types of the function.
+ * @param body the body of the function.
+ * @param start the start trace position - for stack trace.
+ * @param end the end trace position.
  */
 class FunctionExpression(
     val name: String,

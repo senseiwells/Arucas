@@ -7,8 +7,8 @@ import me.senseiwells.arucas.utils.LocatableTrace
 /**
  * This statement allows for throwing errors.
  *
- * @param throwable The expression to throw.
- * @param trace The trace position - where the error occured.
+ * @param throwable the expression to throw.
+ * @param trace the trace position - where the error occured.
  */
 class ThrowStatement(
     val throwable: Expression,

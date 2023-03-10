@@ -6,11 +6,11 @@ import me.senseiwells.arucas.utils.LocatableTrace
 /**
  * This statement declares a class.
  *
- * @param name The name of the class.
- * @param parents The parents of the class.
- * @param body The body of the class.
- * @param start The trace position - if class name is taken.
- * @param end The end trace position.
+ * @param name the name of the class.
+ * @param parents the parents of the class.
+ * @param body the body of the class.
+ * @param start the trace position - if class name is taken.
+ * @param end the end trace position.
  */
 class ClassStatement(
     val name: String,

@@ -7,12 +7,12 @@ import me.senseiwells.arucas.utils.LocatableTrace
 /**
  * This statement declares an enum
  *
- * @param name The name of the enum.
- * @param parents The parents of the enum.
- * @param enums The enums of the enum.
- * @param body The body of the enum.
- * @param start The trace position - if enum name is taken.
- * @param end The end trace position.
+ * @param name the name of the enum.
+ * @param parents the parents of the enum.
+ * @param enums the enums of the enum.
+ * @param body the body of the enum.
+ * @param start the trace position - if enum name is taken.
+ * @param end the end trace position.
  */
 class EnumStatement(
     val name: String,

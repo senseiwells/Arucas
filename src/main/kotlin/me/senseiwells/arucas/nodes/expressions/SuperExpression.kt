@@ -6,7 +6,7 @@ import me.senseiwells.arucas.utils.LocatableTrace
 /**
  * This expression is used to access super class members if available.
  *
- * @param trace The trace position - if the access is invalid.
+ * @param trace the trace position - if the access is invalid.
  */
 class SuperExpression(
     val trace: LocatableTrace

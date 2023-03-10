@@ -6,9 +6,9 @@ import me.senseiwells.arucas.utils.CallTrace
 /**
  * This expression is used to call a class constructor.
  *
- * @param name The name of the class to instantiate.
- * @param arguments The arguments to pass into the constructor.
- * @param trace The trace position - if the call is invalid.
+ * @param name the name of the class to instantiate.
+ * @param arguments the arguments to pass into the constructor.
+ * @param trace the trace position - if the call is invalid.
  */
 class NewCallExpression(
     val name: String,

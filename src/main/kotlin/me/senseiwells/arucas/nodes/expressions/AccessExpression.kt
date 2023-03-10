@@ -6,8 +6,8 @@ import me.senseiwells.arucas.utils.LocatableTrace
 /**
  * This expression accesses a variable in the scope.
  *
- * @param name The name of the identifier to access.
- * @param trace The trace position - if the access is invalid.
+ * @param name the name of the identifier to access.
+ * @param trace the trace position - if the access is invalid.
  */
 class AccessExpression(
     val name: String,

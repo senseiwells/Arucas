@@ -7,10 +7,10 @@ import me.senseiwells.arucas.utils.LocatableTrace
 /**
  * This expression is used to assign something to an expression using brackets.
  *
- * @param expression The expression to assign to.
- * @param index The index to assign to.
- * @param assignee The expression to assign to the index.
- * @param trace The trace position - if the assignment is invalid.
+ * @param expression the expression to assign to.
+ * @param index the index to assign to.
+ * @param assignee the expression to assign to the index.
+ * @param trace the trace position - if the assignment is invalid.
  */
 class BracketAssignExpression(
     val expression: Expression,

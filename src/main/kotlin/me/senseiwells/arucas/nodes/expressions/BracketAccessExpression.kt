@@ -6,9 +6,9 @@ import me.senseiwells.arucas.utils.LocatableTrace
 /**
  * This expression is used to access brackets on an expression.
  *
- * @param expression The expression to access.
- * @param index The index to access.
- * @param trace The trace position - if the access is invalid.
+ * @param expression the expression to access.
+ * @param index the index to access.
+ * @param trace the trace position - if the access is invalid.
  */
 class BracketAccessExpression(
     val expression: Expression,

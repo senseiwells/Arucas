@@ -7,10 +7,10 @@ import me.senseiwells.arucas.utils.LocatableTrace
 /**
  * This expression assigns a value to a member.
  *
- * @param expression The expression to assign to.
- * @param name The name of the identifier.
- * @param assignee The expression to assign to the field.
- * @param trace The trace position - if the assignment is invalid.
+ * @param expression the expression to assign to.
+ * @param name the name of the identifier.
+ * @param assignee the expression to assign to the field.
+ * @param trace the trace position - if the assignment is invalid.
  */
 class MemberAssignExpression(
     val expression: Expression,

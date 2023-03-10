@@ -6,7 +6,7 @@ import me.senseiwells.arucas.utils.LocatableTrace
 /**
  * This statement allows for continues inside loops.
  *
- * @param trace The trace position - if used in an incorrect context.
+ * @param trace the trace position - if used in an incorrect context.
  */
 class ContinueStatement(
     val trace: LocatableTrace

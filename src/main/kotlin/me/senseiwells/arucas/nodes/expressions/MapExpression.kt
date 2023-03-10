@@ -5,7 +5,7 @@ import me.senseiwells.arucas.nodes.ExpressionVisitor
 /**
  * This expression evaluates the map literal.
  *
- * @param expressions The map to evaluate.
+ * @param expressions the map to evaluate.
  */
 class MapExpression(
     val expressions: Map<Expression, Expression>

@@ -72,7 +72,7 @@ open class Arguments(
     /**
      * This sets the index of the argument iterator.
      *
-     * @param index The new index.
+     * @param index the new index.
      * @return This.
      */
     fun setIndex(index: Int): Arguments {
@@ -119,7 +119,7 @@ open class Arguments(
     /**
      * This gets the ClassInstance at a given index in the arguments.
      *
-     * @param index The index of the ClassInstance to get.
+     * @param index the index of the ClassInstance to get.
      * @return The ClassInstance at the given index.
      */
     fun get(index: Int): ClassInstance {
@@ -134,8 +134,8 @@ open class Arguments(
      * ensuring it is of a specific type or inherits that specific
      * type otherwise it throws an error.
      *
-     * @param index The index of the ClassInstance to get.
-     * @param definition The definition required.
+     * @param index the index of the ClassInstance to get.
+     * @param definition the definition required.
      * @return The ClassInstance.
      */
     fun get(index: Int, definition: ClassDefinition): ClassInstance {
@@ -151,8 +151,8 @@ open class Arguments(
      * ensuring it is of a specific primitive type or inherits that
      * specific primitive type otherwise it throws an error.
      *
-     * @param index The index of the ClassInstance to get.
-     * @param clazz The primitive class required.
+     * @param index the index of the ClassInstance to get.
+     * @param clazz the primitive class required.
      * @return The ClassInstance.
      */
     fun <T: PrimitiveDefinition<*>> get(index: Int, clazz: Class<T>): ClassInstance {
@@ -164,8 +164,8 @@ open class Arguments(
      * ensuring it is of a specific primitive type or inherits that
      * specific primitive type otherwise it throws an error.
      *
-     * @param index The index of the ClassInstance to get.
-     * @param clazz The primitive class required.
+     * @param index the index of the ClassInstance to get.
+     * @param clazz the primitive class required.
      * @return The ClassInstance.
      */
     fun <T: PrimitiveDefinition<*>> get(index: Int, clazz: KClass<T>): ClassInstance {
@@ -175,8 +175,8 @@ open class Arguments(
     /**
      * This gets the primitive value at a given index in the arguments.
      *
-     * @param index The index of the primitive value to get.
-     * @param definition The definition required.
+     * @param index the index of the primitive value to get.
+     * @param definition the definition required.
      */
     fun <T: Any> getPrimitive(index: Int, definition: PrimitiveDefinition<T>): T {
         return this.get(index, definition).asPrimitive(definition)
@@ -185,8 +185,8 @@ open class Arguments(
     /**
      * This gets the primitive value at a given index in the arguments.
      *
-     * @param index The index of the primitive value to get.
-     * @param clazz The primitive class required.
+     * @param index the index of the primitive value to get.
+     * @param clazz the primitive class required.
      */
     fun <T: PrimitiveDefinition<V>, V: Any> getPrimitive(index: Int, clazz: Class<T>): V {
         return this.getPrimitive(index, this.interpreter.getPrimitive(clazz))
@@ -195,8 +195,8 @@ open class Arguments(
     /**
      * This gets the primitive value at a given index in the arguments.
      *
-     * @param index The index of the primitive value to get.
-     * @param clazz The primitive class required.
+     * @param index the index of the primitive value to get.
+     * @param clazz the primitive class required.
      */
     fun <T: PrimitiveDefinition<V>, V: Any> getPrimitive(index: Int, clazz: KClass<T>): V {
         return this.getPrimitive(index, this.interpreter.getPrimitive(clazz))
@@ -217,7 +217,7 @@ open class Arguments(
      * and increments the index by one and ensuring that it is of a specific
      * type or inherits that specific type otherwise it throws an error.
      *
-     * @param definition The definition required.
+     * @param definition the definition required.
      * @return The next ClassInstance.
      */
     fun next(definition: ClassDefinition): ClassInstance {
@@ -229,7 +229,7 @@ open class Arguments(
      * and increments the index by one and ensuring that it is of a specific
      * primitive type or inherits that specific primitive type otherwise it throws an error.
      *
-     * @param clazz The primitive class required.
+     * @param clazz the primitive class required.
      * @return The next ClassInstance.
      */
     fun <T: PrimitiveDefinition<*>> next(clazz: Class<T>): ClassInstance {
@@ -241,7 +241,7 @@ open class Arguments(
      * and increments the index by one and ensuring that it is of a specific
      * primitive type or inherits that specific primitive type otherwise it throws an error.
      *
-     * @param clazz The primitive class required.
+     * @param clazz the primitive class required.
      * @return The next ClassInstance.
      */
     fun <T: PrimitiveDefinition<*>> next(clazz: KClass<T>): ClassInstance {
@@ -251,7 +251,7 @@ open class Arguments(
     /**
      * This gets the next primitive value in the argument iterator.
      *
-     * @param definition The definition required.
+     * @param definition the definition required.
      * @return The next primitive value.
      */
     fun <T: Any> nextPrimitive(definition: PrimitiveDefinition<T>): T {
@@ -261,7 +261,7 @@ open class Arguments(
     /**
      * This gets the next primitive value in the argument iterator.
      *
-     * @param clazz The primitive class required.
+     * @param clazz the primitive class required.
      * @return The next primitive value.
      */
     fun <T: PrimitiveDefinition<V>, V: Any> nextPrimitive(clazz: Class<T>): V {
@@ -271,7 +271,7 @@ open class Arguments(
     /**
      * This gets the next primitive value in the argument iterator.
      *
-     * @param clazz The primitive class required.
+     * @param clazz the primitive class required.
      * @return The next primitive value.
      */
     fun <T: PrimitiveDefinition<V>, V: Any> nextPrimitive(clazz: KClass<T>): V {

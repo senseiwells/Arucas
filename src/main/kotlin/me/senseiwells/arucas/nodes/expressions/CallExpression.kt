@@ -6,9 +6,9 @@ import me.senseiwells.arucas.utils.LocatableTrace
 /**
  * This expression calls an expression, for example a function.
  *
- * @param expression The expression to be called.
- * @param arguments The arguments to pass into the call.
- * @param trace The trace position - if the call is invalid.
+ * @param expression the expression to be called.
+ * @param arguments the arguments to pass into the call.
+ * @param trace the trace position - if the call is invalid.
  */
 class CallExpression(
     val expression: Expression,

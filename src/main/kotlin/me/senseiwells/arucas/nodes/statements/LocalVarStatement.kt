@@ -7,9 +7,9 @@ import me.senseiwells.arucas.utils.LocatableTrace
 /**
  * This statement is used to declare a local variable.
  *
- * @param name The name of the local variable.
- * @param assignee The expression to assign.
- * @param trace The trace position - if the declaration is invalid.
+ * @param name the name of the local variable.
+ * @param assignee the expression to assign.
+ * @param trace the trace position - if the declaration is invalid.
  */
 class LocalVarStatement(
     val name: String,

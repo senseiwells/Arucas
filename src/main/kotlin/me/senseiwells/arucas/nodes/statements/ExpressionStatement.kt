@@ -6,7 +6,7 @@ import me.senseiwells.arucas.nodes.StatementVisitor
 /**
  * This statement is used for when an expression is passed as a statement.
  *
- * @param expression The expression to be evaluated.
+ * @param expression the expression to be evaluated.
  */
 class ExpressionStatement(
     val expression: Expression

@@ -6,9 +6,9 @@ import me.senseiwells.arucas.utils.LocatableTrace
 /**
  * This expression accesses an identifier.
  *
- * @param expression The expression to access.
- * @param name The name of the identifier.
- * @param trace The trace position - if the access is invalid.
+ * @param expression the expression to access.
+ * @param name the name of the identifier.
+ * @param trace the trace position - if the access is invalid.
  */
 class MemberAccessExpression(
     val expression: Expression,
