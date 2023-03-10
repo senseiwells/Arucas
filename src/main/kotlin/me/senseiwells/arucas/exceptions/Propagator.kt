@@ -1,7 +1,6 @@
 package me.senseiwells.arucas.exceptions
 
 import me.senseiwells.arucas.classes.instance.ClassInstance
-import kotlin.RuntimeException
 
 abstract class Propagator(message: String? = null): RuntimeException(message) {
     override fun fillInStackTrace(): Throwable {

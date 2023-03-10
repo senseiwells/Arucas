@@ -4,9 +4,10 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import me.senseiwells.arucas.api.ArucasLibrary
 import me.senseiwells.arucas.api.impl.ArucasDownloadableLibrary.LibraryCache
-import me.senseiwells.arucas.core.Interpreter
-import me.senseiwells.arucas.utils.Util
-import me.senseiwells.arucas.utils.Util.File.ensureParentExists
+import me.senseiwells.arucas.interpreter.Interpreter
+import me.senseiwells.arucas.utils.ExceptionUtils
+import me.senseiwells.arucas.utils.FileUtils.ensureParentExists
+import me.senseiwells.arucas.utils.NetworkUtils
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
@@ -81,7 +82,7 @@ abstract class ArucasDownloadableLibrary(
             }
         }
 
-        val library = Util.Network.getStringFromUrl(newCache.downloadUrl) ?: return this.updateLastAndRead(json, existingCache, name, filePath, interpreter)
+        val library = NetworkUtils.getStringFromUrl(newCache.downloadUrl) ?: return this.updateLastAndRead(json, existingCache, name, filePath, interpreter)
         interpreter.logDebug("Downloaded latest library for '$name'")
         Files.writeString(filePath, library)
         this.updateCacheAndWrite(json, newCache, name)
@@ -109,7 +110,7 @@ abstract class ArucasDownloadableLibrary(
         val path = this.getCachePath()
         val cacheContent = this.read(path)
         val cache = cacheContent?.let {
-            Util.Exception.catchAsNull {
+            ExceptionUtils.catchAsNull {
                 GSON.fromJson(
                     cacheContent,
                     JsonObject::class.java
@@ -125,7 +126,7 @@ abstract class ArucasDownloadableLibrary(
     }
 
     private fun read(filePath: Path): String? {
-        return Util.Exception.catchAsNull { Files.readString(filePath) }
+        return ExceptionUtils.catchAsNull { Files.readString(filePath) }
     }
 
     private fun updateLastAndRead(json: JsonObject, cache: LibraryCache, name: String, filePath: Path, interpreter: Interpreter): String? {

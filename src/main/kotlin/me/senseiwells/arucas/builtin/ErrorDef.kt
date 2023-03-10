@@ -3,12 +3,12 @@ package me.senseiwells.arucas.builtin
 import me.senseiwells.arucas.api.docs.annotations.*
 import me.senseiwells.arucas.classes.PrimitiveDefinition
 import me.senseiwells.arucas.classes.instance.ClassInstance
-import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.exceptions.RuntimeError
+import me.senseiwells.arucas.functions.builtin.Arguments
 import me.senseiwells.arucas.functions.builtin.ConstructorFunction
 import me.senseiwells.arucas.functions.builtin.MemberFunction
-import me.senseiwells.arucas.utils.Arguments
-import me.senseiwells.arucas.utils.Util.Types.ERROR
+import me.senseiwells.arucas.interpreter.Interpreter
+import me.senseiwells.arucas.utils.misc.Types.ERROR
 
 @ClassDoc(
     name = ERROR,

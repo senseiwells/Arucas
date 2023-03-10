@@ -1,6 +1,6 @@
 package me.senseiwells.arucas.exceptions
 
-import me.senseiwells.arucas.core.Interpreter
+import me.senseiwells.arucas.interpreter.Interpreter
 
 abstract class ArucasError(
     override val message: String,

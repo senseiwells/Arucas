@@ -1,7 +1,7 @@
-package me.senseiwells.arucas.utils
+package me.senseiwells.arucas.compiler
 
-import me.senseiwells.arucas.nodes.expressions.SuperExpression
 import me.senseiwells.arucas.nodes.Visitable
+import me.senseiwells.arucas.nodes.expressions.SuperExpression
 
 /**
  * Cache storing distances for [StackTable] for different [Visitable]s.

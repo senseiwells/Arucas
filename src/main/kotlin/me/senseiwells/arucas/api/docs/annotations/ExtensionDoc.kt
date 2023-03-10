@@ -1,7 +1,7 @@
 package me.senseiwells.arucas.api.docs.annotations
 
 import me.senseiwells.arucas.api.ArucasExtension
-import me.senseiwells.arucas.utils.Util
+import me.senseiwells.arucas.utils.misc.Language
 
 /**
  * This annotation should be used to document
@@ -38,5 +38,5 @@ annotation class ExtensionDoc(
     /**
      * The language that the extension was written in.
      */
-    val language: Util.Language = Util.Language.Kotlin
+    val language: Language = Language.Kotlin
 )

@@ -1,7 +1,7 @@
 package me.senseiwells.arucas.api.impl
 
 import me.senseiwells.arucas.api.ArucasLibrary
-import me.senseiwells.arucas.core.Interpreter
+import me.senseiwells.arucas.interpreter.Interpreter
 import java.io.BufferedReader
 import java.io.InputStream
 import java.io.InputStreamReader

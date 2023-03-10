@@ -1,6 +1,6 @@
-package me.senseiwells.arucas.utils
+package me.senseiwells.arucas.compiler
 
-import me.senseiwells.arucas.core.Interpreter
+import me.senseiwells.arucas.interpreter.Interpreter
 
 abstract class Trace(val fileName: String) {
     companion object {

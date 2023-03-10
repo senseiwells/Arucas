@@ -6,11 +6,11 @@ import me.senseiwells.arucas.api.docs.annotations.ParameterDoc
 import me.senseiwells.arucas.api.docs.annotations.ReturnDoc
 import me.senseiwells.arucas.classes.CreatableDefinition
 import me.senseiwells.arucas.classes.instance.ClassInstance
-import me.senseiwells.arucas.core.Interpreter
+import me.senseiwells.arucas.functions.builtin.Arguments
 import me.senseiwells.arucas.functions.builtin.BuiltInFunction
 import me.senseiwells.arucas.functions.builtin.MemberFunction
-import me.senseiwells.arucas.utils.Arguments
-import me.senseiwells.arucas.utils.Util.Types.FUTURE
+import me.senseiwells.arucas.interpreter.Interpreter
+import me.senseiwells.arucas.utils.misc.Types.FUTURE
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Future
 

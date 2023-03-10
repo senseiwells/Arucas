@@ -2,8 +2,8 @@ package me.senseiwells.arucas.utils.impl
 
 import me.senseiwells.arucas.builtin.CollectionDef
 import me.senseiwells.arucas.classes.instance.ClassInstance
-import me.senseiwells.arucas.core.Interpreter
-import me.senseiwells.arucas.utils.LocatableTrace
+import me.senseiwells.arucas.compiler.LocatableTrace
+import me.senseiwells.arucas.interpreter.Interpreter
 import java.util.*
 
 interface ArucasCollection: ArucasIterable {

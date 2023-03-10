@@ -5,13 +5,12 @@ import me.senseiwells.arucas.builtin.FunctionDef
 import me.senseiwells.arucas.classes.ClassDefinition
 import me.senseiwells.arucas.classes.CreatableDefinition
 import me.senseiwells.arucas.classes.instance.ClassInstance
-import me.senseiwells.arucas.core.Interpreter
-import me.senseiwells.arucas.functions.ArucasFunction
+import me.senseiwells.arucas.compiler.LocatableTrace
+import me.senseiwells.arucas.compiler.Trace
 import me.senseiwells.arucas.functions.builtin.BuiltInFunction
-import me.senseiwells.arucas.utils.LocatableTrace
+import me.senseiwells.arucas.interpreter.Interpreter
 import me.senseiwells.arucas.utils.ReflectionUtils
-import me.senseiwells.arucas.utils.Trace
-import me.senseiwells.arucas.utils.Util.Types.JAVA_CLASS
+import me.senseiwells.arucas.utils.misc.Types.JAVA_CLASS
 
 @ClassDoc(
     name = JAVA_CLASS,

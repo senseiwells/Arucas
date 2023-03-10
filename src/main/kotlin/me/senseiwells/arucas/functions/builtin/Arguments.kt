@@ -1,14 +1,13 @@
-package me.senseiwells.arucas.utils
+package me.senseiwells.arucas.functions.builtin
 
 import me.senseiwells.arucas.api.ArucasAPI
 import me.senseiwells.arucas.builtin.*
 import me.senseiwells.arucas.classes.ClassDefinition
-import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.classes.PrimitiveDefinition
-import me.senseiwells.arucas.core.Interpreter
+import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.exceptions.runtimeError
 import me.senseiwells.arucas.extensions.JavaDef
-import me.senseiwells.arucas.functions.builtin.BuiltInFunction
+import me.senseiwells.arucas.interpreter.Interpreter
 import kotlin.reflect.KClass
 
 /**

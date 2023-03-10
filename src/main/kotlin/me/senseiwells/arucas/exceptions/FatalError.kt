@@ -1,7 +1,7 @@
 package me.senseiwells.arucas.exceptions
 
-import me.senseiwells.arucas.core.Interpreter
-import me.senseiwells.arucas.utils.Trace
+import me.senseiwells.arucas.compiler.Trace
+import me.senseiwells.arucas.interpreter.Interpreter
 import java.util.*
 
 class FatalError(

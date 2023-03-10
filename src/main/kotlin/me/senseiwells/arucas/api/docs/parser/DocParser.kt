@@ -8,7 +8,7 @@ import me.senseiwells.arucas.api.docs.FieldDoc
 import me.senseiwells.arucas.api.docs.FunctionDoc
 import me.senseiwells.arucas.api.docs.visitor.impl.ArucasDocVisitors
 import me.senseiwells.arucas.classes.ClassDefinition
-import me.senseiwells.arucas.core.Interpreter
+import me.senseiwells.arucas.interpreter.Interpreter
 import java.nio.file.Path
 
 @Deprecated("Replaced with ArucasDocParser")

@@ -1,9 +1,9 @@
 package me.senseiwells.arucas.api.docs.parser
 
 import com.google.gson.*
+import me.senseiwells.arucas.Arucas
 import me.senseiwells.arucas.api.ArucasAPI
 import me.senseiwells.arucas.api.docs.FunctionDoc
-import me.senseiwells.arucas.core.Arucas
 
 @Deprecated("This has been replaced by JsonDocVisitor")
 open class JsonParser protected constructor(): DocParser() {

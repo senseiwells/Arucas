@@ -1,7 +1,7 @@
 package me.senseiwells.arucas.api
 
 import me.senseiwells.arucas.api.impl.ArucasDownloadableLibrary
-import me.senseiwells.arucas.core.Interpreter
+import me.senseiwells.arucas.interpreter.Interpreter
 
 /**
  * This interface provides the ability to get an import

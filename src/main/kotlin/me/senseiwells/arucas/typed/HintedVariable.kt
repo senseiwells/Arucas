@@ -1,10 +1,10 @@
 package me.senseiwells.arucas.typed
 
-import me.senseiwells.arucas.core.Interpreter
+import me.senseiwells.arucas.compiler.Trace
+import me.senseiwells.arucas.interpreter.Interpreter
+import me.senseiwells.arucas.interpreter.StackTable
 import me.senseiwells.arucas.nodes.expressions.Expression
-import me.senseiwells.arucas.utils.StackTable
-import me.senseiwells.arucas.utils.Trace
-import me.senseiwells.arucas.utils.Util
+import me.senseiwells.arucas.utils.misc.Types
 
 class HintedVariable(
     val name: String,
@@ -34,6 +34,6 @@ class HintedVariable(
     }
 
     override fun toString(): String {
-        return this.hints?.joinToString(" | ") ?: Util.Types.OBJECT
+        return this.hints?.joinToString(" | ") ?: Types.OBJECT
     }
 }

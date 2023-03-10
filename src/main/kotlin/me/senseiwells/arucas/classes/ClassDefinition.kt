@@ -4,15 +4,17 @@ import me.senseiwells.arucas.builtin.FunctionDef
 import me.senseiwells.arucas.builtin.ObjectDef
 import me.senseiwells.arucas.builtin.TypeDef
 import me.senseiwells.arucas.classes.instance.ClassInstance
-import me.senseiwells.arucas.typed.ArucasVariable
-import me.senseiwells.arucas.core.Interpreter
-import me.senseiwells.arucas.core.Type
-import me.senseiwells.arucas.core.Type.*
+import me.senseiwells.arucas.compiler.CallTrace
+import me.senseiwells.arucas.compiler.LocatableTrace
+import me.senseiwells.arucas.compiler.Trace
+import me.senseiwells.arucas.compiler.token.Type
+import me.senseiwells.arucas.compiler.token.Type.*
 import me.senseiwells.arucas.exceptions.runtimeError
 import me.senseiwells.arucas.extensions.JavaDef
-import me.senseiwells.arucas.functions.ArucasFunction
 import me.senseiwells.arucas.functions.builtin.BuiltInFunction
-import me.senseiwells.arucas.utils.*
+import me.senseiwells.arucas.interpreter.Interpreter
+import me.senseiwells.arucas.typed.ArucasVariable
+import me.senseiwells.arucas.utils.collections.FunctionMap
 import kotlin.reflect.KClass
 
 /**

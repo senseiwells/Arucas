@@ -1,11 +1,11 @@
 package me.senseiwells.arucas.nodes
 
 import me.senseiwells.arucas.builtin.ErrorDef
-import me.senseiwells.arucas.core.Interpreter
-import me.senseiwells.arucas.core.Parser
-import me.senseiwells.arucas.core.Resolver
+import me.senseiwells.arucas.compiler.Parser
+import me.senseiwells.arucas.compiler.Resolver
 import me.senseiwells.arucas.exceptions.Propagator
 import me.senseiwells.arucas.exceptions.RuntimeError
+import me.senseiwells.arucas.interpreter.Interpreter
 import me.senseiwells.arucas.nodes.statements.*
 
 /**

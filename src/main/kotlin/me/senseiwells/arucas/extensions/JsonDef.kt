@@ -11,12 +11,14 @@ import me.senseiwells.arucas.api.docs.annotations.ReturnDoc
 import me.senseiwells.arucas.builtin.*
 import me.senseiwells.arucas.classes.CreatableDefinition
 import me.senseiwells.arucas.classes.instance.ClassInstance
-import me.senseiwells.arucas.core.Interpreter
+import me.senseiwells.arucas.compiler.LocatableTrace
 import me.senseiwells.arucas.exceptions.runtimeError
+import me.senseiwells.arucas.functions.builtin.Arguments
 import me.senseiwells.arucas.functions.builtin.BuiltInFunction
 import me.senseiwells.arucas.functions.builtin.MemberFunction
-import me.senseiwells.arucas.utils.*
-import me.senseiwells.arucas.utils.Util.Types.JSON
+import me.senseiwells.arucas.interpreter.Interpreter
+import me.senseiwells.arucas.utils.JsonUtils
+import me.senseiwells.arucas.utils.misc.Types.JSON
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.nio.file.Files
@@ -82,7 +84,7 @@ class JsonDef(interpreter: Interpreter): CreatableDefinition<JsonElement>(JSON, 
     )
     private fun fromList(arguments: Arguments): ClassInstance {
         val list = arguments.nextList()
-        return this.create(Util.Json.fromInstance(arguments.interpreter, list, 100))
+        return this.create(JsonUtils.fromInstance(arguments.interpreter, list, 100))
     }
 
     @FunctionDoc(
@@ -117,7 +119,7 @@ class JsonDef(interpreter: Interpreter): CreatableDefinition<JsonElement>(JSON, 
     )
     private fun fromMap(arguments: Arguments): ClassInstance {
         val map = arguments.nextMap()
-        return this.create(Util.Json.fromInstance(arguments.interpreter, map, 100))
+        return this.create(JsonUtils.fromInstance(arguments.interpreter, map, 100))
     }
 
     override fun defineMethods(): List<MemberFunction> {
@@ -135,7 +137,7 @@ class JsonDef(interpreter: Interpreter): CreatableDefinition<JsonElement>(JSON, 
     )
     private fun getValue(arguments: Arguments): ClassInstance {
         val instance = arguments.nextPrimitive(this)
-        return Util.Json.toInstance(arguments.interpreter, instance)
+        return JsonUtils.toInstance(arguments.interpreter, instance)
     }
 
     @FunctionDoc(

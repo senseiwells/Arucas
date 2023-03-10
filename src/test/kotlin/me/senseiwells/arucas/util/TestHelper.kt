@@ -2,7 +2,7 @@ package me.senseiwells.arucas.util
 
 import me.senseiwells.arucas.api.ArucasAPI
 import me.senseiwells.arucas.api.ArucasErrorHandler
-import me.senseiwells.arucas.core.Interpreter
+import me.senseiwells.arucas.interpreter.Interpreter
 import me.senseiwells.arucas.exceptions.CompileError
 import me.senseiwells.arucas.exceptions.RuntimeError
 import me.senseiwells.arucas.extensions.JavaDef

@@ -3,15 +3,18 @@ package me.senseiwells.arucas.builtin
 import me.senseiwells.arucas.api.docs.annotations.*
 import me.senseiwells.arucas.classes.CreatableDefinition
 import me.senseiwells.arucas.classes.instance.ClassInstance
-import me.senseiwells.arucas.core.Interpreter
-import me.senseiwells.arucas.core.Type
+import me.senseiwells.arucas.compiler.LocatableTrace
+import me.senseiwells.arucas.compiler.token.Type
 import me.senseiwells.arucas.exceptions.RuntimeError
 import me.senseiwells.arucas.exceptions.runtimeError
+import me.senseiwells.arucas.functions.builtin.Arguments
 import me.senseiwells.arucas.functions.builtin.ConstructorFunction
 import me.senseiwells.arucas.functions.builtin.MemberFunction
-import me.senseiwells.arucas.utils.*
-import me.senseiwells.arucas.utils.Util.Types.STRING
+import me.senseiwells.arucas.interpreter.Interpreter
+import me.senseiwells.arucas.utils.StringUtils.toNumber
+import me.senseiwells.arucas.utils.StringUtils.unescape
 import me.senseiwells.arucas.utils.impl.ArucasList
+import me.senseiwells.arucas.utils.misc.Types.STRING
 import java.util.*
 import java.util.regex.PatternSyntaxException
 
@@ -27,7 +30,7 @@ class StringDef(interpreter: Interpreter): CreatableDefinition<String>(STRING, i
     private val pool = HashMap<String, ClassInstance>()
 
     fun literal(value: String): ClassInstance {
-        val string = StringUtils.unescapeString(value.substring(1, value.length - 1))
+        val string = value.substring(1, value.length - 1).unescape()
         return this.pool.getOrPut(string) { super.create(string) }
     }
 
@@ -264,7 +267,7 @@ class StringDef(interpreter: Interpreter): CreatableDefinition<String>(STRING, i
     private fun toNumber(arguments: Arguments): Number {
         val string = arguments.nextPrimitive(this)
         return try {
-            StringUtils.parseNumber(string)
+            string.toNumber()
         } catch (e: NumberFormatException) {
             runtimeError("Couldn't convert string to number: '$string'", e)
         }

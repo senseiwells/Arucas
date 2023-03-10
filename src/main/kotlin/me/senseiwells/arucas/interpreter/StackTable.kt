@@ -1,7 +1,9 @@
-package me.senseiwells.arucas.utils
+package me.senseiwells.arucas.interpreter
 
 import me.senseiwells.arucas.classes.ClassDefinition
 import me.senseiwells.arucas.classes.instance.ClassInstance
+import me.senseiwells.arucas.utils.collections.FunctionMap
+import me.senseiwells.arucas.utils.collections.ModuleMap
 
 /**
  * This class holds all the data in a given scopes. It also holds

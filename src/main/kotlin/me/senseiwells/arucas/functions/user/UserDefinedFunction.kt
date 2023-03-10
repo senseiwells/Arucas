@@ -2,14 +2,15 @@ package me.senseiwells.arucas.functions.user
 
 import me.senseiwells.arucas.builtin.ListDef
 import me.senseiwells.arucas.classes.instance.ClassInstance
-import me.senseiwells.arucas.core.Interpreter
+import me.senseiwells.arucas.compiler.LocatableTrace
 import me.senseiwells.arucas.exceptions.Propagator
 import me.senseiwells.arucas.exceptions.runtimeError
 import me.senseiwells.arucas.functions.ArucasFunction
+import me.senseiwells.arucas.interpreter.Interpreter
+import me.senseiwells.arucas.interpreter.StackTable
 import me.senseiwells.arucas.nodes.statements.Statement
 import me.senseiwells.arucas.typed.ArucasParameter
 import me.senseiwells.arucas.typed.LazyDefinitions
-import me.senseiwells.arucas.utils.*
 import me.senseiwells.arucas.utils.impl.ArucasList
 
 open class UserDefinedFunction(

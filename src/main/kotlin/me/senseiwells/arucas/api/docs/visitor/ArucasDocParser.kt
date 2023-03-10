@@ -7,7 +7,7 @@ import me.senseiwells.arucas.builtin.NullDef
 import me.senseiwells.arucas.builtin.ObjectDef
 import me.senseiwells.arucas.classes.ClassDefinition
 import me.senseiwells.arucas.classes.PrimitiveDefinition
-import me.senseiwells.arucas.core.Interpreter
+import me.senseiwells.arucas.interpreter.Interpreter
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.util.*

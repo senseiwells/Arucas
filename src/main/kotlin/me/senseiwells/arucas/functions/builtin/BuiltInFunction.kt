@@ -1,10 +1,11 @@
 package me.senseiwells.arucas.functions.builtin
 
 import me.senseiwells.arucas.classes.instance.ClassInstance
-import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.extensions.JavaDef
 import me.senseiwells.arucas.functions.ArucasFunction
-import me.senseiwells.arucas.utils.Arguments
+import me.senseiwells.arucas.functions.builtin.BuiltInFunction.Companion.arb
+import me.senseiwells.arucas.functions.builtin.BuiltInFunction.Companion.of
+import me.senseiwells.arucas.interpreter.Interpreter
 import me.senseiwells.arucas.utils.ReflectionUtils
 
 /**

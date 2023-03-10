@@ -1,7 +1,7 @@
 package me.senseiwells.arucas.api
 
-import me.senseiwells.arucas.core.Interpreter
-import me.senseiwells.arucas.utils.LocatableTrace
+import me.senseiwells.arucas.compiler.LocatableTrace
+import me.senseiwells.arucas.interpreter.Interpreter
 import kotlin.math.log10
 
 /**

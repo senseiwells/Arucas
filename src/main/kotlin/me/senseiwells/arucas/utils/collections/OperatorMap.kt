@@ -1,10 +1,10 @@
-package me.senseiwells.arucas.utils
+package me.senseiwells.arucas.utils.collections
 
 import me.senseiwells.arucas.builtin.FunctionDef
 import me.senseiwells.arucas.classes.instance.ClassInstance
-import me.senseiwells.arucas.core.Type
+import me.senseiwells.arucas.compiler.token.Type
+import me.senseiwells.arucas.utils.CollectionUtils
 import java.util.*
-import kotlin.collections.HashMap
 
 class OperatorMap: Iterable<Pair<Type, ClassInstance>> {
     private val map = lazy { EnumMap<Type, HashMap<Int, ClassInstance>>(Type::class.java) }
@@ -25,7 +25,7 @@ class OperatorMap: Iterable<Pair<Type, ClassInstance>> {
 
     override fun iterator(): Iterator<Pair<Type, ClassInstance>> {
         if (!this.map.isInitialized()) {
-            return Util.Collection.emptyIterator()
+            return CollectionUtils.emptyIterator()
         }
         return this.map.value.entries.map {
             val type = it.key

@@ -1,8 +1,8 @@
 package me.senseiwells.arucas.nodes.statements
 
+import me.senseiwells.arucas.compiler.LocatableTrace
+import me.senseiwells.arucas.functions.user.DelegatedConstructor
 import me.senseiwells.arucas.nodes.StatementVisitor
-import me.senseiwells.arucas.utils.ConstructorInit
-import me.senseiwells.arucas.utils.LocatableTrace
 import me.senseiwells.arucas.typed.HintedParameter
 
 /**
@@ -20,7 +20,7 @@ class ConstructorStatement(
     val parameters: List<HintedParameter>,
     val arbitrary: Boolean,
     val private: Boolean,
-    val init: ConstructorInit,
+    val init: DelegatedConstructor,
     val body: Statement,
     val start: LocatableTrace,
     val end: LocatableTrace

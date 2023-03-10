@@ -1,19 +1,20 @@
-package me.senseiwells.arucas.core
+package me.senseiwells.arucas.compiler
 
 import me.senseiwells.arucas.builtin.BooleanDef
 import me.senseiwells.arucas.builtin.NullDef
 import me.senseiwells.arucas.builtin.NumberDef
 import me.senseiwells.arucas.builtin.StringDef
-import me.senseiwells.arucas.core.Type.*
+import me.senseiwells.arucas.compiler.token.Token
+import me.senseiwells.arucas.compiler.token.TokenReader
+import me.senseiwells.arucas.compiler.token.Type
+import me.senseiwells.arucas.compiler.token.Type.*
 import me.senseiwells.arucas.exceptions.compileError
+import me.senseiwells.arucas.functions.user.DelegatedConstructor
 import me.senseiwells.arucas.nodes.*
 import me.senseiwells.arucas.nodes.expressions.*
 import me.senseiwells.arucas.nodes.statements.*
-import me.senseiwells.arucas.utils.ConstructorInit
-import me.senseiwells.arucas.utils.LocatableTrace
 import me.senseiwells.arucas.typed.HintedParameter
 import me.senseiwells.arucas.typed.HintedVariable
-import me.senseiwells.arucas.utils.Trace
 import kotlin.reflect.KMutableProperty0
 
 class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
@@ -191,10 +192,10 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
                     }
                     this.check(LEFT_BRACKET, "Expected '(' after constructor")
                     val (parameters, isArbitrary) = this.getFunctionParameters(true)
-                    val constructorInit = if (this.isMatch(COLON)) {
+                    val initialiser = if (this.isMatch(COLON)) {
                         val (initProvider, initType) = when {
-                            this.isMatch(SUPER) -> ConstructorInit.Companion::initSuper to "super"
-                            this.isMatch(THIS) -> ConstructorInit.Companion::initThis to "this"
+                            this.isMatch(SUPER) -> DelegatedConstructor.Companion::initSuper to "super"
+                            this.isMatch(THIS) -> DelegatedConstructor.Companion::initThis to "this"
                             else -> this.error("Expected 'this' or 'super' constructor call")
                         }
                         this.check(LEFT_BRACKET, "Expected '(' after $initType")
@@ -202,10 +203,10 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
                         this.check(RIGHT_BRACKET, "Expected ')' after $initType call")
                         initProvider(expressions)
                     } else {
-                        ConstructorInit.initNone()
+                        DelegatedConstructor.initNone()
                     }
                     val body = this.statement()
-                    constructors.add(ConstructorStatement(parameters, isArbitrary, private, constructorInit, body, currentTrace, this.lastTrace()))
+                    constructors.add(ConstructorStatement(parameters, isArbitrary, private, initialiser, body, currentTrace, this.lastTrace()))
                 }
                 this.peekType() == FUN -> {
                     if (readonly) {

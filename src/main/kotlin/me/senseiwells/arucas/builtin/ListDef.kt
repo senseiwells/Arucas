@@ -4,13 +4,15 @@ import me.senseiwells.arucas.api.docs.annotations.*
 import me.senseiwells.arucas.classes.CreatableDefinition
 import me.senseiwells.arucas.classes.PrimitiveDefinition
 import me.senseiwells.arucas.classes.instance.ClassInstance
-import me.senseiwells.arucas.core.Interpreter
+import me.senseiwells.arucas.compiler.LocatableTrace
 import me.senseiwells.arucas.exceptions.runtimeError
+import me.senseiwells.arucas.functions.builtin.Arguments
 import me.senseiwells.arucas.functions.builtin.ConstructorFunction
 import me.senseiwells.arucas.functions.builtin.MemberFunction
-import me.senseiwells.arucas.utils.*
-import me.senseiwells.arucas.utils.Util.Types.LIST
+import me.senseiwells.arucas.interpreter.Interpreter
+import me.senseiwells.arucas.utils.ExceptionUtils
 import me.senseiwells.arucas.utils.impl.ArucasList
+import me.senseiwells.arucas.utils.misc.Types.LIST
 
 @ClassDoc(
     name = LIST,
@@ -28,14 +30,14 @@ class ListDef(interpreter: Interpreter): CreatableDefinition<ArucasList>(LIST, i
         val list = instance.asPrimitive(this)
         val listIndex = index.getPrimitive(NumberDef::class)?.toInt()
         listIndex ?: runtimeError("Indexer for lists must result a number", trace)
-        return Util.Exception.traceable(trace) { return@traceable list[listIndex] }
+        return ExceptionUtils.traceable(trace) { return@traceable list[listIndex] }
     }
 
     override fun bracketAssign(instance: ClassInstance, interpreter: Interpreter, index: ClassInstance, assignee: ClassInstance, trace: LocatableTrace): ClassInstance {
         val list = instance.asPrimitive(this)
         val listIndex = index.getPrimitive(NumberDef::class)?.toInt()
         listIndex ?: runtimeError("Indexer for lists must result a number", trace)
-        Util.Exception.traceable(trace) { list[listIndex] = assignee }
+        ExceptionUtils.traceable(trace) { list[listIndex] = assignee }
         return assignee
     }
 

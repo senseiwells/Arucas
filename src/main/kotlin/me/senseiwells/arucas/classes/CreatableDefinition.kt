@@ -1,7 +1,7 @@
 package me.senseiwells.arucas.classes
 
 import me.senseiwells.arucas.classes.instance.ClassInstance
-import me.senseiwells.arucas.core.Interpreter
+import me.senseiwells.arucas.interpreter.Interpreter
 
 /**
  * This class defines a [PrimitiveDefinition] that is able to be

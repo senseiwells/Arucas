@@ -2,7 +2,7 @@ package me.senseiwells.arucas.api.docs.visitor.impl
 
 import me.senseiwells.arucas.api.ArucasAPI
 import me.senseiwells.arucas.api.docs.visitor.ArucasDocParser
-import me.senseiwells.arucas.utils.Util.File.ensureExists
+import me.senseiwells.arucas.utils.FileUtils.ensureExists
 import java.nio.file.Files
 import java.nio.file.Path
 

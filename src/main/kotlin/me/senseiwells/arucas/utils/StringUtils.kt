@@ -2,32 +2,23 @@ package me.senseiwells.arucas.utils
 
 import java.util.*
 
+/**
+ * Utility object with helpful string methods.
+ */
 object StringUtils {
     /**
-     * Joins all arguments using `StringBuilder`.
-     */
-    fun join(vararg args: Any?): String {
-        val length = args.size
-        if (length == 0) {
-            return ""
-        }
-        val sb = StringBuilder()
-        for (arg in args) {
-            sb.append(arg)
-        }
-        return sb.toString()
-    }
-
-    /**
      * Converts all instances of `[\'] [\"] [\\] [\r] [\n] [\b] [\t] [\x..] [\u....]` to the correct character.
+     *
+     * @return the unescaped string.
      */
-    fun unescapeString(string: String): String {
+    @JvmStatic
+    fun String.unescape(): String {
         val sb = StringBuilder()
-        val len = string.length
+        val len = this.length
         var escape = false
         var i = 0
         while (i < len) {
-            val c = string[i]
+            val c = this[i]
             if (escape) {
                 escape = false
                 when (c) {
@@ -38,10 +29,10 @@ object StringUtils {
                     'b' -> sb.append('\b')
                     't' -> sb.append('\t')
                     'x' -> {
-                        if (i + 3 > string.length) {
+                        if (i + 3 > this.length) {
                             throw RuntimeException("(index:$i) Not enough characters for '\\x..' escape.")
                         }
-                        val hex = string.substring(i + 1, i + 3)
+                        val hex = this.substring(i + 1, i + 3)
                         try {
                             sb.append(hex.toInt(16).toChar())
                         } catch (e: NumberFormatException) {
@@ -50,10 +41,10 @@ object StringUtils {
                         i += 2
                     }
                     'u' -> {
-                        if (i + 5 > string.length) {
+                        if (i + 5 > this.length) {
                             throw RuntimeException("(index:$i) Not enough characters for '\\u....' escape.")
                         }
-                        val hex = string.substring(i + 1, i + 5)
+                        val hex = this.substring(i + 1, i + 5)
                         try {
                             sb.append(hex.toInt(16).toChar())
                         } catch (e: NumberFormatException) {
@@ -75,13 +66,16 @@ object StringUtils {
 
     /**
      * Escapes a string to convert all control characters into their escaped form.
+     *
+     * @return the escaped string.
      */
-    fun escapeString(string: String): String {
+    @JvmStatic
+    fun String.escape(): String {
         val sb = StringBuilder()
-        val len = string.length
+        val len = this.length
         var i = 0
         while (i < len) {
-            val c = string[i]
+            val c = this[i]
             when (c) {
                 '\r' -> {
                     sb.append("\\r")
@@ -137,13 +131,16 @@ object StringUtils {
 
     /**
      * Escapes a string so that it can safely be placed inside a regex expression.
+     *
+     * @return the regex safe string.
      */
-    fun regexEscape(string: String): String {
+    @JvmStatic
+    fun String.regexEscape(): String {
         val sb = StringBuilder()
         var i = 0
-        val len = string.length
+        val len = this.length
         while (i < len) {
-            val c = string[i]
+            val c = this[i]
             when (c) {
                 '\u0000' -> {
                     sb.append("\\0")
@@ -210,9 +207,12 @@ object StringUtils {
      * Decimal:
      * [0-9]+(\.[0-9]+)?
      * ```
+     *
+     * @return the number as a double.
      */
-    fun parseNumber(string: String): Double {
-        var s = string
+    @JvmStatic
+    fun String.toNumber(): Double {
+        var s = this
         require(s.isNotBlank()) { "Cannot convert an empty string to a number" }
 
         // First check if the value is negative.
@@ -231,10 +231,13 @@ object StringUtils {
      * Ensures that the first character of the first string is
      * capital and also ensures the last character of the last
      * string ends with a full stop.
+     *
+     * @param strings the array of strings to punctuate.
+     * @return the punctuated array of strings.
      */
-    fun ensurePunctuation(strings: Array<String>): Array<String> {
+    fun punctuate(strings: Array<String>): Array<String> {
         if (strings.isNotEmpty()) {
-            strings[0] = capitalise(strings[0])
+            strings[0] = strings[0].capitalise()
             val last = strings[strings.lastIndex]
             if (!last.endsWith(".")) {
                 strings[strings.lastIndex] = "$last."
@@ -245,9 +248,11 @@ object StringUtils {
 
     /**
      * Capitalises a string.
+     *
+     * @return the capitalised string.
      */
-    fun capitalise(string: String): String {
-        return string.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+    fun String.capitalise(): String {
+        return this.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
     }
 
     /**

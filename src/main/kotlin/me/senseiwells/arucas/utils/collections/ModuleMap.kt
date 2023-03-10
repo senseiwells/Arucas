@@ -1,4 +1,4 @@
-package me.senseiwells.arucas.utils
+package me.senseiwells.arucas.utils.collections
 
 import me.senseiwells.arucas.classes.ClassDefinition
 

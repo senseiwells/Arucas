@@ -2,10 +2,10 @@ package me.senseiwells.arucas.builtin
 
 import me.senseiwells.arucas.api.docs.annotations.*
 import me.senseiwells.arucas.classes.PrimitiveDefinition
-import me.senseiwells.arucas.core.Interpreter
+import me.senseiwells.arucas.functions.builtin.Arguments
 import me.senseiwells.arucas.functions.builtin.BuiltInFunction
-import me.senseiwells.arucas.utils.Arguments
-import me.senseiwells.arucas.utils.Util.Types.MATH
+import me.senseiwells.arucas.interpreter.Interpreter
+import me.senseiwells.arucas.utils.misc.Types.MATH
 import kotlin.math.*
 
 @ClassDoc(

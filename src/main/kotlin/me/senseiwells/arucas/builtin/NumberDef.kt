@@ -5,13 +5,13 @@ import me.senseiwells.arucas.api.docs.annotations.FunctionDoc
 import me.senseiwells.arucas.api.docs.annotations.ReturnDoc
 import me.senseiwells.arucas.classes.CreatableDefinition
 import me.senseiwells.arucas.classes.instance.ClassInstance
-import me.senseiwells.arucas.core.Interpreter
-import me.senseiwells.arucas.core.Type
+import me.senseiwells.arucas.compiler.LocatableTrace
+import me.senseiwells.arucas.compiler.token.Type
+import me.senseiwells.arucas.functions.builtin.Arguments
 import me.senseiwells.arucas.functions.builtin.MemberFunction
-import me.senseiwells.arucas.utils.Arguments
-import me.senseiwells.arucas.utils.LocatableTrace
-import me.senseiwells.arucas.utils.StringUtils
-import me.senseiwells.arucas.utils.Util.Types.NUMBER
+import me.senseiwells.arucas.interpreter.Interpreter
+import me.senseiwells.arucas.utils.StringUtils.toNumber
+import me.senseiwells.arucas.utils.misc.Types.NUMBER
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.*
@@ -32,7 +32,7 @@ class NumberDef(interpreter: Interpreter): CreatableDefinition<Double>(NUMBER, i
         val DECIMAL_FORMAT = DecimalFormat("#.############", DecimalFormatSymbols.getInstance(Locale.UK))
     }
 
-    fun literal(string: String) = this.create(StringUtils.parseNumber(string))
+    fun literal(string: String) = this.create(string.toNumber())
 
     override fun canExtend() = false
 

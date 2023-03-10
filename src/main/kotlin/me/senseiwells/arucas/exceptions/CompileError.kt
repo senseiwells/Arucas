@@ -1,7 +1,7 @@
 package me.senseiwells.arucas.exceptions
 
-import me.senseiwells.arucas.core.Interpreter
-import me.senseiwells.arucas.utils.LocatableTrace
+import me.senseiwells.arucas.compiler.LocatableTrace
+import me.senseiwells.arucas.interpreter.Interpreter
 
 fun compileError(details: String, trace: LocatableTrace): Nothing = throw CompileError(details, trace)
 

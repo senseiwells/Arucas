@@ -1,4 +1,4 @@
-package me.senseiwells.arucas.core
+package me.senseiwells.arucas.compiler
 
 import me.senseiwells.arucas.classes.ClassDefinition
 import me.senseiwells.arucas.classes.PrimitiveDefinition
@@ -7,10 +7,7 @@ import me.senseiwells.arucas.functions.ArucasFunction
 import me.senseiwells.arucas.nodes.*
 import me.senseiwells.arucas.nodes.expressions.*
 import me.senseiwells.arucas.nodes.statements.*
-import me.senseiwells.arucas.utils.LocalCache
-import me.senseiwells.arucas.utils.LocatableTrace
 import me.senseiwells.arucas.typed.HintedParameter
-import me.senseiwells.arucas.utils.StackTable
 import java.util.*
 import kotlin.reflect.KMutableProperty0
 

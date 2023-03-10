@@ -2,13 +2,13 @@ package me.senseiwells.arucas.classes.instance
 
 import me.senseiwells.arucas.classes.ClassDefinition
 import me.senseiwells.arucas.classes.PrimitiveDefinition
-import me.senseiwells.arucas.core.Interpreter
-import me.senseiwells.arucas.core.Type
+import me.senseiwells.arucas.compiler.CallTrace
+import me.senseiwells.arucas.compiler.LocatableTrace
+import me.senseiwells.arucas.compiler.Trace
+import me.senseiwells.arucas.compiler.token.Type
 import me.senseiwells.arucas.exceptions.runtimeError
+import me.senseiwells.arucas.interpreter.Interpreter
 import me.senseiwells.arucas.typed.ArucasVariable
-import me.senseiwells.arucas.utils.CallTrace
-import me.senseiwells.arucas.utils.LocatableTrace
-import me.senseiwells.arucas.utils.Trace
 import kotlin.reflect.KClass
 
 /**

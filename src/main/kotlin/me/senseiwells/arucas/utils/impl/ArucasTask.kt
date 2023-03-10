@@ -1,8 +1,8 @@
 package me.senseiwells.arucas.utils.impl
 
 import me.senseiwells.arucas.classes.instance.ClassInstance
-import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.functions.ArucasFunction
+import me.senseiwells.arucas.interpreter.Interpreter
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.Future
 

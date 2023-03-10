@@ -1,7 +1,7 @@
 package me.senseiwells.arucas.nodes.expressions
 
+import me.senseiwells.arucas.compiler.CallTrace
 import me.senseiwells.arucas.nodes.ExpressionVisitor
-import me.senseiwells.arucas.utils.CallTrace
 
 /**
  * This expression is used to call a class constructor.

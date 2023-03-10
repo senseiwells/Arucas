@@ -1,7 +1,7 @@
 package me.senseiwells.arucas.nodes.statements
 
+import me.senseiwells.arucas.compiler.LocatableTrace
 import me.senseiwells.arucas.nodes.StatementVisitor
-import me.senseiwells.arucas.utils.LocatableTrace
 
 /**
  * This statement allows for continues inside loops.

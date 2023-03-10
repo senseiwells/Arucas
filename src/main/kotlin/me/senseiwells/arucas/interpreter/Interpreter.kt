@@ -1,4 +1,4 @@
-package me.senseiwells.arucas.core
+package me.senseiwells.arucas.interpreter
 
 import me.senseiwells.arucas.api.ArucasAPI
 import me.senseiwells.arucas.api.ArucasErrorHandler
@@ -6,22 +6,28 @@ import me.senseiwells.arucas.api.docs.visitor.ArucasDocParser
 import me.senseiwells.arucas.builtin.*
 import me.senseiwells.arucas.classes.*
 import me.senseiwells.arucas.classes.instance.ClassInstance
-import me.senseiwells.arucas.core.Interpreter.Companion.dummy
-import me.senseiwells.arucas.core.Interpreter.Companion.of
+import me.senseiwells.arucas.compiler.*
+import me.senseiwells.arucas.compiler.lexer.Lexer
 import me.senseiwells.arucas.exceptions.*
 import me.senseiwells.arucas.functions.builtin.BuiltInFunction
+import me.senseiwells.arucas.functions.user.DelegatedConstructor
 import me.senseiwells.arucas.functions.user.UserConstructorFunction
 import me.senseiwells.arucas.functions.user.UserDefinedClassFunction
 import me.senseiwells.arucas.functions.user.UserDefinedFunction
+import me.senseiwells.arucas.interpreter.Interpreter.Companion.dummy
+import me.senseiwells.arucas.interpreter.Interpreter.Companion.of
 import me.senseiwells.arucas.nodes.*
 import me.senseiwells.arucas.nodes.expressions.*
 import me.senseiwells.arucas.nodes.statements.*
 import me.senseiwells.arucas.typed.LazyDefinitions
 import me.senseiwells.arucas.utils.*
-import me.senseiwells.arucas.utils.Properties
+import me.senseiwells.arucas.utils.collections.FunctionMap
+import me.senseiwells.arucas.utils.collections.ModuleMap
+import me.senseiwells.arucas.utils.collections.PrimitiveDefinitionMap
 import me.senseiwells.arucas.utils.impl.ArucasList
 import me.senseiwells.arucas.utils.impl.ArucasOrderedMap
 import me.senseiwells.arucas.utils.impl.ArucasThread
+import me.senseiwells.arucas.utils.misc.ErrorSafe
 import java.util.*
 import java.util.concurrent.Future
 import kotlin.reflect.KClass
@@ -221,7 +227,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         return Parser(Lexer(this.content, this.name).createTokens()).parse().also {
             val resolver = Resolver(it, this.primitives, this.functions.map { f -> f.getPrimitive(FunctionDef::class)!! })
             this.localCache.mergeWith(resolver.run())
-            val compileTime = Util.nanosToString(System.nanoTime() - compileStart)
+            val compileTime = TimeUtils.nanosToString(System.nanoTime() - compileStart)
             this.logDebug("Compile time for '${this.name}' was $compileTime")
         }
     }
@@ -237,7 +243,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         try {
             statements.forEach(this::execute)
         } finally {
-            val executionTime = Util.nanosToString(System.nanoTime() - executionStart)
+            val executionTime = TimeUtils.nanosToString(System.nanoTime() - executionStart)
             this.logDebug("Execution time for '${this.name}' was $executionTime")
         }
     }
@@ -755,7 +761,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
             runtimeError("Derived class constructor must initialise super constructor", body.start)
         }
         body.constructors.forEach { c ->
-            if (needsSuper && c.init.type == ConstructorInit.InitType.NONE) {
+            if (needsSuper && c.init.type == DelegatedConstructor.Type.NONE) {
                 runtimeError("Derived class constructor must initialise super constructor", c.start)
             }
             val parameters = c.parameters.map { it.create(this.currentTable, c.start) }

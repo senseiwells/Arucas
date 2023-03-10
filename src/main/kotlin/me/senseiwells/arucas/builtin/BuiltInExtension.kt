@@ -1,17 +1,17 @@
 package me.senseiwells.arucas.builtin
 
+import me.senseiwells.arucas.Arucas
 import me.senseiwells.arucas.api.ArucasExtension
 import me.senseiwells.arucas.api.docs.annotations.ExtensionDoc
 import me.senseiwells.arucas.api.docs.annotations.FunctionDoc
 import me.senseiwells.arucas.api.docs.annotations.ParameterDoc
 import me.senseiwells.arucas.api.docs.annotations.ReturnDoc
 import me.senseiwells.arucas.classes.instance.ClassInstance
-import me.senseiwells.arucas.core.Arucas
 import me.senseiwells.arucas.exceptions.Propagator
 import me.senseiwells.arucas.exceptions.runtimeError
+import me.senseiwells.arucas.functions.builtin.Arguments
 import me.senseiwells.arucas.functions.builtin.BuiltInFunction
-import me.senseiwells.arucas.utils.Arguments
-import me.senseiwells.arucas.utils.Util
+import me.senseiwells.arucas.utils.CollectionUtils
 import me.senseiwells.arucas.utils.impl.ArucasIterable
 import me.senseiwells.arucas.utils.impl.ArucasThread
 import java.io.IOException
@@ -335,7 +335,7 @@ class BuiltInExtension: ArucasExtension {
     )
     private fun range1(arguments: Arguments): ArucasIterable {
         val bound = arguments.nextPrimitive(NumberDef::class)
-        return Util.Collection.rangeIterable(arguments.interpreter, bound)
+        return CollectionUtils.rangeIterable(arguments.interpreter, bound)
     }
 
     @FunctionDoc(
@@ -351,7 +351,7 @@ class BuiltInExtension: ArucasExtension {
     private fun range2(arguments: Arguments): ArucasIterable {
         val start = arguments.nextPrimitive(NumberDef::class)
         val bound = arguments.nextPrimitive(NumberDef::class)
-        return Util.Collection.rangeIterable(arguments.interpreter, bound, start)
+        return CollectionUtils.rangeIterable(arguments.interpreter, bound, start)
     }
 
     @FunctionDoc(
@@ -371,7 +371,7 @@ class BuiltInExtension: ArucasExtension {
         val start = arguments.nextPrimitive(NumberDef::class)
         val bound = arguments.nextPrimitive(NumberDef::class)
         val step = arguments.nextPrimitive(NumberDef::class)
-        return Util.Collection.rangeIterable(arguments.interpreter, bound, start, step)
+        return CollectionUtils.rangeIterable(arguments.interpreter, bound, start, step)
     }
 
     @FunctionDoc(

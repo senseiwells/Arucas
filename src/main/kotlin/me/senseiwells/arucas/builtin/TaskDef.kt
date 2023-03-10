@@ -3,13 +3,13 @@ package me.senseiwells.arucas.builtin
 import me.senseiwells.arucas.api.docs.annotations.*
 import me.senseiwells.arucas.classes.CreatableDefinition
 import me.senseiwells.arucas.classes.instance.ClassInstance
-import me.senseiwells.arucas.core.Interpreter
+import me.senseiwells.arucas.functions.builtin.Arguments
 import me.senseiwells.arucas.functions.builtin.ConstructorFunction
 import me.senseiwells.arucas.functions.builtin.MemberFunction
-import me.senseiwells.arucas.utils.Arguments
-import me.senseiwells.arucas.utils.Util.Types.TASK
+import me.senseiwells.arucas.interpreter.Interpreter
 import me.senseiwells.arucas.utils.impl.ArucasTask
 import me.senseiwells.arucas.utils.impl.Task
+import me.senseiwells.arucas.utils.misc.Types.TASK
 import java.util.concurrent.Future
 
 @ClassDoc(

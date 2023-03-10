@@ -3,14 +3,15 @@ package me.senseiwells.arucas.classes
 import me.senseiwells.arucas.builtin.FunctionDef
 import me.senseiwells.arucas.builtin.ObjectDef
 import me.senseiwells.arucas.classes.instance.ClassInstance
-import me.senseiwells.arucas.typed.ArucasVariable
-import me.senseiwells.arucas.core.Interpreter
-import me.senseiwells.arucas.core.Type
+import me.senseiwells.arucas.compiler.CallTrace
+import me.senseiwells.arucas.compiler.LocatableTrace
+import me.senseiwells.arucas.compiler.token.Type
 import me.senseiwells.arucas.extensions.JavaDef
 import me.senseiwells.arucas.functions.builtin.BuiltInFunction
 import me.senseiwells.arucas.functions.builtin.ConstructorFunction
 import me.senseiwells.arucas.functions.builtin.MemberFunction
-import me.senseiwells.arucas.utils.*
+import me.senseiwells.arucas.interpreter.Interpreter
+import me.senseiwells.arucas.typed.ArucasVariable
 
 /**
  * This class represents a [ClassDefinition] that has a

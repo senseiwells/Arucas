@@ -1,9 +1,9 @@
 package me.senseiwells.arucas.typed
 
 import me.senseiwells.arucas.classes.ClassDefinition
+import me.senseiwells.arucas.compiler.Trace
 import me.senseiwells.arucas.exceptions.runtimeError
-import me.senseiwells.arucas.utils.StackTable
-import me.senseiwells.arucas.utils.Trace
+import me.senseiwells.arucas.interpreter.StackTable
 
 interface LazyDefinitions {
     fun get(): List<ClassDefinition>

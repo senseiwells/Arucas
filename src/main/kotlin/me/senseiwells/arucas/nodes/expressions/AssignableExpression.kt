@@ -1,7 +1,7 @@
 package me.senseiwells.arucas.nodes.expressions
 
 import me.senseiwells.arucas.classes.instance.ClassInstance
-import me.senseiwells.arucas.utils.LocatableTrace
+import me.senseiwells.arucas.compiler.LocatableTrace
 
 /**
  * This abstract class is the base for all assignable expressions.

@@ -1,6 +1,5 @@
-package me.senseiwells.arucas.utils
+package me.senseiwells.arucas.interpreter
 
-import me.senseiwells.arucas.core.Interpreter
 import java.util.*
 
 /**

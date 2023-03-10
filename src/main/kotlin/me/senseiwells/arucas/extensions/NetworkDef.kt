@@ -8,12 +8,12 @@ import me.senseiwells.arucas.builtin.BooleanDef
 import me.senseiwells.arucas.builtin.FileDef
 import me.senseiwells.arucas.builtin.StringDef
 import me.senseiwells.arucas.classes.PrimitiveDefinition
-import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.exceptions.runtimeError
+import me.senseiwells.arucas.functions.builtin.Arguments
 import me.senseiwells.arucas.functions.builtin.BuiltInFunction
-import me.senseiwells.arucas.utils.Arguments
-import me.senseiwells.arucas.utils.Util
-import me.senseiwells.arucas.utils.Util.Types.NETWORK
+import me.senseiwells.arucas.interpreter.Interpreter
+import me.senseiwells.arucas.utils.NetworkUtils
+import me.senseiwells.arucas.utils.misc.Types.NETWORK
 import java.awt.Desktop
 import java.io.IOException
 import java.net.URI
@@ -42,7 +42,7 @@ class NetworkDef(interpreter: Interpreter): PrimitiveDefinition<Unit>(NETWORK, i
     )
     private fun requestUrl(arguments: Arguments): String {
         val url = arguments.nextPrimitive(StringDef::class)
-        return Util.Network.getStringFromUrl(url) ?: runtimeError("Failed to request data from '$url'")
+        return NetworkUtils.getStringFromUrl(url) ?: runtimeError("Failed to request data from '$url'")
     }
 
     @FunctionDoc(
@@ -59,7 +59,7 @@ class NetworkDef(interpreter: Interpreter): PrimitiveDefinition<Unit>(NETWORK, i
     private fun downloadFile(arguments: Arguments): Boolean {
         val url = arguments.nextPrimitive(StringDef::class)
         val file = arguments.nextPrimitive(FileDef::class)
-        return Util.Network.downloadFile(url, file)
+        return NetworkUtils.downloadFile(url, file)
     }
 
     @FunctionDoc(

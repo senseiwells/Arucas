@@ -2,8 +2,8 @@ package me.senseiwells.arucas.exceptions
 
 import me.senseiwells.arucas.builtin.ErrorDef
 import me.senseiwells.arucas.classes.instance.ClassInstance
-import me.senseiwells.arucas.core.Interpreter
-import me.senseiwells.arucas.utils.Trace
+import me.senseiwells.arucas.compiler.Trace
+import me.senseiwells.arucas.interpreter.Interpreter
 import java.util.*
 
 fun runtimeError(details: String, cause: Throwable): Nothing {

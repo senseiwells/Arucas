@@ -1,7 +1,7 @@
 package me.senseiwells.arucas.nodes.expressions
 
+import me.senseiwells.arucas.compiler.LocatableTrace
 import me.senseiwells.arucas.nodes.ExpressionVisitor
-import me.senseiwells.arucas.utils.LocatableTrace
 
 /**
  * This expression access a function in the scope.

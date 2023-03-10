@@ -93,7 +93,7 @@ Kotlin:
 ```kotlin
 import me.senseiwells.arucas.api.ArucasAPI
 import me.senseiwells.arucas.api.ThreadHandler
-import me.senseiwells.arucas.core.Interpreter
+import me.senseiwells.arucas.interpreter.Interpreter
 
 // ...
 val api = ArucasAPI.Builder()
@@ -110,20 +110,21 @@ interpreter.executeAsync()
 ```
 
 Java:
+
 ```java
 import me.senseiwells.arucas.api.ArucasAPI;
 import me.senseiwells.arucas.api.ThreadHandler;
-import me.senseiwells.arucas.core.Interpreter;
+import me.senseiwells.arucas.interpreter.Interpreter;
 
 // ...
-ArucasAPI api = new ArucasAPI.Builder()
-    .addDefault()
-    .build();
-String code = "print('Hello World!');";
-Interpreter interpreter = Interpreter.of(code, "My Code", api);
+ArucasAPI api=new ArucasAPI.Builder()
+        .addDefault()
+        .build();
+        String code="print('Hello World!');";
+        Interpreter interpreter=Interpreter.of(code,"My Code",api);
 
 // We can run the interpreter async:
-interpreter.executeAsync();
+        interpreter.executeAsync();
 // Alternatively we can run it so it blocks the current thread:
 // interpreter.executeBlocking();
 //...
@@ -150,8 +151,7 @@ class MyCustomExtension: ArucasExtension {
 
 Java:
 ```java
-```kotlin
-import me.senseiwells.arucas.api.ArucasExtension
+import me.senseiwells.arucas.api.ArucasExtension;
 
 import java.util.List;
 
@@ -250,7 +250,7 @@ BuiltInFunction.of("bar", 3, { arguments ->
 
 Java:
 ```java
-import me.senseiwells.arucas.builtin.StringDef;;
+import me.senseiwells.arucas.builtin.StringDef;
 
 // ...
 BuiltInFunction.of("bar", 3, arguments -> {
@@ -291,7 +291,7 @@ Kotlin:
 import me.senseiwells.arucas.api.ArucasExtension
 import me.senseiwells.arucas.builtin.NumberDef
 import me.senseiwells.arucas.builtin.StringDef
-import me.senseiwells.arucas.utils.Arguments  
+import me.senseiwells.arucas.functions.builtin.Arguments  
 
 class BuiltInExtension: ArucasExtension {
     override fun getName() = "BuiltInExtension"
@@ -322,7 +322,7 @@ Java:
 import me.senseiwells.arucas.api.ArucasExtension;
 import me.senseiwells.arucas.builtin.NumberDef;
 import me.senseiwells.arucas.builtin.StringDef;
-import me.senseiwells.arucas.utils.Arguments;;
+import me.senseiwells.arucas.functions.builtin.Arguments;
 
 import java.util.List;
 
@@ -392,7 +392,7 @@ Creating a custom class is more complex than an extension but provides much more
 Kotlin:
 ```kotlin
 import me.senseiwells.arucas.classes.PrimitiveDefinition  
-import me.senseiwells.arucas.core.Interpreter
+import me.senseiwells.arucas.interpreter.Interpreter
 
 class MyCustomClassDef(interpreter: Interpreter): PrimitiveDefinition<Any>("MyCustomClass", interpreter) {
 
@@ -400,9 +400,10 @@ class MyCustomClassDef(interpreter: Interpreter): PrimitiveDefinition<Any>("MyCu
 ```
 
 Java:
+
 ```java
 import me.senseiwells.arucas.classes.PrimitiveDefinition;
-import me.senseiwells.arucas.core.Interpreter;
+import me.senseiwells.arucas.interpreter.Interpreter;
 
 public class MyCustomClassDef extends PrimitiveDefinition<Object> {
     public MyCustomClassDef(Interpreter interpreter) {
@@ -425,8 +426,8 @@ Kotlin:
 ```kotlin  
 import me.senseiwells.arucas.builtin.StringDef
 import me.senseiwells.arucas.classes.CreatableDefinition
-import me.senseiwells.arucas.core.Interpreter  
-import me.senseiwells.arucas.utils.Arguments    
+import me.senseiwells.arucas.interpreter.Interpreter  
+import me.senseiwells.arucas.functions.builtin.Arguments    
 
 import java.io.File
 
@@ -446,13 +447,14 @@ class FileDef(interpreter: Interpreter): CreatableDefinition<File>("File", inter
 ```
 
 Java:
+
 ```java
 import kotlin.Unit;
-import me.senseiwells.arucas.builtin.StringDef;  
+import me.senseiwells.arucas.builtin.StringDef;
 import me.senseiwells.arucas.classes.ClassInstance;
 import me.senseiwells.arucas.classes.CreatableDefinition;
-import me.senseiwells.arucas.core.Interpreter;
-import me.senseiwells.arucas.utils.Arguments;;
+import me.senseiwells.arucas.interpreter.Interpreter;
+import me.senseiwells.arucas.functions.builtin.Arguments;
 
 import java.io.File;
 import java.util.List;
@@ -465,7 +467,7 @@ public class FileDef extends CreatableDefinition<File> {
     @Override
     public List<ConstructorFunction> defineConstructors() {
         return List.of(
-            ConstructorFunction.of(1, this::construct)
+                ConstructorFunction.of(1, this::construct)
         );
     }
 
@@ -488,9 +490,9 @@ Kotlin:
 ```kotlin  
 import me.senseiwells.arucas.builtin.StringDef
 import me.senseiwells.arucas.classes.CreatableDefinition
-import me.senseiwells.arucas.core.Interpreter    
+import me.senseiwells.arucas.interpreter.Interpreter    
 import me.senseiwells.arucas.exceptions.runtimeError
-import me.senseiwells.arucas.utils.Arguments    
+import me.senseiwells.arucas.functions.builtin.Arguments    
 
 import java.io.File  
 import java.io.IOException
@@ -521,15 +523,16 @@ class FileDef(interpreter: Interpreter): CreatableDefinition<File>("File", inter
 ```
 
 Java:
+
 ```java
 import me.senseiwells.arucas.builtin.StringDef;
 import me.senseiwells.arucas.classes.CreatableDefinition;
-import me.senseiwells.arucas.core.Interpreter;
+import me.senseiwells.arucas.interpreter.Interpreter;
 import me.senseiwells.arucas.exceptions.RuntimeError;
-import me.senseiwells.arucas.utils.Arguments;; 
+import me.senseiwells.arucas.functions.builtin.Arguments;
 
-import java.io.File;  
-import java.io.IOException;  
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 
@@ -538,15 +541,15 @@ class FileDef extends CreatableDefinition<File> {
         super("File", interpreter);
     }
 
-    @Override 
+    @Override
     public List<MemberFunction> defineMethods() {
         return List.of(
-            MemberFunction.of("getName", this::getName),
-            MemberFunction.of("write", this::write)
+                MemberFunction.of("getName", this::getName),
+                MemberFunction.of("write", this::write)
         );
     }
-    
-    private String getName(Arguments arguments) {  
+
+    private String getName(Arguments arguments) {
         File file = arguments.nextPrimitive(this);
         return file.getName();
     }
@@ -556,9 +559,9 @@ class FileDef extends CreatableDefinition<File> {
         String string = arguments.nextPrimitive(StringDef.class);
         try {
             Files.writeString(file.toPath(), string);
-        } catch (IOException e) {  
+        } catch (IOException e) {
             throw new RuntimeError("There was an error writing the file '" + file + "'", e);
-        }  
+        }
         return null;
     }
 }

@@ -1,4 +1,4 @@
-package me.senseiwells.arucas.utils
+package me.senseiwells.arucas.utils.misc
 
 class ArgumentParser {
     private val map = HashMap<String, Action<*>>()

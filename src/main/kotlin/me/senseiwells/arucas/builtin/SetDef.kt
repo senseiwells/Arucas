@@ -3,16 +3,18 @@ package me.senseiwells.arucas.builtin
 import me.senseiwells.arucas.api.docs.annotations.*
 import me.senseiwells.arucas.classes.CreatableDefinition
 import me.senseiwells.arucas.classes.instance.ClassInstance
-import me.senseiwells.arucas.core.Interpreter
+import me.senseiwells.arucas.compiler.LocatableTrace
 import me.senseiwells.arucas.exceptions.runtimeError
+import me.senseiwells.arucas.functions.builtin.Arguments
 import me.senseiwells.arucas.functions.builtin.BuiltInFunction
 import me.senseiwells.arucas.functions.builtin.ConstructorFunction
 import me.senseiwells.arucas.functions.builtin.MemberFunction
+import me.senseiwells.arucas.interpreter.Interpreter
 import me.senseiwells.arucas.utils.*
-import me.senseiwells.arucas.utils.Util.Types.SET
 import me.senseiwells.arucas.utils.impl.ArucasList
 import me.senseiwells.arucas.utils.impl.ArucasMap
 import me.senseiwells.arucas.utils.impl.ArucasSet
+import me.senseiwells.arucas.utils.misc.Types.SET
 
 @ClassDoc(
     name = SET,

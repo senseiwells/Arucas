@@ -1,8 +1,8 @@
 package me.senseiwells.arucas.nodes.expressions
 
-import me.senseiwells.arucas.core.Type
+import me.senseiwells.arucas.compiler.LocatableTrace
+import me.senseiwells.arucas.compiler.token.Type
 import me.senseiwells.arucas.nodes.ExpressionVisitor
-import me.senseiwells.arucas.utils.LocatableTrace
 
 /**
  * This expression applies a binary operator between two values.

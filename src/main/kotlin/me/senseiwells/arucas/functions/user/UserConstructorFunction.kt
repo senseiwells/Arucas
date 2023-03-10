@@ -3,16 +3,18 @@ package me.senseiwells.arucas.functions.user
 import me.senseiwells.arucas.builtin.ListDef
 import me.senseiwells.arucas.classes.ArucasClassDefinition
 import me.senseiwells.arucas.classes.instance.ClassInstance
-import me.senseiwells.arucas.core.Interpreter
+import me.senseiwells.arucas.compiler.CallTrace
+import me.senseiwells.arucas.compiler.LocatableTrace
 import me.senseiwells.arucas.functions.ArucasFunction
+import me.senseiwells.arucas.interpreter.Interpreter
+import me.senseiwells.arucas.interpreter.StackTable
 import me.senseiwells.arucas.nodes.statements.Statement
 import me.senseiwells.arucas.typed.ArucasParameter
-import me.senseiwells.arucas.utils.*
 import me.senseiwells.arucas.utils.impl.ArucasList
 
 open class UserConstructorFunction(
     val definition: ArucasClassDefinition,
-    private val constructorInit: ConstructorInit,
+    private val initialiser: DelegatedConstructor,
     parameters: List<ArucasParameter>,
     body: Statement,
     localTable: StackTable,
@@ -37,14 +39,14 @@ open class UserConstructorFunction(
         val localTable = StackTable(interpreter.modules, this.localTable)
         val instance = arguments[0]
         this.checkAndPopulate(interpreter, localTable, arguments)
-        val definition = when (this.constructorInit.type) {
-            ConstructorInit.InitType.SUPER -> this.definition.superclass()
-            ConstructorInit.InitType.THIS -> this.definition
+        val definition = when (this.initialiser.type) {
+            DelegatedConstructor.Type.SUPER -> this.definition.superclass()
+            DelegatedConstructor.Type.THIS -> this.definition
             else -> null
         }
         definition?.let {
             val initArgs = ArrayList<ClassInstance>()
-            for (expression in this.constructorInit.arguments) {
+            for (expression in this.initialiser.arguments) {
                 initArgs.add(interpreter.evaluate(localTable, expression))
             }
             it.init(interpreter, instance, initArgs, CallTrace(this.trace, "init ${definition.name}::${initArgs.size}"))
@@ -55,13 +57,13 @@ open class UserConstructorFunction(
 
     private class Varargs(
         definition: ArucasClassDefinition,
-        constructorInit: ConstructorInit,
+        initialiser: DelegatedConstructor,
         parameters: List<ArucasParameter>,
         body: Statement,
         localTable: StackTable,
         trace: LocatableTrace,
         private: Boolean
-    ): UserConstructorFunction(definition, constructorInit, parameters, body, localTable, trace, private) {
+    ): UserConstructorFunction(definition, initialiser, parameters, body, localTable, trace, private) {
         override val count: Int
             get() = -1
 
@@ -80,7 +82,7 @@ open class UserConstructorFunction(
         fun of(
             arbitrary: Boolean,
             definition: ArucasClassDefinition,
-            constructorInit: ConstructorInit,
+            initialiser: DelegatedConstructor,
             parameters: List<ArucasParameter>,
             body: Statement,
             table: StackTable,
@@ -88,9 +90,9 @@ open class UserConstructorFunction(
             private: Boolean
         ): UserConstructorFunction {
             if (arbitrary) {
-                return Varargs(definition, constructorInit, parameters, body, table, trace, private)
+                return Varargs(definition, initialiser, parameters, body, table, trace, private)
             }
-            return UserConstructorFunction(definition, constructorInit, parameters, body, table, trace, private)
+            return UserConstructorFunction(definition, initialiser, parameters, body, table, trace, private)
         }
     }
 }

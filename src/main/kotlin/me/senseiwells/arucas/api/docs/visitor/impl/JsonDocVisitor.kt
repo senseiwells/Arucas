@@ -1,8 +1,8 @@
 package me.senseiwells.arucas.api.docs.visitor.impl
 
 import com.google.gson.*
+import me.senseiwells.arucas.Arucas
 import me.senseiwells.arucas.api.docs.visitor.*
-import me.senseiwells.arucas.core.Arucas
 
 class JsonDocVisitor: ArucasDocVisitor() {
     companion object {

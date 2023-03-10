@@ -13,7 +13,7 @@ class ParameterDoc(
     private val origin: ArucasDocParser,
     private val doc: ParameterDocAnnotation
 ): Describable {
-    private val lazyDescription by lazy { StringUtils.ensurePunctuation(this.doc.desc) }
+    private val lazyDescription by lazy { StringUtils.punctuate(this.doc.desc) }
     private val lazyType by lazy { this.origin.getClassDoc(this.doc.type.java) }
     private val lazyAllTypes by lazy {
         val types = mutableListOf(this.getType())

@@ -1,7 +1,7 @@
 package me.senseiwells.arucas.utils.impl
 
-import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.exceptions.Propagator
+import me.senseiwells.arucas.interpreter.Interpreter
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 

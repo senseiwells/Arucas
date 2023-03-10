@@ -1,7 +1,7 @@
 package me.senseiwells.arucas.api
 
-import me.senseiwells.arucas.core.Interpreter
 import me.senseiwells.arucas.exceptions.*
+import me.senseiwells.arucas.interpreter.Interpreter
 import org.jetbrains.annotations.TestOnly
 
 /**

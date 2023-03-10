@@ -2,8 +2,9 @@ package me.senseiwells.arucas.api.impl
 
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
-import me.senseiwells.arucas.core.Arucas
-import me.senseiwells.arucas.utils.Util
+import me.senseiwells.arucas.Arucas
+import me.senseiwells.arucas.utils.ExceptionUtils
+import me.senseiwells.arucas.utils.NetworkUtils
 import java.nio.file.Path
 
 private const val LIBRARY_URL = "https://api.github.com/repos/senseiwells/ArucasLibraries/contents/libs"
@@ -35,8 +36,8 @@ open class GitHubArucasLibrary @JvmOverloads constructor(
      * @see ArucasDownloadableLibrary.getUpdatedCache
      */
     override fun getUpdatedCache(name: String): LibraryCache? {
-        val raw = Util.Network.getStringFromUrl("${this.libraryURL}/$name.arucas") ?: return null
-        val response = Util.Exception.catchAsNull { GSON.fromJson(raw, JsonObject::class.java) } ?: return null
+        val raw = NetworkUtils.getStringFromUrl("${this.libraryURL}/$name.arucas") ?: return null
+        val response = ExceptionUtils.catchAsNull { GSON.fromJson(raw, JsonObject::class.java) } ?: return null
         return LibraryCache(
             System.currentTimeMillis() / 1_000,
             response.get("sha").asString,

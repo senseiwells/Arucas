@@ -13,7 +13,7 @@ class FunctionDoc(
     private val origin: ArucasDocParser,
     private val doc: FunctionDocAnnotation
 ): Describable {
-    private val lazyDescription by lazy { StringUtils.ensurePunctuation(this.doc.desc) }
+    private val lazyDescription by lazy { StringUtils.punctuate(this.doc.desc) }
     private val lazyParameters by lazy { this.doc.params.map { ParameterDoc(this.origin, it) } }
 
     /**

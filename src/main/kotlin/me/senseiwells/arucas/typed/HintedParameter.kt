@@ -1,8 +1,8 @@
 package me.senseiwells.arucas.typed
 
-import me.senseiwells.arucas.utils.StackTable
-import me.senseiwells.arucas.utils.Trace
-import me.senseiwells.arucas.utils.Util
+import me.senseiwells.arucas.compiler.Trace
+import me.senseiwells.arucas.interpreter.StackTable
+import me.senseiwells.arucas.utils.misc.Types
 
 class HintedParameter(val name: String, val hints: Array<String>? = null) {
     fun create(local: StackTable, trace: Trace): ArucasParameter {
@@ -18,6 +18,6 @@ class HintedParameter(val name: String, val hints: Array<String>? = null) {
     }
 
     override fun toString(): String {
-        return this.hints?.joinToString(" | ") ?: Util.Types.OBJECT
+        return this.hints?.joinToString(" | ") ?: Types.OBJECT
     }
 }

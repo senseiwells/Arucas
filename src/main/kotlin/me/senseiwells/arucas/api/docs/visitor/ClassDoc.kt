@@ -1,7 +1,7 @@
 package me.senseiwells.arucas.api.docs.visitor
 
 import me.senseiwells.arucas.utils.StringUtils
-import me.senseiwells.arucas.utils.Util
+import me.senseiwells.arucas.utils.misc.Language
 import me.senseiwells.arucas.api.docs.annotations.ClassDoc as ClassDocAnnotation
 
 /**
@@ -16,7 +16,7 @@ class ClassDoc(
     private val doc: ClassDocAnnotation,
     private val importPath: String?
 ): Describable {
-    private val lazyDescription by lazy { StringUtils.ensurePunctuation(this.doc.desc) }
+    private val lazyDescription by lazy { StringUtils.punctuate(this.doc.desc) }
     private val lazySuperclass by lazy { this.origin.getClassDoc(this.doc.superclass.java) }
 
     /**
@@ -68,9 +68,9 @@ class ClassDoc(
     /**
      * This gets the language that the class was written in.
      *
-     * @return the [Util.Language] that the class was written in.
+     * @return the [Language] that the class was written in.
      */
-    fun getLanguage(): Util.Language {
+    fun getLanguage(): Language {
         return this.doc.language
     }
 }

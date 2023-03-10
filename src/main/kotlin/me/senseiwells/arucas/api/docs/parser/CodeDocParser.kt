@@ -4,7 +4,7 @@ import me.senseiwells.arucas.api.ArucasExtension
 import me.senseiwells.arucas.api.docs.ClassDoc
 import me.senseiwells.arucas.api.docs.FunctionDoc
 import me.senseiwells.arucas.classes.ClassDefinition
-import me.senseiwells.arucas.utils.Util
+import me.senseiwells.arucas.utils.misc.Types
 
 @Deprecated("This has been replaced by CodeDocVisitor")
 class CodeDocParser: DocParser() {
@@ -65,7 +65,7 @@ class CodeDocParser: DocParser() {
 
         val superclassDoc = classDoc.superclass.java.getAnnotation(ClassDoc::class.java)
         superclassDoc ?: throw IllegalStateException("Class '${classDoc.superclass}' was not documented")
-        if (superclassDoc.name != Util.Types.OBJECT) {
+        if (superclassDoc.name != Types.OBJECT) {
             builder.append(": ").append(superclassDoc.name)
         }
 
@@ -147,7 +147,7 @@ class CodeDocParser: DocParser() {
             builder.append(": ").append(returns[1]).append("\n")
             returnType
         } else {
-            Util.Types.NULL
+            Types.NULL
         }
         builder.append(indent).append(" */\n")
         return parameterNames to returnType

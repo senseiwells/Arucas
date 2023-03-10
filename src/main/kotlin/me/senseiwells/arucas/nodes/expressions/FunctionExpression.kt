@@ -1,8 +1,8 @@
 package me.senseiwells.arucas.nodes.expressions
 
+import me.senseiwells.arucas.compiler.LocatableTrace
 import me.senseiwells.arucas.nodes.ExpressionVisitor
 import me.senseiwells.arucas.nodes.statements.Statement
-import me.senseiwells.arucas.utils.LocatableTrace
 import me.senseiwells.arucas.typed.HintedParameter
 
 /**

@@ -1,9 +1,9 @@
-package me.senseiwells.arucas.core
+package me.senseiwells.arucas.compiler.lexer
 
+import me.senseiwells.arucas.compiler.LocatableTrace
+import me.senseiwells.arucas.compiler.token.Token
+import me.senseiwells.arucas.compiler.token.Type
 import me.senseiwells.arucas.exceptions.compileError
-import me.senseiwells.arucas.utils.LocatableTrace
-import me.senseiwells.arucas.utils.StringUtils
-import java.util.regex.Pattern
 
 class Lexer(private val text: String, private val fileName: String) {
     companion object {
@@ -138,11 +138,13 @@ class Lexer(private val text: String, private val fileName: String) {
                 }
             }
             if (lexerToken.type !== Type.WHITESPACE && lexerToken.type !== Type.COMMENT) {
-                tokenList.add(Token(
+                tokenList.add(
+                    Token(
                     lexerToken.type,
                     LocatableTrace(this.fileName, this.text, oldLine, oldColumn),
                     lexerToken.content
-                ))
+                )
+                )
             }
             input = input.substring(lexerToken.length)
             offset += lexerToken.length
@@ -152,90 +154,3 @@ class Lexer(private val text: String, private val fileName: String) {
     }
 }
 
-class LexerToken(val type: Type, val content: String) {
-    val length: Int = this.content.length
-}
-
-/**
- * Context that stores all our lexing rules
- */
-class LexerContext {
-    private val rules = ArrayList<LexerRule>()
-
-    fun addRule(type: Type): LexerContext {
-        val rule = LexerRule(type)
-        rule.addString(type.toString())
-        this.rules.add(rule)
-        return this
-    }
-
-    fun addRule(type: Type, consumer: (LexerRule) -> Unit): LexerContext {
-        val rule = LexerRule(type)
-        consumer(rule)
-        this.rules.add(rule)
-        return this
-    }
-
-    fun nextToken(input: String): LexerToken? {
-        var selectedRule: LexerRule? = null
-        var longestRule = 1
-        for (rule in this.rules) {
-            val length = rule.getMatchLength(input)
-            if (length >= longestRule) {
-                longestRule = length
-                selectedRule = rule
-            }
-        }
-        return selectedRule?.let { LexerToken(selectedRule.type, input.substring(0, longestRule)) }
-    }
-}
-
-/**
- * Rule that matches patterns to token types
- */
-class LexerRule(val type: Type) {
-    private val matches = ArrayList<Pattern>()
-
-    fun addString(value: String): LexerRule {
-        this.matches.add(Pattern.compile(StringUtils.regexEscape(value)))
-        return this
-    }
-
-    fun addRegex(regex: String): LexerRule {
-        this.matches.add(Pattern.compile(regex))
-        return this
-    }
-
-    fun addRegexes(vararg regexes: String): LexerRule {
-        for (regex in regexes) {
-            this.addRegex(regex)
-        }
-        return this
-    }
-
-    fun addMultiline(open: String, close: String): LexerRule {
-        return this.addMultiline(open, "", close)
-    }
-
-    fun addMultiline(open: String, escape: String, close: String): LexerRule {
-        val s: String = StringUtils.regexEscape(open)
-        val c: String = StringUtils.regexEscape(close)
-        val regex: String = if (escape.isEmpty()) "$s.*?$c" else {
-            val e: String = StringUtils.regexEscape(escape)
-            "$s(?:$e(?:$e|$c|(?!$c).)|(?!$e|$c).)*$c"
-        }
-        this.matches.add(Pattern.compile(regex, Pattern.DOTALL))
-        return this
-    }
-
-    fun getMatchLength(string: String): Int {
-        var length = 0
-        for (pattern in this.matches) {
-            val matcher = pattern.matcher(string)
-            if (matcher.lookingAt()) {
-                length = length.coerceAtLeast(matcher.end())
-            }
-        }
-        return if (length < 1) -1 else length
-    }
-}

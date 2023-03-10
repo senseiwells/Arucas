@@ -2,8 +2,8 @@ package me.senseiwells.arucas.functions
 
 import me.senseiwells.arucas.builtin.FunctionDef
 import me.senseiwells.arucas.classes.instance.ClassInstance
-import me.senseiwells.arucas.core.Interpreter
-import me.senseiwells.arucas.utils.FunctionMap
+import me.senseiwells.arucas.interpreter.Interpreter
+import me.senseiwells.arucas.utils.collections.FunctionMap
 
 /**
  * This class represents all functions in Arucas.

@@ -1,4 +1,6 @@
-package me.senseiwells.arucas.utils
+package me.senseiwells.arucas.utils.collections
+
+import me.senseiwells.arucas.utils.CollectionUtils
 
 /**
  * This class holds [T] that have a name and a given number of parameters, allows
@@ -96,7 +98,7 @@ abstract class BaseFunctionMap<T>: Iterable<T> {
      */
     override fun iterator(): Iterator<T> {
         if (!this.map.isInitialized()) {
-            return Util.Collection.emptyIterator()
+            return CollectionUtils.emptyIterator()
         }
         return this.map.value.values.flatMap { it.values }.iterator()
     }

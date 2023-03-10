@@ -1,6 +1,6 @@
 package me.senseiwells.arucas.api
 
-import me.senseiwells.arucas.core.Interpreter
+import me.senseiwells.arucas.interpreter.Interpreter
 
 /**
  * This class provides a polling method which gets called

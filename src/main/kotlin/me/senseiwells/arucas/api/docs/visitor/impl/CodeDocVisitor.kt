@@ -1,7 +1,7 @@
 package me.senseiwells.arucas.api.docs.visitor.impl
 
 import me.senseiwells.arucas.api.docs.visitor.*
-import me.senseiwells.arucas.utils.Util
+import me.senseiwells.arucas.utils.misc.Types
 
 class CodeDocVisitor: ArucasDocVisitor() {
     companion object {
@@ -62,7 +62,7 @@ class CodeDocVisitor: ArucasDocVisitor() {
         builder.append(classDoc.getName())
 
         val superclassName = classDoc.getSuperclass().getName()
-        if (superclassName != Util.Types.OBJECT) {
+        if (superclassName != Types.OBJECT) {
             builder.append(": ").append(superclassName)
         }
 

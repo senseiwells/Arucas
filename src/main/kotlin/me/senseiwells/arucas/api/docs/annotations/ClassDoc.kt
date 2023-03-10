@@ -2,7 +2,7 @@ package me.senseiwells.arucas.api.docs.annotations
 
 import me.senseiwells.arucas.builtin.ObjectDef
 import me.senseiwells.arucas.classes.PrimitiveDefinition
-import me.senseiwells.arucas.utils.Util
+import me.senseiwells.arucas.utils.misc.Language
 import kotlin.reflect.KClass
 
 /**
@@ -51,5 +51,5 @@ annotation class ClassDoc(
     /**
      * The language that the class was written in.
      */
-    val language: Util.Language = Util.Language.Kotlin
+    val language: Language = Language.Kotlin
 )
