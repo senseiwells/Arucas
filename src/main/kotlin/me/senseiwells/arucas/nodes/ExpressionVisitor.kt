@@ -14,6 +14,7 @@ import me.senseiwells.arucas.nodes.expressions.*
  * This is intended for use with [Resolver] and [Interpreter] however
  * can be used outside of this for analysis of code etc.
  *
+ * @param T this declares the return type of all the visiting methods.
  * @see Resolver
  * @see Interpreter
  */

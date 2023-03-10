@@ -137,6 +137,16 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
         return if (result == Null) super.xor(instance, interpreter, other, trace) else this.create(result)
     }
 
+    override fun shiftLeft(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace, ): Any? {
+        val result = JavaUtils.shiftLeft(this.asJavaNotNull(instance, trace), other.asJava(), Null)
+        return if (result == Null) super.xor(instance, interpreter, other, trace) else this.create(result)
+    }
+
+    override fun shiftRight(instance: ClassInstance, interpreter: Interpreter, other: ClassInstance, trace: LocatableTrace): Any? {
+        val result = JavaUtils.shiftRight(this.asJavaNotNull(instance, trace), other.asJava(), Null)
+        return if (result == Null) super.xor(instance, interpreter, other, trace) else this.create(result)
+    }
+
     override fun bracketAccess(instance: ClassInstance, interpreter: Interpreter, index: ClassInstance, trace: LocatableTrace): ClassInstance {
         val result = JavaUtils.bracketAccess(this.asJavaNotNull(instance, trace), index.asJava(), Null)
         return if (result == Null) super.bracketAccess(instance, interpreter, index, trace) else this.createNullable(result)

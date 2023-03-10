@@ -761,11 +761,11 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
             runtimeError("Derived class constructor must initialise super constructor", body.start)
         }
         body.constructors.forEach { c ->
-            if (needsSuper && c.init.type == DelegatedConstructor.Type.NONE) {
+            if (needsSuper && c.delegate.type == DelegatedConstructor.Type.NONE) {
                 runtimeError("Derived class constructor must initialise super constructor", c.start)
             }
             val parameters = c.parameters.map { it.create(this.currentTable, c.start) }
-            UserConstructorFunction.of(c.arbitrary, definition, c.init, parameters, c.body, this.currentTable, c.start, c.private).let {
+            UserConstructorFunction.of(c.arbitrary, definition, c.delegate, parameters, c.body, this.currentTable, c.start, c.private).let {
                 definition.constructors.value.add(this.create(FunctionDef::class, it))
             }
         }

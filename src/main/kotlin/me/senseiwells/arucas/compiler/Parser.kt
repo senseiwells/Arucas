@@ -192,21 +192,21 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
                     }
                     this.check(LEFT_BRACKET, "Expected '(' after constructor")
                     val (parameters, isArbitrary) = this.getFunctionParameters(true)
-                    val initialiser = if (this.isMatch(COLON)) {
-                        val (initProvider, initType) = when {
-                            this.isMatch(SUPER) -> DelegatedConstructor.Companion::initSuper to "super"
-                            this.isMatch(THIS) -> DelegatedConstructor.Companion::initThis to "this"
+                    val delegate = if (this.isMatch(COLON)) {
+                        val (delegate, initType) = when {
+                            this.isMatch(SUPER) -> DelegatedConstructor.Companion::parent to "super"
+                            this.isMatch(THIS) -> DelegatedConstructor.Companion::current to "this"
                             else -> this.error("Expected 'this' or 'super' constructor call")
                         }
                         this.check(LEFT_BRACKET, "Expected '(' after $initType")
                         val expressions = if (this.peekType() != RIGHT_BRACKET) this.expressions() else listOf()
                         this.check(RIGHT_BRACKET, "Expected ')' after $initType call")
-                        initProvider(expressions)
+                        delegate(expressions)
                     } else {
-                        DelegatedConstructor.initNone()
+                        DelegatedConstructor.none()
                     }
                     val body = this.statement()
-                    constructors.add(ConstructorStatement(parameters, isArbitrary, private, initialiser, body, currentTrace, this.lastTrace()))
+                    constructors.add(ConstructorStatement(parameters, isArbitrary, private, delegate, body, currentTrace, this.lastTrace()))
                 }
                 this.peekType() == FUN -> {
                     if (readonly) {

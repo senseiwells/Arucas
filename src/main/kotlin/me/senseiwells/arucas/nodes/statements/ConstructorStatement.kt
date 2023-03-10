@@ -11,7 +11,7 @@ import me.senseiwells.arucas.typed.HintedParameter
  * @param parameters the parameters for the constructor.
  * @param arbitrary whether the constructor is varargs.
  * @param private whether the constructor is private.
- * @param init the referencing constructor (this(), or super()).
+ * @param delegate the referencing constructor (this(), or super()).
  * @param body the body of the constructor.
  * @param start the trace position - if constructor is invalid.
  * @param end the end trace position.
@@ -20,7 +20,7 @@ class ConstructorStatement(
     val parameters: List<HintedParameter>,
     val arbitrary: Boolean,
     val private: Boolean,
-    val init: DelegatedConstructor,
+    val delegate: DelegatedConstructor,
     val body: Statement,
     val start: LocatableTrace,
     val end: LocatableTrace

@@ -5,6 +5,7 @@ import me.senseiwells.arucas.builtin.StringDef
 import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.exceptions.RuntimeError
 import me.senseiwells.arucas.exceptions.runtimeError
+import me.senseiwells.arucas.extensions.JavaDef
 import me.senseiwells.arucas.interpreter.Interpreter
 import net.bytebuddy.implementation.bind.annotation.AllArguments
 import net.bytebuddy.implementation.bind.annotation.Origin
@@ -15,6 +16,19 @@ import java.lang.invoke.VarHandle
 import java.lang.invoke.WrongMethodTypeException
 import java.lang.reflect.*
 
+/**
+ * Utility class intended to help calling Java methods
+ * and constructors, as well as accessing fields
+ * from within Arucas. The calls are done with method
+ * and var handles for speed.
+ *
+ * The reason we need a utility class is that we cannot
+ * necessarily map Arucas objects into Java objects, the
+ * implementation here finds the correct methods depending
+ * on the given arguments.
+ *
+ * @see JavaDef
+ */
 object ReflectionUtils {
     private val methodCache = HashMap<MethodId, MethodWithHandle>()
     private val constructorCache = HashMap<ConstructorId, MethodWithHandle>()

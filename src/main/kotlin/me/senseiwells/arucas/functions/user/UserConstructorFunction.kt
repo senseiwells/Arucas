@@ -14,7 +14,7 @@ import me.senseiwells.arucas.utils.impl.ArucasList
 
 open class UserConstructorFunction(
     val definition: ArucasClassDefinition,
-    private val initialiser: DelegatedConstructor,
+    private val delegate: DelegatedConstructor,
     parameters: List<ArucasParameter>,
     body: Statement,
     localTable: StackTable,
@@ -39,14 +39,14 @@ open class UserConstructorFunction(
         val localTable = StackTable(interpreter.modules, this.localTable)
         val instance = arguments[0]
         this.checkAndPopulate(interpreter, localTable, arguments)
-        val definition = when (this.initialiser.type) {
+        val definition = when (this.delegate.type) {
             DelegatedConstructor.Type.SUPER -> this.definition.superclass()
             DelegatedConstructor.Type.THIS -> this.definition
             else -> null
         }
         definition?.let {
             val initArgs = ArrayList<ClassInstance>()
-            for (expression in this.initialiser.arguments) {
+            for (expression in this.delegate.arguments) {
                 initArgs.add(interpreter.evaluate(localTable, expression))
             }
             it.init(interpreter, instance, initArgs, CallTrace(this.trace, "init ${definition.name}::${initArgs.size}"))
@@ -57,13 +57,13 @@ open class UserConstructorFunction(
 
     private class Varargs(
         definition: ArucasClassDefinition,
-        initialiser: DelegatedConstructor,
+        delegate: DelegatedConstructor,
         parameters: List<ArucasParameter>,
         body: Statement,
         localTable: StackTable,
         trace: LocatableTrace,
         private: Boolean
-    ): UserConstructorFunction(definition, initialiser, parameters, body, localTable, trace, private) {
+    ): UserConstructorFunction(definition, delegate, parameters, body, localTable, trace, private) {
         override val count: Int
             get() = -1
 
@@ -82,7 +82,7 @@ open class UserConstructorFunction(
         fun of(
             arbitrary: Boolean,
             definition: ArucasClassDefinition,
-            initialiser: DelegatedConstructor,
+            delegate: DelegatedConstructor,
             parameters: List<ArucasParameter>,
             body: Statement,
             table: StackTable,
@@ -90,9 +90,9 @@ open class UserConstructorFunction(
             private: Boolean
         ): UserConstructorFunction {
             if (arbitrary) {
-                return Varargs(definition, initialiser, parameters, body, table, trace, private)
+                return Varargs(definition, delegate, parameters, body, table, trace, private)
             }
-            return UserConstructorFunction(definition, initialiser, parameters, body, table, trace, private)
+            return UserConstructorFunction(definition, delegate, parameters, body, table, trace, private)
         }
     }
 }

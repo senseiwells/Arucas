@@ -1,10 +1,17 @@
 package me.senseiwells.arucas.utils
 
 import me.senseiwells.arucas.exceptions.RuntimeError
+import me.senseiwells.arucas.extensions.JavaDef
 import kotlin.experimental.and
 import kotlin.experimental.or
 import kotlin.experimental.xor
 
+/**
+ * Utility object that allows for appling operators to
+ * [Any] java values.
+ *
+ * @see JavaDef
+ */
 object JavaUtils {
     fun not(first: Any, default: Any): Any {
         return when (first) {
@@ -310,6 +317,14 @@ object JavaUtils {
         return binarySimilar(first, second, default, Boolean::or, Byte::or, Short::or, Int::or, Long::or)
     }
 
+    fun shiftLeft(first: Any, second: Any?, default: Any): Any {
+        return binarySimilar(first, second, default, { a, b -> (a.toLong() shl b.toInt()).toByte() }, { a, b -> (a.toLong() shl b.toInt()).toShort() }, { a, b -> a shl b }, { a, b -> a shl b.toInt() })
+    }
+
+    fun shiftRight(first: Any, second: Any?, default: Any): Any {
+        return binarySimilar(first, second, default, { a, b -> (a.toLong() shr b.toInt()).toByte() }, { a, b -> (a.toLong() shr b.toInt()).toShort() }, { a, b -> a shr b }, { a, b -> a shr b.toInt() })
+    }
+
     fun bracketAccess(first: Any, second: Any?, default: Any): Any? {
         RuntimeError.wrap {
             return when (first) {
@@ -429,6 +444,20 @@ object JavaUtils {
                 is Boolean -> bothBoolean(first, second)
                 else -> default
             }
+            else -> return binarySimilar(first, second, default, bothByte, bothShort, bothInt, bothLong)
+        }
+    }
+
+    private fun binarySimilar(
+        first: Any,
+        second: Any?,
+        default: Any,
+        bothByte: (Byte, Byte) -> Byte,
+        bothShort: (Short, Short) -> Short,
+        bothInt: (Int, Int) -> Int,
+        bothLong: (Long, Long) -> Long
+    ): Any {
+        return when (first) {
             is Byte -> when (second) {
                 is Byte -> bothByte(first, second)
                 is Short -> bothByte(first, second.toByte())
@@ -443,6 +472,18 @@ object JavaUtils {
                 is Long -> bothShort(first, second.toShort())
                 else -> default
             }
+            else -> binarySimilar(first, second, default, bothInt, bothLong)
+        }
+    }
+
+    private fun binarySimilar(
+        first: Any,
+        second: Any?,
+        default: Any,
+        bothInt: (Int, Int) -> Int,
+        bothLong: (Long, Long) -> Long
+    ): Any {
+        return when (first) {
             is Int -> when (second) {
                 is Byte -> bothInt(first, second.toInt())
                 is Short -> bothInt(first, second.toInt())

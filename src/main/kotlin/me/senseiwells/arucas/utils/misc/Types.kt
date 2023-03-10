@@ -1,5 +1,9 @@
 package me.senseiwells.arucas.utils.misc
 
+/**
+ * This object contains a list of constants
+ * with the names of the different built-in classes.
+ */
 object Types {
     const val BOOLEAN = "Boolean"
     const val COLLECTION = "Collection"

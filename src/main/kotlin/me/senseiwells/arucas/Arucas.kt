@@ -11,9 +11,18 @@ import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.system.exitProcess
 
+/**
+ * The main arucas class.
+ */
 object Arucas {
-    const val VERSION = "3.0.0"
+    /**
+     * The current version of Arucas.
+     */
+    const val VERSION = "2.3.0"
 
+    /**
+     * The path of the `.arucas` folder where the default config and libraries are stored.
+     */
     @JvmField
     val PATH: Path = Path.of(System.getProperty("user.home")).resolve(".arucas")
 
@@ -28,14 +37,14 @@ object Arucas {
 
         var cmdLine = true
         ArgumentParser().let { p ->
-            p.addBool("-format") { builder.setOutput(DefaultArucasIO(it)) }
-            p.addBool("-debug") { properties.isDebug = it }
-            p.addBool("-experimental") { properties.isExperimental = it }
-            p.addBool("-suppressDeprecated") { properties.logDeprecated = it }
-            p.addBool("-cmdLine") { cmdLine = it }
+            p.addBoolean("-format") { builder.setOutput(DefaultArucasIO(it)) }
+            p.addBoolean("-debug") { properties.isDebug = it }
+            p.addBoolean("-experimental") { properties.isExperimental = it }
+            p.addBoolean("-suppressDeprecated") { properties.logDeprecated = it }
+            p.addBoolean("-cmdLine") { cmdLine = it }
             p.addInt("-maxErrorLength") { properties.errorMaxLength = it }
-            p.addStr("-run") { runFile(api, it) }
-            p.addStr("-generate") { ArucasDocVisitors.generateDefault(Path.of(it), api) }
+            p.addString("-run") { runFile(api, it) }
+            p.addString("-generate") { ArucasDocVisitors.generateDefault(Path.of(it), api) }
 
             p.parse(args)
         }

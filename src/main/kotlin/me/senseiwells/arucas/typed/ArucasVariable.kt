@@ -100,6 +100,11 @@ class ArucasVariable(
         return this.instance
     }
 
+    /**
+     * Gets the type hints as a string.
+     *
+     * @return the type hints as a string separated by the | char.
+     */
     fun typesAsString(): String {
         return this.definitions.get().joinToString(" | ")
     }

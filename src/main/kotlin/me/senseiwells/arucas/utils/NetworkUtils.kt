@@ -5,7 +5,16 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.net.URL
 
+/**
+ * Utility object for handling network requests.
+ */
 object NetworkUtils {
+    /**
+     * Retrieves the content from a given [url] and reads it as a string.
+     *
+     * @param url the url to request.
+     * @return the content as a string, null if the request failed.
+     */
     @JvmStatic
     fun getStringFromUrl(url: String): String? {
         return try {
@@ -16,6 +25,13 @@ object NetworkUtils {
         }
     }
 
+    /**
+     * Downloads the contents of an [url] to a [file].
+     *
+     * @param url the url to download from.
+     * @param file the file to download to.
+     * @return whether the download was successful.
+     */
     @JvmStatic
     fun downloadFile(url: String, file: File): Boolean {
         return try {

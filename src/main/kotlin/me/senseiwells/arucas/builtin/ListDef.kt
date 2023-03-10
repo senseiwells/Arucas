@@ -5,6 +5,7 @@ import me.senseiwells.arucas.classes.CreatableDefinition
 import me.senseiwells.arucas.classes.PrimitiveDefinition
 import me.senseiwells.arucas.classes.instance.ClassInstance
 import me.senseiwells.arucas.compiler.LocatableTrace
+import me.senseiwells.arucas.compiler.Trace
 import me.senseiwells.arucas.exceptions.runtimeError
 import me.senseiwells.arucas.functions.builtin.Arguments
 import me.senseiwells.arucas.functions.builtin.ConstructorFunction
@@ -100,6 +101,7 @@ class ListDef(interpreter: Interpreter): CreatableDefinition<ArucasList>(LIST, i
             MemberFunction.of("flatten", this::flatten),
             MemberFunction.of("reverse", this::reverse),
             MemberFunction.of("shuffle", this::shuffle),
+            MemberFunction.of("slice", 1, this::slice)
         )
     }
 
@@ -448,7 +450,7 @@ class ListDef(interpreter: Interpreter): CreatableDefinition<ArucasList>(LIST, i
         returns = ReturnDoc(ListDef::class, ["The flattened list."]),
         examples = [
             """
-            (list = [1, 2, 3, [4, 5], [6, [7]]]).flatten();
+            list = [1, 2, 3, [4, 5], [6, [7]]].flatten();
             // list = [1, 2, 3, 4, 5, 6, [7]]
             """
         ]
@@ -466,7 +468,7 @@ class ListDef(interpreter: Interpreter): CreatableDefinition<ArucasList>(LIST, i
 
     @FunctionDoc(
         name = "reverse",
-        desc = ["This allows you to reverse the list"],
+        desc = ["This allows you to reverse the list - this mutates the existing list."],
         returns = ReturnDoc(ListDef::class, ["The reversed list."]),
         examples = ["['a', 'b', 'c', 'd'].reverse(); // ['d', 'c', 'b', 'a']"]
     )
@@ -478,7 +480,7 @@ class ListDef(interpreter: Interpreter): CreatableDefinition<ArucasList>(LIST, i
 
     @FunctionDoc(
         name = "shuffle",
-        desc = ["This allows you to shuffle the list"],
+        desc = ["This allows you to shuffle the list - this mutates the existing list."],
         returns = ReturnDoc(ListDef::class, ["The shuffled list."]),
         examples = ["['a', 'b', 'c', 'd'].shuffle(); // some random order ¯\\_(ツ)_/¯"]
     )
@@ -486,5 +488,27 @@ class ListDef(interpreter: Interpreter): CreatableDefinition<ArucasList>(LIST, i
         val list = arguments.nextList()
         list.asPrimitive(this).shuffle()
         return list
+    }
+
+    @FunctionDoc(
+        name = "slice",
+        desc = ["This creates a new list with the desired contents from the list."],
+        params = [ParameterDoc(IterableDef::class, "indexes", ["An iterable object containing the indexes you want to slice"])],
+        returns = ReturnDoc(ListDef::class, ["The sliced list."]),
+        examples = [
+            "['a', 'b', 'c', 'd'].slice([2, 0]); // ['c', 'a']",
+            "['a', 'b', 'c', 'd', 'e'].slice(range(1, 4)); // ['b', 'c', 'd']"
+        ]
+    )
+    private fun slice(arguments: Arguments): ClassInstance {
+        val list = arguments.nextList()
+        val iter = arguments.next(IterableDef::class)
+        val interpreter = arguments.interpreter
+        val newList = ArucasList()
+        while (iter.callMemberPrimitive(interpreter, "hasNext", listOf(), BooleanDef::class, Trace.INTERNAL)) {
+            val index = iter.callMember(interpreter, "next", listOf(), NumberDef::class, Trace.INTERNAL)
+            newList.add(list.callMember(interpreter, "get", listOf(index), Trace.INTERNAL))
+        }
+        return this.create(newList)
     }
 }

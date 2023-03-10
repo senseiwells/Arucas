@@ -4,6 +4,8 @@ import me.senseiwells.arucas.classes.ClassDefinition
 import me.senseiwells.arucas.classes.PrimitiveDefinition
 import me.senseiwells.arucas.exceptions.compileError
 import me.senseiwells.arucas.functions.ArucasFunction
+import me.senseiwells.arucas.interpreter.Interpreter
+import me.senseiwells.arucas.interpreter.StackTable
 import me.senseiwells.arucas.nodes.*
 import me.senseiwells.arucas.nodes.expressions.*
 import me.senseiwells.arucas.nodes.statements.*
@@ -356,7 +358,7 @@ class Resolver(
 
     override fun visitConstructor(constructor: ConstructorStatement) {
         this.visitFunction(constructor.parameters, constructor.body, constructor.start) {
-            this.resolveExpressions(constructor.init.arguments)
+            this.resolveExpressions(constructor.delegate.arguments)
         }
     }
 
@@ -402,7 +404,7 @@ class Resolver(
 
     }
 
-    override fun <L : PrimitiveDefinition<*>> visitLiteral(literal: LiteralExpression<L>) {
+    override fun <L: PrimitiveDefinition<*>> visitLiteral(literal: LiteralExpression<L>) {
 
     }
 

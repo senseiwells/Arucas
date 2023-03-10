@@ -6,6 +6,9 @@ import me.senseiwells.arucas.interpreter.Interpreter
 import me.senseiwells.arucas.utils.impl.ArucasIterable
 import me.senseiwells.arucas.utils.impl.ArucasIterator
 
+/**
+ * Utility object for collections.
+ */
 object CollectionUtils {
     private val emptyIterator = object: Iterator<Nothing> {
         override fun hasNext() = false
@@ -13,13 +16,38 @@ object CollectionUtils {
         override fun next() = throw NoSuchElementException("Empty iterator has no values")
     }
 
-    infix fun <A, B, C> Pair<A, B>.to(that: C): Triple<A, B, C> = Triple(this.first, this.second, that)
+    /**
+     * Creates a triple by combining a pair with another value:
+     * ```kt
+     * 0 to 1 to 2
+     * ```
+     *
+     * @param that the third value.
+     * @return the created triple.
+     */
+    infix fun <A, B, C> Pair<A, B>.to(that: C): Triple<A, B, C> {
+        return Triple(this.first, this.second, that)
+    }
 
+    /**
+     * Returns an iterator that has no values.
+     *
+     * @return the empty iterator.
+     */
     @JvmStatic
     fun <T> emptyIterator(): Iterator<T> {
         return this.emptyIterator
     }
 
+    /**
+     * Creates an [ArucasIterable] that iterates over a range.
+     *
+     * @param interpreter the interpreter that called the range.
+     * @param end the end of the range.
+     * @param start the start of the range.
+     * @param step the step of the range.
+     * @return the range iterable.
+     */
     @JvmStatic
     fun rangeIterable(interpreter: Interpreter, end: Double, start: Double = 0.0, step: Double = 1.0): ArucasIterable {
         return object: ArucasIterable {

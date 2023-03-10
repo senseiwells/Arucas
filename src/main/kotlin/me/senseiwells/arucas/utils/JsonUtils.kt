@@ -9,15 +9,32 @@ import me.senseiwells.arucas.utils.impl.ArucasList
 import me.senseiwells.arucas.utils.impl.ArucasMap
 import me.senseiwells.arucas.utils.impl.ArucasOrderedMap
 
+/**
+ * Utility object for converting JSON
+ * to and from Arucas objects.
+ */
 object JsonUtils {
     @Suppress("PropertyName")
     @JvmField
     val GSON: Gson = GsonBuilder().setPrettyPrinting().disableHtmlEscaping().serializeNulls().create()
 
+    /**
+     * Converts a [JsonElement] to a String.
+     *
+     * @param element the json element to convert.
+     * @return the string of the json element.
+     */
     fun serialize(element: JsonElement): String {
         return GSON.toJson(element)
     }
 
+    /**
+     * Converts a [JsonElement] into a [ClassInstance].
+     *
+     * @param interpreter the interpreter to create the class instance.
+     * @param element the element to convert.
+     * @return the class instance.
+     */
     fun toInstance(interpreter: Interpreter, element: JsonElement): ClassInstance {
         return when {
             element.isJsonPrimitive -> {
@@ -50,6 +67,14 @@ object JsonUtils {
         return interpreter.create(MapDef::class, map)
     }
 
+    /**
+     * Converts a [ClassInstance] into a [JsonElement].
+     *
+     * @param interpreter the interpreter to create the element.
+     * @param instance the instance to convert.
+     * @param depth the depth at which to recursively create elements.
+     * @return the json element.
+     */
     fun fromInstance(interpreter: Interpreter, instance: ClassInstance, depth: Int): JsonElement {
         if (depth < 0) {
             runtimeError("JSON serialisation went too deep")
