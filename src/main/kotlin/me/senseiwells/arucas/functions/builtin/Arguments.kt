@@ -5,9 +5,12 @@ import me.senseiwells.arucas.builtin.*
 import me.senseiwells.arucas.classes.ClassDefinition
 import me.senseiwells.arucas.classes.PrimitiveDefinition
 import me.senseiwells.arucas.classes.instance.ClassInstance
+import me.senseiwells.arucas.compiler.Trace
 import me.senseiwells.arucas.exceptions.runtimeError
 import me.senseiwells.arucas.extensions.JavaDef
 import me.senseiwells.arucas.interpreter.Interpreter
+import me.senseiwells.arucas.utils.CollectionUtils
+import me.senseiwells.arucas.utils.impl.ArucasIterator
 import kotlin.reflect.KClass
 
 /**
@@ -321,6 +324,26 @@ open class Arguments(
         runtimeError("Must pass a String or Enum into parameter ${this.displayedIndex(index)} for '${this.getFunctionName()}'")
     }
 
+    /**
+     * This gets the next iterator, this can either be from
+     * an iterator or will be automatically converted to
+     * an iterator from an iterable instance.
+     *
+     * @return the iterator.
+     */
+    fun nextIterator(): ArucasIterator {
+        val index = this.index
+        val instance = this.next()
+        if (instance.isOf(IteratorDef::class)) {
+            return CollectionUtils.wrapIterator(this.interpreter, instance, Trace.INTERNAL)
+        }
+        if (instance.isOf(IterableDef::class)) {
+            val iter = instance.callMember(this.interpreter, "iterator", listOf(), IteratorDef::class, Trace.INTERNAL)
+            return CollectionUtils.wrapIterator(this.interpreter, iter, Trace.INTERNAL)
+        }
+        runtimeError("Must pass an Iterator or Iterable into parameter ${this.displayedIndex(index)} for '${this.getFunctionName()}'")
+    }
+
     // Some functions to retrieve the basic built in types.
 
     fun nextString(): ClassInstance {
@@ -349,10 +372,6 @@ open class Arguments(
 
     fun nextSet(): ClassInstance {
         return this.next(SetDef::class)
-    }
-
-    fun nextIterator(): ClassInstance {
-        return this.next(IterableDef::class)
     }
 
     fun nextCollection(): ClassInstance {

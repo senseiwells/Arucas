@@ -100,6 +100,18 @@ class ClassInstance internal constructor(
         return null
     }
 
+    fun <T: PrimitiveDefinition<V>, V: Any> getPrimitiveOrThrow(klass: KClass<out T>, message: String, trace: Trace = Trace.INTERNAL): V {
+        return this.getPrimitiveOrThrow(klass.java, message, trace)
+    }
+
+    fun <T: PrimitiveDefinition<V>, V: Any> getPrimitiveOrThrow(clazz: Class<out T>, message: String, trace: Trace = Trace.INTERNAL): V {
+        return this.getPrimitiveOrThrow(this.definition.getPrimitiveDef(clazz), message, trace)
+    }
+
+    fun <T: Any> getPrimitiveOrThrow(definition: PrimitiveDefinition<T>, message: String, trace: Trace = Trace.INTERNAL): T {
+        return this.getPrimitive(definition) ?: runtimeError(message, trace)
+    }
+
     fun <T: PrimitiveDefinition<V>, V: Any> asPrimitive(klass: KClass<out T>): V {
         return this.asPrimitive(klass.java)
     }
@@ -122,6 +134,20 @@ class ClassInstance internal constructor(
 
     fun isOf(clazz: Class<out PrimitiveDefinition<*>>): Boolean {
         return this.isOf(this.definition.getPrimitiveDef(clazz))
+    }
+
+    fun expect(definition: ClassDefinition, message: String, trace: Trace = Trace.INTERNAL) {
+        if (!this.definition.inheritsFrom(definition)) {
+            runtimeError(message, trace)
+        }
+    }
+
+    fun expect(klass: KClass<out PrimitiveDefinition<*>>, message: String, trace: Trace = Trace.INTERNAL) {
+        this.expect(this.definition.getPrimitiveDef(klass), message, trace)
+    }
+
+    fun expect(clazz: Class<out PrimitiveDefinition<*>>, message: String, trace: Trace = Trace.INTERNAL) {
+        this.expect(this.definition.getPrimitiveDef(clazz), message, trace)
     }
 
     fun callMember(interpreter: Interpreter, name: String, args: List<ClassInstance>, returnType: ClassDefinition, trace: LocatableTrace): ClassInstance {

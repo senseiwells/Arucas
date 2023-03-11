@@ -321,7 +321,7 @@ class ListDef(interpreter: Interpreter): CreatableDefinition<ArucasList>(LIST, i
         val comparator = arguments.next()
         list.asPrimitive(this).sortWith { a, b ->
             val returnValue = arguments.interpreter.call(comparator, listOf(a, b))
-            val num = returnValue.getPrimitive(NumberDef::class) ?: runtimeError("Comparator function must return a number")
+            val num = returnValue.getPrimitiveOrThrow(NumberDef::class, "Comparator function must return a number")
             if (num > 0) 1 else if (num < 0) -1 else 0
         }
         return list
@@ -350,7 +350,7 @@ class ListDef(interpreter: Interpreter): CreatableDefinition<ArucasList>(LIST, i
         val predicate = arguments.nextFunction()
         val newList = list.filterTo(ArucasList()) {
             val returnValue = arguments.interpreter.call(predicate, listOf(it))
-            returnValue.getPrimitive(BooleanDef::class) ?: runtimeError("Predicate function must return a boolean")
+            returnValue.getPrimitiveOrThrow(BooleanDef::class, "Predicate function must return a boolean")
         }
         return this.create(newList)
     }
@@ -502,11 +502,11 @@ class ListDef(interpreter: Interpreter): CreatableDefinition<ArucasList>(LIST, i
     )
     private fun slice(arguments: Arguments): ClassInstance {
         val list = arguments.nextList()
-        val iter = arguments.next(IterableDef::class)
+        val iter = arguments.nextIterator()
         val interpreter = arguments.interpreter
         val newList = ArucasList()
-        while (iter.callMemberPrimitive(interpreter, "hasNext", listOf(), BooleanDef::class, Trace.INTERNAL)) {
-            val index = iter.callMember(interpreter, "next", listOf(), NumberDef::class, Trace.INTERNAL)
+        for (index in iter) {
+            index.expect(NumberDef::class, "Expected numbers when slicing")
             newList.add(list.callMember(interpreter, "get", listOf(index), Trace.INTERNAL))
         }
         return this.create(newList)

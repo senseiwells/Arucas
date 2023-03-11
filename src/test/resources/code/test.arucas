@@ -1,2 +1,26 @@
 // ./src/test/resources/code/test.arucas
 
+class X: Iterator {
+    var inner = range(0, 6, 2).iterator();
+
+    X(): super() { }
+
+    fun hasNext() {
+        return this.inner.hasNext();
+    }
+
+    fun next() {
+        return this.inner.next();
+    }
+}
+
+import ImmutableList from util.Collections;
+
+foreach (x : new X()) {
+    print(x);
+}
+
+l = ImmutableList.of(0, 1, 2, 3, 4, 5, 6);
+print(l);
+
+print(l.slice(new X()));

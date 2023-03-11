@@ -1,7 +1,9 @@
 package me.senseiwells.arucas.utils
 
-import me.senseiwells.arucas.builtin.NumberDef
+import me.senseiwells.arucas.builtin.*
 import me.senseiwells.arucas.classes.instance.ClassInstance
+import me.senseiwells.arucas.compiler.LocatableTrace
+import me.senseiwells.arucas.exceptions.runtimeError
 import me.senseiwells.arucas.interpreter.Interpreter
 import me.senseiwells.arucas.utils.impl.ArucasIterable
 import me.senseiwells.arucas.utils.impl.ArucasIterator
@@ -53,6 +55,32 @@ object CollectionUtils {
         return object: ArucasIterable {
             override fun iterator(): ArucasIterator {
                 return RangeIterator(start, end, step) { interpreter.create(NumberDef::class, it) }
+            }
+        }
+    }
+
+    /**
+     * Wraps an implemented iterator instance from Arucas to Kotlin.
+     *
+     * @param interpreter the interpreter that wants to iterate.
+     * @param instance the instance to iterator.
+     * @param trace the trace location.
+     * @return the wrapped iterator.
+     */
+    @JvmStatic
+    fun wrapIterator(interpreter: Interpreter, instance: ClassInstance, trace: LocatableTrace): ArucasIterator {
+        val iter = instance.getPrimitiveOrThrow(IteratorDef::class, "Cannot iterate a non Iterator value: ${instance.toString(interpreter, trace)}", trace)
+        // Implemented natively - faster
+        if (iter !== ArucasIterator.EMPTY) {
+            return iter
+        }
+        return object: ArucasIterator {
+            override fun hasNext(): Boolean {
+                return instance.callMemberPrimitive(interpreter, "hasNext", listOf(), BooleanDef::class, trace)
+            }
+
+            override fun next(): ClassInstance {
+                return instance.callMember(interpreter, "next", listOf(), trace)
             }
         }
     }

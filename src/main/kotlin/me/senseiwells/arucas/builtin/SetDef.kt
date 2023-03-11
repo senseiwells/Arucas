@@ -218,7 +218,7 @@ class SetDef(interpreter: Interpreter): CreatableDefinition<ArucasSet>(SET, inte
 
     @FunctionDoc(
         name = "filter",
-        desc = ["This allows you to filter the set"],
+        desc = ["This allows you to filter the set, this returns a new set."],
         params = [ParameterDoc(FunctionDef::class, "function", ["The function you want to filter the set by."])],
         returns = ReturnDoc(SetDef::class, ["The filtered set."]),
         examples = ["Set.of(-9, 81, 96, 15).filter(fun(value) { return value > 80; });"]
@@ -228,9 +228,7 @@ class SetDef(interpreter: Interpreter): CreatableDefinition<ArucasSet>(SET, inte
         val predicate = arguments.nextFunction()
         val newSet = ArucasSet()
         for (value in instance) {
-            val returnValue = arguments.interpreter.call(predicate, listOf(value))
-            val boolean = returnValue.getPrimitive(BooleanDef::class) ?: runtimeError("Predicate function must return a boolean")
-            if (boolean) {
+            if (FunctionUtils.callAsPredicate(arguments.interpreter, predicate, value)) {
                 newSet.add(arguments.interpreter, value)
             }
         }

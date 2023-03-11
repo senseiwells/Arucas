@@ -918,19 +918,19 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
     }
 
     override fun visitForeach(foreach: ForeachStatement) {
-        val iterable = this.evaluate(foreach.iterable)
-        if (!iterable.isOf(IterableDef::class)) {
-            runtimeError("'foreach' loop must iterate over an Iterable value", foreach.start)
+        val result = this.evaluate(foreach.iterable)
+        val iterator = if (result.isOf(IterableDef::class)) {
+            result.callMember(this, "iterator", listOf(), IteratorDef::class, foreach.start)
+        } else {
+            result.expect(IteratorDef::class, "'foreach' loop must iterate over an Iterable or Iterator", foreach.start)
+            result
         }
 
-        val iterator = iterable.callMember(this, "iterator", listOf(), IteratorDef::class, foreach.start)
-
-        val hasNext = { iterator.callMemberPrimitive(this, "hasNext", listOf(), BooleanDef::class, foreach.start) }
-        val getNext = { iterator.callMember(this, "next", listOf(), ObjectDef::class, foreach.start) }
-        while (hasNext()) {
+        val wrapped = CollectionUtils.wrapIterator(this, iterator, foreach.start)
+        for (value in wrapped) {
             this.poll()
             val shouldBreak = this.jumpNextTable {
-                this.currentTable.defineVar(foreach.name, getNext())
+                this.currentTable.defineVar(foreach.name, value)
                 try {
                     this.execute(foreach.body)
                 } catch (breakPropagator: Propagator.Break) {
