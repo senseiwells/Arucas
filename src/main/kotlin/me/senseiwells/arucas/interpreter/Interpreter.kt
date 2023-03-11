@@ -1253,7 +1253,7 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
 
     override fun visitNewAccess(access: NewAccessExpression): ClassInstance {
         val classDefinition = this.getClass(access.name, access.trace, access)
-        return classDefinition.accessConstructor(access.trace)
+        return classDefinition.accessConstructor(this, access.trace)
     }
 
     override fun visitNewCall(call: NewCallExpression): ClassInstance {

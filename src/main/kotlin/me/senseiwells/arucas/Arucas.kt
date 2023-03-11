@@ -56,38 +56,51 @@ object Arucas {
 
     private fun commandLine(api: ArucasAPI) {
         api.getOutput().println("\nWelcome to the Arucas Interpreter!")
+        val lastInputs = ArrayList<String>()
         while (true) {
             api.getOutput().print("\n>> ")
-            val content = readln().trim()
+            var content = readln().trim()
+            if (content.matches(Regex("^\\^+$"))) {
+                val index = content.length - 1
+                if (index > lastInputs.lastIndex) {
+                    api.getOutput().printError("> Cannot get previous input for '$content'")
+                    continue
+                }
+                content = lastInputs[index]
+            }
+
             when {
                 content.isBlank() -> continue
                 content == "quit" || content == "exit" -> exitProcess(130)
                 else -> {
                     val matcher = Regex("^.*?\\.arucas\$").find(content)
                     if (matcher != null) {
-                        if (runFile(api, matcher.value)) {
-                            continue
+                        runFile(api, matcher.value)
+                        if (content != lastInputs.firstOrNull()) {
+                            lastInputs.add(0, content)
                         }
+                        continue
                     }
                 }
             }
 
             Interpreter.of(content, "console", api).executeAsync().get()
+            if (content != lastInputs.firstOrNull()) {
+                lastInputs.add(0, content)
+            }
         }
     }
 
-    private fun runFile(api: ArucasAPI, filePath: String): Boolean {
-        return try {
+    private fun runFile(api: ArucasAPI, filePath: String) {
+        try {
             val path = Path.of(filePath)
             val fileName = path.fileName?.toString() ?: filePath
             val content = Files.readString(path)
             Interpreter.of(content, fileName, api).executeBlocking()
-            true
-        } catch (e: ArucasError) {
-            true
+        } catch (_: ArucasError) {
+
         } catch (e: Exception) {
             api.getOutput().printError("Could not read file '$filePath':\n${e.stackTraceToString()}")
-            false
         }
     }
 }

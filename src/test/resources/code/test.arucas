@@ -1,21 +1,2 @@
 // ./src/test/resources/code/test.arucas
 
-class A {
-    private var x = 10;
-
-    fun getX() {
-        return this.x;
-    }
-}
-
-class B: A {
-    B(): super() {
-
-    }
-
-    fun bruh() {
-        print(this.getX());
-    }
-}
-
-new B().bruh();

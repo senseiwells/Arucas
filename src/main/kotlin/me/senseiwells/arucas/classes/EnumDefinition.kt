@@ -55,12 +55,12 @@ class EnumDefinition(
         return super.superclass() as EnumDef
     }
 
-    override fun accessConstructor(trace: Trace): Nothing {
+    override fun accessConstructor(interpreter: Interpreter, trace: LocatableTrace): Nothing {
         runtimeError("Enums cannot be constructed", trace)
     }
 
     override fun callConstructor(interpreter: Interpreter, args: MutableList<ClassInstance>, trace: CallTrace): Nothing {
-        this.accessConstructor(trace)
+        runtimeError("Enums cannot be constructed", trace)
     }
 
     override fun staticMemberAccess(interpreter: Interpreter, name: String, trace: LocatableTrace): ClassInstance {

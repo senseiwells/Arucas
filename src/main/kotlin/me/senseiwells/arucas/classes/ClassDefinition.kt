@@ -638,11 +638,17 @@ abstract class ClassDefinition(
         this.superclasses.value.addAll(this.interfaces())
     }
 
-    internal open fun accessConstructor(trace: Trace): ClassInstance {
+    internal open fun accessConstructor(interpreter: Interpreter, trace: LocatableTrace): ClassInstance {
         if (!this.canConstructDirectly()) {
             runtimeError("The class '${this.name}' cannot be constructed", trace)
         }
-        runtimeError("The constructor for class '${this.name}' cannot be delegated", trace)
+
+        val branch = interpreter.branch()
+        val delegate = BuiltInFunction.arb("\$delegate.<${this.name}>.constructor", {
+            val arguments = ArrayList(it.arguments)
+            callConstructor(branch, arguments, CallTrace(trace, "new ${this.name}::${arguments.size}"))
+        })
+        return interpreter.create(FunctionDef::class, delegate)
     }
 
     internal open fun callConstructor(interpreter: Interpreter, args: MutableList<ClassInstance>, trace: CallTrace): ClassInstance {
@@ -735,12 +741,12 @@ abstract class ClassDefinition(
             if (instance.definition.hasMemberFunction(instance, name)) {
                 // We need to create a branch because we cannot guarantee
                 // that this function will be run on the same thread
-                val child = interpreter.branch()
+                val branch = interpreter.branch()
                 // We create a temporary function that take arbitrary
                 // number of parameters that tries to call the instance
                 val delegate = BuiltInFunction.arb("\$delegate.<${instance.definition.name}>.$name", {
                     val arguments = ArrayList(it.arguments)
-                    instance.callMember(child.branch(), name, arguments, trace)
+                    instance.callMember(branch.branch(), name, arguments, trace)
                 })
                 return interpreter.create(FunctionDef::class, delegate)
             }

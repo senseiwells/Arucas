@@ -34,7 +34,7 @@ class InterfaceDefinition(
         throw IllegalStateException("Tried to convert interface instance into java value, this is a bug!")
     }
 
-    override fun accessConstructor(trace: Trace): ClassInstance {
+    override fun accessConstructor(interpreter: Interpreter, trace: LocatableTrace): ClassInstance {
         runtimeError("Cannot construct an interface class", trace)
     }
 
