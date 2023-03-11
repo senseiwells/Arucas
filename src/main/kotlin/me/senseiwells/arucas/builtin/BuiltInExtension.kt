@@ -306,7 +306,7 @@ class BuiltInExtension: ArucasExtension {
                 )
             }
             else -> {
-                runtimeError("Cannot pass ... into len()")
+                runtimeError("Cannot pass ${arguments.next().toString(arguments.interpreter)} into len()")
             }
         }
     }
