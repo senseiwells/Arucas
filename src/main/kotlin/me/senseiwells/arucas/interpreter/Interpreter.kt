@@ -805,6 +805,10 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
 
         body.staticInitializers.forEach { this.execute(it) }
 
+        if (definition.staticFields.isInitialized()) {
+            definition.staticFields.value.values.forEach { it.finalise(body.start) }
+        }
+
         for (interfaceDefinition in definition.interfaces()) {
             if (!interfaceDefinition.hasRequiredMethods(definition)) {
                 runtimeError("$type '${definition.name}' has not properly implemented '${interfaceDefinition.name}'", body.start)
