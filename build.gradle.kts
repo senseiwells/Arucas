@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "me.senseiwells"
-version = "2.2.0"
+version = "2.3.0"
 
 val shade: Configuration by configurations.creating
 
@@ -62,7 +62,7 @@ tasks.startScripts {
 }
 
 application {
-    mainClass.set("me.senseiwells.arucas.MainKt")
+    mainClass.set("me.senseiwells.arucas.Arucas")
 }
 
 publishing {
