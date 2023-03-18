@@ -102,7 +102,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
                 this.error("Enum cannot have a duplicate constant: '${name.content}'", name.trace)
             }
             if (name.content == "type") {
-                this.error("Enum cannot defined constant 'type'", name.trace)
+                this.error("Enum cannot define constant 'type'", name.trace)
             }
             val arguments = if (this.isMatch(LEFT_BRACKET)) {
                 val expressions = if (this.peekType() != RIGHT_BRACKET) this.expressions() else listOf()
@@ -166,7 +166,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
                         this.error("Class cannot contain duplicate field name", name.trace)
                     }
                     if (static && name.content == "type") {
-                        this.error("Class cannot defined static field 'type'", name.trace)
+                        this.error("Class cannot define static field 'type'", name.trace)
                     }
                     val types = this.getTypeHint()
                     val expression = when {
@@ -466,7 +466,7 @@ class Parser(tokens: List<Token>): TokenReader<Token>(tokens) {
         this.check(FROM, "Expected 'from' after import names")
         val builder = StringBuilder(this.checkIdentifier("Expected module name"))
         while (this.isMatch(DOT)) {
-            builder.append(".").append(this.checkIdentifier("expected submodule name after '.'"))
+            builder.append(".").append(this.checkIdentifier("Expected submodule name after '.'"))
         }
         this.check(SEMICOLON, "Expected ';' after module name")
         return ImportStatement(names, builder.toString(), isLocal, trace)
