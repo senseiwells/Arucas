@@ -291,6 +291,7 @@ class BuiltInExtension: ArucasExtension {
         name = "len",
         desc = ["This is used to get the length of a collection or string"],
         params = [ParameterDoc(StringDef::class, "sizable", ["The collection or string."])],
+        returns = ReturnDoc(NumberDef::class, ["The size of the given object"]),
         examples = ["len(\"Hello World\");"]
     )
     private fun len(arguments: Arguments): Number {
