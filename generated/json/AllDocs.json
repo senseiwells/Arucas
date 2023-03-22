@@ -211,6 +211,10 @@
             "desc": "The collection or string."
           }
         ],
+        "returns": {
+          "type": "Number",
+          "desc": "The size of the given object."
+        },
         "examples": [
           "len(\"Hello World\");"
         ]
