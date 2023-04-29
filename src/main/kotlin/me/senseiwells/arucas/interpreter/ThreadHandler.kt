@@ -7,10 +7,7 @@ import me.senseiwells.arucas.exceptions.ArucasError
 import me.senseiwells.arucas.exceptions.FatalError
 import me.senseiwells.arucas.exceptions.Propagator
 import me.senseiwells.arucas.utils.impl.ArucasThread
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.Future
-import java.util.concurrent.ScheduledExecutorService
-import java.util.concurrent.ScheduledThreadPoolExecutor
+import java.util.concurrent.*
 
 class ThreadHandler(val interpreter: Interpreter) {
     private val shutdown = ArrayList<Runnable>()
@@ -125,8 +122,8 @@ class ThreadHandler(val interpreter: Interpreter) {
         }
     }
 
-    private fun createExecutor(): ScheduledExecutorService {
-        return ScheduledThreadPoolExecutor(2) { runnable ->
+    private fun createExecutor(): ExecutorService {
+        return Executors.newCachedThreadPool { runnable ->
             ArucasThread(this.interpreter, this.threadGroup, runnable, "Arucas Async Thread")
         }
     }
