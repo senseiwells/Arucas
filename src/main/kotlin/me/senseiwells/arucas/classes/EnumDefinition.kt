@@ -26,7 +26,7 @@ class EnumDefinition(
 
     init {
         val valuesMethod = BuiltInFunction.of("values", this::values)
-        val fromStringMethod = BuiltInFunction.of("fromString", this::fromString)
+        val fromStringMethod = BuiltInFunction.of("fromString", 1, this::fromString)
         this.staticMethods.value.add(this.interpreter.create(FunctionDef::class, valuesMethod))
         this.staticMethods.value.add(this.interpreter.create(FunctionDef::class, fromStringMethod))
     }
