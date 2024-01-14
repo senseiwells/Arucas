@@ -176,7 +176,7 @@ object ReflectionUtils {
         val required = executable.parameterTypes
 
         if (executable.isVarArgs) {
-            // Technically VarArgs can be empty
+            // Technically, VarArgs can be empty
             if (required.size - 1 > given.size) {
                 return false
             }
@@ -222,8 +222,8 @@ object ReflectionUtils {
     }
 
     private fun getAccessibleMethod(callingClass: Class<*>, callingObject: Any?, method: Method): Method? {
-        // The direct method may be inaccessible (for example it's a member of an inaccessible inner class)
-        // but accessible via an interface or a superclass. Notably this happens for synthetic lambda classes.
+        // The direct method may be inaccessible (for example, it's a member of an inaccessible inner class)
+        // but accessible via an interface or a superclass. Notably, this happens for synthetic lambda classes.
         // This is a workaround which looks for an accessible method in a superclass or interface.
 
         if (method.canAccess(callingObject)) {

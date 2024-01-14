@@ -702,9 +702,9 @@ sealed class Interpreter: StatementVisitor<Unit>, ExpressionVisitor<ClassInstanc
         distance?.let {
             this.currentTable.getVar(name, distance)?.let { variable -> return variable }
 
-            // So theoretically it's possible that a variable defined in a function
+            // So theoretically, it's possible that a variable defined in a function
             // was cached in that location but was since defined in the previous scopes
-            // where it currently resides. This means that we need to check scopes above.
+            // where it currently resides. This means that we need to check the scopes above.
             // But this should be avoided as it can lead to unwanted behaviours.
             this.currentTable.getVar(name)?.let { variable ->
                 this.logDebug("Local variable '$name' was defined previously in a scope but was accessed in scopes above")

@@ -816,7 +816,9 @@ class JavaDef(interpreter: Interpreter): CreatableDefinition<Any>(JAVA, interpre
         ]
     )
     private fun implementClass(arguments: Arguments): Class<*> {
-        arguments.interpreter.throwIfNotExperimental { "Implementing Java classes is experimental, enable with `experimental(true)`" }
+        arguments.interpreter.throwIfNotExperimental {
+            "Implementing Java classes is experimental, enable with `experimental(true)`"
+        }
 
         val collection = arguments.nextPrimitive(CollectionDef::class)
         val invokeHandler = arguments.nextFunction()

@@ -18,9 +18,9 @@ repositories {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.7.10")?.let { shade(it) }
-    implementation("com.google.code.gson:gson:2.9.0")?.let { shade(it) }
-    implementation("net.bytebuddy:byte-buddy:1.12.23")?.let { shade(it) }
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:${property("kotlin_std_version")}")?.let { shade(it) }
+    implementation("com.google.code.gson:gson:${property("gson_version")}")?.let { shade(it) }
+    implementation("net.bytebuddy:byte-buddy:${property("bytebuddy_version")}")?.let { shade(it) }
 
     testImplementation(kotlin("test"))
     testImplementation("org.openjdk.jmh:jmh-core:1.35")
