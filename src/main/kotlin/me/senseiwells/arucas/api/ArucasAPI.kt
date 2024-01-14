@@ -364,6 +364,17 @@ interface ArucasAPI {
         }
 
         /**
+         * This sets the file handler of the API.
+         *
+         * @param files the file handler.
+         * @return the builder.
+         */
+        fun setFileHandler(files: ArucasFileHandler): Builder {
+            this.files = files
+            return this
+        }
+
+        /**
          * This sets the error handler of the API.
          *
          * @param errorHandler the new error handler.

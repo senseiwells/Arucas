@@ -10,7 +10,7 @@ interface ArucasFileHandler {
     /**
      * This method should open a file on the user's os.
      *
-     * @param file The file to open.
+     * @param file the file to open.
      */
     fun open(file: File) {
         Desktop.getDesktop().open(file)
