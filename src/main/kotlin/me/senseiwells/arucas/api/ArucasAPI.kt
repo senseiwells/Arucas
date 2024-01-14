@@ -104,6 +104,14 @@ interface ArucasAPI {
     fun getOutput(): ArucasOutput
 
     /**
+     * This method should return the interpreter's file handler.
+     *
+     * @return the file handler.
+     * @see ArucasFileHandler
+     */
+    fun getFileHandler(): ArucasFileHandler
+
+    /**
      * This method should return the interpreter's error handler.
      *
      * @return the error handler.
@@ -222,6 +230,13 @@ interface ArucasAPI {
             private set
 
         /**
+         * The file handler.
+         * @see ArucasFileHandler
+         */
+        var files: ArucasFileHandler
+            private set
+
+        /**
          * The error handler.
          *
          * @see ArucasErrorHandler
@@ -271,6 +286,7 @@ interface ArucasAPI {
             val io = DefaultArucasIO()
             this.input = io
             this.output = io
+            this.files = object: ArucasFileHandler { }
         }
 
         /**
@@ -608,6 +624,8 @@ interface ArucasAPI {
                 override fun getInput() = this@Builder.input
 
                 override fun getOutput() = this@Builder.output
+
+                override fun getFileHandler() = this@Builder.files
 
                 override fun getErrorHandler() = this@Builder.errorHandler
 

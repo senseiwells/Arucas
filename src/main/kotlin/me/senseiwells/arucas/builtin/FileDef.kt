@@ -208,9 +208,9 @@ class FileDef(interpreter: Interpreter): CreatableDefinition<File>(FILE, interpr
     private fun open(arguments: Arguments) {
         val file = arguments.nextPrimitive(this)
         try {
-            Desktop.getDesktop().open(file)
+            arguments.api().getFileHandler().open(file)
         } catch (e: Exception) {
-            runtimeError("An error occurred while opening the file '$file'")
+            runtimeError("An error occurred while opening the file '$file'", e)
         }
     }
 }
