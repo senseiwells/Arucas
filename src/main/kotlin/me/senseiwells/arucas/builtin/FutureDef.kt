@@ -46,7 +46,9 @@ class FutureDef(interpreter: Interpreter): CreatableDefinition<Future<*>>(FUTURE
     override fun defineMethods(): List<MemberFunction> {
         return listOf(
             MemberFunction.of("await", this::await),
-            MemberFunction.of("isComplete", this::isComplete)
+            MemberFunction.of("cancel", this::cancel),
+            MemberFunction.of("isComplete", this::isComplete),
+            MemberFunction.of("isCancelled", this::isCancelled)
         )
     }
 
@@ -66,6 +68,17 @@ class FutureDef(interpreter: Interpreter): CreatableDefinition<Future<*>>(FUTURE
     }
 
     @FunctionDoc(
+        name = "cancel",
+        desc = [
+            "This cancels the future and prevents it from completing"
+        ],
+        examples = ["future.cancel();"]
+    )
+    private fun cancel(arguments: Arguments) {
+        arguments.nextPrimitive(this).cancel(true)
+    }
+
+    @FunctionDoc(
         name = "isComplete",
         desc = ["This returns whether the future has been completed"],
         returns = ReturnDoc(BooleanDef::class, ["Whether the future has been completed."]),
@@ -73,5 +86,15 @@ class FutureDef(interpreter: Interpreter): CreatableDefinition<Future<*>>(FUTURE
     )
     private fun isComplete(arguments: Arguments): Boolean {
         return arguments.nextPrimitive(this).isDone
+    }
+
+    @FunctionDoc(
+        name = "isCancelled",
+        desc = ["This returns whether the future has been cancelled"],
+        returns = ReturnDoc(BooleanDef::class, ["Whether the future has been cancelled."]),
+        examples = ["future.isCancelled();"]
+    )
+    private fun isCancelled(arguments: Arguments): Boolean {
+        return arguments.nextPrimitive(this).isCancelled
     }
 }

@@ -1,11 +1,13 @@
 // ./src/test/resources/code/test.arucas
 
-class X {
-    static readonly var x = 10;
 
-    static {
-        X.x = 11;
-    }
+start = getNanoTime();
+local piSum: Number = 0;
+for (n = 1; n < 1000000; n++) {
+    piSum += 1/(n*n);
 }
 
-print(X.x);
+local pi = Math.sqrt(piSum * 6);
+
+print(getNanoTime() - start);
+print(pi);
