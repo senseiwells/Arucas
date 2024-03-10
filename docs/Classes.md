@@ -298,6 +298,21 @@ been completed and then returns the value of the future.
 future.await();
 ```
 
+### `<Future>.cancel()`
+- Description: This cancels the future and prevents it from completing.
+- Example:
+```kotlin
+future.cancel();
+```
+
+### `<Future>.isCancelled()`
+- Description: This returns whether the future has been cancelled.
+- Returns - Boolean: Whether the future has been cancelled.
+- Example:
+```kotlin
+future.isCancelled();
+```
+
 ### `<Future>.isComplete()`
 - Description: This returns whether the future has been completed.
 - Returns - Boolean: Whether the future has been completed.

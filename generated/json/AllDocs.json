@@ -926,6 +926,30 @@
           ]
         },
         {
+          "name": "cancel",
+          "is_arbitrary": false,
+          "desc": [
+            "This cancels the future and prevents it from completing."
+          ],
+          "examples": [
+            "future.cancel();"
+          ]
+        },
+        {
+          "name": "isCancelled",
+          "is_arbitrary": false,
+          "desc": [
+            "This returns whether the future has been cancelled."
+          ],
+          "returns": {
+            "type": "Boolean",
+            "desc": "Whether the future has been cancelled."
+          },
+          "examples": [
+            "future.isCancelled();"
+          ]
+        },
+        {
           "name": "isComplete",
           "is_arbitrary": false,
           "desc": [

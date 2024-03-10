@@ -206,6 +206,17 @@ class Future {
     fun await(): Object;
 
     /*
+     * This cancels the future and prevents it from completing.
+     */
+    fun cancel(): Null;
+
+    /*
+     * This returns whether the future has been cancelled.
+     * Returns - Boolean: Whether the future has been cancelled.
+     */
+    fun isCancelled(): Boolean;
+
+    /*
      * This returns whether the future has been completed.
      * Returns - Boolean: Whether the future has been completed.
      */

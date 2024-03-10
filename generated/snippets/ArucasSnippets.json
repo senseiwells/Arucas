@@ -289,6 +289,16 @@
     "body": ".await()",
     "description": "<Future>.await()\nThis blocks the current thread until the future has\nbeen completed and then returns the value of the future.\n"
   },
+  "Method <Future>.cancel()": {
+    "prefix": ".cancel()",
+    "body": ".cancel()",
+    "description": "<Future>.cancel()\nThis cancels the future and prevents it from completing.\n"
+  },
+  "Method <Future>.isCancelled()": {
+    "prefix": ".isCancelled()",
+    "body": ".isCancelled()",
+    "description": "<Future>.isCancelled()\nThis returns whether the future has been cancelled.\n"
+  },
   "Method <Future>.isComplete()": {
     "prefix": ".isComplete()",
     "body": ".isComplete()",
